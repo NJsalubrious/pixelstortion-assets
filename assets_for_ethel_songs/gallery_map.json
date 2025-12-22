@@ -22,6 +22,7 @@
         "https://NJsalubrious.github.io/pixelstortion-assets/assets_for_ethel_songs/images/track_01/track_20.png"
     ],
     "track_02": [
+<<<<<<< HEAD
         "https://NJsalubrious.github.io/pixelstortion-assets/assets_for_ethel_songs/images/track_02/001_track.jpg",
         "https://NJsalubrious.github.io/pixelstortion-assets/assets_for_ethel_songs/images/track_02/002_track.jpg",
         "https://NJsalubrious.github.io/pixelstortion-assets/assets_for_ethel_songs/images/track_02/003_track.jpg",
@@ -87,5 +88,267 @@
         "https://NJsalubrious.github.io/pixelstortion-assets/assets_for_ethel_songs/images/track_02/063_track.jpg",
         "https://NJsalubrious.github.io/pixelstortion-assets/assets_for_ethel_songs/images/track_02/064_track.jpg",
         "https://NJsalubrious.github.io/pixelstortion-assets/assets_for_ethel_songs/images/track_02/065_track.jpg"
+=======
+        {
+            "t": null,
+            "u": "https://NJsalubrious.github.io/pixelstortion-assets/assets_for_ethel_songs/images/track_02/001_track.jpg"
+        },
+        {
+            "t": null,
+            "u": "https://NJsalubrious.github.io/pixelstortion-assets/assets_for_ethel_songs/images/track_02/002_track.jpg"
+        },
+        {
+            "t": null,
+            "u": "https://NJsalubrious.github.io/pixelstortion-assets/assets_for_ethel_songs/images/track_02/003_track.jpg"
+        },
+        {
+            "t": null,
+            "u": "https://NJsalubrious.github.io/pixelstortion-assets/assets_for_ethel_songs/images/track_02/004_track.jpg"
+        },
+        {
+            "t": null,
+            "u": "https://NJsalubrious.github.io/pixelstortion-assets/assets_for_ethel_songs/images/track_02/005_track.jpg"
+        },
+        {
+            "t": null,
+            "u": "https://NJsalubrious.github.io/pixelstortion-assets/assets_for_ethel_songs/images/track_02/006_track.jpg"
+        },
+        {
+            "t": null,
+            "u": "https://NJsalubrious.github.io/pixelstortion-assets/assets_for_ethel_songs/images/track_02/007_track.jpg"
+        },
+        {
+            "t": null,
+            "u": "https://NJsalubrious.github.io/pixelstortion-assets/assets_for_ethel_songs/images/track_02/008_track.jpg"
+        },
+        {
+            "t": 22,
+            "u": "https://NJsalubrious.github.io/pixelstortion-assets/assets_for_ethel_songs/images/track_02/009_track_022s.jpg"
+        },
+        {
+            "t": null,
+            "u": "https://NJsalubrious.github.io/pixelstortion-assets/assets_for_ethel_songs/images/track_02/010_track.jpg"
+        },
+        {
+            "t": null,
+            "u": "https://NJsalubrious.github.io/pixelstortion-assets/assets_for_ethel_songs/images/track_02/011_track.jpg"
+        },
+        {
+            "t": 27,
+            "u": "https://NJsalubrious.github.io/pixelstortion-assets/assets_for_ethel_songs/images/track_02/012_track_027s.jpg"
+        },
+        {
+            "t": null,
+            "u": "https://NJsalubrious.github.io/pixelstortion-assets/assets_for_ethel_songs/images/track_02/013_track.jpg"
+        },
+        {
+            "t": null,
+            "u": "https://NJsalubrious.github.io/pixelstortion-assets/assets_for_ethel_songs/images/track_02/014_track.jpg"
+        },
+        {
+            "t": null,
+            "u": "https://NJsalubrious.github.io/pixelstortion-assets/assets_for_ethel_songs/images/track_02/015_track.jpg"
+        },
+        {
+            "t": null,
+            "u": "https://NJsalubrious.github.io/pixelstortion-assets/assets_for_ethel_songs/images/track_02/016_track.jpg"
+        },
+        {
+            "t": null,
+            "u": "https://NJsalubrious.github.io/pixelstortion-assets/assets_for_ethel_songs/images/track_02/017_track.jpg"
+        },
+        {
+            "t": null,
+            "u": "https://NJsalubrious.github.io/pixelstortion-assets/assets_for_ethel_songs/images/track_02/018_track.jpg"
+        },
+        {
+            "t": null,
+            "u": "https://NJsalubrious.github.io/pixelstortion-assets/assets_for_ethel_songs/images/track_02/019_track.jpg"
+        },
+        {
+            "t": null,
+            "u": "https://NJsalubrious.github.io/pixelstortion-assets/assets_for_ethel_songs/images/track_02/020_track.jpg"
+        },
+        {
+            "t": null,
+            "u": "https://NJsalubrious.github.io/pixelstortion-assets/assets_for_ethel_songs/images/track_02/021_track.jpg"
+        },
+        {
+            "t": null,
+            "u": "https://NJsalubrious.github.io/pixelstortion-assets/assets_for_ethel_songs/images/track_02/022_track.jpg"
+        },
+        {
+            "t": null,
+            "u": "https://NJsalubrious.github.io/pixelstortion-assets/assets_for_ethel_songs/images/track_02/023_track.jpg"
+        },
+        {
+            "t": 63,
+            "u": "https://NJsalubrious.github.io/pixelstortion-assets/assets_for_ethel_songs/images/track_02/024_track_063s.jpg"
+        },
+        {
+            "t": null,
+            "u": "https://NJsalubrious.github.io/pixelstortion-assets/assets_for_ethel_songs/images/track_02/025_track.jpg"
+        },
+        {
+            "t": null,
+            "u": "https://NJsalubrious.github.io/pixelstortion-assets/assets_for_ethel_songs/images/track_02/026_track.jpg"
+        },
+        {
+            "t": null,
+            "u": "https://NJsalubrious.github.io/pixelstortion-assets/assets_for_ethel_songs/images/track_02/027_track.jpg"
+        },
+        {
+            "t": null,
+            "u": "https://NJsalubrious.github.io/pixelstortion-assets/assets_for_ethel_songs/images/track_02/028_track.jpg"
+        },
+        {
+            "t": null,
+            "u": "https://NJsalubrious.github.io/pixelstortion-assets/assets_for_ethel_songs/images/track_02/029_track.jpg"
+        },
+        {
+            "t": 80,
+            "u": "https://NJsalubrious.github.io/pixelstortion-assets/assets_for_ethel_songs/images/track_02/030_track_080s.jpg"
+        },
+        {
+            "t": null,
+            "u": "https://NJsalubrious.github.io/pixelstortion-assets/assets_for_ethel_songs/images/track_02/031_track.jpg"
+        },
+        {
+            "t": null,
+            "u": "https://NJsalubrious.github.io/pixelstortion-assets/assets_for_ethel_songs/images/track_02/032_track.jpg"
+        },
+        {
+            "t": null,
+            "u": "https://NJsalubrious.github.io/pixelstortion-assets/assets_for_ethel_songs/images/track_02/033_track.jpg"
+        },
+        {
+            "t": null,
+            "u": "https://NJsalubrious.github.io/pixelstortion-assets/assets_for_ethel_songs/images/track_02/034_track.jpg"
+        },
+        {
+            "t": null,
+            "u": "https://NJsalubrious.github.io/pixelstortion-assets/assets_for_ethel_songs/images/track_02/035_track.jpg"
+        },
+        {
+            "t": null,
+            "u": "https://NJsalubrious.github.io/pixelstortion-assets/assets_for_ethel_songs/images/track_02/036_track.jpg"
+        },
+        {
+            "t": null,
+            "u": "https://NJsalubrious.github.io/pixelstortion-assets/assets_for_ethel_songs/images/track_02/037_track.jpg"
+        },
+        {
+            "t": null,
+            "u": "https://NJsalubrious.github.io/pixelstortion-assets/assets_for_ethel_songs/images/track_02/038_track.jpg"
+        },
+        {
+            "t": null,
+            "u": "https://NJsalubrious.github.io/pixelstortion-assets/assets_for_ethel_songs/images/track_02/039_track.jpg"
+        },
+        {
+            "t": 100,
+            "u": "https://NJsalubrious.github.io/pixelstortion-assets/assets_for_ethel_songs/images/track_02/040_track_100s.jpg"
+        },
+        {
+            "t": null,
+            "u": "https://NJsalubrious.github.io/pixelstortion-assets/assets_for_ethel_songs/images/track_02/041_track.jpg"
+        },
+        {
+            "t": 104,
+            "u": "https://NJsalubrious.github.io/pixelstortion-assets/assets_for_ethel_songs/images/track_02/042_track_104s.jpg"
+        },
+        {
+            "t": null,
+            "u": "https://NJsalubrious.github.io/pixelstortion-assets/assets_for_ethel_songs/images/track_02/043_track.jpg"
+        },
+        {
+            "t": null,
+            "u": "https://NJsalubrious.github.io/pixelstortion-assets/assets_for_ethel_songs/images/track_02/044_track.jpg"
+        },
+        {
+            "t": null,
+            "u": "https://NJsalubrious.github.io/pixelstortion-assets/assets_for_ethel_songs/images/track_02/045_track.jpg"
+        },
+        {
+            "t": null,
+            "u": "https://NJsalubrious.github.io/pixelstortion-assets/assets_for_ethel_songs/images/track_02/046_track.jpg"
+        },
+        {
+            "t": 122,
+            "u": "https://NJsalubrious.github.io/pixelstortion-assets/assets_for_ethel_songs/images/track_02/047_track_122s.jpg"
+        },
+        {
+            "t": null,
+            "u": "https://NJsalubrious.github.io/pixelstortion-assets/assets_for_ethel_songs/images/track_02/048_track.jpg"
+        },
+        {
+            "t": null,
+            "u": "https://NJsalubrious.github.io/pixelstortion-assets/assets_for_ethel_songs/images/track_02/049_track.jpg"
+        },
+        {
+            "t": null,
+            "u": "https://NJsalubrious.github.io/pixelstortion-assets/assets_for_ethel_songs/images/track_02/050_track.jpg"
+        },
+        {
+            "t": 135,
+            "u": "https://NJsalubrious.github.io/pixelstortion-assets/assets_for_ethel_songs/images/track_02/051_track_135s.jpg"
+        },
+        {
+            "t": null,
+            "u": "https://NJsalubrious.github.io/pixelstortion-assets/assets_for_ethel_songs/images/track_02/052_track.jpg"
+        },
+        {
+            "t": null,
+            "u": "https://NJsalubrious.github.io/pixelstortion-assets/assets_for_ethel_songs/images/track_02/053_track.jpg"
+        },
+        {
+            "t": null,
+            "u": "https://NJsalubrious.github.io/pixelstortion-assets/assets_for_ethel_songs/images/track_02/054_track.jpg"
+        },
+        {
+            "t": null,
+            "u": "https://NJsalubrious.github.io/pixelstortion-assets/assets_for_ethel_songs/images/track_02/055_track.jpg"
+        },
+        {
+            "t": null,
+            "u": "https://NJsalubrious.github.io/pixelstortion-assets/assets_for_ethel_songs/images/track_02/056_track.jpg"
+        },
+        {
+            "t": null,
+            "u": "https://NJsalubrious.github.io/pixelstortion-assets/assets_for_ethel_songs/images/track_02/057_track.jpg"
+        },
+        {
+            "t": null,
+            "u": "https://NJsalubrious.github.io/pixelstortion-assets/assets_for_ethel_songs/images/track_02/058_track.jpg"
+        },
+        {
+            "t": 151,
+            "u": "https://NJsalubrious.github.io/pixelstortion-assets/assets_for_ethel_songs/images/track_02/060_track_151s.jpg"
+        },
+        {
+            "t": null,
+            "u": "https://NJsalubrious.github.io/pixelstortion-assets/assets_for_ethel_songs/images/track_02/061_track.jpg"
+        },
+        {
+            "t": null,
+            "u": "https://NJsalubrious.github.io/pixelstortion-assets/assets_for_ethel_songs/images/track_02/062_track.jpg"
+        },
+        {
+            "t": null,
+            "u": "https://NJsalubrious.github.io/pixelstortion-assets/assets_for_ethel_songs/images/track_02/063_track.jpg"
+        },
+        {
+            "t": null,
+            "u": "https://NJsalubrious.github.io/pixelstortion-assets/assets_for_ethel_songs/images/track_02/064_track.jpg"
+        },
+        {
+            "t": null,
+            "u": "https://NJsalubrious.github.io/pixelstortion-assets/assets_for_ethel_songs/images/track_02/065_track.jpg"
+        },
+        {
+            "t": 169,
+            "u": "https://NJsalubrious.github.io/pixelstortion-assets/assets_for_ethel_songs/images/track_02/066_track_169s.jpg"
+        }
+>>>>>>> 6c52776d35f5cfedf555a17f00913e51ae5ef0d9
     ]
 }
