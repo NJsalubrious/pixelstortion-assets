@@ -20,8 +20,8 @@ TRACK_DATA = [
     {"id": 6, "path": "track_06", "count": 30},
     {"id": 7, "path": "track_07", "count": 23},
     {"id": 8, "path": "track_08", "count": 46},
-    {"id": 90, "path": "track_90", "count": 12},  # Ethel's Intro: Ride
-    {"id": 11, "path": "track_11", "count": 37},  # Ride
+    {"id": 9, "path": "track_90", "count": 12},  # Ethel's Intro: Ride
+    {"id": 10, "path": "track_10", "count": 37},  # Ride
     {"id": 11, "path": "track_11b", "count": 12},  # Intro: Grief (Duplicate ID handled with 'b')
     {"id": 12, "path": "track_12", "count": 35},
     {"id": 13, "path": "track_13", "count": 21},
