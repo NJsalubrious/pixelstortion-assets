@@ -1,0 +1,286 @@
+
+        :root {
+            --glitch-green: #00ff41;
+            --glitch-pink: #ff0055;
+            --fire-core: #ffcc00;
+            --fire-mid: #ff4400;
+            --fire-dark: #220000;
+            --transition-duration: 0.8s;
+        }
+
+        body {
+            background-color: #000;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: 'Space Grotesk', sans-serif;
+        }
+
+        /* --- Split Layout --- */
+        .split-container {
+            display: flex;
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+        }
+
+        .panel {
+            flex: 1;
+            position: relative;
+            transition: flex 0.8s cubic-bezier(0.25, 1, 0.5, 1);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .panel:hover {
+            flex: 3;
+        }
+
+        /* Dim the non-hovered panel - Apply to entire panel */
+        .split-container:has(.panel:hover) .panel:not(:hover) {
+            filter: blur(2px) brightness(0.4) grayscale(60%);
+        }
+
+        .split-container:has(.panel:hover) .panel:not(:hover) .content-inner {
+            opacity: 0.5;
+            transform: scale(0.98);
+        }
+
+        /* Divider */
+        .divider {
+            position: absolute;
+            left: 50%;
+            top: 0; bottom: 0;
+            width: 2px;
+            background: linear-gradient(to bottom, transparent, var(--glitch-green) 20%, #fff 50%, var(--fire-mid) 80%, transparent);
+            z-index: 50;
+            pointer-events: none;
+            transform: translateX(-50%);
+            transition: opacity 0.3s;
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
+        }
+        .split-container:hover .divider { opacity: 0; }
+
+        /* --- LEFT SIDE: Silence is the Trauma --- */
+        .left-panel { background: #020202; }
+
+        .scanlines {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,0) 50%, rgba(0,0,0,0.4) 50%, rgba(0,0,0,0.4));
+            background-size: 100% 4px;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        .glitch-text {
+            position: relative;
+            color: #fff;
+            mix-blend-mode: lighten;
+        }
+        .glitch-text::before, .glitch-text::after {
+            content: attr(data-text);
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: #020202;
+        }
+        .glitch-text::before {
+            left: 2px;
+            text-shadow: -2px 0 var(--glitch-pink);
+            clip-path: inset(44px 0 56px 0);
+            animation: glitch-anim 3s infinite linear alternate-reverse;
+        }
+        .glitch-text::after {
+            left: -2px;
+            text-shadow: -2px 0 var(--glitch-green);
+            clip-path: inset(44px 0 56px 0);
+            animation: glitch-anim2 2s infinite linear alternate-reverse;
+        }
+
+        @keyframes glitch-anim {
+            0% { clip-path: inset(30% 0 40% 0); }
+            20% { clip-path: inset(10% 0 80% 0); }
+            40% { clip-path: inset(80% 0 5% 0); }
+            60% { clip-path: inset(5% 0 60% 0); }
+            80% { clip-path: inset(50% 0 20% 0); }
+            100% { clip-path: inset(10% 0 50% 0); }
+        }
+        @keyframes glitch-anim2 {
+            0% { clip-path: inset(15% 0 60% 0); }
+            20% { clip-path: inset(80% 0 5% 0); }
+            40% { clip-path: inset(40% 0 20% 0); }
+            60% { clip-path: inset(10% 0 80% 0); }
+            80% { clip-path: inset(60% 0 10% 0); }
+            100% { clip-path: inset(25% 0 50% 0); }
+        }
+
+        .btn-tech {
+            border: 1px solid var(--glitch-green);
+            color: var(--glitch-green);
+            font-family: 'Courier Prime', monospace;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            padding: 12px 30px;
+            background: rgba(0, 20, 0, 0.6);
+            transition: all 0.3s;
+            box-shadow: 0 0 10px rgba(0,255,65,0.1);
+        }
+        .btn-tech:hover {
+            background: var(--glitch-green);
+            color: #000;
+            box-shadow: 0 0 25px var(--glitch-green);
+        }
+
+        /* --- RIGHT SIDE: NALANI (Fire) --- */
+        .right-panel {
+            background-color: #080200;
+            position: relative;
+        }
+
+        /* 1. Background Image */
+        .bg-war {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0.7;
+            filter: contrast(140%) brightness(0.6) grayscale(30%) sepia(20%);
+            z-index: 1;
+        }
+
+        /* 2. NALANI FIRE TEXT EFFECT */
+        .nalani-fire-wrapper {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            aspect-ratio: 2.5/1;
+            z-index: 30;
+            margin-bottom: 1rem;
+            filter: drop-shadow(0 0 8px rgba(255, 160, 0, 0.8)) drop-shadow(0 0 20px rgba(255, 60, 0, 0.6));
+            transform: scale(1.5);
+        }
+
+        .nalani-fire-mask {
+            position: absolute;
+            inset: 0;
+            -webkit-mask-image: url('https://raw.githubusercontent.com/NJsalubrious/pixelstortion-assets/67296a57b902e42ac6c72977fac5d6eb0bdc8e09/assets_for_nalani_song/Images_misc/Nalani_type_shadow.png');
+            mask-image: url('https://raw.githubusercontent.com/NJsalubrious/pixelstortion-assets/67296a57b902e42ac6c72977fac5d6eb0bdc8e09/assets_for_nalani_song/Images_misc/Nalani_type_shadow.png');
+            -webkit-mask-size: contain;
+            mask-size: contain;
+            -webkit-mask-repeat: no-repeat;
+            mask-repeat: no-repeat;
+            -webkit-mask-position: center;
+            mask-position: center;
+            background: transparent;
+        }
+
+        .nalani-fire-fill {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(0deg,
+                #ffffaa 0%,
+                #ffaa00 30%,
+                #ff4400 60%,
+                #550000 100%);
+            mask-image: linear-gradient(to top, black 80%, transparent 100%);
+        }
+
+        .nalani-fire-turbulence {
+            position: absolute;
+            inset: -50%;
+            width: 200%;
+            height: 200%;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.05' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.5'/%3E%3C/svg%3E");
+            mix-blend-mode: overlay;
+            animation: fireFlow 3s infinite linear;
+            opacity: 0.7;
+        }
+
+        @keyframes fireFlow {
+            0% { transform: translateY(0) scale(1); }
+            50% { transform: translateY(-10%) scale(1.02); }
+            100% { transform: translateY(-20%) scale(1); }
+        }
+
+        /* 3. SLOWER, REALISTIC EMBERS */
+        .ember-container {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            z-index: 20;
+            overflow: hidden;
+        }
+
+        .ember {
+            position: absolute;
+            bottom: -20px;
+            border-radius: 50%;
+            opacity: 0;
+            background: radial-gradient(circle, #ffcc00 20%, #ff4400 100%);
+            box-shadow: 0 0 6px #ff4400;
+            animation: floatUp linear infinite;
+        }
+
+        @keyframes floatUp {
+            0% {
+                transform: translateY(0) translateX(0) scale(1);
+                opacity: 0;
+            }
+            10% { opacity: 1; }
+            80% { opacity: 0.8; }
+            100% {
+                transform: translateY(-110vh) translateX(var(--drift)) scale(0.6);
+                opacity: 0;
+            }
+        }
+
+        /* 4. Button */
+        .btn-war {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.8rem;
+            letter-spacing: 0.2em;
+            color: #ffaa00;
+            background: transparent;
+            border: none;
+            padding: 10px 40px;
+            position: relative;
+            text-shadow: 0 2px 10px rgba(0,0,0,1);
+            z-index: 50;
+        }
+
+        .btn-war::before {
+            content: '';
+            position: absolute;
+            bottom: 0; left: 50%;
+            width: 40%; height: 1px;
+            background: linear-gradient(90deg, transparent, #ff4400, transparent);
+            transform: translateX(-50%);
+        }
+
+        .content-inner {
+            transition: all var(--transition-duration) ease;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            z-index: 50;
+            padding: 2rem;
+            height: 100%;
+        }
+
+        .content-inner > * {
+            transition: all var(--transition-duration) ease;
+        }
+
+        @media (max-width: 768px) {
+            .split-container { flex-direction: column; }
+            .divider { width: 100%; height: 2px; top: 50%; left: 0; transform: translateY(-50%); }
+        }
