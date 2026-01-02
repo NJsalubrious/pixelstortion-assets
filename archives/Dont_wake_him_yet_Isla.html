@@ -6,7 +6,7 @@
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
     <title>ARCHIVE: ISLA 2017 FLIGHT TRAGEDY</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://www.youtube.com/iframe_api"></script>
+
     <link
         href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=Inter:wght@400;600;800&display=swap"
         rel="stylesheet" />
@@ -123,7 +123,7 @@
 
     <div class="scanlines"></div>
 
-    <div id="youtube-audio" style="display:none;"></div>
+
 
     <div id="decrypt-overlay" onclick="enterArchive()">
         <div class="text-center">
@@ -244,19 +244,7 @@
                     </div>
                 </div>
 
-                <div class="border border-gray-800 bg-[#050505] p-3 flex items-center gap-4">
-                    <div class="text-[10px] text-red-500 font-mono-code animate-pulse">● AUDIO LOG PLAYING</div>
-                    <div class="flex-1 flex items-end h-4 gap-1">
-                        <div class="w-1 bg-gray-600 h-full animate-[bounce_1s_infinite]"></div>
-                        <div class="w-1 bg-gray-600 h-1/2 animate-[bounce_1.2s_infinite]"></div>
-                        <div class="w-1 bg-gray-600 h-3/4 animate-[bounce_0.8s_infinite]"></div>
-                        <div class="w-1 bg-gray-600 h-full animate-[bounce_1.5s_infinite]"></div>
-                        <div class="w-1 bg-gray-600 h-1/4 animate-[bounce_0.9s_infinite]"></div>
-                        <div class="w-1 bg-gray-600 h-2/3 animate-[bounce_1.1s_infinite]"></div>
-                        <div class="w-1 bg-gray-600 h-full animate-[bounce_1.3s_infinite]"></div>
-                    </div>
-                    <div class="text-[10px] text-gray-600 font-mono-code">REF: Youtube/NwqHLFYR1mA</div>
-                </div>
+
 
             </div>
         </div>
@@ -273,29 +261,7 @@
     </div>
 
     <script>
-        // YouTube API Setup
-        var player;
-        function onYouTubeIframeAPIReady() {
-            player = new YT.Player('youtube-audio', {
-                height: '0',
-                width: '0',
-                videoId: 'NwqHLFYR1mA',
-                playerVars: {
-                    'autoplay': 0, // Wait for user click
-                    'controls': 0,
-                    'loop': 1,
-                    'playlist': 'NwqHLFYR1mA' // Must match videoId for single video loop
-                },
-                events: {
-                    'onReady': onPlayerReady
-                }
-            });
-        }
 
-        function onPlayerReady(event) {
-            // Player is ready, waiting for start screen click
-            console.log("Audio Node Ready");
-        }
 
         function enterArchive() {
             // Pause parent window music (silence.html) if loaded in iframe
@@ -305,11 +271,6 @@
                 }
             } catch (e) {
                 console.log('Could not communicate with parent window');
-            }
-
-            // User interaction triggers play
-            if (player && player.playVideo) {
-                player.playVideo();
             }
 
             // UI Transition
@@ -324,11 +285,6 @@
         }
 
         function closeArchive() {
-            // Stop audio
-            if (player && player.stopVideo) {
-                player.stopVideo();
-            }
-
             // Resume parent window music if in iframe
             try {
                 if (window.parent && window.parent !== window) {
