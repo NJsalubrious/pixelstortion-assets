@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>ARCHIVE: ISLA 2017 FLIGHT TRAGEDY</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://www.youtube.com/iframe_api"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=Inter:wght@400;600;800&display=swap"
+        rel="stylesheet" />
+    <style>
+        :root {
+            --term-bg: #0a0a0a;
+            --term-text: #e0e0e0;
+            --term-accent: #ff3333;
+            /* Alert Red */
+            --term-dim: #444;
+        }
+
+        body {
+            background-color: var(--term-bg);
+            color: var(--term-text);
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+        }
+
+        .font-mono-code {
+            font-family: 'Courier Prime', monospace;
+        }
+
+        /* Start Screen Overlay */
+        #decrypt-overlay {
+            position: fixed;
+            inset: 0;
+            background: #000;
+            z-index: 50;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+
+        .blink {
+            animation: blinker 1s linear infinite;
+        }
+
+        @keyframes blinker {
+            50% {
+                opacity: 0;
+            }
+        }
+
+        /* Grid Background Effect */
+        .grid-bg {
+            background-image:
+                linear-gradient(to right, #1a1a1a 1px, transparent 1px),
+                linear-gradient(to bottom, #1a1a1a 1px, transparent 1px);
+            background-size: 40px 40px;
+        }
+
+        /* Evidence Image Styling */
+        .evidence-card {
+            border: 1px solid #333;
+            background: #111;
+            padding: 8px;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .evidence-card:hover {
+            border-color: var(--term-text);
+            transform: scale(1.02);
+            z-index: 10;
+        }
+
+        .evidence-card::after {
+            content: 'EVIDENCE SCAN';
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            font-family: 'Courier Prime', monospace;
+            font-size: 8px;
+            background: var(--term-accent);
+            color: black;
+            padding: 2px 4px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .evidence-card:hover::after {
+            opacity: 1;
+        }
+
+        /* File list items */
+        .file-row {
+            border-bottom: 1px solid #222;
+            transition: background 0.2s;
+        }
+
+        .file-row:hover {
+            background: #151515;
+        }
+
+        /* CRT Scanline Effect (Subtle) */
+        .scanlines {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
+            background-size: 100% 2px, 3px 100%;
+            pointer-events: none;
+            z-index: 40;
+        }
+    </style>
+</head>
+
+<body class="grid-bg min-h-screen relative">
+
+    <div class="scanlines"></div>
+
+    <div id="youtube-audio" style="display:none;"></div>
+
+    <div id="decrypt-overlay" onclick="enterArchive()">
+        <div class="text-center">
+            <div class="text-red-600 font-mono-code text-sm mb-4 tracking-widest">ENCRYPTED FILE DETECTED</div>
+            <h1 class="text-4xl md:text-6xl font-black tracking-tighter mb-6 text-white mix-blend-difference">
+                ARCHIVE ENTRY:<br>ISLA // 2017
+            </h1>
+            <div
+                class="border border-white/30 px-6 py-3 hover:bg-white hover:text-black transition-colors inline-flex items-center gap-2">
+                <span class="material-symbols-outlined text-sm">lock_open</span>
+                <span class="font-mono-code text-sm font-bold tracking-widest">CLICK TO DECRYPT & PLAY</span>
+            </div>
+        </div>
+    </div>
+
+    <div id="archive-content"
+        class="opacity-0 transition-opacity duration-1000 p-6 md:p-12 max-w-6xl mx-auto relative z-10">
+
+        <header
+            class="flex flex-col md:flex-row justify-between items-start md:items-center mb-12 border-b border-gray-800 pb-6">
+            <div class="mb-4 md:mb-0">
+                <div class="text-[10px] text-gray-500 font-mono-code mb-1">ARCHIVE SEARCH QUERY</div>
+                <div class="flex items-center gap-2 text-xl md:text-2xl font-mono-code text-white">
+                    <span class="text-gray-600">></span>
+                    <span class="bg-gray-800/50 px-2">"ISLA" + "FLIGHT TRAGEDY" + "2017"</span>
+                    <span class="blink w-2 h-6 bg-white ml-1"></span>
+                </div>
+            </div>
+
+            <button onclick="closeArchive()"
+                class="border border-red-900 text-red-500 hover:bg-red-900/20 px-4 py-2 text-xs font-mono-code tracking-widest transition-colors flex items-center gap-2">
+                <span>[X] CLOSE ARCHIVE</span>
+            </button>
+        </header>
+
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12">
+            <div class="md:col-span-1 space-y-6">
+                <div class="bg-[#111] border border-gray-800 p-4">
+                    <h3
+                        class="text-xs font-bold text-gray-500 mb-4 uppercase tracking-widest border-b border-gray-800 pb-2">
+                        File Metadata</h3>
+
+                    <div class="space-y-3 font-mono-code text-xs">
+                        <div>
+                            <span class="block text-gray-600">SUBJECT ID</span>
+                            <span class="text-white">ISLA [Redacted]</span>
+                        </div>
+                        <div>
+                            <span class="block text-gray-600">AGE AT EVENT</span>
+                            <span class="text-white">15 Years</span>
+                        </div>
+                        <div>
+                            <span class="block text-gray-600">DATE RECORDED</span>
+                            <span class="text-red-400">JULY 2017</span>
+                        </div>
+                        <div>
+                            <span class="block text-gray-600">FILE COUNT</span>
+                            <span class="text-white">3 Items</span>
+                        </div>
+                        <div>
+                            <span class="block text-gray-600">STATUS</span>
+                            <span class="text-white bg-red-900/40 px-1">PUBLIC RECORD</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="text-[10px] text-gray-500 font-mono-code leading-relaxed">
+                    <strong class="text-white block mb-1">ARCHIVIST NOTE:</strong>
+                    This incident marks the first public, sensationalized record of the subject. Often cited as the
+                    origin point of the "Cautionary Tale" narrative.
+                </div>
+            </div>
+
+            <div class="md:col-span-3">
+
+                <div class="mb-8 border-l-2 border-white pl-4">
+                    <p class="text-lg text-gray-300 font-light leading-relaxed mb-4">
+                        This archive collects three foundational posts concerning the July 2017 "Flight Tragedy" event.
+                    </p>
+                    <div class="space-y-2 text-sm text-gray-400 font-mono-code">
+                        <div class="flex gap-3">
+                            <span class="text-white">01.</span>
+                            <p>A digitized scan of the original 2017 "scandal sheet" news clipping ("JUDGE'S DAUGHTER
+                                (15) IN FLIGHT TRAGEDY").</p>
+                        </div>
+                        <div class="flex gap-3">
+                            <span class="text-white">02.</span>
+                            <p>The full "From Pymble to the Pit" analysis, providing later context on the event's
+                                personal fallout.</p>
+                        </div>
+                        <div class="flex gap-3">
+                            <span class="text-white">03.</span>
+                            <p>Embedded link to "Don't Wake Him" (Song 39), Isla's own artistic account of the overdose.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <h3 class="text-xs font-bold text-gray-500 mb-4 uppercase tracking-widest flex items-center gap-2">
+                    <span class="w-2 h-2 bg-red-500 rounded-full animate-pulse"></span>
+                    Visual Evidence
+                </h3>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+                    <div class="evidence-card transform rotate-1">
+                        <img src="https://static.wixstatic.com/media/723d75_7aec1968a6094ff0bb9b63110643d9f8~mv2.png"
+                            alt="Flight Tragedy Scan 1" class="w-full h-auto grayscale-[50%] hover:grayscale-0">
+                    </div>
+
+                    <div class="evidence-card transform -rotate-1 z-10">
+                        <img src="https://static.wixstatic.com/media/723d75_8c7211127ae24f6885975fbb016035bc~mv2.png"
+                            alt="Flight Tragedy Scan 2" class="w-full h-auto grayscale-[50%] hover:grayscale-0">
+                    </div>
+
+                    <div class="evidence-card transform rotate-2">
+                        <img src="https://static.wixstatic.com/media/723d75_230e7a6586bd44fcab8801f479663ae6~mv2.png"
+                            alt="Flight Tragedy Scan 3" class="w-full h-auto grayscale-[50%] hover:grayscale-0">
+                    </div>
+                </div>
+
+                <div class="border border-gray-800 bg-[#050505] p-3 flex items-center gap-4">
+                    <div class="text-[10px] text-red-500 font-mono-code animate-pulse">● AUDIO LOG PLAYING</div>
+                    <div class="flex-1 flex items-end h-4 gap-1">
+                        <div class="w-1 bg-gray-600 h-full animate-[bounce_1s_infinite]"></div>
+                        <div class="w-1 bg-gray-600 h-1/2 animate-[bounce_1.2s_infinite]"></div>
+                        <div class="w-1 bg-gray-600 h-3/4 animate-[bounce_0.8s_infinite]"></div>
+                        <div class="w-1 bg-gray-600 h-full animate-[bounce_1.5s_infinite]"></div>
+                        <div class="w-1 bg-gray-600 h-1/4 animate-[bounce_0.9s_infinite]"></div>
+                        <div class="w-1 bg-gray-600 h-2/3 animate-[bounce_1.1s_infinite]"></div>
+                        <div class="w-1 bg-gray-600 h-full animate-[bounce_1.3s_infinite]"></div>
+                    </div>
+                    <div class="text-[10px] text-gray-600 font-mono-code">REF: Youtube/NwqHLFYR1mA</div>
+                </div>
+
+            </div>
+        </div>
+
+        <footer class="border-t border-gray-800 pt-8 text-center">
+            <p class="text-[10px] text-gray-600 font-mono-code uppercase tracking-widest">
+                Ethel & Isla are characters from PixelStortion's fictional crime drama series. Their world is adjacent
+                to ours.<br>
+                Dates are accurate.<br>
+                <span class="text-white mt-2 block">© 2025 PIXEL STORTION. ALL RIGHTS RESERVED.</span>
+            </p>
+        </footer>
+
+    </div>
+
+    <script>
+        // YouTube API Setup
+        var player;
+        function onYouTubeIframeAPIReady() {
+            player = new YT.Player('youtube-audio', {
+                height: '0',
+                width: '0',
+                videoId: 'NwqHLFYR1mA',
+                playerVars: {
+                    'autoplay': 0, // Wait for user click
+                    'controls': 0,
+                    'loop': 1,
+                    'playlist': 'OLAK5uy_lrHxGcaG9X49ymy4mcwZlnRAOooFh02uQ'
+                },
+                events: {
+                    'onReady': onPlayerReady
+                }
+            });
+        }
+
+        function onPlayerReady(event) {
+            // Player is ready, waiting for start screen click
+            console.log("Audio Node Ready");
+        }
+
+        function enterArchive() {
+            // User interaction triggers play
+            if (player && player.playVideo) {
+                player.playVideo();
+            }
+
+            // UI Transition
+            const overlay = document.getElementById('decrypt-overlay');
+            const content = document.getElementById('archive-content');
+
+            overlay.style.opacity = '0';
+            setTimeout(() => {
+                overlay.style.display = 'none';
+                content.classList.remove('opacity-0');
+            }, 500);
+        }
+
+        function closeArchive() {
+            // Stop audio
+            if (player && player.stopVideo) {
+                player.stopVideo();
+            }
+
+            // Show termination screen
+            document.body.innerHTML = `
+                <div class="h-screen w-full flex items-center justify-center bg-black">
+                    <div class="text-center font-mono-code">
+                        <div class="text-red-500 mb-2">CONNECTION TERMINATED</div>
+                        <div class="text-gray-600 text-xs">LOGGING OUT...</div>
+                    </div>
+                </div>
+            `;
+
+            // Optional: Close window if allowed (often blocked by browsers)
+            // window.close(); 
+        }
+    </script>
+</body>
+
+</html>
