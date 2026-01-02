@@ -136,11 +136,6 @@
                     <span class="blink w-2 h-6 bg-white ml-1"></span>
                 </div>
             </div>
-
-            <button onclick="closeArchive()"
-                class="border border-red-900 text-red-500 hover:bg-red-900/20 px-4 py-2 text-xs font-mono-code tracking-widest transition-colors flex items-center gap-2">
-                <span>[X] CLOSE ARCHIVE</span>
-            </button>
         </header>
 
         <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12">
@@ -245,29 +240,7 @@
     </div>
 
     <script>
-        function closeArchive() {
-            // Resume parent window music if in iframe
-            try {
-                if (window.parent && window.parent !== window) {
-                    window.parent.postMessage({ action: 'resumeMusic' }, '*');
-                }
-            } catch (e) {
-                console.log('Could not communicate with parent window');
-            }
-
-            // Show termination screen
-            document.body.innerHTML = `
-                <div class="h-screen w-full flex items-center justify-center bg-black">
-                    <div class="text-center font-mono-code">
-                        <div class="text-red-500 mb-2">CONNECTION TERMINATED</div>
-                        <div class="text-gray-600 text-xs">LOGGING OUT...</div>
-                    </div>
-                </div>
-            `;
-
-            // Optional: Close window if allowed (often blocked by browsers)
-            // window.close(); 
-        }
+        // No archive control functions needed - modal X button handles closing
     </script>
 </body>
 
