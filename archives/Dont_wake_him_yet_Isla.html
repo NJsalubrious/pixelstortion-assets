@@ -298,6 +298,15 @@
         }
 
         function enterArchive() {
+            // Pause parent window music (silence.html) if loaded in iframe
+            try {
+                if (window.parent && window.parent !== window) {
+                    window.parent.postMessage({ action: 'pauseMusic' }, '*');
+                }
+            } catch (e) {
+                console.log('Could not communicate with parent window');
+            }
+
             // User interaction triggers play
             if (player && player.playVideo) {
                 player.playVideo();
@@ -318,6 +327,15 @@
             // Stop audio
             if (player && player.stopVideo) {
                 player.stopVideo();
+            }
+
+            // Resume parent window music if in iframe
+            try {
+                if (window.parent && window.parent !== window) {
+                    window.parent.postMessage({ action: 'resumeMusic' }, '*');
+                }
+            } catch (e) {
+                console.log('Could not communicate with parent window');
             }
 
             // Show termination screen
