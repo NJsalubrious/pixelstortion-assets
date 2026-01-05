@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Exhibit: Strategies of Survival | Mataala Heritage Trust</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Lato:wght@300;400&display=swap"
+        rel="stylesheet" />
+    <style>
+        :root {
+            --museum-black: #080808;
+            --museum-panel: #111111;
+            --museum-gold: #C5A059;
+            --museum-text: #d4d4d4;
+            --museum-muted: #666;
+        }
+
+        body {
+            background-color: var(--museum-black);
+            color: var(--museum-text);
+            font-family: 'Lato', sans-serif;
+            font-weight: 300;
+            line-height: 1.7;
+        }
+
+        /* Typography */
+        h1,
+        h2,
+        h3,
+        .font-display {
+            font-family: 'Cinzel', serif;
+            letter-spacing: 0.05em;
+        }
+
+        .font-serif {
+            font-family: 'Playfair Display', serif;
+        }
+
+        /* Gold Accents */
+        .text-gold {
+            color: var(--museum-gold);
+        }
+
+        .border-gold {
+            border-color: var(--museum-gold);
+        }
+
+        .bg-gold {
+            background-color: var(--museum-gold);
+        }
+
+        /* Artifact Container */
+        .artifact-container {
+            border: 1px solid #222;
+            background: var(--museum-panel);
+            padding: 2rem;
+            margin-bottom: 4rem;
+            position: relative;
+        }
+
+        .artifact-container::before {
+            content: '';
+            position: absolute;
+            top: -1px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 1px;
+            background: var(--museum-gold);
+        }
+
+        /* Metadata Tag */
+        .meta-tag {
+            font-family: 'Lato', sans-serif;
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            color: var(--museum-muted);
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        /* Image Placeholder Styling (For your future artifact photos) */
+        .artifact-placeholder {
+            width: 100%;
+            height: 400px;
+            background: #0f0f0f;
+            border: 1px solid #1a1a1a;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            color: #444;
+            margin-bottom: 1.5rem;
+            font-family: 'Courier Prime', monospace;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+        }
+
+        /* Drop Cap */
+        .drop-cap::first-letter {
+            float: left;
+            font-family: 'Cinzel', serif;
+            font-size: 3.5rem;
+            line-height: 0.8;
+            padding-right: 0.75rem;
+            padding-top: 0.1rem;
+            color: var(--museum-gold);
+        }
+    </style>
+</head>
+
+<body class="min-h-screen">
+
+    <nav class="w-full border-b border-[#222] py-8 px-6 md:px-12 sticky top-0 bg-[#080808]/95 backdrop-blur z-50">
+        <div class="max-w-4xl mx-auto flex justify-between items-end">
+            <div>
+                <div class="text-[10px] uppercase tracking-[0.3em] text-gold mb-1">Mataala Heritage Trust</div>
+                <div class="font-display font-bold text-xl text-white tracking-widest">PERMANENT COLLECTION</div>
+            </div>
+            <div class="text-[10px] uppercase tracking-widest text-gray-600 hidden md:block">
+                Curatorial Guide • Room 04
+            </div>
+        </div>
+    </nav>
+
+    <main class="max-w-3xl mx-auto px-6 py-20">
+
+        <header class="mb-20 text-center">
+            <h1 class="text-4xl md:text-5xl font-display text-white mb-6 leading-tight">
+                The Unquiet Spirit:<br>
+                <span class="text-gold italic font-serif lowercase text-3xl md:text-4xl">strategies of survival</span>
+            </h1>
+            <div class="w-12 h-1 bg-gold mx-auto mb-8"></div>
+            <p class="text-gray-400 text-lg leading-relaxed max-w-2xl mx-auto">
+                History often frames indigenous resistance as a binary choice: total war or total submission. The
+                material evidence of the Nalani Era (1894–1905) suggests a third path. Facing the threat of erasure, she
+                recognized that the modern world could not be stopped, only navigated.
+            </p>
+        </header>
+
+        <article class="artifact-container">
+            <div class="grid md:grid-cols-12 gap-8">
+                <div class="md:col-span-12">
+                    <span class="meta-tag">Item No. 001 — Archive Document</span>
+                    <h2 class="text-2xl font-display text-white mb-6">The "Incorrigible" Mile</h2>
+
+                    <img src="https://raw.githubusercontent.com/NJsalubrious/pixelstortion-assets/a852464d7774edf1036fdae78a4022b99b6275bf/MATAALA/museum_1/old_leather_bound_ledger.jpg"
+                        alt="Old Leather-Bound Ledger" class="w-full mb-6">
+
+                    <div class="prose prose-invert max-w-none">
+                        <p class="drop-cap text-gray-300">
+                            To the administration of the St. Jude Mission, the subject was an <strong>"unquiet
+                                spirit."</strong> The disciplinary logbook, displayed here, records the administration's
+                            struggle to categorize a mind that refused static confinement.
+                        </p>
+                        <p class="text-gray-300">
+                            The entry for November 12, 1894, details an act labeled as "madness": a five-mile open ocean
+                            swim to the "Shattered Belt" reefs. Curatorial analysis suggests this was not an act of
+                            impulse, but of rehearsal. Nalani had memorized tidal charts and located wrecks dismissed as
+                            myth. While the punishment record notes "insubordination," the event actually documents a
+                            capacity for risk and deep focus that exceeded the institution's metric for assessment.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </article>
+
+        <article class="artifact-container">
+            <div class="grid md:grid-cols-12 gap-8">
+                <div class="md:col-span-12">
+                    <span class="meta-tag">Item No. 004 — Recovered Numismatics</span>
+                    <h2 class="text-2xl font-display text-white mb-6">The Trader's Price</h2>
+
+                    <img src="https://raw.githubusercontent.com/NJsalubrious/pixelstortion-assets/a852464d7774edf1036fdae78a4022b99b6275bf/MATAALA/museum_1/The_Traders_Price.jpg"
+                        alt="The Trader's Price - Dutch Guilder" class="w-full mb-6">
+
+                    <div class="prose prose-invert max-w-none">
+                        <p class="text-gray-300">
+                            This Dutch Guilder, recovered from the "Shattered Belt," represents the pivot from
+                            victimhood to agency. It documents a specific transaction in 1895.
+                        </p>
+                        <p class="text-gray-300">
+                            Nalani did not use recovered capital for personal flight. Instead, oral history and trader
+                            logs confirm she used this gold to bribe local merchants to detain the Head Nun, who was
+                            attempting to abscond with government funds. It was a calculated intervention. Nalani
+                            understood that corruption was the structural weakness of the colonial administration. She
+                            utilized this weakness to remove an obstacle to her own legitimate advancement.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </article>
+
+        <article class="artifact-container">
+            <div class="grid md:grid-cols-12 gap-8">
+                <div class="md:col-span-12">
+                    <span class="meta-tag">Item No. 007 — Paper Ephemera</span>
+                    <h2 class="text-2xl font-display text-white mb-6">The Hidden Letter</h2>
+
+                    <img src="https://raw.githubusercontent.com/NJsalubrious/pixelstortion-assets/a852464d7774edf1036fdae78a4022b99b6275bf/MATAALA/museum_1/The_Hidden_Letter.jpg"
+                        alt="The Hidden Letter - University Acceptance" class="w-full mb-6">
+
+                    <div class="prose prose-invert max-w-none">
+                        <p class="text-gray-300">
+                            Recovered from the personal effects of the Mission administration, this document, a
+                            University Acceptance Notification, bears heavy crease marks, indicating it was crumpled and
+                            hidden.
+                        </p>
+                        <p class="text-gray-300">
+                            Its discovery provided the strategic clarity Nalani required. It confirmed that the barrier
+                            to her future was not the Law, but the individual enforcing it. Recognizing that she had
+                            already been accepted into the "Native Advancement Scheme," she chose to enter the mainland
+                            system. This was not an act of assimilation, but of acquisition: she sought the legal and
+                            linguistic tools necessary to dismantle the threat posed by Governor Turnbull.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </article>
+
+        <article class="artifact-container">
+            <div class="grid md:grid-cols-12 gap-8">
+                <div class="md:col-span-12">
+                    <span class="meta-tag">Item No. 012 — Court Filing</span>
+                    <h2 class="text-2xl font-display text-white mb-6">The Petition of Defense</h2>
+
+                    <img src="https://raw.githubusercontent.com/NJsalubrious/pixelstortion-assets/a852464d7774edf1036fdae78a4022b99b6275bf/MATAALA/museum_1/The_Petition_of_Defense.jpg"
+                        alt="The Petition of Defense - Legal Document" class="w-full mb-6">
+
+                    <div class="prose prose-invert max-w-none">
+                        <p class="text-gray-300">
+                            Upon her return in 1898, Nalani did not immediately engage in physical conflict. Instead,
+                            she filed this document with the Mainland High Court.
+                        </p>
+                        <p class="text-gray-300">
+                            The "Petition for the Maintenance of Regional Stability" is a masterclass in bureaucratic
+                            warfare. It does not argue for independence, a claim that would have invited naval
+                            retaliation, but instead categorizes Governor Turnbull's erratic violence as a "liability to
+                            commerce." By framing her people's defense as a service to the Crown's stability, she
+                            ensured that when the conflict began, the law was technically on her side.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </article>
+
+        <article class="artifact-container">
+            <div class="grid md:grid-cols-12 gap-8">
+                <div class="md:col-span-12">
+                    <span class="meta-tag">Item No. 015 — Tactical Map</span>
+                    <h2 class="text-2xl font-display text-white mb-6">The Chimney Strategy</h2>
+
+                    <img src="https://raw.githubusercontent.com/NJsalubrious/pixelstortion-assets/8308bc1ded5161281ef80b29afe4443e98cf521d/MATAALA/museum_1/The_Chimney_Strategy.jpg"
+                        alt="The Chimney Strategy - Tactical Map" class="w-full mb-6">
+
+                    <div class="prose prose-invert max-w-none">
+                        <p class="text-gray-300">
+                            This field map details the tactical arrangement for the events of August 1898. It
+                            illustrates the use of the island’s geology as a force multiplier.
+                        </p>
+                        <p class="text-gray-300">
+                            Known as the "Chimney Strategy," the plan involved burning wet vegetation on the Southern
+                            Ridge to exploit the caldera’s downdraft, flooding the bay with opaque smoke. This negated
+                            the technological superiority of Turnbull's gunners. It demonstrates the "unquiet spirit" in
+                            its mature form: an ability to analyze the environment and direct chaos to a specific
+                            outcome.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </article>
+
+        <article class="artifact-container" style="border-color: #C5A059;">
+            <div class="grid md:grid-cols-12 gap-8">
+                <div class="md:col-span-12">
+                    <span class="meta-tag text-gold">Item No. 022 — Legal Instrument</span>
+                    <h2 class="text-2xl font-display text-white mb-6">The Sovereign Anchor</h2>
+
+                    <img src="https://raw.githubusercontent.com/NJsalubrious/pixelstortion-assets/4ce8c7494b831d1eed93224474274c8870eaebd8/MATAALA/museum_1/trust_charter.jpg"
+                        alt="The Sovereign Anchor - Trust Charter" class="w-full mb-6">
+
+                    <div class="prose prose-invert max-w-none">
+                        <p class="text-gray-300">
+                            The island of Mataala today remains uninhabited and privately held by the Hale-Nalani Trust.
+                            This status is the direct result of the Charter displayed here.
+                        </p>
+                        <p class="text-gray-300">
+                            Nalani recognized that territorial status invited exploitation. She utilized her legal
+                            training to transition the island into a private estate, An entity protected by property law
+                            rather than treaty. The island remains empty not due to abandonment, but as a calculated
+                            "Sovereign Anchor." It provides her descendants with the political and economic autonomy to
+                            exist in the modern world on their own terms, preserving the autonomy she fought to secure.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </article>
+
+    </main>
+
+    <footer class="border-t border-[#222] py-12 text-center bg-[#080808]">
+        <div class="text-[10px] uppercase tracking-widest text-gray-600 mb-2">
+            Mataala Heritage Trust • Archives Division
+        </div>
+        <div class="text-[10px] uppercase tracking-widest text-gray-700">
+            PixelStortion Media © 2025
+        </div>
+    </footer>
+
+</body>
+
+</html>
