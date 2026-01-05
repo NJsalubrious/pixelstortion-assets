@@ -186,11 +186,31 @@
             }
 
             h1 {
-                font-size: 24px;
+                font-size: 20px;
             }
 
             h2 {
-                font-size: 20px;
+                font-size: 16px;
+            }
+
+            h3 {
+                font-size: 14px;
+            }
+
+            p {
+                font-size: 14px;
+            }
+
+            strong {
+                font-size: inherit;
+                font-weight: 600;
+            }
+
+            /* Make all grids single column on mobile */
+            .grid-gallery,
+            .survey-grid {
+                grid-template-columns: 1fr !important;
+                gap: 20px;
             }
 
             .figure-plate img,
