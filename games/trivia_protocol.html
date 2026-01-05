@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trivia Protocol | Cipher Decryption</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=Space+Grotesk:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+
+    <style>
+        :root {
+            --glitch-color-1: #00ff41;
+            --glitch-color-2: #ff0055;
+            --bg-dark: #050505;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Space Grotesk', sans-serif;
+            background: var(--bg-dark);
+            color: #fff;
+            overflow-y: auto;
+            height: 100vh;
+        }
+
+        .font-mono-custom {
+            font-family: 'Courier Prime', monospace;
+        }
+
+        /* Cipher Game Styles */
+        .game-container {
+            width: 100%;
+            height: 100vh;
+            overflow-y: auto;
+            background: linear-gradient(135deg, #0a0a0a 0%, #000000 100%);
+            border-left: 2px solid var(--glitch-color-1);
+        }
+
+        .cipher-option {
+            background: #0a0a0a;
+            border: 1px solid #333;
+            padding: 12px;
+            margin: 8px 0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-radius: 4px;
+        }
+
+        .cipher-option:hover {
+            background: #1a1a1a;
+            border-color: var(--glitch-color-1);
+            transform: translateX(4px);
+        }
+
+        .cipher-option.correct {
+            background: rgba(0, 255, 65, 0.2);
+            border-color: var(--glitch-color-1);
+            animation: pulse 0.5s ease;
+        }
+
+        .cipher-option.wrong {
+            background: rgba(255, 0, 85, 0.2);
+            border-color: var(--glitch-color-2);
+            animation: shake 0.5s ease;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.02);
+            }
+        }
+
+        @keyframes shake {
+
+            0%,
+            100% {
+                transform: translateX(0);
+            }
+
+            25% {
+                transform: translateX(-10px);
+            }
+
+            75% {
+                transform: translateX(10px);
+            }
+        }
+
+        .intel-reward {
+            background: linear-gradient(135deg, #1a1a1a 0%, #0a0a0a 100%);
+            border: 1px solid var(--glitch-color-1);
+            padding: 16px;
+            margin: 12px 0;
+            font-size: 11px;
+            line-height: 1.6;
+            border-radius: 4px;
+            animation: fadeInUp 0.5s ease;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .timer-display {
+            background: #0a0a0a;
+            border: 1px solid #333;
+            padding: 12px;
+            border-radius: 4px;
+            margin-bottom: 16px;
+        }
+
+        .timer-value {
+            font-size: 20px;
+            font-weight: bold;
+            color: var(--glitch-color-1);
+        }
+
+        .timer-value.critical {
+            color: var(--glitch-color-2);
+            animation: pulse-timer 0.5s ease infinite;
+        }
+
+        @keyframes pulse-timer {
+
+            0%,
+            100% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.1);
+            }
+        }
+
+        .timer-bar {
+            width: 100%;
+            height: 4px;
+            background: #1a1a1a;
+            border-radius: 2px;
+            overflow: hidden;
+            margin-top: 8px;
+        }
+
+        .timer-fill {
+            height: 100%;
+            background: var(--glitch-color-1);
+            transition: width 1s linear;
+        }
+
+        .profile-bar {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 10px;
+            color: #888;
+        }
+
+        .profile-bar span {
+            width: 80px;
+            text-align: right;
+        }
+
+        .bar-fill {
+            height: 8px;
+            background: var(--glitch-color-1);
+            border-radius: 2px;
+            transition: width 0.5s ease;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="game-container">
+        <div class="p-6">
+            <div class="border-b border-gray-700 pb-4 mb-6">
+                <h3 class="text-xl font-bold text-green-500 font-mono-custom mb-2">CIPHER PROTOCOL</h3>
+                <p class="text-xs text-gray-500">DECRYPT CLASSIFIED INTEL</p>
+            </div>
+
+            <div class="mb-6">
+                <div class="flex justify-between items-center mb-2">
+                    <span class="text-xs text-gray-500 font-mono-custom">SECURITY CLEARANCE</span>
+                    <span id="game-score" class="text-green-500 font-bold font-mono-custom">0 / 12</span>
+                </div>
+                <div class="w-full h-2 bg-gray-800 rounded-full overflow-hidden">
+                    <div id="game-progress"
+                        class="h-full bg-gradient-to-r from-green-500 to-cyan-400 w-0 transition-all duration-500">
+                    </div>
+                </div>
+            </div>
+
+            <div id="game-timer" class="timer-display" style="display:none;">
+                <div class="flex justify-between items-center mb-2">
+                    <span class="text-xs text-gray-500">TIME REMAINING</span>
+                    <span id="timer-value" class="timer-value">20s</span>
+                </div>
+                <div class="timer-bar">
+                    <div id="timer-fill" class="timer-fill" style="width: 100%; background: var(--glitch-color-1);">
+                    </div>
+                </div>
+            </div>
+
+            <div id="game-content">
+                <div class="text-center py-8">
+                    <p class="text-gray-400 text-sm mb-4">Select protocol to begin decryption</p>
+                    <div class="space-y-3">
+                        <button onclick="startGame('ethel')"
+                            class="w-full py-3 bg-green-900/30 border border-green-500 text-green-500 hover:bg-green-900/50 transition-all font-mono-custom text-sm uppercase tracking-wider">
+                            <div class="font-bold">ETHEL PROTOCOL</div>
+                            <div class="text-xs opacity-70">Pattern Recognition</div>
+                        </button>
+                        <button onclick="startGame('isla')"
+                            class="w-full py-3 bg-blue-900/30 border border-blue-500 text-blue-500 hover:bg-blue-900/50 transition-all font-mono-custom text-sm uppercase tracking-wider">
+                            <div class="font-bold">ISLA PROTOCOL</div>
+                            <div class="text-xs opacity-70">Creative Chaos</div>
+                        </button>
+                        <button onclick="startGame('dominic')"
+                            class="w-full py-3 bg-red-900/30 border border-red-500 text-red-500 hover:bg-red-900/50 transition-all font-mono-custom text-sm uppercase tracking-wider">
+                            <div class="font-bold">DOMINIC PROTOCOL</div>
+                            <div class="text-xs opacity-70">Strategic Control</div>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="intel-rewards" class="mt-6"></div>
+        </div>
+    </div>
+
+    <script>
+        // Cipher game data - Questions and puzzles for each protocol
+        const cipherPuzzles = {
+            ethel: [
+                { cipher: "MIRROR + STUNT = HIT BLUNT", question: "In the song 'Ride,' what does Ethel see that her peer group ignores?", options: ["Social anxiety and withdrawal", "Predictive simulation of victim impact", "Standard oppositional defiance", "Fear of legal consequences"], correct: 1, intel: "The system labels her 'withdrawn.' The reality is hyper-empathy. She isn't lacking social cues; she is modeling the 'hit' the victim takes.", timeLimit: 20 },
+                { cipher: "DIRECT LINE != PARALLAX ERROR", question: "In 'The Drop,' what is Ethel's primary objective at the cliff edge?", options: ["Thrill-seeking/Impulsivity", "Testing life-ending ideation", "Validation of objective geometry over subjective perspective", "Seeking peer approval through risk"], correct: 2, intel: "The fall is physics, not pathology. Ethel isn't testing her bravery; she is testing the 'shaped lenses' of others.", timeLimit: 22 },
+                { cipher: "FUNCTION > CONFORMITY", question: "What does Ethel define as the primary function of 'Normal' in a corrupt system?", options: ["A healthy social bond", "Camouflage for collective denial and harm", "A lack of technical aptitude", "Emotional stability"], correct: 1, intel: "Ethel identifies that 'normal' is a leash of politeness. Her 'abrasiveness' is actually a high-functioning refusal to soften the naming of harm.", timeLimit: 20 },
+                { cipher: "99th REASONING / ROTE DEFICIT = MISREAD", question: "Why did the school system label Ethel as having 'deficits'?", options: ["Inability to process complex data", "Lack of cognitive potential", "Failure to conform to rote metrics despite high fluid reasoning", "General cognitive impairment"], correct: 2, intel: "Ethel scored in the 99th percentile for fluid reasoning but tanked rote tests. The system measured conformity, not capacity.", timeLimit: 22 },
+                { cipher: "CRAZY HOUSE = WON'T BREAK", question: "Why did Ethel frame her move into Dominic's house as a 'decision'?", options: ["She wanted the Mosman lifestyle", "She was bribed by Dominic", "To stay psychologically intact while buying time", "She was afraid of the social worker"], correct: 2, intel: "At 17, admitting you are a prisoner causes a psychological break. Ethel 'built the box' and walked in, dressing the lack of choice as a decision.", timeLimit: 25 },
+                { cipher: "SHARP TEETH + STEEL KEY = BANK VAULT", question: "What did the 'sharp' steel key found after the crash literally unlock?", options: ["Gran's industrial chemistry lab", "A bank vault with unredacted files and an AFP contact", "The ignition of the Honda CB1000", "A hidden diary in the farm shed"], correct: 1, intel: "RECOVERY LOG: It led to a bank vault where Gran had stored the 'unspoken alliance'—unredacted court files and a direct number for an AFP officer.", timeLimit: 20 },
+                { cipher: "QUESTION FURNITURE - OPTICS = CLARITY", question: "What is Ethel's strategy during her courtroom testimony?", options: ["To lie to protect Dominic", "To cry for the jury's sympathy", "To provide clipped, fact-framed answers", "To refuse to speak at all"], correct: 2, intel: "LEGAL STRATEGY: Ethel knows lawyers use 'optics' to bury truth. She provides answers that are 'Nothing True, Nothing Refuted.'", timeLimit: 22 },
+                { cipher: "CATALYST RISE + FAKE DATA = THE OUTLIER", question: "What did Ethel uncover at the research lab?", options: ["The lab was underfunded", "Human trials were starting on fake data", "Her boss was stealing her intellectual property", "The equipment was not calibrated"], correct: 1, intel: "DATA AUDIT: Ethel noted the ratios others ignored. She realized human trials were about to start based on fake data.", timeLimit: 22 },
+                { cipher: "RESONANCE + ACTION = THE HIT", question: "Why does Ethel's response to harm appear 'clipped' or 'flat' to outside observers?", options: ["She is suppressing her emotions to fit in", "She has been desensitized by her upbringing", "She experiences raw affective resonance but channels it into forensic fix-action", "She lacks the ability to understand others' pain"], correct: 2, intel: "Ethel doesn't perform empathy; she executes it. Her 'flat' affect is the 'bracing' of a high-IQ mind experiencing intense affective resonance.", timeLimit: 20 },
+                { cipher: "INPUT: [MORTALITY CLUSTER] >>> STATUS: [?]", question: "In the 'Normal' intro, why does Ethel say people choose to stay quiet about the faked data?", options: ["THEY WANT THE COMPANY TO SUCCEED", "THEY ARE AFRAID OF THE LAW", "THEY DISAGREE WITH THE FINDINGS", "THEY PRETEND NOT TO KNOW"], correct: 3, intel: "SYSTEM LOG: 'People will pretend not to know until someone makes them look.' This isn't a lack of information; it's a surplus of comfort.", timeLimit: 20 },
+                { cipher: "WHISTLEBLOWER PATH: [LEAK PROTOCOL]", question: "When the company used 'politeness as a leash' to keep her quiet, what was Ethel's final response?", options: ["SHE REFORMED THE SYSTEM", "SHE WENT TO THE PRESS", "SHE QUIT THE LAB", "SHE SIGNED THE NDA"], correct: 1, intel: "'If I name it early, it's because I've seen how long people pretend not to know until someone makes them look.'", timeLimit: 22 },
+                { cipher: "PERFORMANCE SCAN: [RED NOSE REFUSAL]", question: "The CEO 'talks fast and pushes hard' to sell the drug. What role does Ethel refuse to 'perform' to keep the peace?", options: ["THE LOYAL SOLDIER", "THE SILENT PARTNER", "THE CLOWN", "THE ACCIDENT"], correct: 2, intel: "'I won't play the clown.' The CEO needs a smile to feel safe. Ethel refuses the performance.", timeLimit: 20 }
+            ],
+            isla: [
+                { cipher: "NAPKIN SMILE - GLOSS = SYSTEMIC ROT", question: "Isla describes her mother as 'Polished Vomit.' What is the root of this perception?", options: ["Distorted sensory processing", "Recognition of a performative facade masking instability", "Standard adolescent rebellion", "Manic irritability"], correct: 1, intel: "Isla identifies the 'masking' of her mother. 'Polished Vomit' is her descriptor for 'cultured stability', a beautiful surface used to hide systemic neglect.", timeLimit: 20 },
+                { cipher: "LATE NIGHT BURGER + CAR CHASE = PERFORMANCE ART", question: "Why does Isla engage in the 'Tunnel Chase' with the Married Banker?", options: ["Mania-induced reckless behavior", "Weaponized Mania as a defensive deterrent", "A simple theft of a high-value asset", "Standard attention-seeking behavior"], correct: 1, intel: "This isn't 'acting out.' Isla uses performance art to mirror the banker's predatory patterns back to him.", timeLimit: 25 },
+                { cipher: "PORCELAIN STRIKE + SINGING HINGE = SURVIVAL", question: "In 'Raise the Fourth,' what does the 'hinge' represent for Isla?", options: ["A literal broken door", "A symbolic desire for death", "Her voice as an autonomous survival mechanism", "A symptom of fragmented identity"], correct: 2, intel: "Even when Isla is struck like 'porcelain,' she preserves the 'hinge'—her voice. She isn't fragmented; she is choosing which part continues to 'sing.'", timeLimit: 20 },
+                { cipher: "MIRROR INHERITANCE - VOICE = PYRE", question: "How does Isla describe her 'inheritance' from her father?", options: ["Material wealth and social status", "An unavoidable mirror of their pathology", "A half-mind mirror she refuses to return", "A gift of artistic talent"], correct: 2, intel: "Isla identifies that she carries 'half its mind.' By acknowledging the 'scorched root,' she separates her voice from the inheritance.", timeLimit: 22 },
+                { cipher: "SLEAZE CURRENCY / NO COMPLIANCE = DETONATION", question: "Why does Isla scream in the studio during her 'audition' with the Shiny Headed Man?", options: ["Auditory hallucinations", "Calculated refusal to barter worth for access", "Inability to handle professional rejection", "A panic attack caused by men in power"], correct: 1, intel: "This isn't a lack of discipline. Isla recognizes the 'sleaze wrapped in influence' and chooses to 'frighten the shit out of him' rather than comply.", timeLimit: 25 },
+                { cipher: "NEEDLE GIFT + BLACK BOXES = EMPIRE BLEED", question: "What is Isla's objective when she steals her dealer's phone and locks him in his own bathroom?", options: ["Self-destructive addiction spiral", "Confirm Dominic's involvement and hit sent", "A desperate search for comfort", "Accidental discovery of evidence"], correct: 1, intel: "Drug dealer. Fentanyl. A setup disguised. Neat. And she reacted the way Isla reacts when she's cornered. With force and shape.", timeLimit: 22 },
+                { cipher: "CRAZY HOUSE / CBD LIGHTS = DRIVE", question: "In 'Peek-A-Boo,' what happens when Ethel won't let Isla ride the bike?", options: ["She crashes", "Red light, key yanked, Isla's off", "She sells the bike", "She escapes to the coast"], correct: 1, intel: "Rivalry becomes recognition. Isla wants to steer, but Ethel drives. In the 'crazy house,' they find a shared frequency.", timeLimit: 20 },
+                { cipher: "LOCKS GATES IGNITION = PATTERN READ", question: "What does Ethel claim Isla is 'reading' when she breaks a code?", options: ["The user's face", "User behavioral patterns", "Magnetic signatures", "Luck and chance"], correct: 1, intel: "Isla doesn't guess; she tracks. She reads the 'syntax' of the person behind the lock.", timeLimit: 20 },
+                { cipher: "SMUG TOASTER = PSYCH EVAL", question: "Isla once rewired a toaster because it 'looked smug.' What was she actually testing?", options: ["Electronic circuit flaws", "The limits of house rules", "Structural integrity of objects", "Her own technical dominance"], correct: 1, intel: "Isla tests the 'system' of the house by interacting with mundane objects in 'abnormal' ways. It isn't madness; it's the constant probing of the perimeter.", timeLimit: 22 },
+                { cipher: "USB STUN = SYSTEM DETONATION", question: "What did Isla do at her mother's wedding to Dominic?", options: ["Cried for help", "Fled the country", "Released hidden accounts via projector", "Assaulted the groom"], correct: 2, intel: "Isla used the wedding—a ceremony of 'Polished Vomit'—to detonate truth. She slipped a USB in, projecting hidden accounts and affairs.", timeLimit: 18 },
+                { cipher: "ART == PAIN", question: "How does Isla define the source of her music?", options: ["Melody of normality", "Weaponized trauma and spectacle", "Commercial success", "Classical training"], correct: 1, intel: "Isla rejects 'therapy' through art. She uses the stage to detonate silence. 'Art is Pain' isn't a cliché for her; it's the process of turning a scorched root into weaponized sound.", timeLimit: 20 },
+                { cipher: "FRACTURE = SPLIT IN TIME", question: "In 'Broken Edge,' Isla describes her sanity stuttering. What is she refusing to hide?", options: ["Her bank balance", "The noise", "Her addiction", "The knife edge truth"], correct: 3, intel: "Isla refuses to mend what is broken. She describes herself as a 'knife edge truth' split inside. While others hide the fracture, she exposes it.", timeLimit: 22 }
+            ],
+            dominic: [
+                { cipher: "STRAIN DETECTION = SCAPEGOAT SIGNATURE", question: "Why does Dominic encourage the engineer's shortcut in 'Structural Psychopathy'?", options: ["To maximize profit and efficiency", "To ensure an engineer's signature is on the flaw for future leverage", "General over-optimism about build quality", "To help a stressed employee finish early"], correct: 1, intel: "Dominic identifies 'limping prey', the engineer under strain. He doesn't just want a building; he wants a fall guy.", timeLimit: 20 },
+                { cipher: "RHYTHM MATCH = REMOVAL OF CHOICE", question: "How does Dominic achieve 'compliance' with his cellmate in prison?", options: ["Physical intimidation", "Sequence and pacing to bypass critical faculty", "Bribing him with resources", "Logical debate"], correct: 1, intel: "BEHAVIORAL DATA: Dominic removes friction by matching the target's rhythm. He doesn't lie; he sequences.", timeLimit: 22 },
+                { cipher: "HERO STEP == KILLER STEP", question: "What is the strategic function of Dominic's 'Hero' performance during a crisis?", options: ["To fulfill a genuine moral obligation to protect the vulnerable", "To overwrite the memory of a systemic failure with a narrative of individual action", "To demonstrate physical superiority over first responders", "To distract from his own hesitation in high-pressure scenarios"], correct: 1, intel: "Dominic isn't 'moving' while others 'freeze'. He is waiting for the 'long pause' of human hesitation to establish a monopoly on the narrative.", timeLimit: 22 },
+                { cipher: "COURTESY + PREDICTABLE RHYTHM = EXIT PERMISSION", question: "How does Dominic describe the mechanism of his escape?", options: ["Brute force and physical violence", "Exploiting the permissions granted by social courtesy", "High-tech hacking of security systems", "Pure luck and timing"], correct: 1, intel: "TACTICAL ANALYSIS: Dominic understands that 'gone isn't a moment; it's a series of permissions.' He uses the guard's 'belief' and 'rhythm' to bypass checks.", timeLimit: 20 },
+                { cipher: "FIRST MOVE > LONG PAUSE = REMEMBERED HAND", question: "In 'Hero Complex,' why does Dominic step in when others freeze?", options: ["An innate moral compass", "To ensure the world won't break apart", "To manufacture a memory that erases his hesitation", "To prove he is better than his peers"], correct: 2, intel: "COGNITIVE NOTE: Dominic waits for the 'hesitation' of others, then acts so that the 'hand that acts first is the hand remembered.'", timeLimit: 22 },
+                { cipher: "BAIL COST + GUILT MIRROR = DECISION BOX", question: "Why does Dominic frame Ethel's entry into his house as her 'decision'?", options: ["To respect autonomy", "To trap her in a psychological shell game of complicity", "To remove liability", "To help her grief"], correct: 1, intel: "JUSTIFICATION GLOSS: By framing her move as a 'deal' (paying Isla's bail), Dominic forces Ethel to 'dress her guilt' as a choice.", timeLimit: 25 },
+                { cipher: "HARMLESS TASK + IMPORTANT TASK = THE SPENT RESOURCE", question: "What is the final stage of Dominic's four-step process of manipulation?", options: ["Demanding a show of loyalty", "Giving them a task they can't take back", "Asking them to plan an escape", "Letting them rest after a job well done"], correct: 1, intel: "Dominic builds trust as currency. He starts with a harmless task to establish obedience, moves to an important one, and finally forces an action that creates permanent complicity.", timeLimit: 22 },
+                { cipher: "OBEDIENCE / BURDENS = CLEAR SPACE", question: "What does Dominic sell to his victims as the primary benefit of following his rules?", options: ["Protection from other inmates", "A way to prove their innocence", "Wealth and influence within the prison", "The clearing of mental space by removing the burden of choice"], correct: 3, intel: "Dominic sells obedience as a relief from the exhaustion of 'guessing' and 'wondering.' He asks, 'Why hold burdens that I already know how to carry?'", timeLimit: 20 },
+                { cipher: "RHYTHM > NOISE = POWER", question: "Why does Dominic claim that 'plans' and 'anger' are less effective than rhythm?", options: ["Because plans are too simple", "Because anger and noise burn out but steady rhythm outlasts them", "Because the guards don't like noise", "Because plans require too much paperwork"], correct: 1, intel: "Dominic is a parasitic architect. He knows that 'anger burns fast' and 'plans cloud.' He wins by outlasting the energy of others.", timeLimit: 22 },
+                { cipher: "PRE-EMPTIVE CLOSE == THE PATTERN", question: "How does Dominic view the moment a target finally asks for his help?", options: ["As something the target already decided without knowing it", "As a surprise victory", "As a sign of the target's weakness", "As a moment that requires a new negotiation"], correct: 0, intel: "Dominic believes choice is an illusion he manages. By the time a victim 'asks' to stop losing, he has already removed every other option.", timeLimit: 20 },
+                { cipher: "LEAN vs LEFT = THE SMART CHOICE", question: "Why do targets eventually choose to 'lean' on Dominic's structure?", options: ["Because they have no other friends", "Because of fear of being left behind", "Because he is the only one who doesn't lie", "Because they want to stop losing and believe leaning is the 'smart' alternative"], correct: 3, intel: "Dominic makes dependency look like pragmatism. He waits for the 'rushing' and 'grasping' of others to fail, then offers his structure as the only logical way to survive.", timeLimit: 22 },
+                { cipher: "LETHAL STACK + RETALIATION = BLAST RADIUS", question: "What was the intent behind the fentanyl 'dealer stack' incident?", options: ["A targeted murder designed to look like an addict's overdose", "To test Isla's loyalty to the household", "To protect the house from outside intruders", "To teach Isla how to handle the dealer's Russian contacts"], correct: 0, intel: "Dominic P.I. found Isla's drug dealer and persuaded him to sell her a lethal dose. The attempt failed because Isla identified the setup and retaliated.", timeLimit: 25 }
+            ]
+        };
+
+        const finalIntel = {
+            ethel: "PROFILE COMPLETE: High-resolution empathy with forensic precision. Survival: Compartmentalization. Threat to Dominic: EXTREME. Status: BUILDING CASE.",
+            isla: "PROFILE COMPLETE: Weaponizes chaos as boundary enforcement. Trauma converted to art. Threat to system: HIGH. Status: DETONATING SILENCE.",
+            dominic: "PROFILE COMPLETE: Structural psychopath. Control via rhythm manipulation. Empathy simulation for tactical advantage. Threat to society: CRITICAL. Status: AT LARGE. ARMED AND DANGEROUS."
+        };
+
+        // Game state
+        let gameScore = 0;
+        let currentPuzzleIndex = 0;
+        let currentProtocol = '';
+        let unlockedIntel = [];
+        let gameTimer = null;
+        let timeLeft = 0;
+        let psychProfile = { empathy: 0, pragmatism: 0, rebellion: 0, control: 0 };
+
+        function startGame(protocol) {
+            currentProtocol = protocol;
+            currentPuzzleIndex = 0;
+            gameScore = 0;
+            unlockedIntel = [];
+            psychProfile = { empathy: 0, pragmatism: 0, rebellion: 0, control: 0 };
+
+            const puzzles = [...cipherPuzzles[protocol]];
+            for (let i = puzzles.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [puzzles[i], puzzles[j]] = [puzzles[j], puzzles[i]];
+            }
+
+            window.shuffledPuzzles = puzzles;
+            updateScore();
+            loadPuzzle();
+        }
+
+        function loadPuzzle() {
+            const puzzles = window.shuffledPuzzles;
+            if (!puzzles || currentPuzzleIndex >= puzzles.length) {
+                showCompletion();
+                return;
+            }
+
+            const puzzle = puzzles[currentPuzzleIndex];
+            const colors = { ethel: 'text-green-500', isla: 'text-blue-500', dominic: 'text-red-500' };
+
+            document.getElementById('game-timer').style.display = 'block';
+            document.getElementById('game-content').innerHTML = `
+        <div class="mb-6">
+            <div class="bg-black/50 border border-gray-700 p-4 mb-4">
+                <p class="text-xs text-gray-500 font-mono-custom mb-2">ENCRYPTED MESSAGE</p>
+                <p class="text-sm ${colors[currentProtocol]} font-mono-custom font-bold break-words leading-relaxed">${puzzle.cipher}</p>
+            </div>
+            <p class="text-xs text-gray-300 mb-4 font-mono-custom leading-relaxed">${puzzle.question}</p>
+            <div class="space-y-2">
+                ${puzzle.options.map((opt, idx) => `
+                    <div class="cipher-option" onclick="checkAnswer(${idx})">
+                        <span class="text-gray-400">[${String.fromCharCode(65 + idx)}]</span>
+                        <span class="text-white ml-3">${opt}</span>
+                    </div>
+                `).join('')}
+            </div>
+        </div>
+        <div class="text-center">
+            <p class="text-xs text-gray-500 font-mono-custom">
+                FILE ${currentPuzzleIndex + 1} OF ${puzzles.length} — ${currentProtocol.toUpperCase()} PROTOCOL
+            </p>
+        </div>
+    `;
+
+            startTimer(puzzle.timeLimit);
+        }
+
+        function startTimer(seconds) {
+            timeLeft = seconds;
+            updateTimer();
+
+            if (gameTimer) clearInterval(gameTimer);
+            gameTimer = setInterval(() => {
+                timeLeft--;
+                updateTimer();
+
+                if (timeLeft <= 0) {
+                    clearInterval(gameTimer);
+                    handleTimeout();
+                }
+            }, 1000);
+        }
+
+        function updateTimer() {
+            const puzzles = window.shuffledPuzzles;
+            const puzzle = puzzles[currentPuzzleIndex];
+
+            document.getElementById('timer-value').innerText = timeLeft + 's';
+            document.getElementById('timer-fill').style.width = `${(timeLeft / puzzle.timeLimit) * 100}%`;
+
+            if (timeLeft <= 5) {
+                document.getElementById('timer-value').classList.add('critical');
+                document.getElementById('timer-fill').style.background = 'var(--glitch-color-2)';
+            } else {
+                document.getElementById('timer-value').classList.remove('critical');
+                document.getElementById('timer-fill').style.background = 'var(--glitch-color-1)';
+            }
+        }
+
+        function handleTimeout() {
+            const puzzles = window.shuffledPuzzles;
+            const puzzle = puzzles[currentPuzzleIndex];
+
+            unlockIntel(`TIMEOUT PENALTY: ${puzzle.intel}`);
+
+            setTimeout(() => {
+                currentPuzzleIndex++;
+                loadPuzzle();
+            }, 1500);
+        }
+
+        function checkAnswer(selectedIdx) {
+            if (gameTimer) clearInterval(gameTimer);
+
+            const puzzles = window.shuffledPuzzles;
+            const puzzle = puzzles[currentPuzzleIndex];
+            const options = document.querySelectorAll('.cipher-option');
+
+            options.forEach(opt => opt.style.pointerEvents = 'none');
+
+            if (selectedIdx === puzzle.correct) {
+                options[selectedIdx].classList.add('correct');
+                gameScore++;
+
+                if (currentProtocol === 'ethel') psychProfile.empathy += 1;
+                if (currentProtocol === 'isla') psychProfile.rebellion += 1;
+                if (currentProtocol === 'dominic') psychProfile.control += 1;
+                psychProfile.pragmatism += 1;
+
+                updateScore();
+
+                setTimeout(() => {
+                    unlockIntel(puzzle.intel);
+                    currentPuzzleIndex++;
+                    setTimeout(loadPuzzle, 500);
+                }, 1000);
+            } else {
+                options[selectedIdx].classList.add('wrong');
+                options[puzzle.correct].classList.add('correct');
+
+                setTimeout(() => {
+                    unlockIntel(`FAILED: ${puzzle.intel}`);
+                    currentPuzzleIndex++;
+                    setTimeout(loadPuzzle, 500);
+                }, 1500);
+            }
+        }
+
+        function updateScore() {
+            const puzzles = window.shuffledPuzzles || cipherPuzzles[currentProtocol] || [];
+            const total = puzzles.length || 12;
+            document.getElementById('game-score').innerText = `${gameScore} / ${total}`;
+            const percentage = (gameScore / total) * 100;
+            document.getElementById('game-progress').style.width = percentage + '%';
+        }
+
+        function unlockIntel(intelText) {
+            unlockedIntel.push(intelText);
+            const rewardsContainer = document.getElementById('intel-rewards');
+            const intelDiv = document.createElement('div');
+            intelDiv.className = 'intel-reward';
+            intelDiv.innerHTML = `
+        <div class="flex items-start gap-2 mb-2">
+            <span class="text-green-500 text-xs">✓</span>
+            <span class="text-green-500 text-xs font-mono-custom font-bold">INTEL DECRYPTED</span>
+        </div>
+        <p class="text-gray-300 text-xs leading-relaxed">${intelText}</p>
+    `;
+            rewardsContainer.appendChild(intelDiv);
+            rewardsContainer.scrollTop = rewardsContainer.scrollHeight;
+        }
+
+        function showCompletion() {
+            if (gameTimer) clearInterval(gameTimer);
+            document.getElementById('game-timer').style.display = 'none';
+
+            const puzzles = window.shuffledPuzzles;
+            const colors = { ethel: 'border-green-500 text-green-500', isla: 'border-blue-500 text-blue-500', dominic: 'border-red-500 text-red-500' };
+
+            const total = Object.values(psychProfile).reduce((a, b) => a + b, 0);
+            const dominant = Object.entries(psychProfile).reduce((a, b) => a[1] > b[1] ? a : b);
+
+            const analyses = {
+                empathy: "HIGH EMPATHY: You prioritize understanding psychological damage. You see the victim. This makes you dangerous to gaslighters when mixed with pragmatism.",
+                pragmatism: "HIGH PRAGMATISM: You make hard choices under pressure. You value real-world effectiveness over sentiment.",
+                rebellion: "HIGH REBELLION: You challenge systems that enable harm. You detonate structures to expose rot. Chaos as tool.",
+                control: "HIGH CONTROL: You value strategic thinking and influence patterns. Concerning similarity to Dominic detected."
+            };
+
+            document.getElementById('game-content').innerHTML = `
+        <div class="text-center py-8">
+            <div class="mb-6">
+                <div class="text-5xl mb-4">${gameScore === puzzles.length ? '🔓' : '🔒'}</div>
+                <h3 class="text-2xl font-bold ${colors[currentProtocol]} font-mono-custom mb-2">
+                    ${gameScore === puzzles.length ? 'PROTOCOL COMPLETE' : 'PROTOCOL FAILED'}
+                </h3>
+                <p class="text-gray-400 text-sm mb-4">
+                    ${gameScore} / ${puzzles.length} FILES DECRYPTED
+                </p>
+            </div>
+
+            <div class="border ${colors[currentProtocol]} bg-black/50 p-4 mb-4 text-left">
+                <p class="text-xs text-gray-500 font-mono-custom mb-2">PSYCHOLOGICAL PROFILE</p>
+                <p class="text-xs text-gray-300 leading-relaxed mb-3">${analyses[dominant[0]]}</p>
+                <div class="space-y-2">
+                    <div class="profile-bar">
+                        <span>Empathy</span>
+                        <div class="bar-fill" style="width: ${(psychProfile.empathy / 12) * 100}%;"></div>
+                    </div>
+                    <div class="profile-bar">
+                        <span>Pragmatism</span>
+                        <div class="bar-fill" style="width: ${(psychProfile.pragmatism / 12) * 100}%;"></div>
+                    </div>
+                    <div class="profile-bar">
+                        <span>Rebellion</span>
+                        <div class="bar-fill" style="width: ${(psychProfile.rebellion / 12) * 100}%;"></div>
+                    </div>
+                    <div class="profile-bar">
+                        <span>Control</span>
+                        <div class="bar-fill" style="width: ${(psychProfile.control / 12) * 100}%;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="border ${colors[currentProtocol]} bg-black/50 p-4 mb-6 text-left">
+                <p class="text-xs text-gray-300 leading-relaxed">${finalIntel[currentProtocol]}</p>
+            </div>
+
+            <button onclick="startGame('${currentProtocol}')" class="w-full py-3 border ${colors[currentProtocol]} hover:bg-white/10 transition-all font-mono-custom text-sm uppercase tracking-wider mb-2">
+                RETRY PROTOCOL
+            </button>
+            <button onclick="resetGame()" class="w-full py-3 border border-gray-600 text-gray-400 hover:bg-white/10 transition-all font-mono-custom text-sm uppercase tracking-wider">
+                NEW PROTOCOL
+            </button>
+        </div>
+    `;
+
+            if (gameScore === puzzles.length) {
+                unlockIntel(finalIntel[currentProtocol]);
+            }
+        }
+
+        function resetGame() {
+            if (gameTimer) clearInterval(gameTimer);
+            document.getElementById('game-timer').style.display = 'none';
+            document.getElementById('intel-rewards').innerHTML = '';
+            gameScore = 0;
+            currentPuzzleIndex = 0;
+            psychProfile = { empathy: 0, pragmatism: 0, rebellion: 0, control: 0 };
+            updateScore();
+
+            document.getElementById('game-content').innerHTML = `
+        <div class="text-center py-8">
+            <p class="text-gray-400 text-sm mb-4">Select protocol to begin decryption</p>
+            <div class="space-y-3">
+                <button onclick="startGame('ethel')" class="w-full py-3 bg-green-900/30 border border-green-500 text-green-500 hover:bg-green-900/50 transition-all font-mono-custom text-sm uppercase tracking-wider">
+                    <div class="font-bold">ETHEL PROTOCOL</div>
+                    <div class="text-xs opacity-70">Pattern Recognition</div>
+                </button>
+                <button onclick="startGame('isla')" class="w-full py-3 bg-blue-900/30 border border-blue-500 text-blue-500 hover:bg-blue-900/50 transition-all font-mono-custom text-sm uppercase tracking-wider">
+                    <div class="font-bold">ISLA PROTOCOL</div>
+                    <div class="text-xs opacity-70">Creative Chaos</div>
+                </button>
+                <button onclick="startGame('dominic')" class="w-full py-3 bg-red-900/30 border border-red-500 text-red-500 hover:bg-red-900/50 transition-all font-mono-custom text-sm uppercase tracking-wider">
+                    <div class="font-bold">DOMINIC PROTOCOL</div>
+                    <div class="text-xs opacity-70">Strategic Control</div>
+                </button>
+            </div>
+        </div>
+    `;
+        }
+
+        // Auto-start with protocol selection menu on page load
+        window.addEventListener('DOMContentLoaded', () => {
+            console.log('Cipher Protocol System Online');
+            // Game starts with menu visible - user selects protocol
+        });
+    </script>
+</body>
+
+</html>
