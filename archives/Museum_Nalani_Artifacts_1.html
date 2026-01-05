@@ -113,6 +113,12 @@
 
         /* Mobile Responsive - Compact Header */
         @media (max-width: 768px) {
+
+            /* Hide header on mobile - user already clicked the title */
+            header {
+                display: none !important;
+            }
+
             nav {
                 padding-top: 0.75rem !important;
                 padding-bottom: 0.75rem !important;
@@ -125,10 +131,6 @@
             main {
                 padding-top: 1.5rem !important;
                 padding-bottom: 1.5rem !important;
-            }
-
-            header {
-                margin-bottom: 1.5rem !important;
             }
 
             header h1 {
