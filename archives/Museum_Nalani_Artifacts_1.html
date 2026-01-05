@@ -113,17 +113,10 @@
 
         /* Mobile Responsive - Compact Header */
         @media (max-width: 768px) {
+
+            /* Hide nav completely on mobile */
             body nav {
-                padding-top: 0.5rem !important;
-                padding-bottom: 0.5rem !important;
-            }
-
-            body nav .font-display {
-                font-size: 0.75rem !important;
-            }
-
-            body nav .text-\[10px\] {
-                font-size: 8px !important;
+                display: none !important;
             }
 
             body main {
@@ -135,14 +128,20 @@
                 margin-bottom: 1rem !important;
             }
 
+            /* Hide full title on mobile */
             body main header h1 {
+                display: none !important;
+            }
+
+            /* Show simplified title on mobile */
+            body main header h1::before {
+                content: "Unquiet Spirit";
+                display: block !important;
                 font-size: 1.25rem !important;
                 margin-bottom: 0.5rem !important;
                 line-height: 1.3 !important;
-            }
-
-            body main header h1 span {
-                font-size: 1rem !important;
+                color: white;
+                font-family: 'Cinzel', serif;
             }
 
             body main header .w-12 {
