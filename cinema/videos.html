@@ -24,12 +24,12 @@
             overflow: hidden;
             width: 100vw;
             height: 100%; /* Fallback */
-            height: 100dvh; /* Dynamic Height */
+            /* CRITICAL FIX: Accounts for mobile address bars */
+            height: 100dvh; 
             display: flex;
             flex-direction: column;
         }
 
-        /* Desktop Layout Switch */
         @media (min-width: 769px) {
             body { flex-direction: row; }
         }
@@ -96,10 +96,10 @@
         .control-btn:hover { border-color: var(--neon-green); color: var(--neon-green); box-shadow: 0 0 10px var(--neon-dim); }
         .control-btn:active { transform: scale(0.95); }
 
-        /* --- MOBILE LAYOUT FIXES --- */
+        /* --- MOBILE LAYOUT LOCKS --- */
         @media (max-width: 768px) {
             
-            /* TOP BAR: Horizontal Scroller */
+            /* TOP BAR: Pinned to Top */
             #sidebar-left { 
                 position: fixed; top: 0; left: 0; right: 0;
                 height: 60px; z-index: 40;
@@ -107,13 +107,12 @@
                 display: flex; align-items: center;
                 overflow-x: auto; overflow-y: hidden;
                 padding: 0 10px; gap: 8px;
-                /* Force items to start from left */
-                justify-content: flex-start; 
+                justify-content: flex-start; /* Fix spacing issue */
             }
             
             /* Hide desktop headers */
             .header-section, .footer-section { display: none !important; }
-            #protocol-list { display: contents; } /* Unwrap list container */
+            #protocol-list { display: contents; } 
 
             /* MAIN CONTENT: Pinned between bars */
             #main-container {
@@ -122,6 +121,7 @@
                 bottom: 70px; /* Above bottom bar */
                 left: 0; right: 0;
                 background: #000;
+                z-index: 10;
             }
 
             /* VIDEO FRAME: Fill container */
@@ -130,12 +130,12 @@
                 position: relative;
             }
 
-            /* BOTTOM BAR: Fixed at bottom */
+            /* BOTTOM BAR: Pinned to Bottom */
             .header-bar {
                 position: fixed; bottom: 0; left: 0; right: 0;
                 height: 70px !important;
                 background: #080808; border-top: 1px solid #222;
-                z-index: 40;
+                z-index: 50; /* Top Z-Index */
                 display: flex; align-items: center; justify-content: space-between;
                 padding: 0 15px;
             }
@@ -151,7 +151,7 @@
         body.fullscreen-mode #sidebar-left, 
         body.fullscreen-mode #sidebar-right,
         body.fullscreen-mode .header-bar { display: none !important; }
-        body.fullscreen-mode #main-container { position: fixed; inset: 0; z-index: 100; }
+        body.fullscreen-mode #main-container { position: fixed; inset: 0; z-index: 100; top: 0; bottom: 0; }
         body.fullscreen-mode #video-frame { height: 100%; width: 100%; }
         body.fullscreen-mode #fs-exit-btn { display: flex; }
 
