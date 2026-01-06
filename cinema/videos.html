@@ -15,20 +15,29 @@
             --bg-dark: #050505;
         }
 
-        body {
+        /* RESET & LAYOUT BASE */
+        html, body {
+            margin: 0; padding: 0;
             background-color: var(--bg-dark);
             color: #e0e0e0;
             font-family: 'Space Grotesk', sans-serif;
-            overflow: hidden;
-            height: 100vh; /* Fallback */
-            height: 100dvh; /* Dynamic Height for Mobile Browsers */
+            overflow: hidden; /* No scroll on body */
             width: 100vw;
+            /* CRITICAL FIX: Use dvh to account for mobile address bars */
+            height: 100vh; 
+            height: 100dvh; 
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Layout Structure: Desktop default */
+        @media (min-width: 769px) {
+            body { flex-direction: row; }
         }
 
         .font-mono-custom { font-family: 'Courier Prime', monospace; }
 
-        /* --- CUSTOM SCROLLBARS --- */
-        /* Works on Desktop & Mobile WebKit */
+        /* Custom Scrollbar */
         ::-webkit-scrollbar { width: 4px; height: 4px; }
         ::-webkit-scrollbar-track { background: #0a0a0a; }
         ::-webkit-scrollbar-thumb { background: #333; border-radius: 2px; }
@@ -52,32 +61,23 @@
             position: fixed; inset: 0; pointer-events: none; z-index: 50;
         }
 
+        /* --- UI ELEMENTS --- */
+
         /* Protocol Buttons (Characters) */
         .protocol-btn {
             display: flex; align-items: center; gap: 10px;
             text-align: left; padding: 12px 16px;
             border-left: 2px solid transparent;
-            border-bottom: 2px solid transparent; /* For mobile */
             transition: all 0.2s ease; opacity: 0.6;
             font-family: 'Courier Prime', monospace; font-size: 11px; letter-spacing: 1px;
-            background: #080808; flex-shrink: 0; /* Prevent squishing on mobile */
+            background: #080808; flex-shrink: 0;
         }
         .protocol-btn:hover { background: #111; opacity: 1; }
         
-        /* Active State */
         .protocol-btn.active {
             color: var(--neon-green); opacity: 1;
             background: linear-gradient(90deg, var(--neon-dim) 0%, transparent 100%);
             text-shadow: 0 0 5px var(--neon-green);
-        }
-        /* Desktop Active Border */
-        @media (min-width: 768px) {
-            .protocol-btn.active { border-left: 2px solid var(--neon-green); padding-left: 20px; }
-            .protocol-btn:hover { padding-left: 20px; }
-        }
-        /* Mobile Active Border */
-        @media (max-width: 767px) {
-            .protocol-btn.active { border-bottom: 2px solid var(--neon-green); background: linear-gradient(0deg, var(--neon-dim) 0%, transparent 100%); }
         }
 
         /* Images */
@@ -89,7 +89,7 @@
             filter: grayscale(0%); border-color: var(--neon-green);
         }
 
-        /* Track List Items */
+        /* Track List */
         .track-item {
             padding: 12px; border-bottom: 1px solid #1a1a1a; cursor: pointer;
             transition: all 0.2s; display: flex; align-items: center; gap: 12px;
@@ -108,7 +108,81 @@
         .control-btn:hover { border-color: var(--neon-green); color: var(--neon-green); box-shadow: 0 0 10px var(--neon-dim); }
         .control-btn:active { transform: scale(0.95); }
 
-        /* Fullscreen Mode Overrides */
+        /* --- MOBILE LAYOUT OVERRIDES --- */
+        @media (max-width: 768px) {
+            /* Top Scroller (Characters) */
+            #sidebar-left { 
+                width: 100%; 
+                height: 60px; /* Fixed small height */
+                border-right: none; 
+                border-bottom: 1px solid #222;
+                flex-direction: row; 
+                overflow-x: auto; 
+                overflow-y: hidden;
+                white-space: nowrap;
+                padding: 0; 
+                z-index: 30;
+                background: #000;
+            }
+            
+            /* Hide Desktop Header/Footer elements */
+            .header-section, .footer-section { display: none !important; }
+
+            /* Character Buttons on Mobile */
+            #protocol-list { 
+                display: flex; flex-direction: row; height: 100%;
+            }
+            .protocol-btn {
+                width: auto; padding: 0 16px; height: 100%;
+                border-left: none; border-bottom: 2px solid transparent;
+                background: transparent;
+            }
+            .protocol-btn.active {
+                border-left: none; border-bottom: 2px solid var(--neon-green);
+                background: linear-gradient(0deg, var(--neon-dim) 0%, transparent 100%);
+            }
+
+            /* Main Content Wrapper */
+            #main-container {
+                flex: 1; /* Takes all remaining height */
+                display: flex; 
+                flex-direction: column;
+                min-height: 0; /* Crucial for nested flex scrolling */
+            }
+
+            /* Video Frame */
+            #video-frame {
+                flex: 1; /* Grow to fill space */
+                width: 100%;
+                min-height: 0;
+            }
+
+            /* Bottom Controls - Compact */
+            .header-bar {
+                height: 60px !important; /* Fixed small height */
+                min-height: 0 !important;
+                padding: 5px 10px !important;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                flex-wrap: nowrap !important;
+            }
+            
+            /* Hide non-essential desktop controls on mobile */
+            #current-title { display: none; }
+            .desktop-tools { display: none; }
+            
+            /* Mobile Title */
+            .mobile-title-container {
+                position: absolute; bottom: 65px; left: 0; right: 0;
+                text-align: center; pointer-events: none; z-index: 40;
+                text-shadow: 0 2px 4px rgba(0,0,0,0.8);
+            }
+            
+            #sidebar-right { display: none; } /* Hide track list */
+        }
+
+        /* Fullscreen Mode */
         body.fullscreen-mode #sidebar-left, 
         body.fullscreen-mode #sidebar-right,
         body.fullscreen-mode .header-bar { display: none !important; }
@@ -118,31 +192,29 @@
 
     </style>
 </head>
-<body class="flex flex-col md:flex-row h-screen bg-black text-white overflow-hidden">
+<body>
 
     <div class="scanlines"></div>
 
-    <div id="sidebar-left" class="w-full md:w-64 bg-[#080808] border-r border-[#222] flex flex-row md:flex-col z-30 flex-shrink-0 h-16 md:h-auto border-b md:border-b-0 border-[#222]">
-        
-        <div class="header-section p-6 border-b border-[#222] hidden md:block">
+    <div id="sidebar-left" class="w-full md:w-64 bg-[#080808] border-r border-[#222] flex flex-col z-30 flex-shrink-0">
+        <div class="header-section p-6 border-b border-[#222]">
             <h1 class="text-lg font-bold font-mono-custom text-white glitch-text" data-text="ARCHIVE">ARCHIVE</h1>
             <p class="text-[9px] text-gray-500 mt-1 font-mono-custom tracking-widest">CLEARANCE: 4</p>
         </div>
         
-        <div id="protocol-list" class="flex-1 flex flex-row md:flex-col overflow-x-auto md:overflow-y-auto md:overflow-x-hidden items-center md:items-stretch scrollbar-thin">
+        <div class="flex-1 overflow-y-auto" id="protocol-list">
             </div>
         
-        <div class="footer-section p-4 border-t border-[#222] space-y-2 hidden md:block">
+        <div class="footer-section p-4 border-t border-[#222] space-y-2">
             <button onclick="shuffleGlobal()" class="w-full py-2 border border-[#333] text-[10px] hover:border-green-500 hover:text-green-500 transition-colors font-mono-custom">
                 GLOBAL SHUFFLE
             </button>
         </div>
     </div>
 
-    <div id="main-container" class="flex-1 flex flex-col relative min-h-0 bg-[#050505]">
+    <div id="main-container" class="bg-[#050505] relative">
         
-        <div id="video-frame" class="flex-1 relative bg-black flex items-center justify-center overflow-hidden border-b border-[#222]">
-            
+        <div id="video-frame" class="relative bg-black flex items-center justify-center overflow-hidden border-b border-[#222]">
             <div id="youtube-player" class="w-full h-full absolute inset-0"></div>
             
             <div id="interaction-shield" class="absolute inset-0 z-50 pointer-events-auto" style="background: transparent;" onclick="togglePlay()"></div>
@@ -152,36 +224,37 @@
             </button>
         </div>
 
-        <div class="header-bar h-auto min-h-[80px] md:h-24 bg-[#080808] border-t border-[#222] flex flex-wrap items-center justify-between p-4 z-20 flex-shrink-0 gap-4">
-            
-            <div class="w-full md:hidden text-center mb-1">
-                <div id="current-title-mobile" class="text-[10px] font-mono-custom text-green-500 truncate">INITIALIZING FEED...</div>
-            </div>
+        <div class="mobile-title-container md:hidden">
+            <div id="current-title-mobile" class="text-[10px] font-mono-custom text-green-500 truncate bg-black/50 inline-block px-2 py-1 rounded">INITIALIZING...</div>
+        </div>
 
-            <div class="hidden md:block w-1/3">
+        <div class="header-bar h-24 bg-[#080808] border-t border-[#222] flex items-center justify-between px-6 z-20 flex-shrink-0">
+            
+            <div class="hidden md:block w-1/3" id="current-title-desktop">
                 <div class="text-[10px] text-green-500 font-mono-custom mb-1">CURRENT FEED</div>
                 <div id="current-title" class="text-sm font-bold truncate text-gray-300">INITIALIZING...</div>
             </div>
 
-            <div class="flex items-center gap-6 justify-center w-full md:w-auto order-last md:order-none">
+            <div class="flex items-center gap-6 justify-center w-full md:w-auto">
                 <button class="control-btn" onclick="prevTrack()" title="Previous">
                     <span class="material-symbols-outlined">skip_previous</span>
                 </button>
-                <button class="control-btn" onclick="togglePlay()" title="Play/Pause" style="width: 60px; height: 60px; border-color: #444;">
-                    <span id="play-icon" class="material-symbols-outlined text-4xl">play_arrow</span>
+                <button class="control-btn" onclick="togglePlay()" title="Play/Pause" style="width: 50px; height: 50px; border-color: #444;">
+                    <span id="play-icon" class="material-symbols-outlined text-3xl">play_arrow</span>
                 </button>
                 <button class="control-btn" onclick="nextTrack()" title="Next">
                     <span class="material-symbols-outlined">skip_next</span>
                 </button>
+                <button class="control-btn md:hidden" onclick="toggleFullscreen()" title="Fullscreen" style="width: 40px; height: 40px;">
+                    <span class="material-symbols-outlined text-xl">fullscreen</span>
+                </button>
             </div>
 
-            <div class="flex items-center justify-end gap-3 w-full md:w-1/3 order-2 md:order-none absolute md:relative top-2 right-2 md:top-auto md:right-auto pointer-events-none md:pointer-events-auto">
-                <div class="pointer-events-auto flex gap-2">
-                    <button class="hidden md:block text-xs font-mono-custom text-gray-500 hover:text-white px-3 py-1 border border-[#222] rounded hover:border-gray-500 transition-colors" onclick="toggleResolution()">SD/HD</button>
-                    <button class="text-gray-500 hover:text-green-500 transition-colors p-2" onclick="toggleFullscreen()" title="Maximize">
-                        <span class="material-symbols-outlined text-2xl">fullscreen</span>
-                    </button>
-                </div>
+            <div class="desktop-tools flex items-center justify-end gap-3 w-1/3 hidden md:flex">
+                <button class="text-xs font-mono-custom text-gray-500 hover:text-white px-3 py-1 border border-[#222] rounded hover:border-gray-500 transition-colors" onclick="toggleResolution()">SD/HD</button>
+                <button class="text-gray-500 hover:text-green-500 transition-colors p-2" onclick="toggleFullscreen()" title="Fullscreen">
+                    <span class="material-symbols-outlined text-2xl">fullscreen</span>
+                </button>
             </div>
         </div>
     </div>
@@ -190,13 +263,11 @@
         <div class="p-4 border-b border-[#222] bg-[#0a0a0a]">
             <h2 class="text-xs font-bold text-gray-400 font-mono-custom tracking-widest">FEED SELECTION</h2>
         </div>
-        <div class="flex-1 overflow-y-auto" id="track-list">
-            </div>
+        <div class="flex-1 overflow-y-auto" id="track-list"></div>
     </div>
 
     <script>
         // --- DATA ---
-        // REPLACE IMAGE URLs WITH YOUR GIT LINKS (200x200px recommended)
         const PROTOCOLS = [
             { 
                 id: 'isla', name: 'ISLA', img: 'https://github.com/NJsalubrious/pixelstortion-assets/blob/main/Isla_misc/Images/Isla_Profile.jpg?raw=true', 
@@ -311,7 +382,6 @@
                 btn.innerText = 'play_arrow';
                 isPlaying = false;
             }
-            // AUTO-ADVANCE
             if (event.data == YT.PlayerState.ENDED) {
                 nextTrack(); 
             }
@@ -322,7 +392,7 @@
             container.innerHTML = PROTOCOLS.map((p, idx) => `
                 <button onclick="loadProtocol(${idx})" id="proto-btn-${idx}" class="protocol-btn w-full">
                     <img src="${p.img}" class="protocol-img" alt="${p.name}">
-                    <span class="protocol-text font-bold text-gray-400 group-hover:text-white">${p.name}</span>
+                    <span class="font-bold text-gray-400 group-hover:text-white">${p.name}</span>
                 </button>
             `).join('');
         }
@@ -353,8 +423,11 @@
             const track = PROTOCOLS[currentProtocolIdx].tracks[trackIdx];
             player.loadVideoById(track.id);
             const title = track.title.toUpperCase();
-            document.getElementById('current-title').innerText = title;
-            document.getElementById('current-title-mobile').innerText = title;
+            const desktopTitle = document.getElementById('current-title');
+            const mobileTitle = document.getElementById('current-title-mobile');
+            if(desktopTitle) desktopTitle.innerText = title;
+            if(mobileTitle) mobileTitle.innerText = title;
+            
             document.querySelectorAll('.track-item').forEach(el => el.classList.remove('active'));
             const activeRow = document.getElementById(`track-row-${trackIdx}`);
             if(activeRow) { activeRow.classList.add('active'); activeRow.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
