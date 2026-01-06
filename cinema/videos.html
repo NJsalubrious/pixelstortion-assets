@@ -15,22 +15,21 @@
             --bg-dark: #050505;
         }
 
-        /* RESET & LAYOUT BASE */
+        /* RESET & BASE */
         html, body {
             margin: 0; padding: 0;
             background-color: var(--bg-dark);
             color: #e0e0e0;
             font-family: 'Space Grotesk', sans-serif;
-            overflow: hidden; /* No scroll on body */
+            overflow: hidden;
             width: 100vw;
-            /* CRITICAL FIX: Use dvh to account for mobile address bars */
-            height: 100vh; 
-            height: 100dvh; 
+            height: 100%; /* Fallback */
+            height: 100dvh; /* Dynamic Height */
             display: flex;
             flex-direction: column;
         }
 
-        /* Layout Structure: Desktop default */
+        /* Desktop Layout Switch */
         @media (min-width: 769px) {
             body { flex-direction: row; }
         }
@@ -43,17 +42,6 @@
         ::-webkit-scrollbar-thumb { background: #333; border-radius: 2px; }
         ::-webkit-scrollbar-thumb:hover { background: var(--neon-green); }
 
-        /* Glitch Text */
-        .glitch-text { position: relative; }
-        .glitch-text::before, .glitch-text::after {
-            content: attr(data-text); position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0.8;
-        }
-        .glitch-text::before { left: 2px; text-shadow: -1px 0 red; clip-path: inset(0 0 0 0); animation: glitch-anim 2s infinite linear alternate-reverse; }
-        .glitch-text::after { left: -2px; text-shadow: 1px 0 var(--neon-green); clip-path: inset(0 0 0 0); animation: glitch-anim 3s infinite linear alternate-reverse; }
-        @keyframes glitch-anim {
-            0% { clip-path: inset(10% 0 80% 0); } 20% { clip-path: inset(80% 0 10% 0); } 100% { clip-path: inset(30% 0 60% 0); }
-        }
-
         /* Scanlines */
         .scanlines {
             background: linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,0) 50%, rgba(0,0,0,0.1) 50%, rgba(0,0,0,0.1));
@@ -63,33 +51,33 @@
 
         /* --- UI ELEMENTS --- */
 
-        /* Protocol Buttons (Characters) */
+        /* Character Buttons */
         .protocol-btn {
             display: flex; align-items: center; gap: 10px;
-            text-align: left; padding: 12px 16px;
-            border-left: 2px solid transparent;
-            transition: all 0.2s ease; opacity: 0.6;
-            font-family: 'Courier Prime', monospace; font-size: 11px; letter-spacing: 1px;
-            background: #080808; flex-shrink: 0;
+            text-align: left; padding: 8px 12px;
+            border: 1px solid transparent;
+            transition: all 0.2s ease; opacity: 0.7;
+            font-family: 'Courier Prime', monospace; font-size: 10px; letter-spacing: 1px;
+            background: #080808; flex-shrink: 0; white-space: nowrap;
         }
         .protocol-btn:hover { background: #111; opacity: 1; }
         
         .protocol-btn.active {
             color: var(--neon-green); opacity: 1;
             background: linear-gradient(90deg, var(--neon-dim) 0%, transparent 100%);
+            border-color: var(--neon-green);
             text-shadow: 0 0 5px var(--neon-green);
         }
 
-        /* Images */
         .protocol-img {
-            width: 32px; height: 32px; object-fit: cover; border-radius: 2px;
+            width: 28px; height: 28px; object-fit: cover; border-radius: 2px;
             filter: grayscale(100%); transition: all 0.3s ease; border: 1px solid #333;
         }
         .protocol-btn.active .protocol-img, .protocol-btn:hover .protocol-img {
             filter: grayscale(0%); border-color: var(--neon-green);
         }
 
-        /* Track List */
+        /* Track List (Desktop) */
         .track-item {
             padding: 12px; border-bottom: 1px solid #1a1a1a; cursor: pointer;
             transition: all 0.2s; display: flex; align-items: center; gap: 12px;
@@ -108,86 +96,63 @@
         .control-btn:hover { border-color: var(--neon-green); color: var(--neon-green); box-shadow: 0 0 10px var(--neon-dim); }
         .control-btn:active { transform: scale(0.95); }
 
-        /* --- MOBILE LAYOUT OVERRIDES --- */
+        /* --- MOBILE LAYOUT FIXES --- */
         @media (max-width: 768px) {
-            /* Top Scroller (Characters) */
+            
+            /* TOP BAR: Horizontal Scroller */
             #sidebar-left { 
-                width: 100%; 
-                height: 60px; /* Fixed small height */
-                border-right: none; 
-                border-bottom: 1px solid #222;
-                flex-direction: row; 
-                overflow-x: auto; 
-                overflow-y: hidden;
-                white-space: nowrap;
-                padding: 0; 
-                z-index: 30;
+                position: fixed; top: 0; left: 0; right: 0;
+                height: 60px; z-index: 40;
+                background: #000; border-bottom: 1px solid #222;
+                display: flex; align-items: center;
+                overflow-x: auto; overflow-y: hidden;
+                padding: 0 10px; gap: 8px;
+                /* Force items to start from left */
+                justify-content: flex-start; 
+            }
+            
+            /* Hide desktop headers */
+            .header-section, .footer-section { display: none !important; }
+            #protocol-list { display: contents; } /* Unwrap list container */
+
+            /* MAIN CONTENT: Pinned between bars */
+            #main-container {
+                position: absolute;
+                top: 60px; /* Below top bar */
+                bottom: 70px; /* Above bottom bar */
+                left: 0; right: 0;
                 background: #000;
             }
-            
-            /* Hide Desktop Header/Footer elements */
-            .header-section, .footer-section { display: none !important; }
 
-            /* Character Buttons on Mobile */
-            #protocol-list { 
-                display: flex; flex-direction: row; height: 100%;
-            }
-            .protocol-btn {
-                width: auto; padding: 0 16px; height: 100%;
-                border-left: none; border-bottom: 2px solid transparent;
-                background: transparent;
-            }
-            .protocol-btn.active {
-                border-left: none; border-bottom: 2px solid var(--neon-green);
-                background: linear-gradient(0deg, var(--neon-dim) 0%, transparent 100%);
-            }
-
-            /* Main Content Wrapper */
-            #main-container {
-                flex: 1; /* Takes all remaining height */
-                display: flex; 
-                flex-direction: column;
-                min-height: 0; /* Crucial for nested flex scrolling */
-            }
-
-            /* Video Frame */
+            /* VIDEO FRAME: Fill container */
             #video-frame {
-                flex: 1; /* Grow to fill space */
-                width: 100%;
-                min-height: 0;
+                width: 100%; height: 100%;
+                position: relative;
             }
 
-            /* Bottom Controls - Compact */
+            /* BOTTOM BAR: Fixed at bottom */
             .header-bar {
-                height: 60px !important; /* Fixed small height */
-                min-height: 0 !important;
-                padding: 5px 10px !important;
-                display: flex;
-                align-items: center;
-                justify-content: space-between;
-                flex-wrap: nowrap !important;
+                position: fixed; bottom: 0; left: 0; right: 0;
+                height: 70px !important;
+                background: #080808; border-top: 1px solid #222;
+                z-index: 40;
+                display: flex; align-items: center; justify-content: space-between;
+                padding: 0 15px;
             }
+
+            /* Hide Sidebar Right */
+            #sidebar-right { display: none; }
             
-            /* Hide non-essential desktop controls on mobile */
-            #current-title { display: none; }
-            .desktop-tools { display: none; }
-            
-            /* Mobile Title */
-            .mobile-title-container {
-                position: absolute; bottom: 65px; left: 0; right: 0;
-                text-align: center; pointer-events: none; z-index: 40;
-                text-shadow: 0 2px 4px rgba(0,0,0,0.8);
-            }
-            
-            #sidebar-right { display: none; } /* Hide track list */
+            /* Hide Titles/Extras on Mobile */
+            #current-title, .desktop-tools, .mobile-title-container { display: none; }
         }
 
         /* Fullscreen Mode */
         body.fullscreen-mode #sidebar-left, 
         body.fullscreen-mode #sidebar-right,
         body.fullscreen-mode .header-bar { display: none !important; }
-        body.fullscreen-mode #main-container { padding: 0; }
-        body.fullscreen-mode #video-frame { position: fixed; inset: 0; z-index: 100; height: 100vh; width: 100vw; border: none; max-height: none; }
+        body.fullscreen-mode #main-container { position: fixed; inset: 0; z-index: 100; }
+        body.fullscreen-mode #video-frame { height: 100%; width: 100%; }
         body.fullscreen-mode #fs-exit-btn { display: flex; }
 
     </style>
@@ -196,13 +161,13 @@
 
     <div class="scanlines"></div>
 
-    <div id="sidebar-left" class="w-full md:w-64 bg-[#080808] border-r border-[#222] flex flex-col z-30 flex-shrink-0">
+    <div id="sidebar-left" class="w-full md:w-64 bg-[#080808] border-r border-[#222] flex-col z-30 flex-shrink-0 md:flex hidden-scrollbar">
         <div class="header-section p-6 border-b border-[#222]">
             <h1 class="text-lg font-bold font-mono-custom text-white glitch-text" data-text="ARCHIVE">ARCHIVE</h1>
             <p class="text-[9px] text-gray-500 mt-1 font-mono-custom tracking-widest">CLEARANCE: 4</p>
         </div>
         
-        <div class="flex-1 overflow-y-auto" id="protocol-list">
+        <div class="flex-1 overflow-y-auto md:block flex items-center" id="protocol-list">
             </div>
         
         <div class="footer-section p-4 border-t border-[#222] space-y-2">
@@ -212,7 +177,7 @@
         </div>
     </div>
 
-    <div id="main-container" class="bg-[#050505] relative">
+    <div id="main-container" class="bg-[#050505]">
         
         <div id="video-frame" class="relative bg-black flex items-center justify-center overflow-hidden border-b border-[#222]">
             <div id="youtube-player" class="w-full h-full absolute inset-0"></div>
@@ -222,10 +187,6 @@
             <button id="fs-exit-btn" onclick="toggleFullscreen()" class="hidden absolute top-4 right-4 z-50 bg-black/80 text-white p-3 rounded-full border border-red-500 hover:bg-red-900/50 transition-colors cursor-pointer shadow-lg">
                 <span class="material-symbols-outlined">close</span>
             </button>
-        </div>
-
-        <div class="mobile-title-container md:hidden">
-            <div id="current-title-mobile" class="text-[10px] font-mono-custom text-green-500 truncate bg-black/50 inline-block px-2 py-1 rounded">INITIALIZING...</div>
         </div>
 
         <div class="header-bar h-24 bg-[#080808] border-t border-[#222] flex items-center justify-between px-6 z-20 flex-shrink-0">
@@ -390,9 +351,9 @@
         function renderProtocols() {
             const container = document.getElementById('protocol-list');
             container.innerHTML = PROTOCOLS.map((p, idx) => `
-                <button onclick="loadProtocol(${idx})" id="proto-btn-${idx}" class="protocol-btn w-full">
+                <button onclick="loadProtocol(${idx})" id="proto-btn-${idx}" class="protocol-btn">
                     <img src="${p.img}" class="protocol-img" alt="${p.name}">
-                    <span class="font-bold text-gray-400 group-hover:text-white">${p.name}</span>
+                    <span class="font-bold text-gray-400 group-hover:text-white hidden md:inline">${p.name}</span>
                 </button>
             `).join('');
         }
@@ -423,10 +384,9 @@
             const track = PROTOCOLS[currentProtocolIdx].tracks[trackIdx];
             player.loadVideoById(track.id);
             const title = track.title.toUpperCase();
-            const desktopTitle = document.getElementById('current-title');
-            const mobileTitle = document.getElementById('current-title-mobile');
-            if(desktopTitle) desktopTitle.innerText = title;
-            if(mobileTitle) mobileTitle.innerText = title;
+            
+            const dt = document.getElementById('current-title');
+            if(dt) dt.innerText = title;
             
             document.querySelectorAll('.track-item').forEach(el => el.classList.remove('active'));
             const activeRow = document.getElementById(`track-row-${trackIdx}`);
