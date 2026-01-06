@@ -29,8 +29,8 @@
         /* Custom Scrollbar */
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: #0a0a0a; border-left: 1px solid #222; }
-        ::-webkit-scrollbar-thumb { background: #333; border-radius: 0; border: 1px solid #000; }
-        ::-webkit-scrollbar-thumb:hover { background: var(--neon-green); border-color: var(--neon-green); }
+        ::-webkit-scrollbar-thumb { background: #333; border: 1px solid #000; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--neon-green); }
 
         /* Glitch Text */
         .glitch-text { position: relative; }
@@ -50,7 +50,7 @@
             position: fixed; inset: 0; pointer-events: none; z-index: 50;
         }
 
-        /* Protocol Buttons */
+        /* Protocol Buttons (Character List) */
         .protocol-btn {
             display: flex; align-items: center; gap: 12px;
             text-align: left; padding: 12px 16px;
@@ -66,8 +66,10 @@
             color: var(--neon-green); opacity: 1; padding-left: 20px;
             text-shadow: 0 0 5px var(--neon-green);
         }
+        
+        /* Character Images */
         .protocol-img {
-            width: 32px; height: 32px; object-fit: cover; border-radius: 2px;
+            width: 36px; height: 36px; object-fit: cover; border-radius: 2px;
             filter: grayscale(100%); transition: all 0.3s ease; border: 1px solid #333;
         }
         .protocol-btn.active .protocol-img, .protocol-btn:hover .protocol-img {
@@ -76,14 +78,14 @@
 
         /* Track List */
         .track-item {
-            padding: 10px 12px; border-bottom: 1px solid #1a1a1a; cursor: pointer;
-            transition: all 0.2s; display: flex; align-items: center; gap: 10px;
+            padding: 12px; border-bottom: 1px solid #1a1a1a; cursor: pointer;
+            transition: all 0.2s; display: flex; align-items: center; gap: 12px;
         }
         .track-item:hover { background: #111; }
         .track-item.active { background: #1a1a1a; border-left: 2px solid var(--neon-green); }
         .track-item.active .track-idx { color: var(--neon-green); }
 
-        /* Controls */
+        /* Control Buttons */
         .control-btn {
             width: 45px; height: 45px; border-radius: 50%;
             border: 1px solid #333; background: #000; color: #888;
@@ -98,52 +100,62 @@
         body.fullscreen-mode #sidebar-right,
         body.fullscreen-mode .header-bar { display: none !important; }
         body.fullscreen-mode #main-container { padding: 0; }
-        body.fullscreen-mode #video-frame { position: fixed; inset: 0; z-index: 100; height: 100vh; width: 100vw; border: none; }
+        body.fullscreen-mode #video-frame { position: fixed; inset: 0; z-index: 100; height: 100vh; width: 100vw; border: none; max-height: none; }
         body.fullscreen-mode #fs-exit-btn { display: flex; }
 
-        /* Mobile Overrides */
+        /* Mobile Optimization */
         @media (max-width: 768px) {
             body { flex-direction: column; }
             
-            /* Sidebar becomes top scroller */
+            /* Top Character Scroller */
             #sidebar-left { 
                 width: 100%; height: auto; border-right: none; border-bottom: 1px solid #222;
                 flex-direction: row; overflow-x: auto; overflow-y: hidden;
                 padding: 0; z-index: 30;
-                /* Hide header on mobile to save space */
+                scrollbar-width: none; /* Hide scrollbar for cleaner look */
             }
-            #sidebar-left .header-section { display: none; }
+            #sidebar-left::-webkit-scrollbar { display: none; }
+            
+            /* Hide the large "ARCHIVE" header on mobile */
+            .header-section { display: none !important; }
+            .footer-section { display: none !important; }
+
             #protocol-list { 
                 display: flex; flex-direction: row; padding: 0; width: max-content;
             }
+            
             .protocol-btn {
-                width: auto; padding: 10px 14px; border-left: none; border-bottom: 2px solid transparent;
-                background: #000;
+                width: auto; padding: 8px 12px; border-left: none; border-bottom: 2px solid transparent;
+                background: #000; gap: 8px;
             }
-            .protocol-btn:hover { padding-left: 14px; background: #111; }
+            .protocol-btn .protocol-text { display: none; } /* Hide text, show only icon on mobile? Optional. Keeping text for now. */
+            
             .protocol-btn.active {
-                border-left: none; border-bottom: 2px solid var(--neon-green); padding-left: 14px;
+                border-left: none; border-bottom: 2px solid var(--neon-green); padding-left: 12px;
                 background: linear-gradient(0deg, var(--neon-dim) 0%, transparent 100%);
             }
-            /* Hide Global Shuffle on mobile to save space */
-            #sidebar-left .footer-section { display: none; }
 
-            /* Right sidebar (track list) hidden on mobile initially, or stacked below */
-            #sidebar-right { display: none; } /* User clicks Next/Prev instead */
-
-            /* Main Container */
-            #main-container { height: 100%; }
-            #video-frame { height: 60%; max-height: 60vh; }
+            /* Main Content */
+            #main-container { height: 100%; display: flex; flex-direction: column; }
             
-            /* Controls */
-            .header-bar { 
-                height: auto; padding: 10px; flex-wrap: wrap; gap: 10px;
-                background: #050505; border-top: 1px solid #222;
+            /* Video Frame - Takes maximum space */
+            #video-frame { 
+                flex: 1; /* Fills available vertical space */
+                max-height: none; 
+                width: 100%;
             }
-            .header-bar > div { width: 100%; justify-content: center; } /* Center controls */
-            .header-bar .hidden { display: none !important; } /* Hide Current Feed text */
             
-            #current-title-mobile { display: block; text-align: center; width: 100%; font-size: 10px; color: #666; margin-bottom: 5px; font-family: 'Courier Prime', monospace;}
+            /* Bottom Controls */
+            .header-bar { 
+                height: auto; min-height: 80px; padding: 12px; 
+                background: #080808; border-top: 1px solid #222;
+                display: flex; flex-wrap: wrap; justify-content: center;
+            }
+            
+            .header-bar > div { width: auto; }
+            .mobile-title-container { width: 100% !important; text-align: center; margin-bottom: 10px; }
+            
+            #sidebar-right { display: none; } /* Hide track list on mobile */
         }
     </style>
 </head>
@@ -157,7 +169,8 @@
             <p class="text-[9px] text-gray-500 mt-1 font-mono-custom tracking-widest">CLEARANCE: 4</p>
         </div>
         
-        <div class="flex-1 overflow-y-auto" id="protocol-list"></div>
+        <div class="flex-1 overflow-y-auto" id="protocol-list">
+            </div>
         
         <div class="footer-section p-4 border-t border-[#222] space-y-2">
             <button onclick="shuffleGlobal()" class="w-full py-2 border border-[#333] text-[10px] hover:border-green-500 hover:text-green-500 transition-colors font-mono-custom">
@@ -170,22 +183,26 @@
         
         <div id="video-frame" class="flex-1 relative bg-black flex items-center justify-center overflow-hidden border-b border-[#222]">
             <div id="youtube-player" class="w-full h-full absolute inset-0"></div>
-            <div id="interaction-shield" class="absolute inset-0 z-50 pointer-events-auto" onclick="togglePlay()"></div>
-            <button id="fs-exit-btn" onclick="toggleFullscreen()" class="hidden absolute top-4 right-4 z-50 bg-black/80 text-white p-3 rounded-full border border-red-500 hover:bg-red-900/50 transition-colors cursor-pointer">
+            
+            <div id="interaction-shield" class="absolute inset-0 z-50 pointer-events-auto" style="background: transparent;" onclick="togglePlay()"></div>
+            
+            <button id="fs-exit-btn" onclick="toggleFullscreen()" class="hidden absolute top-4 right-4 z-50 bg-black/80 text-white p-3 rounded-full border border-red-500 hover:bg-red-900/50 transition-colors cursor-pointer shadow-lg">
                 <span class="material-symbols-outlined">close</span>
             </button>
         </div>
 
         <div class="header-bar h-24 bg-[#080808] border-t border-[#222] flex items-center justify-between px-6 z-20 flex-shrink-0">
             
-            <div id="current-title-mobile" class="md:hidden">INITIALIZING...</div>
+            <div class="mobile-title-container md:hidden">
+                <div id="current-title-mobile" class="text-xs font-mono-custom text-green-500 truncate">INITIALIZING...</div>
+            </div>
 
             <div class="hidden md:block w-1/3">
                 <div class="text-[10px] text-green-500 font-mono-custom mb-1">CURRENT FEED</div>
                 <div id="current-title" class="text-sm font-bold truncate text-gray-300">INITIALIZING...</div>
             </div>
 
-            <div class="flex items-center gap-6 justify-center">
+            <div class="flex items-center gap-6 justify-center w-full md:w-auto">
                 <button class="control-btn" onclick="prevTrack()" title="Previous">
                     <span class="material-symbols-outlined">skip_previous</span>
                 </button>
@@ -197,7 +214,7 @@
                 </button>
             </div>
 
-            <div class="flex items-center justify-end gap-3 w-1/3">
+            <div class="flex items-center justify-end gap-3 w-1/3 hidden md:flex">
                 <button class="text-xs font-mono-custom text-gray-500 hover:text-white px-3 py-1 border border-[#222] rounded hover:border-gray-500 transition-colors" onclick="toggleResolution()">SD/HD</button>
                 <button class="text-gray-500 hover:text-green-500 transition-colors p-2" onclick="toggleFullscreen()" title="Fullscreen">
                     <span class="material-symbols-outlined text-2xl">fullscreen</span>
@@ -211,16 +228,15 @@
             <h2 class="text-xs font-bold text-gray-400 font-mono-custom tracking-widest">FEED SELECTION</h2>
         </div>
         <div class="flex-1 overflow-y-auto" id="track-list">
-        </div>
+            </div>
     </div>
 
     <script>
-        // --- DATA ---
-        // UPDATE THESE IMAGE URLS WITH YOUR GIT PATHS
-        // Recommended size: 200x200px (Square)
+        // --- CONFIGURATION ---
+        // Image Guidelines: Use 200x200px square images for best results.
         const PROTOCOLS = [
             { 
-                id: 'isla', name: 'ISLA', img: 'https://via.placeholder.com/100/000033/ffffff?text=ISLA', 
+                id: 'isla', name: 'ISLA', img: 'https://github.com/NJsalubrious/pixelstortion-assets/blob/main/Isla_misc/Images/Isla_Profile.jpg?raw=true', 
                 tracks: [
                     { id: "MhEeDcdscrs", title: "Polished Vomit" },
                     { id: "qbFxG7sK0pE", title: "Peek-A-Boo" },
@@ -242,7 +258,7 @@
                 ]
             },
             { 
-                id: 'ethel', name: 'ETHEL', img: 'https://via.placeholder.com/100/003300/ffffff?text=ETHEL',
+                id: 'ethel', name: 'ETHEL', img: 'https://github.com/NJsalubrious/pixelstortion-assets/blob/main/Isla_misc/Images/Ethel_Profile.jpg?raw=true',
                 tracks: [
                     { id: "YKQk4G_XJ1w", title: "Introduction" },
                     { id: "zHWwhom80go", title: "The Drop 1" },
@@ -267,7 +283,7 @@
                 ]
             },
             { 
-                id: 'dominic', name: 'DOMINIC', img: 'https://via.placeholder.com/100/330000/ffffff?text=DOMINIC',
+                id: 'dominic', name: 'DOMINIC', img: 'https://github.com/NJsalubrious/pixelstortion-assets/blob/main/Isla_misc/Images/Dominic_Profile.jpg?raw=true',
                 tracks: [
                     { id: "8rvIVBLZg2o", title: "Structural Psychopathy" },
                     { id: "f8o7zb3F-Xk", title: "For You!!!" },
@@ -280,7 +296,7 @@
                 ]
             },
             { 
-                id: 'sticky', name: 'STICKY', img: 'https://via.placeholder.com/100/333300/ffffff?text=STICKY',
+                id: 'sticky', name: 'STICKY', img: 'https://via.placeholder.com/200/333300/ffffff?text=STICKY',
                 tracks: [
                     { id: "iTOKsLS3jhM", title: "Red Stick" },
                     { id: "s9Z8dgRk-Q8", title: "Make A Mistake On Purpose" },
@@ -289,7 +305,7 @@
                 ]
             },
             { 
-                id: 'kinley', name: 'KINLEY', img: 'https://via.placeholder.com/100/333333/ffffff?text=KINLEY',
+                id: 'kinley', name: 'KINLEY', img: 'https://via.placeholder.com/200/333333/ffffff?text=KINLEY',
                 tracks: [
                     { id: "Ac3cRsmjKpE", title: "Kinley (Guilt Money)" },
                     { id: "ZAhqNWTHTGU", title: "Clipboard Man" },
@@ -332,6 +348,7 @@
                 btn.innerText = 'play_arrow';
                 isPlaying = false;
             }
+            // AUTO-ADVANCE
             if (event.data == YT.PlayerState.ENDED) {
                 nextTrack(); 
             }
@@ -342,7 +359,7 @@
             container.innerHTML = PROTOCOLS.map((p, idx) => `
                 <button onclick="loadProtocol(${idx})" id="proto-btn-${idx}" class="protocol-btn w-full">
                     <img src="${p.img}" class="protocol-img" alt="${p.name}">
-                    <span class="text-gray-400 group-hover:text-white font-bold">${p.name}</span>
+                    <span class="protocol-text font-bold text-gray-400 group-hover:text-white">${p.name}</span>
                 </button>
             `).join('');
         }
@@ -381,21 +398,27 @@
         }
 
         function togglePlay() { if(isPlaying) player.pauseVideo(); else player.playVideo(); }
+        
         function nextTrack() {
             const tracks = PROTOCOLS[currentProtocolIdx].tracks;
+            // Go to next track, or loop to start
             let nextIdx = (currentTrackIdx + 1) % tracks.length;
             loadTrack(nextIdx);
         }
+        
         function prevTrack() {
             const tracks = PROTOCOLS[currentProtocolIdx].tracks;
             let prevIdx = (currentTrackIdx - 1 + tracks.length) % tracks.length;
             loadTrack(prevIdx);
         }
+        
         function toggleFullscreen() { document.body.classList.toggle('fullscreen-mode'); }
+        
         function toggleResolution() {
             if(!isLowRes) { player.setPlaybackQuality('small'); isLowRes = true; } 
             else { player.setPlaybackQuality('hd1080'); isLowRes = false; }
         }
+        
         function shuffleGlobal() {
             const rProto = Math.floor(Math.random() * PROTOCOLS.length);
             loadProtocol(rProto);
