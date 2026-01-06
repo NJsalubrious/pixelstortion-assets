@@ -2,427 +2,343 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PIXELSTORTION // VISUAL ARCHIVE</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://www.youtube.com/iframe_api"></script>
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,1,0" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
     <style>
-        :root {
-            --neon-green: #00ff41;
-            --neon-dim: rgba(0, 255, 65, 0.1);
-            --bg-dark: #050505;
-        }
-
-        /* --- GLOBAL LAYOUT --- */
-        html, body {
-            margin: 0; padding: 0;
-            background-color: var(--bg-dark);
-            color: #e0e0e0;
-            font-family: 'Space Grotesk', sans-serif;
-            overflow: hidden;
-            width: 100vw;
-            height: 100dvh; /* Mobile-safe height */
-            display: flex;
-            flex-direction: column;
-        }
-
-        @media (min-width: 769px) {
-            body { flex-direction: row; }
-        }
-
+        :root { --neon-green: #00ff41; --neon-dim: rgba(0, 255, 65, 0.1); --bg-dark: #050505; }
+        body { background-color: var(--bg-dark); color: #e0e0e0; font-family: 'Space Grotesk', sans-serif; overflow: hidden; height: 100vh; width: 100vw; }
         .font-mono-custom { font-family: 'Courier Prime', monospace; }
 
-        /* Custom Scrollbar */
+        /* Glitch & Visuals */
+        .glitch-text { position: relative; }
+        .glitch-text::before, .glitch-text::after { content: attr(data-text); position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0.8; }
+        .glitch-text::before { left: 2px; text-shadow: -1px 0 red; clip-path: inset(0 0 0 0); animation: glitch-anim 2s infinite linear alternate-reverse; }
+        .glitch-text::after { left: -2px; text-shadow: 1px 0 var(--neon-green); clip-path: inset(0 0 0 0); animation: glitch-anim 3s infinite linear alternate-reverse; }
+        @keyframes glitch-anim { 0% { clip-path: inset(10% 0 80% 0); } 20% { clip-path: inset(80% 0 10% 0); } 100% { clip-path: inset(30% 0 60% 0); } }
+        .scanlines { background: linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,0) 50%, rgba(0,0,0,0.1) 50%, rgba(0,0,0,0.1)); background-size: 100% 4px; position: fixed; inset: 0; pointer-events: none; z-index: 50; }
+
+        /* Scrollbars */
         ::-webkit-scrollbar { width: 4px; height: 4px; }
-        ::-webkit-scrollbar-track { background: #0a0a0a; }
+        ::-webkit-scrollbar-track { background: #000; }
         ::-webkit-scrollbar-thumb { background: #333; border-radius: 2px; }
-        ::-webkit-scrollbar-thumb:hover { background: var(--neon-green); }
 
-        /* Scanlines */
-        .scanlines {
-            background: linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,0) 50%, rgba(0,0,0,0.1) 50%, rgba(0,0,0,0.1));
-            background-size: 100% 4px;
-            position: fixed; inset: 0; pointer-events: none; z-index: 50;
+        /* MENU BUTTONS */
+        .protocol-btn { 
+            text-align: left; 
+            padding: 12px 16px; 
+            border: 2px solid transparent; 
+            transition: all 0.2s ease; 
+            opacity: 0.5; 
+            font-family: 'Courier Prime', monospace; 
+            font-size: 11px; 
+            letter-spacing: 1px; 
+            white-space: nowrap; 
+            cursor: pointer;
+        }
+        .protocol-btn:hover { background: rgba(255, 255, 255, 0.05); opacity: 0.8; }
+        .protocol-btn.active { color: var(--neon-green); opacity: 1; text-shadow: 0 0 5px var(--neon-green); font-weight: bold; }
+
+        /* DESKTOP LAYOUT */
+        @media (min-width: 768px) {
+            .protocol-btn { border-left: 2px solid transparent; border-bottom: none; }
+            .protocol-btn:hover { padding-left: 20px; }
+            .protocol-btn.active { border-left: 2px solid var(--neon-green); padding-left: 20px; background: linear-gradient(90deg, var(--neon-dim) 0%, transparent 100%); }
         }
 
-        /* --- COMPONENTS --- */
+        /* MOBILE LAYOUT - TIGHT HORIZONTAL SCROLL */
+        @media (max-width: 767px) {
+            #sidebar-left { height: auto; flex-shrink: 0; }
+            /* Hide the "Archive" header on mobile to save space, or make it tiny */
+            .mobile-header { display: none; } 
+            
+            /* The Horizontal Scrolling List */
+            #protocol-list {
+                display: flex;
+                flex-direction: row;
+                overflow-x: auto;
+                padding: 0;
+                border-bottom: 1px solid #222;
+                background: #080808;
+                height: 40px; /* Fixed tight height */
+                align-items: center;
+            }
 
-        /* Character Buttons */
-        .protocol-btn {
-            display: flex; align-items: center; gap: 10px;
-            text-align: left; padding: 12px 16px;
-            border: 1px solid transparent; 
-            transition: all 0.2s ease; opacity: 0.6;
-            font-family: 'Courier Prime', monospace; font-size: 11px; letter-spacing: 1px;
-            background: #080808; flex-shrink: 0;
+            .protocol-btn {
+                padding: 0 12px; /* Very tight padding */
+                height: 100%;
+                display: flex;
+                align-items: center;
+                border-bottom: 2px solid transparent;
+                border-left: none;
+                font-size: 10px; /* Smaller font */
+                flex-shrink: 0;
+            }
+            
+            .protocol-btn.active {
+                border-bottom: 2px solid var(--neon-green);
+                background: linear-gradient(0deg, var(--neon-dim) 0%, transparent 100%);
+            }
         }
-        .protocol-btn:hover { background: #111; opacity: 1; }
-        .protocol-btn.active {
-            color: var(--neon-green); opacity: 1;
-            background: linear-gradient(90deg, var(--neon-dim) 0%, transparent 100%);
-            border-color: var(--neon-green);
-            text-shadow: 0 0 5px var(--neon-green);
-        }
-        .protocol-img {
-            width: 32px; height: 32px; object-fit: cover; border-radius: 2px;
-            filter: grayscale(100%); transition: all 0.3s ease; border: 1px solid #333;
-        }
-        .protocol-btn.active .protocol-img { filter: grayscale(0%); border-color: var(--neon-green); }
+
+        /* TRACK LIST (Right Sidebar) */
+        .track-item { padding: 10px 12px; border-bottom: 1px solid #1a1a1a; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 10px; }
+        .track-item:hover { background: #111; }
+        .track-item.active { background: #1a1a1a; border-left: 2px solid var(--neon-green); }
+        .track-item.active .track-idx { color: var(--neon-green); }
 
         /* Controls */
-        .control-btn {
-            width: 45px; height: 45px; border-radius: 50%;
-            border: 1px solid #333; background: #000; color: #888;
-            display: flex; align-items: center; justify-content: center;
-            transition: all 0.2s;
-        }
+        .control-btn { width: 40px; height: 40px; border-radius: 50%; border: 1px solid #333; background: #000; color: #888; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
         .control-btn:hover { border-color: var(--neon-green); color: var(--neon-green); box-shadow: 0 0 10px var(--neon-dim); }
-        .control-btn:active { transform: scale(0.95); }
-
-        /* --- MOBILE SPECIFIC LAYOUT --- */
-        @media (max-width: 768px) {
-            /* Top Bar: Horizontal Scroll */
-            #sidebar-left {
-                height: 60px; min-height: 60px;
-                flex-direction: row !important;
-                overflow-x: auto; overflow-y: hidden;
-                border-bottom: 1px solid #222;
-                background: #000; z-index: 30;
-                padding: 0 10px;
-            }
-            /* Hide Desktop Header/Footer */
-            .header-section, .footer-section { display: none !important; }
-            #protocol-list { display: flex; flex-direction: row; height: 100%; align-items: center; }
-            .protocol-btn { 
-                background: transparent; border: none; padding: 0 12px; 
-                opacity: 0.5; height: 100%;
-            }
-            .protocol-btn.active { 
-                opacity: 1; border-bottom: 2px solid var(--neon-green); background: linear-gradient(to top, rgba(0,255,65,0.1), transparent);
-            }
-
-            /* Main Content Area */
-            #main-container { flex: 1; display: flex; flex-direction: column; position: relative; }
-            
-            /* Video: Fills available space */
-            #video-frame { flex: 1; width: 100%; position: relative; background: black; }
-
-            /* Controls: Fixed Height at Bottom */
-            #controls-bar {
-                height: auto; min-height: 100px;
-                padding: 10px 15px 20px 15px; /* Extra bottom padding for safety */
-                background: #0a0a0a; border-top: 1px solid #222;
-                flex-direction: column; justify-content: center; gap: 10px;
-                z-index: 40;
-            }
-            
-            /* Mobile Title Styling */
-            #current-title-mobile { 
-                display: block !important; 
-                text-align: center; color: var(--neon-green); 
-                font-family: 'Courier Prime', monospace; font-size: 11px;
-                width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-            }
-            
-            /* Hide Desktop Elements */
-            #current-title-desktop, .desktop-tools, #sidebar-right { display: none !important; }
-            
-            /* Mobile Tracklist Overlay */
-            #mobile-tracklist-overlay {
-                position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 60;
-                display: flex; flex-direction: column; padding: 20px;
-                transition: transform 0.3s ease; transform: translateY(100%);
-            }
-            #mobile-tracklist-overlay.active { transform: translateY(0); }
-        }
-
-        /* Fullscreen Mode */
-        body.fullscreen-mode #sidebar-left, 
-        body.fullscreen-mode #sidebar-right, 
-        body.fullscreen-mode #controls-bar { display: none !important; }
-        body.fullscreen-mode #video-frame { position: fixed; inset: 0; z-index: 100; height: 100vh; }
+        
+        /* Fullscreen */
+        body.fullscreen-mode #sidebar-left, body.fullscreen-mode #sidebar-right, body.fullscreen-mode .header-bar { display: none !important; }
+        body.fullscreen-mode #main-container { padding: 0; }
+        body.fullscreen-mode #video-frame { position: fixed; inset: 0; z-index: 100; height: 100vh; width: 100vw; border: none; }
         body.fullscreen-mode #fs-exit-btn { display: flex; }
-
     </style>
 </head>
-<body>
+<body class="flex flex-col md:flex-row h-screen overflow-hidden bg-black text-white">
 
     <div class="scanlines"></div>
 
-    <div id="sidebar-left" class="w-full md:w-64 bg-[#080808] border-r border-[#222] flex flex-col z-30 flex-shrink-0">
-        <div class="header-section p-6 border-b border-[#222] hidden md:block">
+    <div id="sidebar-left" class="w-full md:w-56 bg-[#080808] border-r border-[#222] flex flex-col z-20">
+        
+        <div class="hidden md:block p-6 border-b border-[#222]">
             <h1 class="text-lg font-bold font-mono-custom text-white glitch-text" data-text="ARCHIVE">ARCHIVE</h1>
             <p class="text-[9px] text-gray-500 mt-1 font-mono-custom tracking-widest">CLEARANCE: 4</p>
         </div>
-        
-        <div class="flex-1 overflow-y-auto no-scrollbar" id="protocol-list">
+
+        <div id="protocol-list" class="scrollbar-hide md:flex-1 md:overflow-y-auto">
             </div>
-        
-        <div class="footer-section p-4 border-t border-[#222] space-y-2 hidden md:block">
-            <button onclick="shuffleGlobal()" class="w-full py-2 border border-[#333] text-[10px] hover:border-green-500 hover:text-green-500 transition-colors font-mono-custom">
-                GLOBAL SHUFFLE
-            </button>
+
+        <div class="hidden md:block p-4 border-t border-[#222]">
+            <button onclick="shuffleGlobal()" class="w-full py-2 border border-[#333] text-[10px] hover:border-green-500 hover:text-green-500 transition-colors font-mono-custom">GLOBAL SHUFFLE</button>
         </div>
     </div>
 
-    <div id="main-container" class="flex-1 flex flex-col bg-[#050505] relative">
+    <div id="main-container" class="flex-1 flex flex-col relative bg-[#050505]">
         
-        <div id="video-frame" class="relative flex items-center justify-center overflow-hidden border-b border-[#222]">
+        <div id="video-frame" class="flex-1 relative bg-black flex items-center justify-center overflow-hidden border-b border-[#222]">
             <div id="youtube-player" class="w-full h-full absolute inset-0"></div>
-            <div id="interaction-shield" class="absolute inset-0 z-50 pointer-events-auto" style="background: transparent;" onclick="togglePlay()"></div>
-            <button id="fs-exit-btn" onclick="toggleFullscreen()" class="hidden absolute top-4 right-4 z-50 bg-black/80 text-white p-3 rounded-full border border-red-500 hover:bg-red-900/50 transition-colors">
-                <span class="material-symbols-outlined">close</span>
-            </button>
+            <div id="interaction-shield" class="absolute inset-0 z-50 pointer-events-auto" onclick="togglePlay()"></div>
+            
+            <button id="fs-exit-btn" onclick="toggleFullscreen()" class="hidden absolute top-6 right-6 z-50 bg-black/80 text-white p-3 rounded-full border border-red-500 hover:bg-red-900/50 transition-colors"><span class="material-symbols-outlined">close</span></button>
         </div>
 
-        <div id="controls-bar" class="h-24 bg-[#080808] border-t border-[#222] flex items-center justify-between px-6 z-20 flex-shrink-0">
-            
-            <div id="current-title-mobile" class="hidden">INITIALIZING...</div>
-
-            <div id="current-title-desktop" class="hidden md:block w-1/3">
+        <div class="header-bar h-14 md:h-20 bg-[#080808] border-t border-[#222] flex items-center justify-between px-4 md:px-6 z-20 flex-shrink-0">
+            <div class="hidden md:block w-1/3">
                 <div class="text-[10px] text-green-500 font-mono-custom mb-1">CURRENT FEED</div>
-                <div id="current-title" class="text-sm font-bold truncate text-gray-300">INITIALIZING...</div>
+                <div id="current-title" class="text-sm font-bold truncate text-gray-300">CONNECTING...</div>
             </div>
 
-            <div class="flex items-center gap-6 justify-center w-full md:w-auto">
-                <button class="control-btn" onclick="prevTrack()" title="Previous">
-                    <span class="material-symbols-outlined">skip_previous</span>
-                </button>
-                <button class="control-btn" onclick="togglePlay()" title="Play/Pause" style="width: 55px; height: 55px; border-color: #444;">
-                    <span id="play-icon" class="material-symbols-outlined text-3xl">play_arrow</span>
-                </button>
-                <button class="control-btn" onclick="nextTrack()" title="Next">
-                    <span class="material-symbols-outlined">skip_next</span>
-                </button>
-                
-                <button class="control-btn md:hidden" onclick="toggleMobileTracklist()" title="Tracklist" style="width: 40px; height: 40px; border-color: #333;">
-                    <span class="material-symbols-outlined text-lg">queue_music</span>
-                </button>
+            <div class="md:hidden w-1/3 overflow-hidden">
+                <div id="current-title-mobile" class="text-xs font-bold truncate text-gray-300">...</div>
             </div>
 
-            <div class="desktop-tools flex items-center justify-end gap-3 w-1/3 hidden md:flex">
-                <button class="text-xs font-mono-custom text-gray-500 hover:text-white px-3 py-1 border border-[#222] rounded hover:border-gray-500 transition-colors" onclick="toggleResolution()">SD/HD</button>
-                <button class="text-gray-500 hover:text-green-500 transition-colors p-2" onclick="toggleFullscreen()" title="Fullscreen">
-                    <span class="material-symbols-outlined text-2xl">fullscreen</span>
-                </button>
+            <div class="flex items-center gap-3 md:gap-4">
+                <button class="control-btn" onclick="prevTrack()"><span class="material-symbols-outlined">skip_previous</span></button>
+                <button class="control-btn" style="border-color: #555;" onclick="togglePlay()"><span id="play-icon" class="material-symbols-outlined text-2xl">play_arrow</span></button>
+                <button class="control-btn" onclick="nextTrack()"><span class="material-symbols-outlined">skip_next</span></button>
+            </div>
+
+            <div class="flex items-center justify-end gap-2 md:gap-3 w-1/3">
+                <button class="md:hidden text-gray-500" onclick="shuffleGlobal()"><span class="material-symbols-outlined text-sm">shuffle</span></button>
+                <button class="text-gray-500 hover:text-green-500" onclick="toggleFullscreen()"><span class="material-symbols-outlined">fullscreen</span></button>
             </div>
         </div>
     </div>
 
     <div id="sidebar-right" class="w-full md:w-64 bg-[#080808] border-l border-[#222] flex flex-col z-20 flex-shrink-0 hidden md:flex">
         <div class="p-4 border-b border-[#222] bg-[#0a0a0a]">
-            <h2 class="text-xs font-bold text-gray-400 font-mono-custom tracking-widest">FEED SELECTION</h2>
+            <h2 class="text-xs font-bold text-gray-400 font-mono-custom tracking-widest">FEED DATA</h2>
         </div>
-        <div class="flex-1 overflow-y-auto" id="track-list"></div>
-    </div>
-
-    <div id="mobile-tracklist-overlay" class="md:hidden">
-        <div class="flex justify-between items-center mb-4 border-b border-gray-800 pb-2">
-            <span class="text-green-500 font-mono-custom font-bold">SELECT TRACK</span>
-            <button onclick="toggleMobileTracklist()" class="text-white"><span class="material-symbols-outlined">close</span></button>
+        <div class="flex-1 overflow-y-auto" id="track-list">
+             <div class="p-4 text-xs text-gray-500">Establishing Uplink...</div>
         </div>
-        <div id="mobile-track-container" class="flex-1 overflow-y-auto"></div>
     </div>
 
     <script>
-        // --- DATA ---
-        const PROTOCOLS = [
-            { 
-                id: 'isla', name: 'ISLA', img: 'https://github.com/NJsalubrious/pixelstortion-assets/blob/main/Isla_misc/Images/Isla_Profile.jpg?raw=true', 
-                tracks: [
-                    { id: "MhEeDcdscrs", title: "Polished Vomit" },
-                    { id: "qbFxG7sK0pE", title: "Peek-A-Boo" },
-                    { id: "sXKAs0U8eO8", title: "Isla Hates Married Bankers" },
-                    { id: "0F_prk5dGC4", title: "I Built A Box" },
-                    { id: "nVKkwb4EnRc", title: "Burning Bridges" },
-                    { id: "_gvv_W5_x10", title: "Broken Edge" },
-                    { id: "0tzOaukuBns", title: "This Isn't Therapy" },
-                    { id: "6bwKDegeBHU", title: "Drop From The Fourth" },
-                    { id: "GFkK21BdE9o", title: "The Porcelain Lie" },
-                    { id: "nk4Re7OjTTM", title: "Memory Under Water" },
-                    { id: "ey20cJsY82M", title: "Raise The Fourth" },
-                    { id: "dK8mqLNRZ2Q", title: "Intro: Shiny Headed Man" },
-                    { id: "UFZeKCcSMoE", title: "Shiny Headed Radio Man" },
-                    { id: "-3m2_zUNBlo", title: "Stanmore Farewell" },
-                    { id: "NwqHLFYR1mA", title: "Don't Wake Him Yet" },
-                    { id: "Y4VC6mh37NI", title: "What You Don't See" },
-                    { id: "Aw2ZAkxp6b0", title: "Give It Back" }
-                ]
-            },
-            { 
-                id: 'ethel', name: 'ETHEL', img: 'https://github.com/NJsalubrious/pixelstortion-assets/blob/main/Isla_misc/Images/Ethel_Profile.jpg?raw=true',
-                tracks: [
-                    { id: "YKQk4G_XJ1w", title: "Introduction" },
-                    { id: "zHWwhom80go", title: "The Drop 1" },
-                    { id: "lV4572kA1RE", title: "Intro: The Drop" },
-                    { id: "K0ILO8MwX4Y", title: "The Drop 2" },
-                    { id: "VKJaSC_-0sM", title: "Intro: Polished Vomit" },
-                    { id: "Jl8T2gWUVMY", title: "Intro: Dominic's Intent" },
-                    { id: "Wvu0JIV1ePQ", title: "Intro: Ride" },
-                    { id: "0sgcZRtPO6s", title: "Ride" },
-                    { id: "95wQ9YZUbcA", title: "Intro: Grief" },
-                    { id: "PMy76HBgpL8", title: "Grief" },
-                    { id: "IuyKvsxwBgY", title: "Intro: Gotta Move" },
-                    { id: "06qE_-OeIT0", title: "Gotta Move" },
-                    { id: "oPOEgISVQYk", title: "Intro: Won't Break" },
-                    { id: "fJNMlT7UeW0", title: "Won't Break Where Others End" },
-                    { id: "8UvIT2TgY_Y", title: "Intro: Big House" },
-                    { id: "mj9MGf-VzJY", title: "Big House" },
-                    { id: "dIh_CL7h7zU", title: "Intro: Northern Road" },
-                    { id: "P19KBEQdVjQ", title: "Northern Road" },
-                    { id: "V0hvxqMWcnE", title: "Intro: Normal?!" },
-                    { id: "8GCXnOQI60g", title: "Normal?!" }
-                ]
-            },
-            { 
-                id: 'dominic', name: 'DOMINIC', img: 'https://github.com/NJsalubrious/pixelstortion-assets/blob/main/Isla_misc/Images/Dominic_Profile.jpg?raw=true',
-                tracks: [
-                    { id: "8rvIVBLZg2o", title: "Structural Psychopathy" },
-                    { id: "f8o7zb3F-Xk", title: "For You!!!" },
-                    { id: "YkQOXPzYkkU", title: "Hero Complex" },
-                    { id: "Ghg7pC3ms3I", title: "Nothing True" },
-                    { id: "n6OgobffCzo", title: "You Will Thank Me Later" },
-                    { id: "t6vLU0uqIfc", title: "No Sparrow Caught Mid Flight" },
-                    { id: "kB5lGHjUqUY", title: "Intro: Escape" },
-                    { id: "6eZwBGXGSO4", title: "Dominic's Escape" }
-                ]
-            },
-            { 
-                id: 'sticky', name: 'STICKY', img: 'https://via.placeholder.com/200/333300/ffffff?text=STICKY',
-                tracks: [
-                    { id: "iTOKsLS3jhM", title: "Red Stick" },
-                    { id: "s9Z8dgRk-Q8", title: "Make A Mistake On Purpose" },
-                    { id: "CaBcQ2aSjog", title: "Ants On The Vine" },
-                    { id: "VC6vQGPyF4c", title: "Platform 18" }
-                ]
-            },
-            { 
-                id: 'kinley', name: 'KINLEY', img: 'https://via.placeholder.com/200/333333/ffffff?text=KINLEY',
-                tracks: [
-                    { id: "Ac3cRsmjKpE", title: "Kinley (Guilt Money)" },
-                    { id: "ZAhqNWTHTGU", title: "Clipboard Man" },
-                    { id: "Fs7BXBOVnvY", title: "Rattled" },
-                    { id: "WZ3P96AJfEc", title: "Harms Ghost" }
-                ]
-            }
+        // --- YOUR PLAYLISTS ARE CONFIGURED HERE ---
+        // The app will look up these IDs and fetch the videos automatically.
+        const PLAYLISTS = [
+            { id: 'PLCznJy93VqGAzZT1mND7Kl2sBm7gXYjY5', name: 'ISLA VIDEO' },
+            { id: 'PLCznJy93VqGD93s7ESR0NMfJJAvxPCajr', name: 'ETHEL VIDEO' },
+            { id: 'PLCznJy93VqGAYV-5ITfKlaSwxF-rGDl_4', name: 'DOMINIC VIDEO' },
+            { id: 'PLCznJy93VqGDqVB53a_p79ry132TYe7Ql', name: 'STICKY VIDEO' },
+            { id: 'PLCznJy93VqGAyLossoIWD15Lx_SRAcRu7', name: 'KINLEY VIDEO' }
         ];
 
+        let PROTOCOLS = PLAYLISTS.map(p => ({ ...p, tracks: [] }));
         let player;
         let currentProtocolIdx = 0;
         let currentTrackIdx = 0;
         let isPlaying = false;
-        let isLowRes = false;
 
+        // --- THE "MAGIC" AUTO-UPDATE FUNCTION ---
+        // This connects to YouTube's feed and grabs your latest playlist changes
+        async function fetchAllPlaylists() {
+            const promises = PROTOCOLS.map(async (p, idx) => {
+                // We use a public bridge to read the YouTube RSS Feed
+                const rssUrl = `https://www.youtube.com/feeds/videos.xml?playlist_id=${p.id}`;
+                const convertUrl = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(rssUrl)}`;
+                
+                try {
+                    const res = await fetch(convertUrl);
+                    const data = await res.json();
+                    if(data.status === 'ok') {
+                        // Process the feed data
+                        p.tracks = data.items.map(item => {
+                            // Video ID is hidden in the GUID, extract it
+                            const vidId = item.guid.split(':').pop(); 
+                            return { id: vidId, title: item.title };
+                        });
+                    }
+                } catch (e) {
+                    console.error("Connection Error", p.name);
+                }
+            });
+
+            // Wait for all playlists to load
+            await Promise.all(promises);
+            
+            // Build the interface
+            renderProtocols();
+            
+            // Start the first playlist
+            if(PROTOCOLS[0].tracks.length > 0) {
+                loadProtocol(0);
+            } else {
+                document.getElementById('current-title').innerText = "NO SIGNAL";
+            }
+        }
+
+        // --- YOUTUBE PLAYER SETUP ---
         function onYouTubeIframeAPIReady() {
             player = new YT.Player('youtube-player', {
                 height: '100%', width: '100%',
-                videoId: PROTOCOLS[0].tracks[0].id,
                 playerVars: { 'controls': 0, 'showinfo': 0, 'rel': 0, 'modestbranding': 1, 'iv_load_policy': 3, 'fs': 0, 'disablekb': 1 },
-                events: { 'onReady': onPlayerReady, 'onStateChange': onPlayerStateChange }
+                events: { 'onStateChange': onPlayerStateChange }
             });
-        }
-
-        function onPlayerReady(event) {
-            renderProtocols();
-            loadProtocol(0); 
+            // Initiate the data fetch
+            fetchAllPlaylists();
         }
 
         function onPlayerStateChange(event) {
             const btn = document.getElementById('play-icon');
             if (event.data == YT.PlayerState.PLAYING) {
-                btn.innerText = 'pause';
-                isPlaying = true;
+                btn.innerText = 'pause'; isPlaying = true;
             } else {
-                btn.innerText = 'play_arrow';
-                isPlaying = false;
+                btn.innerText = 'play_arrow'; isPlaying = false;
             }
-            if (event.data == YT.PlayerState.ENDED) { nextTrack(); }
+            if (event.data == YT.PlayerState.ENDED) nextTrack();
         }
 
+        // --- UI DRAWING ---
         function renderProtocols() {
             const container = document.getElementById('protocol-list');
             container.innerHTML = PROTOCOLS.map((p, idx) => `
-                <button onclick="loadProtocol(${idx})" id="proto-btn-${idx}" class="protocol-btn w-full">
-                    <img src="${p.img}" class="protocol-img" alt="${p.name}">
-                    <span class="font-bold text-gray-400 group-hover:text-white">${p.name}</span>
-                </button>
+                <div onclick="loadProtocol(${idx})" id="proto-btn-${idx}" class="protocol-btn">
+                    ${p.name}
+                </div>
             `).join('');
         }
 
         function loadProtocol(idx) {
             currentProtocolIdx = idx;
-            currentTrackIdx = 0; 
+            currentTrackIdx = 0;
+            
+            // Update Active Tabs
             document.querySelectorAll('.protocol-btn').forEach(b => b.classList.remove('active'));
-            document.getElementById(`proto-btn-${idx}`).classList.add('active');
+            const btn = document.getElementById(`proto-btn-${idx}`);
+            if(btn) btn.classList.add('active');
+            // Scroll tab into view on mobile
+            if(btn) btn.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+
             renderTrackList();
-            loadTrack(currentTrackIdx);
+            
+            // Auto-load first video of this character
+            if(PROTOCOLS[idx].tracks.length > 0) {
+                loadTrack(0);
+            }
         }
 
         function renderTrackList() {
             const container = document.getElementById('track-list');
-            const mobileContainer = document.getElementById('mobile-track-container');
             const tracks = PROTOCOLS[currentProtocolIdx].tracks;
-            
-            const html = tracks.map((t, i) => `
+
+            if (tracks.length === 0) {
+                container.innerHTML = '<div class="p-4 text-xs text-gray-500">No data received.</div>';
+                return;
+            }
+
+            container.innerHTML = tracks.map((t, i) => `
                 <div onclick="loadTrack(${i})" class="track-item group" id="track-row-${i}">
                     <span class="track-idx font-mono-custom text-[10px] text-gray-600 group-hover:text-white">${(i + 1).toString().padStart(2, '0')}</span>
                     <div class="flex-1"><div class="text-[11px] text-gray-300 font-bold truncate">${t.title.toUpperCase()}</div></div>
                     <span class="material-symbols-outlined text-[14px] text-gray-700 opacity-0 group-hover:opacity-100">play_circle</span>
                 </div>
             `).join('');
-            
-            container.innerHTML = html;
-            mobileContainer.innerHTML = html; // Populate mobile overlay too
         }
 
         function loadTrack(trackIdx) {
+            const tracks = PROTOCOLS[currentProtocolIdx].tracks;
+            if (!tracks || tracks.length === 0) return;
+
             currentTrackIdx = trackIdx;
-            const track = PROTOCOLS[currentProtocolIdx].tracks[trackIdx];
-            player.loadVideoById(track.id);
+            const track = tracks[trackIdx];
+
+            if(player && player.loadVideoById) {
+                player.loadVideoById(track.id);
+            }
+
+            // Update Titles
             const title = track.title.toUpperCase();
-            
             document.getElementById('current-title').innerText = title;
-            document.getElementById('current-title-mobile').innerText = title;
-            
+            const mobTitle = document.getElementById('current-title-mobile');
+            if(mobTitle) mobTitle.innerText = title;
+
+            // Highlight Active Row (Desktop)
             document.querySelectorAll('.track-item').forEach(el => el.classList.remove('active'));
-            const rows = document.querySelectorAll(`[id^='track-row-${trackIdx}']`);
-            rows.forEach(r => r.classList.add('active'));
-            
-            // Close mobile overlay on selection
-            document.getElementById('mobile-tracklist-overlay').classList.remove('active');
+            const activeRow = document.getElementById(`track-row-${trackIdx}`);
+            if (activeRow) {
+                activeRow.classList.add('active');
+                activeRow.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
         }
 
-        function togglePlay() { if(isPlaying) player.pauseVideo(); else player.playVideo(); }
+        // --- PLAYER CONTROLS ---
+        function togglePlay() { isPlaying ? player.pauseVideo() : player.playVideo(); }
         
         function nextTrack() {
-            let nextIdx = (currentTrackIdx + 1) % PROTOCOLS[currentProtocolIdx].tracks.length;
-            loadTrack(nextIdx);
+            const tracks = PROTOCOLS[currentProtocolIdx].tracks;
+            if(tracks.length === 0) return;
+            loadTrack((currentTrackIdx + 1) % tracks.length);
         }
         
         function prevTrack() {
-            let len = PROTOCOLS[currentProtocolIdx].tracks.length;
-            let prevIdx = (currentTrackIdx - 1 + len) % len;
-            loadTrack(prevIdx);
+            const tracks = PROTOCOLS[currentProtocolIdx].tracks;
+            if(tracks.length === 0) return;
+            loadTrack((currentTrackIdx - 1 + tracks.length) % tracks.length);
         }
         
         function toggleFullscreen() { document.body.classList.toggle('fullscreen-mode'); }
         
-        function toggleResolution() {
-            if(!isLowRes) { player.setPlaybackQuality('small'); isLowRes = true; } 
-            else { player.setPlaybackQuality('hd1080'); isLowRes = false; }
-        }
-        
         function shuffleGlobal() {
+            // Randomly pick a character
             const rProto = Math.floor(Math.random() * PROTOCOLS.length);
             loadProtocol(rProto);
-            const rTrack = Math.floor(Math.random() * PROTOCOLS[rProto].tracks.length);
-            setTimeout(() => loadTrack(rTrack), 500);
-        }
-        
-        function toggleMobileTracklist() {
-            document.getElementById('mobile-tracklist-overlay').classList.toggle('active');
+            
+            // Randomly pick a video
+            setTimeout(() => {
+                const tracks = PROTOCOLS[rProto].tracks;
+                if(tracks.length > 0) {
+                    loadTrack(Math.floor(Math.random() * tracks.length));
+                }
+            }, 100);
         }
     </script>
 </body>
