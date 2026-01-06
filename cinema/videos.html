@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PIXELSTORTION // VIDEO ARCHIVE</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://www.youtube.com/iframe_api"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,1,0"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=Space+Grotesk:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet" />
+    <style>
+        :root {
+            --neon-green: #00ff41;
+            --neon-red: #ff0055;
+            --neon-blue: #00ccff;
+            --bg-dark: #050505;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: #e0e0e0;
+            font-family: 'Space Grotesk', sans-serif;
+            overflow: hidden;
+            height: 100vh;
+            width: 100vw;
+        }
+
+        .font-mono-custom {
+            font-family: 'Courier Prime', monospace;
+        }
+
+        /* Glitch Text Effect */
+        .glitch-text {
+            position: relative;
+        }
+
+        .glitch-text::before,
+        .glitch-text::after {
+            content: attr(data-text);
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0.8;
+        }
+
+        .glitch-text::before {
+            left: 2px;
+            text-shadow: -1px 0 var(--neon-red);
+            clip-path: inset(0 0 0 0);
+            animation: glitch-anim 2s infinite linear alternate-reverse;
+        }
+
+        .glitch-text::after {
+            left: -2px;
+            text-shadow: 1px 0 var(--neon-green);
+            clip-path: inset(0 0 0 0);
+            animation: glitch-anim 3s infinite linear alternate-reverse;
+        }
+
+        @keyframes glitch-anim {
+            0% {
+                clip-path: inset(10% 0 80% 0);
+            }
+
+            20% {
+                clip-path: inset(80% 0 10% 0);
+            }
+
+            40% {
+                clip-path: inset(40% 0 50% 0);
+            }
+
+            60% {
+                clip-path: inset(10% 0 20% 0);
+            }
+
+            80% {
+                clip-path: inset(70% 0 5% 0);
+            }
+
+            100% {
+                clip-path: inset(30% 0 60% 0);
+            }
+        }
+
+        /* Playlist Buttons */
+        .playlist-btn {
+            text-align: left;
+            padding: 12px 16px;
+            border-left: 2px solid transparent;
+            transition: all 0.3s ease;
+            opacity: 0.6;
+        }
+
+        .playlist-btn:hover {
+            background: rgba(255, 255, 255, 0.05);
+            opacity: 1;
+            padding-left: 24px;
+        }
+
+        .playlist-btn.active {
+            border-left: 2px solid var(--neon-green);
+            background: linear-gradient(90deg, rgba(0, 255, 65, 0.1) 0%, transparent 100%);
+            color: var(--neon-green);
+            opacity: 1;
+            padding-left: 24px;
+            text-shadow: 0 0 8px rgba(0, 255, 65, 0.5);
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #000;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #333;
+            border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--neon-green);
+        }
+
+        /* CRT Scanline Overlay */
+        .scanlines {
+            background: linear-gradient(to bottom, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0) 50%, rgba(0, 0, 0, 0.2) 50%, rgba(0, 0, 0, 0.2));
+            background-size: 100% 4px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            pointer-events: none;
+            z-index: 50;
+        }
+
+        /* Control Buttons */
+        .control-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 60px;
+            height: 60px;
+            border: 1px solid #333;
+            background: #0a0a0a;
+            color: #888;
+            transition: all 0.2s;
+        }
+
+        .control-btn:hover {
+            border-color: var(--neon-green);
+            color: var(--neon-green);
+            background: #111;
+        }
+
+        .control-btn:active {
+            transform: scale(0.95);
+            background: #000;
+        }
+
+        .control-btn.active-mode {
+            border-color: var(--neon-blue);
+            color: var(--neon-blue);
+            box-shadow: 0 0 15px rgba(0, 204, 255, 0.2);
+        }
+    </style>
+</head>
+
+<body class="flex flex-col md:flex-row">
+
+    <div class="scanlines"></div>
+
+    <div class="w-full md:w-64 bg-black border-r border-gray-800 flex flex-col z-20">
+        <div class="p-6 border-b border-gray-800">
+            <h1 class="text-xl font-bold font-mono-custom text-white glitch-text" data-text="VIDEO ARCHIVE">VIDEO
+                ARCHIVE</h1>
+            <p class="text-[10px] text-gray-500 mt-2 font-mono-custom tracking-widest">SECURE STREAM // V.2.0</p>
+        </div>
+
+        <div class="flex-1 overflow-y-auto py-4 space-y-1" id="playlist-menu">
+        </div>
+
+        <div class="p-4 border-t border-gray-800">
+            <div class="text-[9px] text-gray-600 font-mono-custom">
+                STATUS: ONLINE<br>
+                BUFFER: STABLE<br>
+                ENC: AES-256
+            </div>
+        </div>
+    </div>
+
+    <div class="flex-1 flex flex-col bg-[#0a0a0a] relative z-10">
+
+        <div class="flex-1 relative bg-black flex items-center justify-center overflow-hidden">
+            <div id="player-wrapper"
+                class="w-full h-full max-w-5xl max-h-[80vh] aspect-video relative shadow-2xl border-y border-gray-900">
+                <div id="youtube-player" class="w-full h-full"></div>
+            </div>
+
+            <div id="loader"
+                class="absolute inset-0 bg-black flex items-center justify-center z-50 transition-opacity duration-500 pointer-events-none opacity-0">
+                <div class="text-green-500 font-mono-custom text-xs animate-pulse">LOADING STREAM DATA...</div>
+            </div>
+        </div>
+
+        <div
+            class="h-24 bg-black border-t border-gray-800 flex items-center justify-center gap-4 md:gap-8 p-4 relative z-20">
+
+            <button class="control-btn rounded-full" onclick="togglePlay()" title="Play / Pause">
+                <span id="play-icon" class="material-symbols-outlined text-3xl">play_arrow</span>
+                <span class="text-[9px] font-mono-custom mt-1">PLAY</span>
+            </button>
+
+            <button class="control-btn rounded-md" onclick="shuffleCurrent()" title="Shuffle Current Playlist">
+                <span class="material-symbols-outlined text-xl">shuffle</span>
+                <span class="text-[9px] font-mono-custom mt-1">SHUFFLE LIST</span>
+            </button>
+
+            <button
+                class="control-btn rounded-md border-green-900 text-green-700 hover:text-green-400 hover:border-green-500"
+                onclick="shuffleGlobal()" title="Global Shuffle">
+                <span class="material-symbols-outlined text-xl">travel_explore</span>
+                <span class="text-[9px] font-mono-custom mt-1">GLOBAL RND</span>
+            </button>
+
+            <button id="res-btn" class="control-btn rounded-md" onclick="toggleResolution()" title="Toggle Bandwidth">
+                <span class="material-symbols-outlined text-xl">hd</span>
+                <span id="res-text" class="text-[9px] font-mono-custom mt-1">AUTO</span>
+            </button>
+
+        </div>
+    </div>
+
+    <script>
+        // --- CONFIGURATION ---
+        const PLAYLISTS = [
+            { id: 'isla', name: 'ISLA PROTOCOL', listId: 'PLCznJy93VqGAzZT1mND7Kl2sBm7gXYjY5' },
+            { id: 'ethel', name: 'ETHEL PROTOCOL', listId: 'PLCznJy93VqGD93s7ESR0NMfJJAvxPCajr' },
+            { id: 'dominic', name: 'DOMINIC PROTOCOL', listId: 'PLCznJy93VqGAYV-5ITfKlaSwxF-rGDl_4' },
+            { id: 'sticky', name: 'STICKY PROTOCOL', listId: 'PLCznJy93VqGDqVB53a_p79ry132TYe7Ql' },
+            { id: 'kinley', name: 'KINLEY PROTOCOL', listId: 'PLCznJy93VqGAyLossoIWD15Lx_SRAcRu7' }
+        ];
+
+        let player;
+        let currentListIndex = 0;
+        let isPlaying = false;
+        let isLowRes = false;
+
+        // --- INIT YOUTUBE API ---
+        function onYouTubeIframeAPIReady() {
+            player = new YT.Player('youtube-player', {
+                height: '100%',
+                width: '100%',
+                playerVars: {
+                    'listType': 'playlist',
+                    'list': PLAYLISTS[0].listId,
+                    'autoplay': 0,
+                    'controls': 1, // Keep YT controls for scrubbing
+                    'modestbranding': 1,
+                    'rel': 0,
+                    'iv_load_policy': 3,
+                    'fs': 0
+                },
+                events: {
+                    'onReady': onPlayerReady,
+                    'onStateChange': onPlayerStateChange
+                }
+            });
+        }
+
+        function onPlayerReady(event) {
+            renderMenu();
+            // Default select first
+            updateActiveButton(0);
+        }
+
+        function onPlayerStateChange(event) {
+            const btn = document.getElementById('play-icon');
+            if (event.data == YT.PlayerState.PLAYING) {
+                btn.innerText = 'pause';
+                isPlaying = true;
+            } else {
+                btn.innerText = 'play_arrow';
+                isPlaying = false;
+            }
+        }
+
+        // --- LOGIC ---
+
+        function renderMenu() {
+            const menu = document.getElementById('playlist-menu');
+            menu.innerHTML = PLAYLISTS.map((pl, idx) => `
+                <button onclick="loadPlaylist(${idx})" 
+                        class="playlist-btn w-full text-sm font-mono-custom text-gray-400"
+                        id="btn-${idx}">
+                    ${pl.name}
+                </button>
+            `).join('');
+        }
+
+        function updateActiveButton(idx) {
+            document.querySelectorAll('.playlist-btn').forEach(b => b.classList.remove('active'));
+            const btn = document.getElementById(`btn-${idx}`);
+            if (btn) btn.classList.add('active');
+        }
+
+        // E. CHOOSE PLAYLIST
+        function loadPlaylist(index) {
+            currentListIndex = index;
+            updateActiveButton(index);
+
+            // Show loader animation
+            const loader = document.getElementById('loader');
+            loader.style.opacity = '1';
+
+            player.loadPlaylist({
+                listType: 'playlist',
+                list: PLAYLISTS[index].listId
+            });
+
+            setTimeout(() => loader.style.opacity = '0', 1000);
+        }
+
+        // A. & B. PLAY / PAUSE
+        function togglePlay() {
+            if (!player) return;
+            if (isPlaying) player.pauseVideo();
+            else player.playVideo();
+        }
+
+        // C. RESOLUTION (Suggest quality)
+        function toggleResolution() {
+            if (!player) return;
+            const btn = document.getElementById('res-btn');
+            const txt = document.getElementById('res-text');
+
+            if (!isLowRes) {
+                // Force Low
+                player.setPlaybackQuality('small');
+                btn.classList.add('active-mode');
+                txt.innerText = 'SD 240p';
+                isLowRes = true;
+            } else {
+                // Force Auto/High
+                player.setPlaybackQuality('hd720'); // Suggest HD
+                btn.classList.remove('active-mode');
+                txt.innerText = 'AUTO';
+                isLowRes = false;
+            }
+        }
+
+        // F. SHUFFLE SELECTED PLAYLIST
+        function shuffleCurrent() {
+            if (!player) return;
+            player.setShuffle(true);
+            // Playing next video triggers the shuffle order
+            player.playVideoAt(0);
+            player.nextVideo();
+        }
+
+        // D. GLOBAL SHUFFLE (Random Playlist)
+        function shuffleGlobal() {
+            const randomIdx = Math.floor(Math.random() * PLAYLISTS.length);
+            loadPlaylist(randomIdx);
+            setTimeout(() => {
+                shuffleCurrent(); // Shuffle the randomly selected playlist
+            }, 500);
+        }
+
+    </script>
+</body>
+
+</html>
