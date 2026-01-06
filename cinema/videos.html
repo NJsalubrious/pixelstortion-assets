@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>PIXELSTORTION // VISUAL ARCHIVE</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://www.youtube.com/iframe_api"></script>
@@ -15,9 +15,8 @@
     <style>
         :root {
             --neon-green: #00ff41;
-            --neon-dim: rgba(0, 255, 65, 0.2);
+            --neon-dim: rgba(0, 255, 65, 0.1);
             --bg-dark: #050505;
-            --panel-bg: rgba(10, 10, 10, 0.95);
         }
 
         body {
@@ -26,11 +25,34 @@
             font-family: 'Space Grotesk', sans-serif;
             overflow: hidden;
             height: 100vh;
+            /* Fallback */
+            height: 100dvh;
+            /* Dynamic Height for Mobile Browsers */
             width: 100vw;
         }
 
         .font-mono-custom {
             font-family: 'Courier Prime', monospace;
+        }
+
+        /* --- CUSTOM SCROLLBARS --- */
+        /* Works on Desktop & Mobile WebKit */
+        ::-webkit-scrollbar {
+            width: 4px;
+            height: 4px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #0a0a0a;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #333;
+            border-radius: 2px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--neon-green);
         }
 
         /* Glitch Text */
@@ -72,18 +94,6 @@
                 clip-path: inset(80% 0 10% 0);
             }
 
-            40% {
-                clip-path: inset(40% 0 50% 0);
-            }
-
-            60% {
-                clip-path: inset(10% 0 20% 0);
-            }
-
-            80% {
-                clip-path: inset(70% 0 5% 0);
-            }
-
             100% {
                 clip-path: inset(30% 0 60% 0);
             }
@@ -99,59 +109,85 @@
             z-index: 50;
         }
 
-        /* Scrollbar */
-        ::-webkit-scrollbar {
-            width: 4px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: #000;
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: #333;
-            border-radius: 2px;
-        }
-
-        ::-webkit-scrollbar-thumb:hover {
-            background: var(--neon-green);
-        }
-
-        /* UI Elements */
+        /* Protocol Buttons (Characters) */
         .protocol-btn {
+            display: flex;
+            align-items: center;
+            gap: 10px;
             text-align: left;
             padding: 12px 16px;
             border-left: 2px solid transparent;
+            border-bottom: 2px solid transparent;
+            /* For mobile */
             transition: all 0.2s ease;
-            opacity: 0.5;
+            opacity: 0.6;
             font-family: 'Courier Prime', monospace;
             font-size: 11px;
             letter-spacing: 1px;
+            background: #080808;
+            flex-shrink: 0;
+            /* Prevent squishing on mobile */
         }
 
         .protocol-btn:hover {
-            background: rgba(255, 255, 255, 0.05);
-            opacity: 0.8;
-            padding-left: 20px;
+            background: #111;
+            opacity: 1;
         }
 
+        /* Active State */
         .protocol-btn.active {
-            border-left: 2px solid var(--neon-green);
-            background: linear-gradient(90deg, var(--neon-dim) 0%, transparent 100%);
             color: var(--neon-green);
             opacity: 1;
-            padding-left: 20px;
+            background: linear-gradient(90deg, var(--neon-dim) 0%, transparent 100%);
             text-shadow: 0 0 5px var(--neon-green);
         }
 
+        /* Desktop Active Border */
+        @media (min-width: 768px) {
+            .protocol-btn.active {
+                border-left: 2px solid var(--neon-green);
+                padding-left: 20px;
+            }
+
+            .protocol-btn:hover {
+                padding-left: 20px;
+            }
+        }
+
+        /* Mobile Active Border */
+        @media (max-width: 767px) {
+            .protocol-btn.active {
+                border-bottom: 2px solid var(--neon-green);
+                background: linear-gradient(0deg, var(--neon-dim) 0%, transparent 100%);
+            }
+        }
+
+        /* Images */
+        .protocol-img {
+            width: 32px;
+            height: 32px;
+            object-fit: cover;
+            border-radius: 2px;
+            filter: grayscale(100%);
+            transition: all 0.3s ease;
+            border: 1px solid #333;
+        }
+
+        .protocol-btn.active .protocol-img,
+        .protocol-btn:hover .protocol-img {
+            filter: grayscale(0%);
+            border-color: var(--neon-green);
+        }
+
+        /* Track List Items */
         .track-item {
-            padding: 10px 12px;
+            padding: 12px;
             border-bottom: 1px solid #1a1a1a;
             cursor: pointer;
             transition: all 0.2s;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
         }
 
         .track-item:hover {
@@ -167,6 +203,7 @@
             color: var(--neon-green);
         }
 
+        /* Controls */
         .control-btn {
             width: 45px;
             height: 45px;
@@ -190,7 +227,7 @@
             transform: scale(0.95);
         }
 
-        /* Fullscreen Mode */
+        /* Fullscreen Mode Overrides */
         body.fullscreen-mode #sidebar-left,
         body.fullscreen-mode #sidebar-right,
         body.fullscreen-mode .header-bar {
@@ -207,8 +244,8 @@
             z-index: 100;
             height: 100vh;
             width: 100vw;
-            max-height: none;
             border: none;
+            max-height: none;
         }
 
         body.fullscreen-mode #fs-exit-btn {
@@ -217,17 +254,23 @@
     </style>
 </head>
 
-<body class="flex flex-col md:flex-row h-screen overflow-hidden bg-black text-white">
+<body class="flex flex-col md:flex-row h-screen bg-black text-white overflow-hidden">
 
     <div class="scanlines"></div>
 
-    <div id="sidebar-left" class="w-full md:w-56 bg-[#080808] border-r border-[#222] flex flex-col z-20 flex-shrink-0">
-        <div class="p-6 border-b border-[#222]">
+    <div id="sidebar-left"
+        class="w-full md:w-64 bg-[#080808] border-r border-[#222] flex flex-row md:flex-col z-30 flex-shrink-0 h-16 md:h-auto border-b md:border-b-0 border-[#222]">
+
+        <div class="header-section p-6 border-b border-[#222] hidden md:block">
             <h1 class="text-lg font-bold font-mono-custom text-white glitch-text" data-text="ARCHIVE">ARCHIVE</h1>
             <p class="text-[9px] text-gray-500 mt-1 font-mono-custom tracking-widest">CLEARANCE: 4</p>
         </div>
-        <div class="flex-1 overflow-y-auto py-2" id="protocol-list"></div>
-        <div class="p-4 border-t border-[#222] space-y-2">
+
+        <div id="protocol-list"
+            class="flex-1 flex flex-row md:flex-col overflow-x-auto md:overflow-y-auto md:overflow-x-hidden items-center md:items-stretch scrollbar-thin">
+        </div>
+
+        <div class="footer-section p-4 border-t border-[#222] space-y-2 hidden md:block">
             <button onclick="shuffleGlobal()"
                 class="w-full py-2 border border-[#333] text-[10px] hover:border-green-500 hover:text-green-500 transition-colors font-mono-custom">
                 GLOBAL SHUFFLE
@@ -235,51 +278,59 @@
         </div>
     </div>
 
-    <div id="main-container" class="flex-1 flex flex-col relative bg-[#050505]">
+    <div id="main-container" class="flex-1 flex flex-col relative min-h-0 bg-[#050505]">
 
         <div id="video-frame"
             class="flex-1 relative bg-black flex items-center justify-center overflow-hidden border-b border-[#222]">
 
             <div id="youtube-player" class="w-full h-full absolute inset-0"></div>
 
-            <div class="absolute inset-0 z-10 pointer-events-none" style="box-shadow: inset 0 0 100px rgba(0,0,0,0.8);">
-            </div>
+            <div id="interaction-shield" class="absolute inset-0 z-50 pointer-events-auto"
+                style="background: transparent;" onclick="togglePlay()"></div>
 
             <button id="fs-exit-btn" onclick="toggleFullscreen()"
-                class="hidden absolute top-6 right-6 z-50 bg-black/80 text-white p-3 rounded-full border border-red-500 hover:bg-red-900/50 transition-colors">
+                class="hidden absolute top-4 right-4 z-50 bg-black/80 text-white p-3 rounded-full border border-red-500 hover:bg-red-900/50 transition-colors cursor-pointer shadow-lg">
                 <span class="material-symbols-outlined">close</span>
             </button>
         </div>
 
         <div
-            class="header-bar h-20 bg-[#080808] border-t border-[#222] flex items-center justify-between px-6 z-20 flex-shrink-0">
+            class="header-bar h-auto min-h-[80px] md:h-24 bg-[#080808] border-t border-[#222] flex flex-wrap items-center justify-between p-4 z-20 flex-shrink-0 gap-4">
+
+            <div class="w-full md:hidden text-center mb-1">
+                <div id="current-title-mobile" class="text-[10px] font-mono-custom text-green-500 truncate">INITIALIZING
+                    FEED...</div>
+            </div>
 
             <div class="hidden md:block w-1/3">
                 <div class="text-[10px] text-green-500 font-mono-custom mb-1">CURRENT FEED</div>
                 <div id="current-title" class="text-sm font-bold truncate text-gray-300">INITIALIZING...</div>
             </div>
 
-            <div class="flex items-center gap-4">
+            <div class="flex items-center gap-6 justify-center w-full md:w-auto order-last md:order-none">
                 <button class="control-btn" onclick="prevTrack()" title="Previous">
                     <span class="material-symbols-outlined">skip_previous</span>
                 </button>
                 <button class="control-btn" onclick="togglePlay()" title="Play/Pause"
-                    style="width: 55px; height: 55px; border-color: #444;">
-                    <span id="play-icon" class="material-symbols-outlined text-3xl">play_arrow</span>
+                    style="width: 60px; height: 60px; border-color: #444;">
+                    <span id="play-icon" class="material-symbols-outlined text-4xl">play_arrow</span>
                 </button>
                 <button class="control-btn" onclick="nextTrack()" title="Next">
                     <span class="material-symbols-outlined">skip_next</span>
                 </button>
             </div>
 
-            <div class="flex items-center justify-end gap-3 w-1/3">
-                <button
-                    class="text-xs font-mono-custom text-gray-500 hover:text-white px-3 py-1 border border-[#222] rounded hover:border-gray-500 transition-colors"
-                    onclick="toggleResolution()">SD/HD</button>
-                <button class="text-gray-500 hover:text-green-500 transition-colors" onclick="toggleFullscreen()"
-                    title="Fullscreen">
-                    <span class="material-symbols-outlined">fullscreen</span>
-                </button>
+            <div
+                class="flex items-center justify-end gap-3 w-full md:w-1/3 order-2 md:order-none absolute md:relative top-2 right-2 md:top-auto md:right-auto pointer-events-none md:pointer-events-auto">
+                <div class="pointer-events-auto flex gap-2">
+                    <button
+                        class="hidden md:block text-xs font-mono-custom text-gray-500 hover:text-white px-3 py-1 border border-[#222] rounded hover:border-gray-500 transition-colors"
+                        onclick="toggleResolution()">SD/HD</button>
+                    <button class="text-gray-500 hover:text-green-500 transition-colors p-2"
+                        onclick="toggleFullscreen()" title="Maximize">
+                        <span class="material-symbols-outlined text-2xl">fullscreen</span>
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -290,52 +341,115 @@
             <h2 class="text-xs font-bold text-gray-400 font-mono-custom tracking-widest">FEED SELECTION</h2>
         </div>
         <div class="flex-1 overflow-y-auto" id="track-list">
-            <div class="p-4 text-[10px] text-gray-600 font-mono-custom text-center mt-10">
-                SELECT A PROTOCOL TO LOAD FEEDS
-            </div>
         </div>
     </div>
 
     <script>
         // --- DATA ---
-        const PLAYLISTS = [
-            { id: 'isla', name: 'ISLA PROTOCOL', listId: 'PLCznJy93VqGAzZT1mND7Kl2sBm7gXYjY5' },
-            { id: 'ethel', name: 'ETHEL PROTOCOL', listId: 'PLCznJy93VqGD93s7ESR0NMfJJAvxPCajr' },
-            { id: 'dominic', name: 'DOMINIC PROTOCOL', listId: 'PLCznJy93VqGAYV-5ITfKlaSwxF-rGDl_4' },
-            { id: 'sticky', name: 'STICKY PROTOCOL', listId: 'PLCznJy93VqGDqVB53a_p79ry132TYe7Ql' },
-            { id: 'kinley', name: 'KINLEY PROTOCOL', listId: 'PLCznJy93VqGAyLossoIWD15Lx_SRAcRu7' }
+        // REPLACE IMAGE URLs WITH YOUR GIT LINKS (200x200px recommended)
+        const PROTOCOLS = [
+            {
+                id: 'isla', name: 'ISLA', img: 'https://github.com/NJsalubrious/pixelstortion-assets/blob/main/Isla_misc/Images/Isla_Profile.jpg?raw=true',
+                tracks: [
+                    { id: "MhEeDcdscrs", title: "Polished Vomit" },
+                    { id: "qbFxG7sK0pE", title: "Peek-A-Boo" },
+                    { id: "sXKAs0U8eO8", title: "Isla Hates Married Bankers" },
+                    { id: "0F_prk5dGC4", title: "I Built A Box" },
+                    { id: "nVKkwb4EnRc", title: "Burning Bridges" },
+                    { id: "_gvv_W5_x10", title: "Broken Edge" },
+                    { id: "0tzOaukuBns", title: "This Isn't Therapy" },
+                    { id: "6bwKDegeBHU", title: "Drop From The Fourth" },
+                    { id: "GFkK21BdE9o", title: "The Porcelain Lie" },
+                    { id: "nk4Re7OjTTM", title: "Memory Under Water" },
+                    { id: "ey20cJsY82M", title: "Raise The Fourth" },
+                    { id: "dK8mqLNRZ2Q", title: "Intro: Shiny Headed Man" },
+                    { id: "UFZeKCcSMoE", title: "Shiny Headed Radio Man" },
+                    { id: "-3m2_zUNBlo", title: "Stanmore Farewell" },
+                    { id: "NwqHLFYR1mA", title: "Don't Wake Him Yet" },
+                    { id: "Y4VC6mh37NI", title: "What You Don't See" },
+                    { id: "Aw2ZAkxp6b0", title: "Give It Back" }
+                ]
+            },
+            {
+                id: 'ethel', name: 'ETHEL', img: 'https://github.com/NJsalubrious/pixelstortion-assets/blob/main/Isla_misc/Images/Ethel_Profile.jpg?raw=true',
+                tracks: [
+                    { id: "YKQk4G_XJ1w", title: "Introduction" },
+                    { id: "zHWwhom80go", title: "The Drop 1" },
+                    { id: "lV4572kA1RE", title: "Intro: The Drop" },
+                    { id: "K0ILO8MwX4Y", title: "The Drop 2" },
+                    { id: "VKJaSC_-0sM", title: "Intro: Polished Vomit" },
+                    { id: "Jl8T2gWUVMY", title: "Intro: Dominic's Intent" },
+                    { id: "Wvu0JIV1ePQ", title: "Intro: Ride" },
+                    { id: "0sgcZRtPO6s", title: "Ride" },
+                    { id: "95wQ9YZUbcA", title: "Intro: Grief" },
+                    { id: "PMy76HBgpL8", title: "Grief" },
+                    { id: "IuyKvsxwBgY", title: "Intro: Gotta Move" },
+                    { id: "06qE_-OeIT0", title: "Gotta Move" },
+                    { id: "oPOEgISVQYk", title: "Intro: Won't Break" },
+                    { id: "fJNMlT7UeW0", title: "Won't Break Where Others End" },
+                    { id: "8UvIT2TgY_Y", title: "Intro: Big House" },
+                    { id: "mj9MGf-VzJY", title: "Big House" },
+                    { id: "dIh_CL7h7zU", title: "Intro: Northern Road" },
+                    { id: "P19KBEQdVjQ", title: "Northern Road" },
+                    { id: "V0hvxqMWcnE", title: "Intro: Normal?!" },
+                    { id: "8GCXnOQI60g", title: "Normal?!" }
+                ]
+            },
+            {
+                id: 'dominic', name: 'DOMINIC', img: 'https://github.com/NJsalubrious/pixelstortion-assets/blob/main/Isla_misc/Images/Dominic_Profile.jpg?raw=true',
+                tracks: [
+                    { id: "8rvIVBLZg2o", title: "Structural Psychopathy" },
+                    { id: "f8o7zb3F-Xk", title: "For You!!!" },
+                    { id: "YkQOXPzYkkU", title: "Hero Complex" },
+                    { id: "Ghg7pC3ms3I", title: "Nothing True" },
+                    { id: "n6OgobffCzo", title: "You Will Thank Me Later" },
+                    { id: "t6vLU0uqIfc", title: "No Sparrow Caught Mid Flight" },
+                    { id: "kB5lGHjUqUY", title: "Intro: Escape" },
+                    { id: "6eZwBGXGSO4", title: "Dominic's Escape" }
+                ]
+            },
+            {
+                id: 'sticky', name: 'STICKY', img: 'https://via.placeholder.com/200/333300/ffffff?text=STICKY',
+                tracks: [
+                    { id: "iTOKsLS3jhM", title: "Red Stick" },
+                    { id: "s9Z8dgRk-Q8", title: "Make A Mistake On Purpose" },
+                    { id: "CaBcQ2aSjog", title: "Ants On The Vine" },
+                    { id: "VC6vQGPyF4c", title: "Platform 18" }
+                ]
+            },
+            {
+                id: 'kinley', name: 'KINLEY', img: 'https://via.placeholder.com/200/333333/ffffff?text=KINLEY',
+                tracks: [
+                    { id: "Ac3cRsmjKpE", title: "Kinley (Guilt Money)" },
+                    { id: "ZAhqNWTHTGU", title: "Clipboard Man" },
+                    { id: "Fs7BXBOVnvY", title: "Rattled" },
+                    { id: "WZ3P96AJfEc", title: "Harms Ghost" }
+                ]
+            }
         ];
 
         let player;
+        let currentProtocolIdx = 0;
+        let currentTrackIdx = 0;
         let isPlaying = false;
-        let currentPlaylistId = '';
         let isLowRes = false;
 
-        // --- INIT ---
         function onYouTubeIframeAPIReady() {
             player = new YT.Player('youtube-player', {
                 height: '100%',
                 width: '100%',
+                videoId: PROTOCOLS[0].tracks[0].id,
                 playerVars: {
-                    'controls': 0, // HIDE YOUTUBE CONTROLS
-                    'showinfo': 0,
-                    'rel': 0,
-                    'modestbranding': 1,
-                    'iv_load_policy': 3,
-                    'fs': 0,
-                    'disablekb': 1
+                    'controls': 0, 'showinfo': 0, 'rel': 0,
+                    'modestbranding': 1, 'iv_load_policy': 3, 'fs': 0, 'disablekb': 1
                 },
-                events: {
-                    'onReady': onPlayerReady,
-                    'onStateChange': onPlayerStateChange
-                }
+                events: { 'onReady': onPlayerReady, 'onStateChange': onPlayerStateChange }
             });
         }
 
         function onPlayerReady(event) {
             renderProtocols();
-            // Load first playlist by default
-            loadPlaylist(0);
+            loadProtocol(0);
         }
 
         function onPlayerStateChange(event) {
@@ -343,126 +457,86 @@
             if (event.data == YT.PlayerState.PLAYING) {
                 btn.innerText = 'pause';
                 isPlaying = true;
-                updateTrackInfo();
             } else {
                 btn.innerText = 'play_arrow';
                 isPlaying = false;
             }
+            // AUTO-ADVANCE
+            if (event.data == YT.PlayerState.ENDED) {
+                nextTrack();
+            }
         }
-
-        // --- CORE FUNCTIONS ---
 
         function renderProtocols() {
             const container = document.getElementById('protocol-list');
-            container.innerHTML = PLAYLISTS.map((pl, idx) => `
-                <button onclick="loadPlaylist(${idx})" id="proto-btn-${idx}" class="protocol-btn w-full">
-                    ${pl.name}
+            container.innerHTML = PROTOCOLS.map((p, idx) => `
+                <button onclick="loadProtocol(${idx})" id="proto-btn-${idx}" class="protocol-btn w-full">
+                    <img src="${p.img}" class="protocol-img" alt="${p.name}">
+                    <span class="protocol-text font-bold text-gray-400 group-hover:text-white">${p.name}</span>
                 </button>
             `).join('');
         }
 
-        function loadPlaylist(idx) {
-            // Update UI
+        function loadProtocol(idx) {
+            currentProtocolIdx = idx;
+            currentTrackIdx = 0;
             document.querySelectorAll('.protocol-btn').forEach(b => b.classList.remove('active'));
             document.getElementById(`proto-btn-${idx}`).classList.add('active');
-
-            currentPlaylistId = PLAYLISTS[idx].listId;
-
-            // Load List
-            player.loadPlaylist({
-                listType: 'playlist',
-                list: currentPlaylistId
-            });
-
-            // Generate Track List (Simulated since we lack API Key)
-            setTimeout(generateTrackListUI, 1500);
+            renderTrackList();
+            loadTrack(currentTrackIdx);
         }
 
-        function generateTrackListUI() {
-            // We ask the player how many videos are in the queue
-            const playlist = player.getPlaylist();
+        function renderTrackList() {
             const container = document.getElementById('track-list');
-
-            if (!playlist || playlist.length === 0) {
-                container.innerHTML = '<div class="p-4 text-xs text-gray-600 font-mono-custom">LOADING DATA...</div>';
-                setTimeout(generateTrackListUI, 1000); // Retry
-                return;
-            }
-
-            container.innerHTML = playlist.map((vidId, i) => `
-                <div onclick="playTrackByIndex(${i})" class="track-item group" id="track-row-${i}">
-                    <span class="track-idx font-mono-custom text-[10px] text-gray-600 group-hover:text-white">
-                        ${(i + 1).toString().padStart(2, '0')}
-                    </span>
-                    <div class="flex-1">
-                        <div class="text-[11px] text-gray-300 font-bold">VIDEO FILE ${i + 1}</div>
-                        <div class="text-[9px] text-gray-600 font-mono-custom">ID: ${vidId.substring(0, 8)}...</div>
-                    </div>
+            const tracks = PROTOCOLS[currentProtocolIdx].tracks;
+            container.innerHTML = tracks.map((t, i) => `
+                <div onclick="loadTrack(${i})" class="track-item group" id="track-row-${i}">
+                    <span class="track-idx font-mono-custom text-[10px] text-gray-600 group-hover:text-white">${(i + 1).toString().padStart(2, '0')}</span>
+                    <div class="flex-1"><div class="text-[11px] text-gray-300 font-bold truncate">${t.title.toUpperCase()}</div></div>
                     <span class="material-symbols-outlined text-[14px] text-gray-700 opacity-0 group-hover:opacity-100">play_circle</span>
                 </div>
             `).join('');
-
-            updateTrackInfo();
         }
 
-        function updateTrackInfo() {
-            const idx = player.getPlaylistIndex();
-
-            // Update Title
-            const titleEl = document.getElementById('current-title');
-            titleEl.innerText = `PLAYING FILE SEQUENCE: ${(idx + 1).toString().padStart(2, '0')}`;
-
-            // Update List Highlight
+        function loadTrack(trackIdx) {
+            currentTrackIdx = trackIdx;
+            const track = PROTOCOLS[currentProtocolIdx].tracks[trackIdx];
+            player.loadVideoById(track.id);
+            const title = track.title.toUpperCase();
+            document.getElementById('current-title').innerText = title;
+            document.getElementById('current-title-mobile').innerText = title;
             document.querySelectorAll('.track-item').forEach(el => el.classList.remove('active'));
-            const activeRow = document.getElementById(`track-row-${idx}`);
-            if (activeRow) {
-                activeRow.classList.add('active');
-                activeRow.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            }
+            const activeRow = document.getElementById(`track-row-${trackIdx}`);
+            if (activeRow) { activeRow.classList.add('active'); activeRow.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
         }
 
-        // --- CONTROLS ---
-
-        function togglePlay() {
-            if (isPlaying) player.pauseVideo();
-            else player.playVideo();
-        }
+        function togglePlay() { if (isPlaying) player.pauseVideo(); else player.playVideo(); }
 
         function nextTrack() {
-            player.nextVideo();
+            const tracks = PROTOCOLS[currentProtocolIdx].tracks;
+            let nextIdx = (currentTrackIdx + 1) % tracks.length;
+            loadTrack(nextIdx);
         }
 
         function prevTrack() {
-            player.previousVideo();
+            const tracks = PROTOCOLS[currentProtocolIdx].tracks;
+            let prevIdx = (currentTrackIdx - 1 + tracks.length) % tracks.length;
+            loadTrack(prevIdx);
         }
 
-        function playTrackByIndex(index) {
-            player.playVideoAt(index);
-        }
-
-        function toggleFullscreen() {
-            document.body.classList.toggle('fullscreen-mode');
-        }
+        function toggleFullscreen() { document.body.classList.toggle('fullscreen-mode'); }
 
         function toggleResolution() {
-            if (!isLowRes) {
-                player.setPlaybackQuality('small');
-                isLowRes = true;
-            } else {
-                player.setPlaybackQuality('hd1080');
-                isLowRes = false;
-            }
+            if (!isLowRes) { player.setPlaybackQuality('small'); isLowRes = true; }
+            else { player.setPlaybackQuality('hd1080'); isLowRes = false; }
         }
 
         function shuffleGlobal() {
-            const randomListIdx = Math.floor(Math.random() * PLAYLISTS.length);
-            loadPlaylist(randomListIdx);
-            setTimeout(() => {
-                player.setShuffle(true);
-                player.playVideoAt(0);
-            }, 1000);
+            const rProto = Math.floor(Math.random() * PROTOCOLS.length);
+            loadProtocol(rProto);
+            const rTrack = Math.floor(Math.random() * PROTOCOLS[rProto].tracks.length);
+            setTimeout(() => loadTrack(rTrack), 500);
         }
-
     </script>
 </body>
 
