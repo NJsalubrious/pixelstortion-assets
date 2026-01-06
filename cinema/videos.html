@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>PIXELSTORTION // VISUAL ARCHIVE</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://www.youtube.com/iframe_api"></script>
@@ -15,27 +15,25 @@
             --bg-dark: #050505;
         }
 
-        body {
+        /* --- GLOBAL RESET --- */
+        html, body {
+            margin: 0; padding: 0;
             background-color: var(--bg-dark);
             color: #e0e0e0;
             font-family: 'Space Grotesk', sans-serif;
             overflow: hidden;
-            height: 100vh;
             width: 100vw;
+            height: 100vh; /* Fallback */
+            height: 100dvh; /* Mobile browser friendly */
         }
 
         .font-mono-custom { font-family: 'Courier Prime', monospace; }
 
-        /* Glitch Text */
-        .glitch-text { position: relative; }
-        .glitch-text::before, .glitch-text::after {
-            content: attr(data-text); position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0.8;
-        }
-        .glitch-text::before { left: 2px; text-shadow: -1px 0 red; clip-path: inset(0 0 0 0); animation: glitch-anim 2s infinite linear alternate-reverse; }
-        .glitch-text::after { left: -2px; text-shadow: 1px 0 var(--neon-green); clip-path: inset(0 0 0 0); animation: glitch-anim 3s infinite linear alternate-reverse; }
-        @keyframes glitch-anim {
-            0% { clip-path: inset(10% 0 80% 0); } 20% { clip-path: inset(80% 0 10% 0); } 100% { clip-path: inset(30% 0 60% 0); }
-        }
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 4px; height: 4px; }
+        ::-webkit-scrollbar-track { background: #0a0a0a; }
+        ::-webkit-scrollbar-thumb { background: #333; border-radius: 2px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--neon-green); }
 
         /* Scanlines */
         .scanlines {
@@ -44,35 +42,44 @@
             position: fixed; inset: 0; pointer-events: none; z-index: 50;
         }
 
-        /* Scrollbar */
-        ::-webkit-scrollbar { width: 4px; }
-        ::-webkit-scrollbar-track { background: #000; }
-        ::-webkit-scrollbar-thumb { background: #333; border-radius: 2px; }
-        ::-webkit-scrollbar-thumb:hover { background: var(--neon-green); }
+        /* --- UI COMPONENTS --- */
 
-        /* UI Elements */
+        /* Character Buttons */
         .protocol-btn {
+            display: flex; align-items: center; gap: 10px;
             text-align: left; padding: 12px 16px;
-            border-left: 2px solid transparent;
-            transition: all 0.2s ease; opacity: 0.5;
+            border-left: 2px solid transparent; /* Desktop indicator */
+            border-bottom: 2px solid transparent; /* Mobile indicator */
+            transition: all 0.2s ease; opacity: 0.6;
             font-family: 'Courier Prime', monospace; font-size: 11px; letter-spacing: 1px;
+            background: #080808; flex-shrink: 0;
         }
-        .protocol-btn:hover { background: rgba(255,255,255,0.05); opacity: 0.8; padding-left: 20px; }
+        .protocol-btn:hover { background: #111; opacity: 1; }
+        
         .protocol-btn.active {
-            border-left: 2px solid var(--neon-green);
+            color: var(--neon-green); opacity: 1;
             background: linear-gradient(90deg, var(--neon-dim) 0%, transparent 100%);
-            color: var(--neon-green); opacity: 1; padding-left: 20px;
             text-shadow: 0 0 5px var(--neon-green);
         }
 
+        .protocol-img {
+            width: 32px; height: 32px; object-fit: cover; border-radius: 2px;
+            filter: grayscale(100%); transition: all 0.3s ease; border: 1px solid #333;
+        }
+        .protocol-btn.active .protocol-img, .protocol-btn:hover .protocol-img {
+            filter: grayscale(0%); border-color: var(--neon-green);
+        }
+
+        /* Track List (Desktop Only) */
         .track-item {
-            padding: 10px 12px; border-bottom: 1px solid #1a1a1a; cursor: pointer;
-            transition: all 0.2s; display: flex; align-items: center; gap: 10px;
+            padding: 12px; border-bottom: 1px solid #1a1a1a; cursor: pointer;
+            transition: all 0.2s; display: flex; align-items: center; gap: 12px;
         }
         .track-item:hover { background: #111; }
         .track-item.active { background: #1a1a1a; border-left: 2px solid var(--neon-green); }
         .track-item.active .track-idx { color: var(--neon-green); }
 
+        /* Controls */
         .control-btn {
             width: 45px; height: 45px; border-radius: 50%;
             border: 1px solid #333; background: #000; color: #888;
@@ -82,57 +89,184 @@
         .control-btn:hover { border-color: var(--neon-green); color: var(--neon-green); box-shadow: 0 0 10px var(--neon-dim); }
         .control-btn:active { transform: scale(0.95); }
 
-        /* Fullscreen Mode */
+
+        /* =========================================
+           DESKTOP LAYOUT (Default Flex Structure)
+           ========================================= */
+        @media (min-width: 769px) {
+            body { display: flex; flex-direction: row; }
+            
+            #sidebar-left { 
+                width: 16rem; /* w-64 */
+                border-right: 1px solid #222;
+                display: flex; flex-direction: column;
+                z-index: 30;
+                background: #080808;
+            }
+
+            #main-content-area {
+                flex: 1;
+                display: flex; flex-direction: column;
+                position: relative;
+            }
+
+            #video-frame {
+                flex: 1;
+                position: relative;
+                overflow: hidden;
+            }
+
+            #controls-bar {
+                height: 6rem; /* h-24 */
+                border-top: 1px solid #222;
+                background: #080808;
+                display: flex; align-items: center; justify-content: space-between;
+                padding: 0 1.5rem;
+                z-index: 20;
+            }
+
+            #sidebar-right {
+                width: 16rem; /* w-64 */
+                border-left: 1px solid #222;
+                display: flex; flex-direction: column;
+                background: #080808;
+                z-index: 20;
+            }
+
+            .mobile-only { display: none !important; }
+        }
+
+
+        /* =========================================
+           MOBILE LAYOUT (Pinned "App" Structure)
+           ========================================= */
+        @media (max-width: 768px) {
+            /* 1. TOP BAR - Fixed Height, Horizontal Scroll */
+            #sidebar-left {
+                position: fixed;
+                top: 0; left: 0; right: 0;
+                height: 60px;
+                background: #000;
+                border-bottom: 1px solid #222;
+                z-index: 50;
+                display: flex; flex-direction: row;
+                overflow-x: auto; overflow-y: hidden;
+            }
+            
+            /* Clean up Sidebar content for mobile */
+            #sidebar-left .header-section { display: none !important; } /* Hide "ARCHIVE" text */
+            #sidebar-left .footer-section { display: none !important; } /* Hide Global Shuffle */
+            
+            /* Horizontal List */
+            #protocol-list {
+                display: flex; flex-direction: row;
+                width: 100%; height: 100%;
+            }
+            
+            /* Button Adjustments */
+            .protocol-btn {
+                width: auto; height: 100%;
+                border-left: none; 
+                padding: 0 16px;
+                background: transparent;
+            }
+            .protocol-btn.active {
+                background: linear-gradient(0deg, var(--neon-dim) 0%, transparent 100%);
+                border-bottom: 2px solid var(--neon-green);
+                padding-left: 16px; /* Reset padding shift */
+            }
+
+            /* 2. BOTTOM BAR - Fixed to Bottom */
+            #controls-bar {
+                position: fixed;
+                bottom: 0; left: 0; right: 0;
+                height: 80px;
+                background: #080808;
+                border-top: 1px solid #222;
+                z-index: 50;
+                display: flex; align-items: center; justify-content: center; /* Center buttons */
+                gap: 20px;
+                padding-bottom: 10px; /* Safe area */
+            }
+            
+            /* Hide Desktop controls */
+            #controls-bar .desktop-info, #controls-bar .desktop-tools { display: none; }
+
+            /* 3. VIDEO AREA - Pinned Between Bars */
+            #main-content-area {
+                position: fixed;
+                top: 60px; /* Below top bar */
+                bottom: 80px; /* Above bottom bar */
+                left: 0; right: 0;
+                background: #000;
+                z-index: 10;
+            }
+            
+            #video-frame {
+                width: 100%; height: 100%;
+                position: relative;
+            }
+
+            /* Hide Right Sidebar */
+            #sidebar-right { display: none; }
+            
+            .mobile-only { display: block; }
+        }
+
+        /* Fullscreen Overlay */
         body.fullscreen-mode #sidebar-left, 
         body.fullscreen-mode #sidebar-right,
-        body.fullscreen-mode .header-bar { display: none !important; }
+        body.fullscreen-mode #controls-bar { display: none !important; }
         
-        body.fullscreen-mode #main-container { padding: 0; }
-        body.fullscreen-mode #video-frame { 
-            position: fixed; inset: 0; z-index: 100; height: 100vh; width: 100vw; max-height: none; border: none; 
+        body.fullscreen-mode #main-content-area {
+            position: fixed; inset: 0; z-index: 100;
+            top: 0 !important; bottom: 0 !important;
         }
+        body.fullscreen-mode #video-frame { width: 100%; height: 100%; }
         body.fullscreen-mode #fs-exit-btn { display: flex; }
 
     </style>
 </head>
-<body class="flex flex-col md:flex-row h-screen overflow-hidden bg-black text-white">
+<body>
 
     <div class="scanlines"></div>
 
-    <div id="sidebar-left" class="w-full md:w-56 bg-[#080808] border-r border-[#222] flex flex-col z-20 flex-shrink-0">
-        <div class="p-6 border-b border-[#222]">
+    <div id="sidebar-left">
+        <div class="header-section p-6 border-b border-[#222]">
             <h1 class="text-lg font-bold font-mono-custom text-white glitch-text" data-text="ARCHIVE">ARCHIVE</h1>
             <p class="text-[9px] text-gray-500 mt-1 font-mono-custom tracking-widest">CLEARANCE: 4</p>
         </div>
-        <div class="flex-1 overflow-y-auto py-2" id="protocol-list"></div>
-        <div class="p-4 border-t border-[#222] space-y-2">
+        
+        <div class="flex-1 overflow-y-auto" id="protocol-list">
+            </div>
+        
+        <div class="footer-section p-4 border-t border-[#222] space-y-2">
             <button onclick="shuffleGlobal()" class="w-full py-2 border border-[#333] text-[10px] hover:border-green-500 hover:text-green-500 transition-colors font-mono-custom">
                 GLOBAL SHUFFLE
             </button>
         </div>
     </div>
 
-    <div id="main-container" class="flex-1 flex flex-col relative bg-[#050505]">
+    <div id="main-content-area">
         
-        <div id="video-frame" class="flex-1 relative bg-black flex items-center justify-center overflow-hidden border-b border-[#222]">
-            
+        <div id="video-frame">
             <div id="youtube-player" class="w-full h-full absolute inset-0"></div>
             
-            <div id="interaction-shield" class="absolute inset-0 z-50 pointer-events-auto" onclick="togglePlay()"></div>
+            <div id="interaction-shield" class="absolute inset-0 z-50 pointer-events-auto" style="background: transparent;" onclick="togglePlay()"></div>
             
-            <button id="fs-exit-btn" onclick="toggleFullscreen()" class="hidden absolute top-6 right-6 z-50 bg-black/80 text-white p-3 rounded-full border border-red-500 hover:bg-red-900/50 transition-colors cursor-pointer">
+            <button id="fs-exit-btn" onclick="toggleFullscreen()" class="hidden absolute top-4 right-4 z-50 bg-black/80 text-white p-3 rounded-full border border-red-500 hover:bg-red-900/50 transition-colors cursor-pointer shadow-lg">
                 <span class="material-symbols-outlined">close</span>
             </button>
         </div>
 
-        <div class="header-bar h-20 bg-[#080808] border-t border-[#222] flex items-center justify-between px-6 z-20 flex-shrink-0">
+        <div id="controls-bar">
             
-            <div class="hidden md:block w-1/3">
+            <div class="desktop-info w-1/3">
                 <div class="text-[10px] text-green-500 font-mono-custom mb-1">CURRENT FEED</div>
                 <div id="current-title" class="text-sm font-bold truncate text-gray-300">INITIALIZING...</div>
             </div>
 
-            <div class="flex items-center gap-4">
+            <div class="flex items-center gap-6 justify-center">
                 <button class="control-btn" onclick="prevTrack()" title="Previous">
                     <span class="material-symbols-outlined">skip_previous</span>
                 </button>
@@ -142,18 +276,21 @@
                 <button class="control-btn" onclick="nextTrack()" title="Next">
                     <span class="material-symbols-outlined">skip_next</span>
                 </button>
+                <button class="control-btn mobile-only" onclick="toggleFullscreen()" style="width: 40px; height: 40px; border-color: #333;">
+                    <span class="material-symbols-outlined text-lg">fullscreen</span>
+                </button>
             </div>
 
-            <div class="flex items-center justify-end gap-3 w-1/3">
+            <div class="desktop-tools flex items-center justify-end gap-3 w-1/3">
                 <button class="text-xs font-mono-custom text-gray-500 hover:text-white px-3 py-1 border border-[#222] rounded hover:border-gray-500 transition-colors" onclick="toggleResolution()">SD/HD</button>
-                <button class="text-gray-500 hover:text-green-500 transition-colors" onclick="toggleFullscreen()" title="Fullscreen">
-                    <span class="material-symbols-outlined">fullscreen</span>
+                <button class="text-gray-500 hover:text-green-500 transition-colors p-2" onclick="toggleFullscreen()" title="Fullscreen">
+                    <span class="material-symbols-outlined text-2xl">fullscreen</span>
                 </button>
             </div>
         </div>
     </div>
 
-    <div id="sidebar-right" class="w-full md:w-64 bg-[#080808] border-l border-[#222] flex flex-col z-20 flex-shrink-0 hidden md:flex">
+    <div id="sidebar-right">
         <div class="p-4 border-b border-[#222] bg-[#0a0a0a]">
             <h2 class="text-xs font-bold text-gray-400 font-mono-custom tracking-widest">FEED SELECTION</h2>
         </div>
@@ -162,11 +299,11 @@
     </div>
 
     <script>
-        // --- CHARACTER DATA & TRACKLISTS ---
+        // --- DATA ---
+        // Ensure image links are correct for your repo
         const PROTOCOLS = [
             { 
-                id: 'isla', 
-                name: 'ISLA PROTOCOL', 
+                id: 'isla', name: 'ISLA', img: 'https://github.com/NJsalubrious/pixelstortion-assets/blob/main/Isla_misc/Images/Isla_Profile.jpg?raw=true', 
                 tracks: [
                     { id: "MhEeDcdscrs", title: "Polished Vomit" },
                     { id: "qbFxG7sK0pE", title: "Peek-A-Boo" },
@@ -188,8 +325,7 @@
                 ]
             },
             { 
-                id: 'ethel', 
-                name: 'ETHEL PROTOCOL', 
+                id: 'ethel', name: 'ETHEL', img: 'https://github.com/NJsalubrious/pixelstortion-assets/blob/main/Isla_misc/Images/Ethel_Profile.jpg?raw=true',
                 tracks: [
                     { id: "YKQk4G_XJ1w", title: "Introduction" },
                     { id: "zHWwhom80go", title: "The Drop 1" },
@@ -214,8 +350,7 @@
                 ]
             },
             { 
-                id: 'dominic', 
-                name: 'DOMINIC PROTOCOL', 
+                id: 'dominic', name: 'DOMINIC', img: 'https://github.com/NJsalubrious/pixelstortion-assets/blob/main/Isla_misc/Images/Dominic_Profile.jpg?raw=true',
                 tracks: [
                     { id: "8rvIVBLZg2o", title: "Structural Psychopathy" },
                     { id: "f8o7zb3F-Xk", title: "For You!!!" },
@@ -228,8 +363,7 @@
                 ]
             },
             { 
-                id: 'sticky', 
-                name: 'STICKY PROTOCOL', 
+                id: 'sticky', name: 'STICKY', img: 'https://via.placeholder.com/200/333300/ffffff?text=STICKY',
                 tracks: [
                     { id: "iTOKsLS3jhM", title: "Red Stick" },
                     { id: "s9Z8dgRk-Q8", title: "Make A Mistake On Purpose" },
@@ -238,8 +372,7 @@
                 ]
             },
             { 
-                id: 'kinley', 
-                name: 'KINLEY PROTOCOL', 
+                id: 'kinley', name: 'KINLEY', img: 'https://via.placeholder.com/200/333333/ffffff?text=KINLEY',
                 tracks: [
                     { id: "Ac3cRsmjKpE", title: "Kinley (Guilt Money)" },
                     { id: "ZAhqNWTHTGU", title: "Clipboard Man" },
@@ -261,24 +394,16 @@
                 width: '100%',
                 videoId: PROTOCOLS[0].tracks[0].id,
                 playerVars: {
-                    'controls': 0, // Hides native controls
-                    'showinfo': 0,
-                    'rel': 0,
-                    'modestbranding': 1,
-                    'iv_load_policy': 3,
-                    'fs': 0,
-                    'disablekb': 1 // Disables keyboard controls
+                    'controls': 0, 'showinfo': 0, 'rel': 0, 
+                    'modestbranding': 1, 'iv_load_policy': 3, 'fs': 0, 'disablekb': 1
                 },
-                events: {
-                    'onReady': onPlayerReady,
-                    'onStateChange': onPlayerStateChange
-                }
+                events: { 'onReady': onPlayerReady, 'onStateChange': onPlayerStateChange }
             });
         }
 
         function onPlayerReady(event) {
             renderProtocols();
-            loadProtocol(0); // Load Isla by default
+            loadProtocol(0); 
         }
 
         function onPlayerStateChange(event) {
@@ -290,32 +415,26 @@
                 btn.innerText = 'play_arrow';
                 isPlaying = false;
             }
-
-            // AUTO-ADVANCE TO NEXT TRACK IN LIST
             if (event.data == YT.PlayerState.ENDED) {
                 nextTrack(); 
             }
         }
 
-        // --- UI RENDERERS ---
-
         function renderProtocols() {
             const container = document.getElementById('protocol-list');
             container.innerHTML = PROTOCOLS.map((p, idx) => `
                 <button onclick="loadProtocol(${idx})" id="proto-btn-${idx}" class="protocol-btn w-full">
-                    ${p.name}
+                    <img src="${p.img}" class="protocol-img" alt="${p.name}">
+                    <span class="font-bold text-gray-400 group-hover:text-white hidden md:inline">${p.name}</span>
                 </button>
             `).join('');
         }
 
         function loadProtocol(idx) {
             currentProtocolIdx = idx;
-            currentTrackIdx = 0; // Reset to first track of new protocol
-
-            // Update UI Active State
+            currentTrackIdx = 0; 
             document.querySelectorAll('.protocol-btn').forEach(b => b.classList.remove('active'));
             document.getElementById(`proto-btn-${idx}`).classList.add('active');
-
             renderTrackList();
             loadTrack(currentTrackIdx);
         }
@@ -323,15 +442,10 @@
         function renderTrackList() {
             const container = document.getElementById('track-list');
             const tracks = PROTOCOLS[currentProtocolIdx].tracks;
-
             container.innerHTML = tracks.map((t, i) => `
                 <div onclick="loadTrack(${i})" class="track-item group" id="track-row-${i}">
-                    <span class="track-idx font-mono-custom text-[10px] text-gray-600 group-hover:text-white">
-                        ${(i + 1).toString().padStart(2, '0')}
-                    </span>
-                    <div class="flex-1">
-                        <div class="text-[11px] text-gray-300 font-bold truncate">${t.title.toUpperCase()}</div>
-                    </div>
+                    <span class="track-idx font-mono-custom text-[10px] text-gray-600 group-hover:text-white">${(i + 1).toString().padStart(2, '0')}</span>
+                    <div class="flex-1"><div class="text-[11px] text-gray-300 font-bold truncate">${t.title.toUpperCase()}</div></div>
                     <span class="material-symbols-outlined text-[14px] text-gray-700 opacity-0 group-hover:opacity-100">play_circle</span>
                 </div>
             `).join('');
@@ -340,66 +454,44 @@
         function loadTrack(trackIdx) {
             currentTrackIdx = trackIdx;
             const track = PROTOCOLS[currentProtocolIdx].tracks[trackIdx];
-
-            // Load Video
             player.loadVideoById(track.id);
-
-            // Update Info
-            document.getElementById('current-title').innerText = track.title.toUpperCase();
-
-            // Highlight Active Track
+            const title = track.title.toUpperCase();
+            
+            const dt = document.getElementById('current-title');
+            if(dt) dt.innerText = title;
+            
             document.querySelectorAll('.track-item').forEach(el => el.classList.remove('active'));
             const activeRow = document.getElementById(`track-row-${trackIdx}`);
-            if(activeRow) {
-                activeRow.classList.add('active');
-                activeRow.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            }
+            if(activeRow) { activeRow.classList.add('active'); activeRow.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
         }
 
-        // --- CONTROLS ---
-
-        function togglePlay() {
-            if(isPlaying) player.pauseVideo();
-            else player.playVideo();
-        }
-
+        function togglePlay() { if(isPlaying) player.pauseVideo(); else player.playVideo(); }
+        
         function nextTrack() {
             const tracks = PROTOCOLS[currentProtocolIdx].tracks;
-            // Loop back to start if at end
             let nextIdx = (currentTrackIdx + 1) % tracks.length;
             loadTrack(nextIdx);
         }
-
+        
         function prevTrack() {
             const tracks = PROTOCOLS[currentProtocolIdx].tracks;
-            // Loop to end if at start
             let prevIdx = (currentTrackIdx - 1 + tracks.length) % tracks.length;
             loadTrack(prevIdx);
         }
-
-        function toggleFullscreen() {
-            document.body.classList.toggle('fullscreen-mode');
-        }
-
+        
+        function toggleFullscreen() { document.body.classList.toggle('fullscreen-mode'); }
+        
         function toggleResolution() {
-            if(!isLowRes) {
-                player.setPlaybackQuality('small');
-                isLowRes = true;
-            } else {
-                player.setPlaybackQuality('hd1080');
-                isLowRes = false;
-            }
+            if(!isLowRes) { player.setPlaybackQuality('small'); isLowRes = true; } 
+            else { player.setPlaybackQuality('hd1080'); isLowRes = false; }
         }
-
+        
         function shuffleGlobal() {
-            // Pick random protocol
             const rProto = Math.floor(Math.random() * PROTOCOLS.length);
             loadProtocol(rProto);
-            // Pick random track in that protocol
             const rTrack = Math.floor(Math.random() * PROTOCOLS[rProto].tracks.length);
             setTimeout(() => loadTrack(rTrack), 500);
         }
-
     </script>
 </body>
 </html>
