@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PIXELSTORTION // VIDEO ARCHIVE</title>
+    <title>PIXELSTORTION // VISUAL ARCHIVE</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://www.youtube.com/iframe_api"></script>
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,1,0"
@@ -15,9 +15,9 @@
     <style>
         :root {
             --neon-green: #00ff41;
-            --neon-red: #ff0055;
-            --neon-blue: #00ccff;
+            --neon-dim: rgba(0, 255, 65, 0.2);
             --bg-dark: #050505;
+            --panel-bg: rgba(10, 10, 10, 0.95);
         }
 
         body {
@@ -33,7 +33,7 @@
             font-family: 'Courier Prime', monospace;
         }
 
-        /* Glitch Text Effect */
+        /* Glitch Text */
         .glitch-text {
             position: relative;
         }
@@ -51,7 +51,7 @@
 
         .glitch-text::before {
             left: 2px;
-            text-shadow: -1px 0 var(--neon-red);
+            text-shadow: -1px 0 red;
             clip-path: inset(0 0 0 0);
             animation: glitch-anim 2s infinite linear alternate-reverse;
         }
@@ -89,33 +89,19 @@
             }
         }
 
-        /* Playlist Buttons */
-        .playlist-btn {
-            text-align: left;
-            padding: 12px 16px;
-            border-left: 2px solid transparent;
-            transition: all 0.3s ease;
-            opacity: 0.6;
+        /* Scanlines */
+        .scanlines {
+            background: linear-gradient(to bottom, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0) 50%, rgba(0, 0, 0, 0.1) 50%, rgba(0, 0, 0, 0.1));
+            background-size: 100% 4px;
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 50;
         }
 
-        .playlist-btn:hover {
-            background: rgba(255, 255, 255, 0.05);
-            opacity: 1;
-            padding-left: 24px;
-        }
-
-        .playlist-btn.active {
-            border-left: 2px solid var(--neon-green);
-            background: linear-gradient(90deg, rgba(0, 255, 65, 0.1) 0%, transparent 100%);
-            color: var(--neon-green);
-            opacity: 1;
-            padding-left: 24px;
-            text-shadow: 0 0 8px rgba(0, 255, 65, 0.5);
-        }
-
-        /* Custom Scrollbar */
+        /* Scrollbar */
         ::-webkit-scrollbar {
-            width: 6px;
+            width: 4px;
         }
 
         ::-webkit-scrollbar-track {
@@ -124,126 +110,194 @@
 
         ::-webkit-scrollbar-thumb {
             background: #333;
-            border-radius: 3px;
+            border-radius: 2px;
         }
 
         ::-webkit-scrollbar-thumb:hover {
             background: var(--neon-green);
         }
 
-        /* CRT Scanline Overlay */
-        .scanlines {
-            background: linear-gradient(to bottom, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0) 50%, rgba(0, 0, 0, 0.2) 50%, rgba(0, 0, 0, 0.2));
-            background-size: 100% 4px;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            pointer-events: none;
-            z-index: 50;
+        /* UI Elements */
+        .protocol-btn {
+            text-align: left;
+            padding: 12px 16px;
+            border-left: 2px solid transparent;
+            transition: all 0.2s ease;
+            opacity: 0.5;
+            font-family: 'Courier Prime', monospace;
+            font-size: 11px;
+            letter-spacing: 1px;
         }
 
-        /* Control Buttons */
-        .control-btn {
+        .protocol-btn:hover {
+            background: rgba(255, 255, 255, 0.05);
+            opacity: 0.8;
+            padding-left: 20px;
+        }
+
+        .protocol-btn.active {
+            border-left: 2px solid var(--neon-green);
+            background: linear-gradient(90deg, var(--neon-dim) 0%, transparent 100%);
+            color: var(--neon-green);
+            opacity: 1;
+            padding-left: 20px;
+            text-shadow: 0 0 5px var(--neon-green);
+        }
+
+        .track-item {
+            padding: 10px 12px;
+            border-bottom: 1px solid #1a1a1a;
+            cursor: pointer;
+            transition: all 0.2s;
             display: flex;
-            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .track-item:hover {
+            background: #111;
+        }
+
+        .track-item.active {
+            background: #1a1a1a;
+            border-left: 2px solid var(--neon-green);
+        }
+
+        .track-item.active .track-idx {
+            color: var(--neon-green);
+        }
+
+        .control-btn {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            border: 1px solid #333;
+            background: #000;
+            color: #888;
+            display: flex;
             align-items: center;
             justify-content: center;
-            width: 60px;
-            height: 60px;
-            border: 1px solid #333;
-            background: #0a0a0a;
-            color: #888;
             transition: all 0.2s;
         }
 
         .control-btn:hover {
             border-color: var(--neon-green);
             color: var(--neon-green);
-            background: #111;
+            box-shadow: 0 0 10px var(--neon-dim);
         }
 
         .control-btn:active {
             transform: scale(0.95);
-            background: #000;
         }
 
-        .control-btn.active-mode {
-            border-color: var(--neon-blue);
-            color: var(--neon-blue);
-            box-shadow: 0 0 15px rgba(0, 204, 255, 0.2);
+        /* Fullscreen Mode */
+        body.fullscreen-mode #sidebar-left,
+        body.fullscreen-mode #sidebar-right,
+        body.fullscreen-mode .header-bar {
+            display: none !important;
+        }
+
+        body.fullscreen-mode #main-container {
+            padding: 0;
+        }
+
+        body.fullscreen-mode #video-frame {
+            position: fixed;
+            inset: 0;
+            z-index: 100;
+            height: 100vh;
+            width: 100vw;
+            max-height: none;
+            border: none;
+        }
+
+        body.fullscreen-mode #fs-exit-btn {
+            display: flex;
         }
     </style>
 </head>
 
-<body class="flex flex-col md:flex-row">
+<body class="flex flex-col md:flex-row h-screen overflow-hidden bg-black text-white">
 
     <div class="scanlines"></div>
 
-    <div class="w-full md:w-64 bg-black border-r border-gray-800 flex flex-col z-20">
-        <div class="p-6 border-b border-gray-800">
-            <h1 class="text-xl font-bold font-mono-custom text-white glitch-text" data-text="VIDEO ARCHIVE">VIDEO
-                ARCHIVE</h1>
-            <p class="text-[10px] text-gray-500 mt-2 font-mono-custom tracking-widest">SECURE STREAM // V.2.0</p>
+    <div id="sidebar-left" class="w-full md:w-56 bg-[#080808] border-r border-[#222] flex flex-col z-20 flex-shrink-0">
+        <div class="p-6 border-b border-[#222]">
+            <h1 class="text-lg font-bold font-mono-custom text-white glitch-text" data-text="ARCHIVE">ARCHIVE</h1>
+            <p class="text-[9px] text-gray-500 mt-1 font-mono-custom tracking-widest">CLEARANCE: 4</p>
+        </div>
+        <div class="flex-1 overflow-y-auto py-2" id="protocol-list"></div>
+        <div class="p-4 border-t border-[#222] space-y-2">
+            <button onclick="shuffleGlobal()"
+                class="w-full py-2 border border-[#333] text-[10px] hover:border-green-500 hover:text-green-500 transition-colors font-mono-custom">
+                GLOBAL SHUFFLE
+            </button>
+        </div>
+    </div>
+
+    <div id="main-container" class="flex-1 flex flex-col relative bg-[#050505]">
+
+        <div id="video-frame"
+            class="flex-1 relative bg-black flex items-center justify-center overflow-hidden border-b border-[#222]">
+
+            <div id="youtube-player" class="w-full h-full absolute inset-0"></div>
+
+            <div class="absolute inset-0 z-10 pointer-events-none" style="box-shadow: inset 0 0 100px rgba(0,0,0,0.8);">
+            </div>
+
+            <button id="fs-exit-btn" onclick="toggleFullscreen()"
+                class="hidden absolute top-6 right-6 z-50 bg-black/80 text-white p-3 rounded-full border border-red-500 hover:bg-red-900/50 transition-colors">
+                <span class="material-symbols-outlined">close</span>
+            </button>
         </div>
 
-        <div class="flex-1 overflow-y-auto py-4 space-y-1" id="playlist-menu">
-        </div>
+        <div
+            class="header-bar h-20 bg-[#080808] border-t border-[#222] flex items-center justify-between px-6 z-20 flex-shrink-0">
 
-        <div class="p-4 border-t border-gray-800">
-            <div class="text-[9px] text-gray-600 font-mono-custom">
-                STATUS: ONLINE<br>
-                BUFFER: STABLE<br>
-                ENC: AES-256
+            <div class="hidden md:block w-1/3">
+                <div class="text-[10px] text-green-500 font-mono-custom mb-1">CURRENT FEED</div>
+                <div id="current-title" class="text-sm font-bold truncate text-gray-300">INITIALIZING...</div>
+            </div>
+
+            <div class="flex items-center gap-4">
+                <button class="control-btn" onclick="prevTrack()" title="Previous">
+                    <span class="material-symbols-outlined">skip_previous</span>
+                </button>
+                <button class="control-btn" onclick="togglePlay()" title="Play/Pause"
+                    style="width: 55px; height: 55px; border-color: #444;">
+                    <span id="play-icon" class="material-symbols-outlined text-3xl">play_arrow</span>
+                </button>
+                <button class="control-btn" onclick="nextTrack()" title="Next">
+                    <span class="material-symbols-outlined">skip_next</span>
+                </button>
+            </div>
+
+            <div class="flex items-center justify-end gap-3 w-1/3">
+                <button
+                    class="text-xs font-mono-custom text-gray-500 hover:text-white px-3 py-1 border border-[#222] rounded hover:border-gray-500 transition-colors"
+                    onclick="toggleResolution()">SD/HD</button>
+                <button class="text-gray-500 hover:text-green-500 transition-colors" onclick="toggleFullscreen()"
+                    title="Fullscreen">
+                    <span class="material-symbols-outlined">fullscreen</span>
+                </button>
             </div>
         </div>
     </div>
 
-    <div class="flex-1 flex flex-col bg-[#0a0a0a] relative z-10">
-
-        <div class="flex-1 relative bg-black flex items-center justify-center overflow-hidden">
-            <div id="player-wrapper"
-                class="w-full h-full max-w-5xl max-h-[80vh] aspect-video relative shadow-2xl border-y border-gray-900">
-                <div id="youtube-player" class="w-full h-full"></div>
-            </div>
-
-            <div id="loader"
-                class="absolute inset-0 bg-black flex items-center justify-center z-50 transition-opacity duration-500 pointer-events-none opacity-0">
-                <div class="text-green-500 font-mono-custom text-xs animate-pulse">LOADING STREAM DATA...</div>
-            </div>
+    <div id="sidebar-right"
+        class="w-full md:w-64 bg-[#080808] border-l border-[#222] flex flex-col z-20 flex-shrink-0 hidden md:flex">
+        <div class="p-4 border-b border-[#222] bg-[#0a0a0a]">
+            <h2 class="text-xs font-bold text-gray-400 font-mono-custom tracking-widest">FEED SELECTION</h2>
         </div>
-
-        <div
-            class="h-24 bg-black border-t border-gray-800 flex items-center justify-center gap-4 md:gap-8 p-4 relative z-20">
-
-            <button class="control-btn rounded-full" onclick="togglePlay()" title="Play / Pause">
-                <span id="play-icon" class="material-symbols-outlined text-3xl">play_arrow</span>
-                <span class="text-[9px] font-mono-custom mt-1">PLAY</span>
-            </button>
-
-            <button class="control-btn rounded-md" onclick="shuffleCurrent()" title="Shuffle Current Playlist">
-                <span class="material-symbols-outlined text-xl">shuffle</span>
-                <span class="text-[9px] font-mono-custom mt-1">SHUFFLE LIST</span>
-            </button>
-
-            <button
-                class="control-btn rounded-md border-green-900 text-green-700 hover:text-green-400 hover:border-green-500"
-                onclick="shuffleGlobal()" title="Global Shuffle">
-                <span class="material-symbols-outlined text-xl">travel_explore</span>
-                <span class="text-[9px] font-mono-custom mt-1">GLOBAL RND</span>
-            </button>
-
-            <button id="res-btn" class="control-btn rounded-md" onclick="toggleResolution()" title="Toggle Bandwidth">
-                <span class="material-symbols-outlined text-xl">hd</span>
-                <span id="res-text" class="text-[9px] font-mono-custom mt-1">AUTO</span>
-            </button>
-
+        <div class="flex-1 overflow-y-auto" id="track-list">
+            <div class="p-4 text-[10px] text-gray-600 font-mono-custom text-center mt-10">
+                SELECT A PROTOCOL TO LOAD FEEDS
+            </div>
         </div>
     </div>
 
     <script>
-        // --- CONFIGURATION ---
+        // --- DATA ---
         const PLAYLISTS = [
             { id: 'isla', name: 'ISLA PROTOCOL', listId: 'PLCznJy93VqGAzZT1mND7Kl2sBm7gXYjY5' },
             { id: 'ethel', name: 'ETHEL PROTOCOL', listId: 'PLCznJy93VqGD93s7ESR0NMfJJAvxPCajr' },
@@ -253,24 +307,23 @@
         ];
 
         let player;
-        let currentListIndex = 0;
         let isPlaying = false;
+        let currentPlaylistId = '';
         let isLowRes = false;
 
-        // --- INIT YOUTUBE API ---
+        // --- INIT ---
         function onYouTubeIframeAPIReady() {
             player = new YT.Player('youtube-player', {
                 height: '100%',
                 width: '100%',
                 playerVars: {
-                    'listType': 'playlist',
-                    'list': PLAYLISTS[0].listId,
-                    'autoplay': 0,
-                    'controls': 1, // Keep YT controls for scrubbing
-                    'modestbranding': 1,
+                    'controls': 0, // HIDE YOUTUBE CONTROLS
+                    'showinfo': 0,
                     'rel': 0,
+                    'modestbranding': 1,
                     'iv_load_policy': 3,
-                    'fs': 0
+                    'fs': 0,
+                    'disablekb': 1
                 },
                 events: {
                     'onReady': onPlayerReady,
@@ -280,9 +333,9 @@
         }
 
         function onPlayerReady(event) {
-            renderMenu();
-            // Default select first
-            updateActiveButton(0);
+            renderProtocols();
+            // Load first playlist by default
+            loadPlaylist(0);
         }
 
         function onPlayerStateChange(event) {
@@ -290,92 +343,124 @@
             if (event.data == YT.PlayerState.PLAYING) {
                 btn.innerText = 'pause';
                 isPlaying = true;
+                updateTrackInfo();
             } else {
                 btn.innerText = 'play_arrow';
                 isPlaying = false;
             }
         }
 
-        // --- LOGIC ---
+        // --- CORE FUNCTIONS ---
 
-        function renderMenu() {
-            const menu = document.getElementById('playlist-menu');
-            menu.innerHTML = PLAYLISTS.map((pl, idx) => `
-                <button onclick="loadPlaylist(${idx})" 
-                        class="playlist-btn w-full text-sm font-mono-custom text-gray-400"
-                        id="btn-${idx}">
+        function renderProtocols() {
+            const container = document.getElementById('protocol-list');
+            container.innerHTML = PLAYLISTS.map((pl, idx) => `
+                <button onclick="loadPlaylist(${idx})" id="proto-btn-${idx}" class="protocol-btn w-full">
                     ${pl.name}
                 </button>
             `).join('');
         }
 
-        function updateActiveButton(idx) {
-            document.querySelectorAll('.playlist-btn').forEach(b => b.classList.remove('active'));
-            const btn = document.getElementById(`btn-${idx}`);
-            if (btn) btn.classList.add('active');
-        }
+        function loadPlaylist(idx) {
+            // Update UI
+            document.querySelectorAll('.protocol-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(`proto-btn-${idx}`).classList.add('active');
 
-        // E. CHOOSE PLAYLIST
-        function loadPlaylist(index) {
-            currentListIndex = index;
-            updateActiveButton(index);
+            currentPlaylistId = PLAYLISTS[idx].listId;
 
-            // Show loader animation
-            const loader = document.getElementById('loader');
-            loader.style.opacity = '1';
-
+            // Load List
             player.loadPlaylist({
                 listType: 'playlist',
-                list: PLAYLISTS[index].listId
+                list: currentPlaylistId
             });
 
-            setTimeout(() => loader.style.opacity = '0', 1000);
+            // Generate Track List (Simulated since we lack API Key)
+            setTimeout(generateTrackListUI, 1500);
         }
 
-        // A. & B. PLAY / PAUSE
+        function generateTrackListUI() {
+            // We ask the player how many videos are in the queue
+            const playlist = player.getPlaylist();
+            const container = document.getElementById('track-list');
+
+            if (!playlist || playlist.length === 0) {
+                container.innerHTML = '<div class="p-4 text-xs text-gray-600 font-mono-custom">LOADING DATA...</div>';
+                setTimeout(generateTrackListUI, 1000); // Retry
+                return;
+            }
+
+            container.innerHTML = playlist.map((vidId, i) => `
+                <div onclick="playTrackByIndex(${i})" class="track-item group" id="track-row-${i}">
+                    <span class="track-idx font-mono-custom text-[10px] text-gray-600 group-hover:text-white">
+                        ${(i + 1).toString().padStart(2, '0')}
+                    </span>
+                    <div class="flex-1">
+                        <div class="text-[11px] text-gray-300 font-bold">VIDEO FILE ${i + 1}</div>
+                        <div class="text-[9px] text-gray-600 font-mono-custom">ID: ${vidId.substring(0, 8)}...</div>
+                    </div>
+                    <span class="material-symbols-outlined text-[14px] text-gray-700 opacity-0 group-hover:opacity-100">play_circle</span>
+                </div>
+            `).join('');
+
+            updateTrackInfo();
+        }
+
+        function updateTrackInfo() {
+            const idx = player.getPlaylistIndex();
+
+            // Update Title
+            const titleEl = document.getElementById('current-title');
+            titleEl.innerText = `PLAYING FILE SEQUENCE: ${(idx + 1).toString().padStart(2, '0')}`;
+
+            // Update List Highlight
+            document.querySelectorAll('.track-item').forEach(el => el.classList.remove('active'));
+            const activeRow = document.getElementById(`track-row-${idx}`);
+            if (activeRow) {
+                activeRow.classList.add('active');
+                activeRow.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        }
+
+        // --- CONTROLS ---
+
         function togglePlay() {
-            if (!player) return;
             if (isPlaying) player.pauseVideo();
             else player.playVideo();
         }
 
-        // C. RESOLUTION (Suggest quality)
-        function toggleResolution() {
-            if (!player) return;
-            const btn = document.getElementById('res-btn');
-            const txt = document.getElementById('res-text');
+        function nextTrack() {
+            player.nextVideo();
+        }
 
+        function prevTrack() {
+            player.previousVideo();
+        }
+
+        function playTrackByIndex(index) {
+            player.playVideoAt(index);
+        }
+
+        function toggleFullscreen() {
+            document.body.classList.toggle('fullscreen-mode');
+        }
+
+        function toggleResolution() {
             if (!isLowRes) {
-                // Force Low
                 player.setPlaybackQuality('small');
-                btn.classList.add('active-mode');
-                txt.innerText = 'SD 240p';
                 isLowRes = true;
             } else {
-                // Force Auto/High
-                player.setPlaybackQuality('hd720'); // Suggest HD
-                btn.classList.remove('active-mode');
-                txt.innerText = 'AUTO';
+                player.setPlaybackQuality('hd1080');
                 isLowRes = false;
             }
         }
 
-        // F. SHUFFLE SELECTED PLAYLIST
-        function shuffleCurrent() {
-            if (!player) return;
-            player.setShuffle(true);
-            // Playing next video triggers the shuffle order
-            player.playVideoAt(0);
-            player.nextVideo();
-        }
-
-        // D. GLOBAL SHUFFLE (Random Playlist)
         function shuffleGlobal() {
-            const randomIdx = Math.floor(Math.random() * PLAYLISTS.length);
-            loadPlaylist(randomIdx);
+            const randomListIdx = Math.floor(Math.random() * PLAYLISTS.length);
+            loadPlaylist(randomListIdx);
             setTimeout(() => {
-                shuffleCurrent(); // Shuffle the randomly selected playlist
-            }, 500);
+                player.setShuffle(true);
+                player.playVideoAt(0);
+            }, 1000);
         }
 
     </script>
