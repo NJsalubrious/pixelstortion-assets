@@ -45,6 +45,39 @@
             inset: 0;
             pointer-events: none;
             z-index: 50;
+            transition: transform 0.1s;
+        }
+
+        /* Scanline vibration when near insight */
+        .scanlines.proximity-near {
+            animation: scanline-vibrate 0.1s infinite;
+        }
+
+        @keyframes scanline-vibrate {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            25% {
+                transform: translateY(1px);
+            }
+
+            75% {
+                transform: translateY(-1px);
+            }
+        }
+
+        /* Magnetic pull / sticky reticle when over valid node */
+        #scanner-reticle.magnetic {
+            transition: transform 0.15s ease-out;
+            transform: scale(0.9);
+        }
+
+        #scanner-reticle.axis-locked {
+            border-color: var(--axis-color, #00ff41) !important;
+            box-shadow: 0 0 20px var(--axis-color, #00ff41);
         }
 
         .crt-flicker {
@@ -224,13 +257,102 @@
     <div class="fixed top-0 left-0 w-full p-4 z-40 pointer-events-none flex justify-between items-start">
         <div>
             <h1 class="text-2xl font-bold text-white tracking-widest hud-text glitch-text">PIXELSTORTION</h1>
-            <div class="text-xs text-green-500 font-mono mt-1">FREQUENCY SCANNER v2.4 // ETHEL_SOURCE</div>
+            <div class="text-xs text-green-500 font-mono mt-1">SEMANTIC SCANNER v3.0 // FOCUS_MODE</div>
         </div>
         <div class="text-right">
-            <div class="text-xs text-gray-500 font-mono">FRAGMENTS RECOVERED</div>
-            <div class="text-xl text-green-500 font-mono" id="score-display">0 / 72</div>
+            <div class="text-xs text-gray-500 font-mono">COHERENCE</div>
+            <div class="text-xl font-mono" id="coherence-display">
+                <span id="coherence-value">0</span><span class="text-gray-600">/100</span>
+            </div>
         </div>
     </div>
+
+    <!-- FOCUS DIAL (4 Axes) -->
+    <div id="focus-dial" class="fixed bottom-4 left-4 z-50 pointer-events-auto">
+        <div class="relative w-24 h-24">
+            <!-- Axis buttons -->
+            <button id="axis-misread" class="axis-btn absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1"
+                data-axis="misread" title="MISREAD: Perception vs Reality">
+                <span class="text-xs font-mono">MIS</span>
+            </button>
+            <button id="axis-signal" class="axis-btn active absolute right-0 top-1/2 -translate-y-1/2 translate-x-1"
+                data-axis="signal" title="SIGNAL: Technical Anomalies">
+                <span class="text-xs font-mono">SIG</span>
+            </button>
+            <button id="axis-response" class="axis-btn absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1"
+                data-axis="response" title="RESPONSE: Cost & Reclamation">
+                <span class="text-xs font-mono">RES</span>
+            </button>
+            <button id="axis-power" class="axis-btn absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1"
+                data-axis="power" title="POWER: Manipulation Techniques">
+                <span class="text-xs font-mono">PWR</span>
+            </button>
+            <!-- Center = ALL mode button -->
+            <div class="absolute inset-0 flex items-center justify-center">
+                <button id="dial-center" data-axis="all"
+                    class="axis-btn w-10 h-10 rounded-full border-2 border-green-500/50 flex items-center justify-center cursor-pointer"
+                    title="ALL: Access all nodes">
+                    <span class="text-[10px] font-mono text-green-500/70" id="active-axis-label">ALL</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        /* Axis button styles */
+        .axis-btn {
+            width: 32px;
+            height: 32px;
+            background: rgba(0, 0, 0, 0.8);
+            border: 1px solid rgba(0, 255, 65, 0.3);
+            border-radius: 50%;
+            color: rgba(0, 255, 65, 0.5);
+            cursor: pointer;
+            transition: all 0.2s;
+            pointer-events: auto !important;
+            z-index: 100;
+        }
+
+        .axis-btn:hover {
+            border-color: rgba(0, 255, 65, 0.7);
+            color: rgba(0, 255, 65, 0.9);
+        }
+
+        .axis-btn.active {
+            border-color: var(--axis-color, #00ff41);
+            color: var(--axis-color, #00ff41);
+            box-shadow: 0 0 10px var(--axis-color, #00ff41);
+        }
+
+        /* Axis visual mode colors */
+        body.axis-misread {
+            --axis-color: #888888;
+            filter: saturate(0.4);
+            /* Neutral hue */
+        }
+
+        body.axis-signal {
+            --axis-color: #00ff41;
+            filter: contrast(1.1);
+            /* Clinical clarity */
+        }
+
+        body.axis-power {
+            --axis-color: #ff9500;
+            filter: saturate(0.8) contrast(0.9);
+            /* Cage effect */
+        }
+
+        body.axis-response {
+            --axis-color: #ff4444;
+            filter: saturate(1.3);
+            /* Heat map pulse */
+        }
+
+        #coherence-display {
+            color: var(--axis-color, #00ff41);
+        }
+    </style>
 
     <!-- SUBTITLE CONTAINER -->
     <div class="fixed bottom-20 left-0 w-full text-center z-40 pointer-events-none px-4">
@@ -260,114 +382,268 @@
         // --- CONFIGURATION ---
 
         // Change this if you upload files to a different folder structure.
-        // Points to the R2 bucket Ethel_speaks folder
         const AUDIO_BASE_URL = 'https://pub-111e813bd5634cd8a9ecdd3d5c2a0916.r2.dev/Ethel_speaks/';
 
-        // List of audio files and their transcripts
-        // Organized by narrative phase - comprehensive Ethel corpus
+        // === SEMANTIC MAP CONSTANTS (Must be defined before AUDIO_DATA) ===
+
+        // The 4 Focus Axes + ALL mode
+        const AXIS = {
+            ALL: 'all',           // Access all nodes (for auto-scan and exploration)
+            MISREAD: 'misread',   // Gap between perception and reality
+            SIGNAL: 'signal',     // Technical anomalies, tells
+            POWER: 'power',       // Manipulation techniques
+            RESPONSE: 'response'  // Cost/action/reclamation
+        };
+
+        // Narrative Anchors (6 physical locations)
+        const ANCHOR = {
+            THE_DROP: 'the_drop',         // Origins / Gran's property
+            THE_HOUSE: 'the_house',       // Dominic's world / Surveillance
+            PLATFORM18: 'platform18',     // The Screen / Public
+            THE_BIKE: 'the_bike',         // Escape / Movement
+            THE_PUB: 'the_pub',           // Vantage / Performance
+            THE_TRIAL: 'the_trial'        // Resolution / Justice
+        };
+
+        // Physical screen locations for the anchors (0.0 to 1.0)
+        const ANCHOR_COORDS = {
+            [ANCHOR.THE_DROP]: { x: 0.15, y: 0.25, r: 150, shape: 'circle' },    // Top Left
+            [ANCHOR.THE_HOUSE]: { x: 0.50, y: 0.45, r: 180, shape: 'rect' },      // Center
+            [ANCHOR.PLATFORM18]: { x: 0.85, y: 0.25, r: 140, shape: 'hex' },       // Top Right
+            [ANCHOR.THE_BIKE]: { x: 0.15, y: 0.75, r: 120, shape: 'triangle' },  // Bottom Left
+            [ANCHOR.THE_PUB]: { x: 0.50, y: 0.80, r: 130, shape: 'circle' },    // Bottom Center
+            [ANCHOR.THE_TRIAL]: { x: 0.85, y: 0.75, r: 160, shape: 'rect' }       // Bottom Right
+        };
+
+        // === MASTER ASSET LIST (100% File Allocation) ===
+        // Every file mapped to Anchor + Axis for semantic filtering
+
         const AUDIO_DATA = [
-            // === PHASE 0 - META INTRODUCTION ===
-            { id: "e001", text: "Entry key for the whole corpus", file: "EthelRunIntroMonologue.mp3", phase: "Meta" },
+            // === ANCHOR 1: THE DROP (Origins) ===
+            { id: "e_gran_had", text: "Gran had been", file: "Ethel_Gran_Had_been.mp3", anchor: ANCHOR.THE_DROP, axis: AXIS.SIGNAL },
+            { id: "e_breaks", text: "After something breaks", file: "Ethel_After_something_breaks.mp3", anchor: ANCHOR.THE_DROP, axis: AXIS.SIGNAL },
+            { id: "e_careful", text: "Right to be careful", file: "Ethel_right_to_be_careful.mp3", anchor: ANCHOR.THE_DROP, axis: AXIS.SIGNAL },
+            { id: "e_map", text: "Map for a storm", file: "Ethel_Map_for_a_storm.mp3", anchor: ANCHOR.THE_DROP, axis: AXIS.SIGNAL },
+            { id: "e_too_normal", text: "Too normal", file: "Ethel_too_normal.mp3", anchor: ANCHOR.THE_DROP, axis: AXIS.MISREAD },
+            { id: "e_name_wrong", text: "My name wrong", file: "Ethel_My_name_wrong.mp3", anchor: ANCHOR.THE_DROP, axis: AXIS.MISREAD },
+            { id: "e_pretend", text: "Pretend not to know", file: "Ethel_pretend_not_to_know.mp3", anchor: ANCHOR.THE_DROP, axis: AXIS.MISREAD },
+            { id: "e_allowed", text: "I wasn't allowed to", file: "Ethel_I_wasnt_allowed_to.mp3", anchor: ANCHOR.THE_DROP, axis: AXIS.POWER },
+            { id: "e_home", text: "Home no more", file: "Ethel_Home_no_more.mp3", anchor: ANCHOR.THE_DROP, axis: AXIS.RESPONSE },
+            { id: "e_change", text: "Things that change you", file: "Ethel_Things_that_change_you.mp3", anchor: ANCHOR.THE_DROP, axis: AXIS.RESPONSE },
+            { id: "e_goth", text: "Goth things done", file: "Ethel_Goth_things_done.mp3", anchor: ANCHOR.THE_DROP, axis: AXIS.MISREAD },
 
-            // === PHASE 0.5 - DOMINIC'S OPERATING PATTERNS (RETROSPECTIVE) ===
-            { id: "e002", text: "They don't pause, they rewrite", file: "Ethel_they_dont_pause_they_rewrite.mp3", phase: "0.5" },
-            { id: "e003", text: "Charisma - it's not", file: "Ethel_charisma_itsNot.mp3", phase: "0.5" },
-            { id: "e004", text: "Charisma - it's nothing", file: "Ethel_charisma_itsNothh.mp3", phase: "0.5" },
-            { id: "e005", text: "Confidence becomes routine", file: "Ethel_Confidence_becomes_routine.mp3", phase: "0.5" },
-            { id: "e006", text: "Control dressed as calm", file: "Ethel_control_dressed_as_calm.mp3", phase: "0.5" },
-            { id: "e007", text: "Gran had been", file: "Ethel_Gran_Had_been.mp3", phase: "0.5" },
+            // === ANCHOR 2: THE HOUSE (Surveillance) ===
+            { id: "e_rewrite2", text: "They don't pause, they rewrite", file: "Ethel_they_dont_pause_they_rewrite.mp3", anchor: ANCHOR.THE_HOUSE, axis: AXIS.POWER },
+            { id: "e_charisma", text: "Charisma - it's nothing", file: "Ethel_charisma_itsNothh.mp3", anchor: ANCHOR.THE_HOUSE, axis: AXIS.POWER },
+            { id: "e_conf", text: "Confidence becomes routine", file: "Ethel_Confidence_becomes_routine.mp3", anchor: ANCHOR.THE_HOUSE, axis: AXIS.POWER },
+            { id: "e_calm", text: "Control dressed as calm", file: "Ethel_control_dressed_as_calm.mp3", anchor: ANCHOR.THE_HOUSE, axis: AXIS.POWER },
+            { id: "e_collect", text: "The man sent to collect me", file: "Ethel_the_man_sent_to_collect_me.mp3", anchor: ANCHOR.THE_HOUSE, axis: AXIS.POWER },
+            { id: "e_watch", text: "Pretending not to watch me", file: "Ethel_pretending_not_to_watch_me.mp3", anchor: ANCHOR.THE_HOUSE, axis: AXIS.POWER },
+            { id: "e_routine", text: "Routine", file: "Ethel_routine.mp3", anchor: ANCHOR.THE_HOUSE, axis: AXIS.POWER },
+            { id: "e_disappear", text: "Until yours disappears", file: "Ethel_until_yours_disappears.mp3", anchor: ANCHOR.THE_HOUSE, axis: AXIS.POWER },
+            { id: "e_favour", text: "Doing them a favour", file: "Ethel_doing_them_a_favour.mp3", anchor: ANCHOR.THE_HOUSE, axis: AXIS.POWER },
+            { id: "e_through", text: "Looked through me", file: "Ethel_looked_through_me.mp3", anchor: ANCHOR.THE_HOUSE, axis: AXIS.POWER },
+            { id: "e_bait", text: "Plant, bait, boring", file: "Ethel_plant_bait_boring.mp3", anchor: ANCHOR.THE_HOUSE, axis: AXIS.POWER },
+            { id: "e_arch", text: "Architecture", file: "Ethel_Archetecture.mp3", anchor: ANCHOR.THE_HOUSE, axis: AXIS.POWER },
+            { id: "e_divide", text: "Divided perfectly", file: "Ethel_divied_perfectly.mp3", anchor: ANCHOR.THE_HOUSE, axis: AXIS.POWER },
+            { id: "e_shut", text: "Shut off whole parts", file: "Ethel_shut_of_whole_parts_of_themselves.mp3", anchor: ANCHOR.THE_HOUSE, axis: AXIS.POWER },
+            { id: "e_nothing", text: "Nothing makes sense if you don't", file: "Ethel_nothing_makes_sense_if_you_dont.mp3", anchor: ANCHOR.THE_HOUSE, axis: AXIS.SIGNAL },
+            { id: "e_entering", text: "Entering a system", file: "Ethel_entering_a_system.mp3", anchor: ANCHOR.THE_HOUSE, axis: AXIS.SIGNAL },
+            { id: "e_forget", text: "Forget the gesture", file: "Ethel_Forget_the_gesture.mp3", anchor: ANCHOR.THE_HOUSE, axis: AXIS.SIGNAL },
+            { id: "e_isla_danger", text: "Isla was a different danger", file: "Ethel_Isla_was_a_different_danger.mp3", anchor: ANCHOR.THE_HOUSE, axis: AXIS.SIGNAL },
+            { id: "e_preditor", text: "The way predators see limp", file: "Ethel_the_way_preditors_see_limp.mp3", anchor: ANCHOR.THE_HOUSE, axis: AXIS.SIGNAL },
+            { id: "e_story", text: "A story told without sound", file: "Ethel_a_story_told_without_sound.mp3", anchor: ANCHOR.THE_HOUSE, axis: AXIS.MISREAD },
+            { id: "e_voice", text: "Never raised his voice", file: "Ethel_never_raised_his_voice.mp3", anchor: ANCHOR.THE_HOUSE, axis: AXIS.MISREAD },
+            { id: "e_simple", text: "Simple for him", file: "Ethel_simple_for_him.mp3", anchor: ANCHOR.THE_HOUSE, axis: AXIS.MISREAD },
+            { id: "e_simple2", text: "Like he's simple", file: "Ethel_like_hes_simple.mp3", anchor: ANCHOR.THE_HOUSE, axis: AXIS.MISREAD },
+            { id: "e_charisma2", text: "Charisma - it's not", file: "Ethel_charisma_itsNot.mp3", anchor: ANCHOR.THE_HOUSE, axis: AXIS.MISREAD },
+            { id: "e_ribbon", text: "Like a threat wrapped in ribbon", file: "Ethel_like_a_threat_wrapped_in_ribbon.mp3", anchor: ANCHOR.THE_HOUSE, axis: AXIS.MISREAD },
+            { id: "e_identify", text: "Identifying with", file: "Ethel_Identifying_with.mp3", anchor: ANCHOR.THE_HOUSE, axis: AXIS.RESPONSE },
+            { id: "e_design", text: "It is the design", file: "Ethel_it_is_the_design.mp3", anchor: ANCHOR.THE_HOUSE, axis: AXIS.MISREAD },
+            { id: "e_exactly", text: "Exactly what it looked like", file: "Ethel_exactly_what_it_looked_like.mp3", anchor: ANCHOR.THE_HOUSE, axis: AXIS.MISREAD },
+            { id: "e_drop", text: "Drop truth", file: "Ethel_Drop_truth.mp3", anchor: ANCHOR.THE_HOUSE, axis: AXIS.RESPONSE },
+            { id: "e_split", text: "Split reaction", file: "Ethel_split_reaction.mp3", anchor: ANCHOR.THE_HOUSE, axis: AXIS.RESPONSE },
+            { id: "e_pressure", text: "Pressure", file: "Ethel_pressure.mp3", anchor: ANCHOR.THE_HOUSE, axis: AXIS.RESPONSE },
+            { id: "i_locks", text: "Isla locks them out", file: "isla_locks_them_out.mp3", anchor: ANCHOR.THE_HOUSE, axis: AXIS.RESPONSE },
+            { id: "e_nochoice", text: "Here's the thing about no choice", file: "Ethel_hers_the_thing_about_no_choice.mp3", anchor: ANCHOR.THE_HOUSE, axis: AXIS.RESPONSE },
+            { id: "e_smug", text: "Because it looked smug", file: "Ethel_because_it_looked_smug.mp3", anchor: ANCHOR.THE_HOUSE, axis: AXIS.RESPONSE },
 
-            // === PHASE 1 - RURAL AUSTRALIA (PRE-LOSS) ===
-            { id: "e008", text: "Home no more", file: "Ethel_Home_no_more.mp3", phase: "1" },
-            { id: "e009", text: "Movement keeps me alive", file: "Ethel_movement_keeps_me_alive.mp3", phase: "1" },
+            // === ANCHOR 3: PLATFORM 18 (The Screen) ===
+            // (Platform18 is primarily for Kinley snippets)
 
-            // === PHASE 1.5 - PARALLEL EVENT (THE WEDDING) ===
-            { id: "e010", text: "Drop truth", file: "Ethel_Drop_truth.mp3", phase: "1.5" },
-            { id: "e011", text: "Like a threat wrapped in ribbon", file: "Ethel_like_a_threat_wrapped_in_ribbon.mp3", phase: "1.5" },
+            // === ANCHOR 4: THE BIKE (Evasion) ===
+            { id: "e_move", text: "Movement keeps me alive", file: "Ethel_movement_keeps_me_alive.mp3", anchor: ANCHOR.THE_BIKE, axis: AXIS.RESPONSE },
+            { id: "e_narrow", text: "Narrow drive", file: "Ethel_Narow_drive.mp3", anchor: ANCHOR.THE_BIKE, axis: AXIS.RESPONSE },
+            { id: "e_dirt", text: "Red dirt ends", file: "Ethel_red_dirt_ends.mp3", anchor: ANCHOR.THE_BIKE, axis: AXIS.RESPONSE },
+            { id: "e_short", text: "Shortest route to staying alive", file: "Ethel_shortes_route_to_staying_alive.mp3", anchor: ANCHOR.THE_BIKE, axis: AXIS.RESPONSE },
 
-            // === PHASE 2 - LOSS, DISCOVERY & LEGAL CHECKMATE ===
-            { id: "e012", text: "Too normal", file: "Ethel_too_normal.mp3", phase: "2" },
-            { id: "e013", text: "My name wrong", file: "Ethel_My_name_wrong.mp3", phase: "2" },
-            { id: "e014", text: "Things that change you", file: "Ethel_Things_that_change_you.mp3", phase: "2" },
-            { id: "e015", text: "After something breaks", file: "Ethel_After_something_breaks.mp3", phase: "2" },
-            { id: "e016", text: "I wasn't allowed to", file: "Ethel_I_wasnt_allowed_to.mp3", phase: "2" },
-            { id: "e017", text: "Dates, statements, omissions", file: "Ethel_dates_statements_ommisions.mp3", phase: "2" },
-            { id: "e018", text: "Right to be careful", file: "Ethel_right_to_be_careful.mp3", phase: "2" },
-            { id: "e019", text: "Map for a storm", file: "Ethel_Map_for_a_storm.mp3", phase: "2" },
-            { id: "e020", text: "Red dirt ends", file: "Ethel_red_dirt_ends.mp3", phase: "2" },
-            { id: "e021", text: "Here's the thing about no choice", file: "Ethel_hers_the_thing_about_no_choice.mp3", phase: "2" },
+            // === ANCHOR 5: THE PUB (Vantage) ===
+            { id: "e_leash", text: "Politeness - the leash", file: "Ethel_politness_the_leash.mp3", anchor: ANCHOR.THE_PUB, axis: AXIS.POWER },
+            { id: "e_both", text: "Both truths at once", file: "Ethel_both_truths_at_once.mp3", anchor: ANCHOR.THE_PUB, axis: AXIS.RESPONSE },
+            { id: "e_blast", text: "Blast radius", file: "Ethel_blast_radius.mp3", anchor: ANCHOR.THE_PUB, axis: AXIS.RESPONSE },
+            { id: "e_two", text: "Two survival styles", file: "Ethel_two_survival_styles.mp3", anchor: ANCHOR.THE_PUB, axis: AXIS.RESPONSE },
 
-            // === PHASE 3 - FORCED ENTRY INTO DOMINIC'S WORLD ===
-            { id: "e022", text: "The man sent to collect me", file: "Ethel_the_man_sent_to_collect_me.mp3", phase: "3" },
-            { id: "e023", text: "Entering a system", file: "Ethel_entering_a_system.mp3", phase: "3" },
-            { id: "e024", text: "A story told without sound", file: "Ethel_a_story_told_without_sound.mp3", phase: "3" },
-            { id: "e025", text: "Pretending not to watch me", file: "Ethel_pretending_not_to_watch_me.mp3", phase: "3" },
-            { id: "e026", text: "Narrow drive", file: "Ethel_Narow_drive.mp3", phase: "3" },
-            { id: "e027", text: "Never raised his voice", file: "Ethel_never_raised_his_voice.mp3", phase: "3" },
-            { id: "e028", text: "Routine", file: "Ethel_routine.mp3", phase: "3" },
-            { id: "e029", text: "Politeness - the leash", file: "Ethel_politness_the_leash.mp3", phase: "3" },
-            { id: "e030", text: "Pressure", file: "Ethel_pressure.mp3", phase: "3" },
-            { id: "e031", text: "Until yours disappears", file: "Ethel_until_yours_disappears.mp3", phase: "3" },
-            { id: "e032", text: "Doing them a favour", file: "Ethel_doing_them_a_favour.mp3", phase: "3" },
-            { id: "e033", text: "Simple for him", file: "Ethel_simple_for_him.mp3", phase: "3" },
-            { id: "e034", text: "Like he's simple", file: "Ethel_like_hes_simple.mp3", phase: "3" },
-            { id: "e035", text: "Looked through me", file: "Ethel_looked_through_me.mp3", phase: "3" },
-            { id: "e036", text: "Forget the gesture", file: "Ethel_Forget_the_gesture.mp3", phase: "3" },
-            { id: "e037", text: "Got things done", file: "Ethel_Goth_things_done.mp3", phase: "3" },
-
-            // === PHASE 3 - ISLA ALREADY INSIDE ===
-            { id: "e038", text: "Isla was a different danger", file: "Ethel_Isla_was_a_different_danger.mp3", phase: "3" },
-            { id: "e039", text: "Because it looked smug", file: "Ethel_because_it_looked_smug.mp3", phase: "3" },
-            { id: "e040", text: "Plant, bait, boring", file: "Ethel_plant_bait_boring.mp3", phase: "3" },
-            { id: "e041", text: "Two survival styles", file: "Ethel_two_survival_styles.mp3", phase: "3" },
-
-            // === PHASE 3 - VIOLENCE INSIDE THE HOUSE ===
-            { id: "e042", text: "Architecture", file: "Ethel_Archetecture.mp3", phase: "3" },
-            { id: "e043", text: "Identifying with", file: "Ethel_Identifying_with.mp3", phase: "3" },
-            { id: "e044", text: "Shortest route to staying alive", file: "Ethel_shortes_route_to_staying_alive.mp3", phase: "3" },
-            { id: "e045", text: "Divided perfectly", file: "Ethel_divied_perfectly.mp3", phase: "3" },
-            { id: "e046", text: "Shut off whole parts of themselves", file: "Ethel_shut_of_whole_parts_of_themselves.mp3", phase: "3" },
-            { id: "e047", text: "Split reaction", file: "Ethel_split_reaction.mp3", phase: "3" },
-            { id: "e048", text: "The way predators see limp", file: "Ethel_the_way_preditors_see_limp.mp3", phase: "3" },
-
-            // === PHASE 3.5 - ISLA TARGETED / FIRST LEAK ===
-            { id: "e049", text: "Blast radius", file: "Ethel_blast_radius.mp3", phase: "3.5" },
-            { id: "e050", text: "Both truths at once", file: "Ethel_both_truths_at_once.mp3", phase: "3.5" },
-            { id: "e051", text: "Nothing makes sense if you don't", file: "Ethel_nothing_makes_sense_if_you_dont.mp3", phase: "3.5" },
-
-            // === PHASE 3.75 - ANGER / AGENCY REBOOT ===
-            { id: "e052", text: "Point of a blade", file: "Ethel_point_of_a_blade.mp3", phase: "3.75" },
-
-            // === PHASE 4 - BURN THE BRIDGE ===
-            { id: "e053", text: "Isla locks them out", file: "isla_locks_them_out.mp3", phase: "4" },
-            { id: "e054", text: "Isla had done her part", file: "Ethel_isla_had_done_her_part.mp3", phase: "4" },
-            { id: "e055", text: "Court proof, not poetic", file: "Ethel_court_proof_not_poetic.mp3", phase: "4" },
-            { id: "e056", text: "To notice who lit the fire", file: "Ethel_to_notice_who_lit_the_fire.mp3", phase: "4" },
-
-            // === PHASE 5 - TRIAL & AFTERMATH ===
-            { id: "e057", text: "Court proof", file: "Ethel_court_proof.mp3", phase: "5" },
-            { id: "e058", text: "Because he won't stop", file: "Ethel_because_he_wont_stop.mp3", phase: "5" },
-            { id: "e059", text: "A pulse nearby", file: "Ethel_a_pulse_near_by.mp3", phase: "5" },
-            { id: "e060", text: "Without ever saying control", file: "Ethel_without-ever_saying_control.mp3", phase: "5" },
-
-            // === PHASE 6 - THE FUTURE / NEXT CHAPTER ===
-            { id: "e061", text: "Wasn't looking for trouble", file: "Ethel_wasnt_looking_for_trouble.mp3", phase: "6" },
-
-            // === ADDITIONAL FRAGMENTS (CROSS-PHASE) ===
-            { id: "e062", text: "Exactly what it looked like", file: "Ethel_exactly_what_it_looked_like.mp3", phase: "X" },
-            { id: "e063", text: "Fallout came to me", file: "Ethel_fallout_came_to_me.mp3", phase: "X" },
-            { id: "e064", text: "Hate, love - not clarifying", file: "Ethel_hate_love_not_clarifying.mp3", phase: "X" },
-            { id: "e065", text: "Make a choice", file: "Ethel_make_a_choice.mp3", phase: "X" },
-            { id: "e066", text: "Not contradiction", file: "Ethel_not_contradiction.mp3", phase: "X" },
-            { id: "e067", text: "Or who didn't get backup", file: "Ethel_or_who_didnt_get_backup.mp3", phase: "X" },
-            { id: "e068", text: "Pretend not to know", file: "Ethel_pretend_not_to_know.mp3", phase: "X" },
-            { id: "e069", text: "Relief as currency", file: "Ethel_Relief_as_currency.mp3", phase: "X" },
-            { id: "e070", text: "Rhythm is the weapon", file: "Ethel_rhythm_is_the_weapon.mp3", phase: "X" },
-            { id: "e071", text: "Threat wrapped in ribbon", file: "Ethel_threat_wrapped_in_ribbon.mp3", phase: "X" },
-            { id: "e072", text: "To notice who lit it", file: "Ethel_to_notice_who_lit_it.mp3", phase: "X" }
+            // === ANCHOR 6: THE TRIAL (Justice) ===
+            { id: "e_dates", text: "Dates, statements, omissions", file: "Ethel_dates_statements_ommisions.mp3", anchor: ANCHOR.THE_TRIAL, axis: AXIS.SIGNAL },
+            { id: "e_court", text: "Court proof, not poetic", file: "Ethel_court_proof_not_poetic.mp3", anchor: ANCHOR.THE_TRIAL, axis: AXIS.SIGNAL },
+            { id: "e_fire", text: "To notice who lit the fire", file: "Ethel_to_notice_who_lit_the_fire.mp3", anchor: ANCHOR.THE_TRIAL, axis: AXIS.SIGNAL },
+            { id: "e_court2", text: "Court proof", file: "Ethel_court_proof.mp3", anchor: ANCHOR.THE_TRIAL, axis: AXIS.SIGNAL },
+            { id: "e_lit", text: "To notice who lit it", file: "Ethel_to_notice_who_lit_it.mp3", anchor: ANCHOR.THE_TRIAL, axis: AXIS.SIGNAL },
+            { id: "e_control", text: "Without ever saying control", file: "Ethel_without-ever_saying_control.mp3", anchor: ANCHOR.THE_TRIAL, axis: AXIS.POWER },
+            { id: "e_choice", text: "Make a choice", file: "Ethel_make_a_choice.mp3", anchor: ANCHOR.THE_TRIAL, axis: AXIS.POWER },
+            { id: "e_backup", text: "Or who didn't get backup", file: "Ethel_or_who_didnt_get_backup.mp3", anchor: ANCHOR.THE_TRIAL, axis: AXIS.POWER },
+            { id: "e_relief", text: "Relief as currency", file: "Ethel_Relief_as_currency.mp3", anchor: ANCHOR.THE_TRIAL, axis: AXIS.POWER },
+            { id: "e_rhythm", text: "Rhythm is the weapon", file: "Ethel_rhythm_is_the_weapon.mp3", anchor: ANCHOR.THE_TRIAL, axis: AXIS.POWER },
+            { id: "e_contra", text: "Not contradiction", file: "Ethel_not_contradiction.mp3", anchor: ANCHOR.THE_TRIAL, axis: AXIS.RESPONSE },
+            { id: "e_choice_gone", text: "Choice gone", file: "Ethel_choice_gone.mp3", anchor: ANCHOR.THE_TRIAL, axis: AXIS.MISREAD },
+            { id: "e_blade", text: "Point of a blade", file: "Ethel_point_of_a_blade.mp3", anchor: ANCHOR.THE_TRIAL, axis: AXIS.RESPONSE },
+            { id: "e_part", text: "Isla had done her part", file: "Ethel_isla_had_done_her_part.mp3", anchor: ANCHOR.THE_TRIAL, axis: AXIS.RESPONSE },
+            { id: "e_stop", text: "Because he won't stop", file: "Ethel_because_he_wont_stop.mp3", anchor: ANCHOR.THE_TRIAL, axis: AXIS.RESPONSE },
+            { id: "e_trouble", text: "Wasn't looking for trouble", file: "Ethel_wasnt_looking_for_trouble.mp3", anchor: ANCHOR.THE_TRIAL, axis: AXIS.RESPONSE },
+            { id: "e_fallout", text: "Fallout came to me", file: "Ethel_fallout_came_to_me.mp3", anchor: ANCHOR.THE_TRIAL, axis: AXIS.RESPONSE },
+            { id: "e_hate", text: "Hate, love - not clarifying", file: "Ethel_hate_love_not_clarifying.mp3", anchor: ANCHOR.THE_TRIAL, axis: AXIS.RESPONSE },
+            { id: "e_threat", text: "Threat wrapped in ribbon", file: "Ethel_threat_wrapped_in_ribbon.mp3", anchor: ANCHOR.THE_TRIAL, axis: AXIS.RESPONSE },
+            { id: "e_pulse", text: "A pulse nearby", file: "Ethel_a_pulse_near_by.mp3", anchor: ANCHOR.THE_TRIAL, axis: AXIS.SIGNAL }
         ];
 
+        // Kinley Legibility Tiers
+        const TIER = {
+            STATIC: 1,      // 0-15 coherence: ambient noise
+            THRESHOLD: 2,   // 16-45: recognizing anomalies
+            SHADOW: 3,      // 46-80: active investigation
+            COHERENCE: 4    // 81-100: full synthesis
+        };
 
+        // Focus Dial state
+        let activeAxis = AXIS.SIGNAL; // Start in Signal mode
+        let coherenceScore = 0;
+        let signalCount = 0;
+        let powerResponsePairings = 0;
+
+        // Audio URLs
+        const KINLEY_AUDIO_BASE = 'https://pub-111e813bd5634cd8a9ecdd3d5c2a0916.r2.dev/Ethel_speaks/';
+        const KINLEY_TRIGGER_DISTANCE = 160;
+
+        // Kinley Snippets - Pressure Collection (no order, no tiers, no chain links)
+        // These are observations, tells, partial admissions - they circle the same person
+        const KINLEY_SNIPPETS = [
+            { id: "k01", text: "Midweek.", file: "KinleyStory01.mp3", isKinley: true },
+            { id: "k02", text: "Evening.", file: "KinleyStory02.mp3", isKinley: true },
+            { id: "k03", text: "Digital screen across the track.", file: "KinleyStory03.mp3", isKinley: true, isMotif: true }, // Motif: Public Surface
+            { id: "k04", text: "Standard rotation.", file: "KinleyStory04.mp3", isKinley: true },
+            { id: "k05", text: "A name in bold, white font.", file: "KinleyStory05.mp3", isKinley: true },
+            { id: "k06", text: "The digital billboard was cycling through a standard loop.", file: "KinleyStory06.mp3", isKinley: true },
+            { id: "k07", text: "A red Amber Alert bar slashed across the frame.", file: "KinleyStory07.mp3", isKinley: true },
+            { id: "k08", text: "Her voice was thin, the sound of a wire about to snap.", file: "KinleyStory08.mp3", isKinley: true },
+            { id: "k09", text: "They chose to believe in error. But I chose to believe in the timestamp.", file: "KinleyStory09.mp3", isKinley: true, isMotif: true }, // Motif: Error vs Intent
+            { id: "k10", text: "Eight, forty-two, twelve O four. No legitimate purpose...", file: "KinleyStory10.mp3", isKinley: true },
+            { id: "k11", text: "The precision was the tell.", file: "KinleyStory11.mp3", isKinley: true },
+            { id: "k12", text: "One guy. Found his blog. Kinley said he'd help.", file: "KinleyStory12.mp3", isKinley: true },
+            { id: "k13", text: "Traffic Systems Analyst. I just needed the keys to the screens.", file: "KinleyStory13.mp3", isKinley: true },
+            { id: "k14", text: "I wanted to know how they were routing the packets.", file: "KinleyStory14.mp3", isKinley: true },
+            { id: "k15", text: "That stick wasn't kicked up. It was placed.", file: "KinleyStory15.mp3", isKinley: true },
+            { id: "k16", text: "I hired a PI to trail the man who was trailing me.", file: "KinleyStory16.mp3", isKinley: true }
+        ];
+
+        // Story17: The Long Story - unlocked after threshold pressure accumulates
+        const STORY17_THRESHOLD = 13; // Silent unlock after this many snippets discovered
+
+        const KINLEY_STORY17 = {
+            id: "k17",
+            text: "Can you make a mistake on purpose?",
+            file: "KinleyStory17.mp3",
+            isKinley: true,
+            isStory17: true
+        };
+
+        // Tracking state
+        let kinleySnippetsDiscovered = 0;
+        let story17Unlocked = false;
+        let story17Node = null;
+        let story17Playing = false;
+        let story17Complete = false;
+        let kinleySnippetPositions = []; // For post-story17 visual effect
+
+        // Check if Story17 should unlock (silently, after threshold)
+        function checkStory17Unlock() {
+            if (!story17Unlocked && kinleySnippetsDiscovered >= STORY17_THRESHOLD) {
+                story17Unlocked = true;
+                spawnStory17Node();
+                console.log('Story17 silently armed after ' + kinleySnippetsDiscovered + ' snippets');
+            }
+        }
+
+        // Spawn Story17 node at a random position
+        function spawnStory17Node() {
+            if (story17Node) return; // Already exists
+            story17Node = {
+                ...KINLEY_STORY17,
+                x: Math.random() * (canvas.width - 100) + 50,
+                y: Math.random() * (canvas.height - 100) + 50,
+                discovered: false
+            };
+            nodes.push(story17Node);
+        }
+
+        // Update coherence score
+        function updateCoherence(points, reason) {
+            coherenceScore = Math.min(100, coherenceScore + points);
+            console.log(`Coherence +${points}: ${reason} (Total: ${coherenceScore})`);
+            updateCoherenceDisplay();
+        }
+
+        // Update coherence display
+        function updateCoherenceDisplay() {
+            const el = document.getElementById('coherence-value');
+            if (el) el.textContent = coherenceScore;
+        }
+
+        // === FOCUS DIAL CONTROLLER ===
+
+        // Switch active axis
+        function switchAxis(newAxis) {
+            if (!Object.values(AXIS).includes(newAxis)) return;
+
+            activeAxis = newAxis;
+
+            // Update body class for visual mode
+            document.body.classList.remove('axis-all', 'axis-misread', 'axis-signal', 'axis-power', 'axis-response');
+            document.body.classList.add(`axis-${newAxis}`);
+
+            // Update button states
+            document.querySelectorAll('.axis-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.axis === newAxis);
+            });
+
+            // Update center label
+            const labels = { all: 'ALL', misread: 'MIS', signal: 'SIG', power: 'PWR', response: 'RES' };
+            const labelEl = document.getElementById('active-axis-label');
+            if (labelEl) labelEl.textContent = labels[newAxis] || 'ALL';
+
+            console.log(`Focus Dial: ${newAxis.toUpperCase()}`);
+        }
+
+        // Initialize dial buttons
+        function initFocusDial() {
+            document.querySelectorAll('.axis-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    switchAxis(btn.dataset.axis);
+                });
+            });
+
+            // Keyboard shortcuts: 0=ALL, 1=MISREAD, 2=SIGNAL, 3=POWER, 4=RESPONSE
+            document.addEventListener('keydown', (e) => {
+                if (e.key === '0') switchAxis(AXIS.ALL);
+                if (e.key === '1') switchAxis(AXIS.MISREAD);
+                if (e.key === '2') switchAxis(AXIS.SIGNAL);
+                if (e.key === '3') switchAxis(AXIS.POWER);
+                if (e.key === '4') switchAxis(AXIS.RESPONSE);
+            });
+
+            // Start in ALL mode by default
+            switchAxis(AXIS.ALL);
+        }
 
         // --- SYSTEM VARIABLES ---
         const canvas = document.getElementById('mainCanvas');
@@ -388,6 +664,7 @@
         let idleTimer = null;
         let autoScanTarget = null; // Coordinates for auto-scan
         let lastInteractionTime = Date.now();
+        let activeKinleyAudio = null; // Track current Kinley audio for fade-out
 
         // Constants
         const LOCK_DISTANCE = 50; // Pixels to trigger audio
@@ -404,42 +681,120 @@
         window.addEventListener('resize', resize);
 
         function initNodes() {
-            nodes = AUDIO_DATA.map((data, index) => ({
-                ...data,
-                x: Math.random() * (window.innerWidth - 100) + 50,
-                y: Math.random() * (window.innerHeight - 100) + 50,
-                vx: (Math.random() - 0.5) * 0.2, // Drift velocity
-                vy: (Math.random() - 0.5) * 0.2,
-                discovered: false, // Has it been fully played?
-                locked: false, // Is the cursor currently "locking" it?
-                captureProgress: 0,
-                audioObj: null // HTML5 Audio element
-            }));
+            // Helper to get position based on anchor
+            const getPos = (anchor) => {
+                if (anchor && ANCHOR_COORDS[anchor]) {
+                    const center = ANCHOR_COORDS[anchor];
+                    // Random point within radius
+                    const angle = Math.random() * Math.PI * 2;
+                    const dist = Math.sqrt(Math.random()) * center.r;
+                    return {
+                        x: (center.x * window.innerWidth) + Math.cos(angle) * dist,
+                        y: (center.y * window.innerHeight) + Math.sin(angle) * dist
+                    };
+                }
+                // Fallback: Random screen position
+                return {
+                    x: Math.random() * (window.innerWidth - 100) + 50,
+                    y: Math.random() * (window.innerHeight - 100) + 50
+                };
+            };
+
+            // Initialize Ethel nodes - clustered around anchors
+            nodes = AUDIO_DATA.map((data, index) => {
+                const pos = getPos(data.anchor);
+                return {
+                    ...data,
+                    x: pos.x,
+                    y: pos.y,
+                    vx: (Math.random() - 0.5) * 0.15, // Slower drift to keep clusters tight
+                    vy: (Math.random() - 0.5) * 0.15,
+                    discovered: false,
+                    captureProgress: 0,
+                    audioObj: null,
+                    isKinley: false,
+                    isStory17: false
+                };
+            });
+
+            // Add Kinley snippet nodes - clustered around their anchors
+            KINLEY_SNIPPETS.forEach((data) => {
+                const pos = getPos(data.anchor);
+                const kinleyNode = {
+                    ...data,
+                    x: pos.x,
+                    y: pos.y,
+                    vx: (Math.random() - 0.5) * 0.1,
+                    vy: (Math.random() - 0.5) * 0.1,
+                    discovered: false,
+                    captureProgress: 0,
+                    audioObj: null
+                };
+                nodes.push(kinleyNode);
+            });
 
             // Pre-create audio objects to avoid lag
             nodes.forEach(node => {
-                const a = new Audio(AUDIO_BASE_URL + node.file);
+                const baseUrl = node.isKinley ? KINLEY_AUDIO_BASE : AUDIO_BASE_URL;
+                const a = new Audio(baseUrl + node.file);
                 a.volume = 0;
-                // Loop slightly to help with capture, but we really want one-shot
-                // Actually, let's make it loop while hovering, stop when leaving.
-                // Upon capture, we play it fully once.
                 node.audioObj = a;
             });
 
+            // Story17 is NOT spawned at init - it appears silently after threshold
+            // checkStory17Unlock() will spawn it when kinleySnippetsDiscovered >= STORY17_THRESHOLD
+
+            kinleySnippetPositions = [];
             updateScore();
         }
+
+        // Check if Story17 should unlock (silently, after threshold)
+        function checkStory17Unlock() {
+            if (story17Unlocked) return;
+
+            kinleySnippetsDiscovered = nodes.filter(n => n.isKinley && !n.isStory17 && n.discovered).length;
+
+            if (kinleySnippetsDiscovered >= STORY17_THRESHOLD) {
+                story17Unlocked = true;
+
+                // Store snippet positions for post-Story17 visual effect
+                kinleySnippetPositions = nodes
+                    .filter(n => n.isKinley && !n.isStory17)
+                    .map(n => ({ x: n.x, y: n.y }));
+
+                // Silently spawn Story17 - no announcement, no visual pulse
+                story17Node = {
+                    ...KINLEY_STORY17,
+                    x: Math.random() * (canvas.width - 200) + 100,
+                    y: Math.random() * (canvas.height - 200) + 100,
+                    vx: 0,
+                    vy: 0,
+                    discovered: false,
+                    captureProgress: 0,
+                    audioObj: new Audio(KINLEY_AUDIO_BASE + KINLEY_STORY17.file)
+                };
+                story17Node.audioObj.volume = 0;
+                nodes.push(story17Node);
+
+                console.log('Story17 silently armed after ' + kinleySnippetsDiscovered + ' snippets');
+            }
+        }
+
+        // (Old triggerStory17UnlockEvent removed - Story17 now spawns silently)
 
         // --- AUDIO ENGINE ---
 
         function handleAudioProximity(targetX, targetY) {
+            // Block all interactions during Story17 playback
+            if (story17Playing) {
+                return;
+            }
+
             let closestDist = Infinity;
             let closestNodeIndex = -1;
 
             nodes.forEach((node, index) => {
                 const dist = Math.hypot(node.x - targetX, node.y - targetY);
-
-                // If discovered, ignore for proximity audio (it's already logged)
-                // Or maybe keeps playing? Let's say discovered nodes are silent or quiet ambient.
 
                 if (dist < closestDist) {
                     closestDist = dist;
@@ -450,48 +805,88 @@
             // Logic for the closest node
             if (closestNodeIndex !== -1) {
                 const node = nodes[closestNodeIndex];
-                const maxDist = 200; // Radius where audio starts fading in
 
-                if (closestDist < maxDist) {
-                    // Calculate volume (0 to 1)
-                    let vol = 1 - (closestDist / maxDist);
-                    vol = Math.max(0, Math.min(1, vol * vol)); // curve it
-
-                    // If this is a different node than active, switch
-                    if (activeNodeIndex !== closestNodeIndex) {
-                        // Fade out old
-                        if (activeNodeIndex !== -1) {
-                            fadeOut(nodes[activeNodeIndex].audioObj);
-                        }
-
-                        // Start new if not playing
-                        node.audioObj.currentTime = 0;
-                        node.audioObj.loop = true; // Loop while hovering to allow "tuning"
-                        node.audioObj.play().catch(e => console.log("Play error", e));
-                        activeNodeIndex = closestNodeIndex;
+                // === KINLEY SNIPPET: Fire when close enough (no tier restrictions) ===
+                if (node.isKinley && !node.isStory17 && !node.discovered) {
+                    if (closestDist < KINLEY_TRIGGER_DISTANCE) {
+                        // Fire immediately - no tier check needed
+                        fireKinleySnippet(closestNodeIndex);
+                        return;
                     }
+                }
 
-                    // Set volume
-                    node.audioObj.volume = vol;
-
-                    // Check for LOCKING (Center hit)
+                // === STORY17: Special behavior - no hover preview, full playback required ===
+                if (node.isStory17) {
+                    // Story17 has NO hover preview - only capture on close lock
                     if (closestDist < LOCK_DISTANCE && !node.discovered) {
                         reticle.classList.add('locked');
-                        node.captureProgress += 0.01; // Increment per frame
-
-                        // Show subtitle preview (glitched)
-                        showSubtitle(node.text, true);
+                        node.captureProgress += 0.015; // Faster capture since no preview
+                        showSubtitle("[ ... ]", true); // Minimal hint, no text preview
 
                         if (node.captureProgress >= 1) {
-                            captureNode(closestNodeIndex);
+                            node.discovered = true;
+                            captureStory17(node);
                         }
                     } else {
+                        // NO hint at any other distance - Story17 is silent until captured
                         reticle.classList.remove('locked');
-                        hideSubtitle();
+                        node.captureProgress = Math.max(0, node.captureProgress - 0.01); // Decay
+                    }
+                    return;
+                }
+
+                // === ETHEL NODES: Axis-filtered behavior (lock + gradual capture) ===
+                const maxDist = 200;
+
+                // Check if axis matches activeAxis (ALL mode matches everything)
+                const axisMatch = activeAxis === AXIS.ALL || !node.axis || node.axis === activeAxis;
+
+                if (closestDist < maxDist) {
+                    if (axisMatch) {
+                        // Axis matches - play audio and allow capture
+                        let vol = 1 - (closestDist / maxDist);
+                        vol = Math.max(0, Math.min(1, vol * vol));
+
+                        if (activeNodeIndex !== closestNodeIndex) {
+                            if (activeNodeIndex !== -1) {
+                                fadeOut(nodes[activeNodeIndex].audioObj);
+                            }
+                            node.audioObj.currentTime = 0;
+                            node.audioObj.loop = true;
+                            node.audioObj.play().catch(e => console.log("Play error", e));
+                            activeNodeIndex = closestNodeIndex;
+                        }
+
+                        node.audioObj.volume = vol;
+
+                        if (closestDist < LOCK_DISTANCE && !node.discovered) {
+                            reticle.classList.add('locked');
+                            node.captureProgress += 0.01;
+                            showSubtitle(node.text, true);
+
+                            if (node.captureProgress >= 1) {
+                                captureNode(closestNodeIndex);
+                            }
+                        } else {
+                            reticle.classList.remove('locked');
+                            hideSubtitle();
+                        }
+                    } else {
+                        // Axis doesn't match - show static hint, no audio, no capture
+                        if (closestDist < 80) {
+                            showSubtitle("[ static ]", true);
+                        } else {
+                            hideSubtitle();
+                        }
+                        if (activeNodeIndex === closestNodeIndex) {
+                            fadeOut(nodes[activeNodeIndex].audioObj);
+                            activeNodeIndex = -1;
+                        }
+                        reticle.classList.remove('locked');
+                        node.captureProgress = Math.max(0, node.captureProgress - 0.01); // Decay
                     }
 
                 } else {
-                    // Too far from any node
                     if (activeNodeIndex !== -1) {
                         fadeOut(nodes[activeNodeIndex].audioObj);
                         activeNodeIndex = -1;
@@ -500,6 +895,91 @@
                     hideSubtitle();
                 }
             }
+        }
+
+        // Kinley snippet: instant fire, one-shot, no lock
+        function fireKinleySnippet(index) {
+            const node = nodes[index];
+            node.discovered = true;
+            node.discoveredAt = Date.now();
+
+            // === COHERENCE SCORING ===
+            updateCoherence(1, 'snippet discovered');
+
+            // Bonus for axis match
+            if (node.axis && node.axis === activeAxis) {
+                updateCoherence(5, `${activeAxis} axis match`);
+            }
+
+            // Track SIGNAL discoveries for tier unlocks
+            if (node.axis === AXIS.SIGNAL) {
+                signalCount++;
+                console.log(`Signals: ${signalCount}`);
+            }
+
+            // Record anchor visit for semantic map
+            if (node.anchor) {
+                recordAnchorVisit(node.anchor, activeAxis);
+            }
+
+            // SPAWN AFTER-IMAGE LINE
+            spawnAfterImageLine(node, node.isMotif);
+
+            // Fade out previous Kinley audio if playing
+            if (activeKinleyAudio && activeKinleyAudio !== node.audioObj) {
+                fadeOut(activeKinleyAudio);
+            }
+
+            // One-shot play - only if not already playing
+            if (node.audioObj.paused || node.audioObj.ended) {
+                node.audioObj.loop = false;
+                node.audioObj.currentTime = 0;
+                node.audioObj.volume = 1;
+                node.audioObj.play().catch(e => console.log("Kinley play error", e));
+                activeKinleyAudio = node.audioObj; // Track as current
+            }
+
+            // Brief subtitle flash
+            showKinleySubtitle(node.text, node.isMotif);
+
+            addToLog(node.text);
+            updateScore();
+
+            if (node.isMotif) {
+                triggerMotifFlicker();
+            }
+
+            checkStory17Unlock();
+        }
+
+        // Kinley subtitle: brief flash, 1.2s auto-fade
+        function showKinleySubtitle(text, isMotif) {
+            const box = document.getElementById('subtitle-box');
+            const el = document.getElementById('subtitle-text');
+            box.classList.remove('hidden');
+
+            el.innerText = text;
+            el.style.opacity = isMotif ? 1 : 0.8;
+
+            // Auto-fade after 1.2s (thought you almost missed)
+            setTimeout(() => {
+                el.style.opacity = 0;
+                setTimeout(() => {
+                    if (el.style.opacity === '0') {
+                        box.classList.add('hidden');
+                        el.style.opacity = 1;
+                    }
+                }, 300);
+            }, 1200);
+        }
+
+        // Motif flicker: 1-frame visual echo
+        function triggerMotifFlicker() {
+            const flash = document.createElement('div');
+            flash.className = 'fixed inset-0 z-50 pointer-events-none';
+            flash.style.background = 'rgba(0, 255, 65, 0.08)';
+            document.body.appendChild(flash);
+            setTimeout(() => flash.remove(), 50);
         }
 
         function fadeOut(audio) {
@@ -519,13 +999,31 @@
         function captureNode(index) {
             const node = nodes[index];
             node.discovered = true;
+            node.discoveredAt = Date.now(); // Track for line connections
             node.captureProgress = 1;
 
-            // Play fully clearly ONCE
+            // Special handling for Story17
+            if (node.isStory17) {
+                captureStory17(node);
+                return;
+            }
+
+            // SPAWN AFTER-IMAGE LINE - shockwave, not lock
+            spawnAfterImageLine(node, false);
+
+            // ALWAYS stop looping on capture so audio will end
             node.audioObj.loop = false;
-            node.audioObj.currentTime = 0;
-            node.audioObj.volume = 1;
-            node.audioObj.play();
+
+            // Play fully clearly ONCE - only restart if not already playing
+            if (node.audioObj.paused || node.audioObj.ended) {
+                node.audioObj.currentTime = 0;
+                node.audioObj.volume = 1;
+                node.audioObj.play();
+            } else {
+                // Audio is already playing - just ensure full volume
+                // (loop is already set to false above)
+                node.audioObj.volume = 1;
+            }
 
             // Visual feedback
             updateScore();
@@ -538,6 +1036,166 @@
             flash.style.opacity = '0.2';
             document.body.appendChild(flash);
             setTimeout(() => flash.remove(), 100);
+
+            // Check if Kinley snippet - update threshold
+            if (node.isKinley && !node.isStory17) {
+                checkStory17Unlock();
+            }
+        }
+
+        // Story17 special capture - full uninterrupted playback
+        function captureStory17(node) {
+            story17Playing = true;
+
+            // Lock the scanner during playback
+            reticle.classList.add('locked');
+            cursorCoords.innerText = "RECEIVING...";
+
+            // Play at full volume, no loop
+            node.audioObj.loop = false;
+            node.audioObj.currentTime = 0;
+            node.audioObj.volume = 1;
+            node.audioObj.play();
+
+            showSubtitle(node.text, false);
+            addToLog("[KINLEY] " + node.text);
+
+            // When playback ends, trigger the visual effect
+            node.audioObj.onended = () => {
+                story17Playing = false;
+                story17Complete = true;
+                updateScore();
+
+                // Draw pressure lines effect
+                drawPressureLinesEffect();
+            };
+        }
+
+        // Post-Story17 visual: faint lines from snippet positions to Story17
+        let pressureLinesOpacity = 0;
+        let pressureLinesActive = false;
+
+        function drawPressureLinesEffect() {
+            pressureLinesActive = true;
+            pressureLinesOpacity = 0.6;
+
+            // Fade out over 3 seconds
+            const fadeInterval = setInterval(() => {
+                pressureLinesOpacity -= 0.02;
+                if (pressureLinesOpacity <= 0) {
+                    pressureLinesActive = false;
+                    clearInterval(fadeInterval);
+                }
+            }, 100);
+        }
+
+        // === AFTER-IMAGE LINE SYSTEM ===
+        // Lines are shockwaves, heat trails, inference ghosts
+        // They confirm "something already connected" — not "you must connect this"
+        // Lines DON'T connect nodes. They cross SPACE. Pressure scars, not wiring.
+
+        let afterImageLines = []; // Array of active lines with decay
+        const FLASH_LINE_DURATION = 300; // Non-motif: fast flash
+        const MOTIF_LINE_DURATION = 1500; // Motif: persistent scar
+        const MOTIF_LINE_ANGLE = Math.PI * 0.25; // Consistent angle for motif lines
+
+        // Spawn an after-image line when audio fires
+        // Lines cross SCREEN SPACE - they brush past the player
+        function spawnAfterImageLine(fromNode, isMotif = false) {
+            const duration = isMotif ? MOTIF_LINE_DURATION : FLASH_LINE_DURATION;
+
+            // Lines don't connect nodes. They cross through space.
+            // Calculate line that crosses the reticle/subtitle area
+            let angle, length;
+
+            if (isMotif) {
+                // Motif lines: SAME angle every time (parallel scars)
+                angle = MOTIF_LINE_ANGLE + (Math.random() - 0.5) * 0.1; // Slight jitter
+                length = 400 + Math.random() * 200; // Long scar
+            } else {
+                // Non-motif: random angle, shorter
+                angle = Math.random() * Math.PI * 2;
+                length = 200 + Math.random() * 150;
+            }
+
+            // Line starts from node and crosses toward screen center/reticle
+            const halfLen = length / 2;
+            const x1 = fromNode.x - Math.cos(angle) * halfLen;
+            const y1 = fromNode.y - Math.sin(angle) * halfLen;
+            const x2 = fromNode.x + Math.cos(angle) * halfLen;
+            const y2 = fromNode.y + Math.sin(angle) * halfLen;
+
+            // Create the line
+            afterImageLines.push({
+                x1, y1, x2, y2,
+                createdAt: Date.now(),
+                duration: duration,
+                isMotif: isMotif,
+                isKinley: fromNode.isKinley || false
+            });
+        }
+
+        // Draw all active after-image lines with decay
+        // DRAWN AFTER NODES for proper layering
+        function drawAfterImageLines() {
+            const now = Date.now();
+
+            // Remove expired lines
+            afterImageLines = afterImageLines.filter(line =>
+                now - line.createdAt < line.duration
+            );
+
+            // Draw each line
+            afterImageLines.forEach(line => {
+                const age = now - line.createdAt;
+                const progress = age / line.duration;
+
+                // Opacity curve: full for first 40%, then decay
+                // MUCH BRIGHTER than before
+                let opacity;
+                if (progress < 0.4) {
+                    opacity = 0.7; // VISIBLE - not subtle
+                } else {
+                    opacity = 0.7 * (1 - ((progress - 0.4) / 0.6));
+                }
+
+                // Color: slightly off-node colors for contrast
+                let color;
+                if (line.isMotif) {
+                    // Warm yellow-orange for motifs - VERY visible
+                    color = `rgba(255, 180, 80, ${opacity})`;
+                } else if (line.isKinley) {
+                    // Red for Kinley - clear and distinct
+                    color = `rgba(255, 80, 80, ${opacity * 0.9})`;
+                } else {
+                    // Desaturated white-green for Ethel - not same as node green
+                    color = `rgba(180, 255, 180, ${opacity * 0.7})`;
+                }
+
+                ctx.beginPath();
+                ctx.strokeStyle = color;
+                // THICKER lines - must be visible
+                ctx.lineWidth = line.isMotif ? 3 : 2;
+
+                // Gradient effect: one end brighter (head of the vector)
+                const gradient = ctx.createLinearGradient(line.x1, line.y1, line.x2, line.y2);
+                if (line.isMotif) {
+                    gradient.addColorStop(0, `rgba(255, 180, 80, ${opacity * 0.3})`);
+                    gradient.addColorStop(0.5, `rgba(255, 180, 80, ${opacity})`);
+                    gradient.addColorStop(1, `rgba(255, 180, 80, ${opacity * 0.5})`);
+                } else if (line.isKinley) {
+                    gradient.addColorStop(0, `rgba(255, 80, 80, ${opacity * 0.2})`);
+                    gradient.addColorStop(1, `rgba(255, 80, 80, ${opacity})`);
+                } else {
+                    gradient.addColorStop(0, `rgba(180, 255, 180, ${opacity * 0.2})`);
+                    gradient.addColorStop(1, `rgba(180, 255, 180, ${opacity})`);
+                }
+                ctx.strokeStyle = gradient;
+
+                ctx.moveTo(line.x1, line.y1);
+                ctx.lineTo(line.x2, line.y2);
+                ctx.stroke();
+            });
         }
 
         // --- UI UPDATES ---
@@ -577,29 +1235,83 @@
 
         function updateScore() {
             const count = nodes.filter(n => n.discovered).length;
-            document.getElementById('score-display').innerText = `${count} / ${nodes.length}`;
+            const el = document.getElementById('score-display');
+            if (el) {
+                el.innerText = `${count} / ${nodes.length}`;
+            }
         }
 
         // --- RENDER LOOP ---
 
+        // Draw anchor zone wireframes (The Latency Map)
+        function drawAnchors() {
+            ctx.save();
+            ctx.lineWidth = 1;
+
+            for (const [key, data] of Object.entries(ANCHOR_COORDS)) {
+                const cx = data.x * width;
+                const cy = data.y * height;
+
+                // Distance to cursor
+                const d = Math.hypot(cx - mouseX, cy - mouseY);
+                const isActive = d < data.r + 100;
+
+                // Visibility: Faint normally, brighter when close
+                const alpha = isActive ? 0.15 : 0.05;
+                ctx.strokeStyle = `rgba(0, 255, 65, ${alpha})`;
+
+                ctx.beginPath();
+                if (data.shape === 'circle') {
+                    ctx.arc(cx, cy, data.r, 0, Math.PI * 2);
+                } else if (data.shape === 'rect') {
+                    ctx.rect(cx - data.r / 1.5, cy - data.r / 1.5, data.r * 1.33, data.r * 1.33);
+                } else if (data.shape === 'hex') {
+                    for (let i = 0; i < 6; i++) {
+                        const angle = i * Math.PI / 3;
+                        const x = cx + Math.cos(angle) * data.r;
+                        const y = cy + Math.sin(angle) * data.r;
+                        if (i === 0) ctx.moveTo(x, y);
+                        else ctx.lineTo(x, y);
+                    }
+                    ctx.closePath();
+                } else if (data.shape === 'triangle') {
+                    ctx.moveTo(cx, cy - data.r);
+                    ctx.lineTo(cx - data.r * 0.866, cy + data.r * 0.5);
+                    ctx.lineTo(cx + data.r * 0.866, cy + data.r * 0.5);
+                    ctx.closePath();
+                }
+                ctx.stroke();
+
+                // Draw Label if close
+                if (isActive) {
+                    ctx.fillStyle = `rgba(0, 255, 65, 0.4)`;
+                    ctx.font = '10px monospace';
+                    ctx.fillText(key.toUpperCase().replace('_', ' '), cx - 30, cy + data.r + 15);
+                }
+            }
+            ctx.restore();
+        }
+
         function draw() {
             ctx.clearRect(0, 0, width, height);
 
-            // Draw connections between discovered nodes
-            ctx.beginPath();
-            ctx.strokeStyle = 'rgba(0, 255, 65, 0.2)';
-            ctx.lineWidth = 1;
-            for (let i = 0; i < nodes.length; i++) {
-                if (!nodes[i].discovered) continue;
-                for (let j = i + 1; j < nodes.length; j++) {
-                    if (nodes[j].discovered) {
-                        // Draw line
-                        ctx.moveTo(nodes[i].x, nodes[i].y);
-                        ctx.lineTo(nodes[j].x, nodes[j].y);
-                    }
-                }
+            // 1. DRAW THE MAP (Anchor Zones)
+            drawAnchors();
+
+            // 2. DRAW AFTER-IMAGE LINES
+            drawAfterImageLines();
+
+            // Draw pressure lines effect after Story17 completes (special case)
+            if (pressureLinesActive && story17Node) {
+                ctx.beginPath();
+                ctx.strokeStyle = `rgba(255, 100, 100, ${pressureLinesOpacity})`;
+                ctx.lineWidth = 1;
+                kinleySnippetPositions.forEach(pos => {
+                    ctx.moveTo(pos.x, pos.y);
+                    ctx.lineTo(story17Node.x, story17Node.y);
+                });
+                ctx.stroke();
             }
-            ctx.stroke();
 
             // Draw Nodes
             nodes.forEach(node => {
@@ -611,30 +1323,77 @@
                 if (node.x < 0 || node.x > width) node.vx *= -1;
                 if (node.y < 0 || node.y > height) node.vy *= -1;
 
-                const isVisible = node.discovered;
+                const targetX = isIdle ? (autoScanTarget ? autoScanTarget.x : -1000) : mouseX;
+                const targetY = isIdle ? (autoScanTarget ? autoScanTarget.y : -1000) : mouseY;
+                const dist = Math.hypot(node.x - targetX, node.y - targetY);
 
-                if (isVisible) {
-                    // Discovered Node: Bright Green Square
-                    ctx.fillStyle = '#00ff41';
+                if (node.discovered) {
+                    // === DISCOVERED NODE: Bright + pressure scar ===
+
+                    // Draw permanent pressure scar (faint line from discovery point)
+                    if (node.discoveredAt && node.isKinley) {
+                        ctx.strokeStyle = node.isMotif ? 'rgba(255, 180, 80, 0.15)' : 'rgba(255, 80, 80, 0.1)';
+                        ctx.lineWidth = 1;
+                        ctx.beginPath();
+                        // Scar line extends at motif angle
+                        const scarAngle = node.isMotif ? MOTIF_LINE_ANGLE : (node.id.charCodeAt(1) * 0.1);
+                        const scarLen = 80;
+                        ctx.moveTo(node.x - Math.cos(scarAngle) * scarLen, node.y - Math.sin(scarAngle) * scarLen);
+                        ctx.lineTo(node.x + Math.cos(scarAngle) * scarLen, node.y + Math.sin(scarAngle) * scarLen);
+                        ctx.stroke();
+                    }
+
+                    // Node glow - color based on axis
+                    let nodeColor = '#00ff41'; // Default green
+                    if (node.isKinley) {
+                        if (node.axis === AXIS.SIGNAL) nodeColor = '#00ff88';
+                        else if (node.axis === AXIS.POWER) nodeColor = '#ff9500';
+                        else if (node.axis === AXIS.RESPONSE) nodeColor = '#ff4444';
+                        else if (node.axis === AXIS.MISREAD) nodeColor = '#aaaaaa';
+                    }
+
+                    ctx.fillStyle = nodeColor;
                     ctx.shadowBlur = 10;
-                    ctx.shadowColor = '#00ff41';
+                    ctx.shadowColor = nodeColor;
                     ctx.fillRect(node.x - 3, node.y - 3, 6, 6);
                     ctx.shadowBlur = 0;
+
                 } else {
-                    // Hidden Node: Faint static or invisible
-                    // We only draw it if close to cursor for "hint"
-                    // Get distance to CURRENT INTERACTION POINT (Mouse or Auto)
-                    const targetX = isIdle ? (autoScanTarget ? autoScanTarget.x : -1000) : mouseX;
-                    const targetY = isIdle ? (autoScanTarget ? autoScanTarget.y : -1000) : mouseY;
+                    // === UNDISCOVERED NODE: Always visible (no more black screen) ===
 
-                    const dist = Math.hypot(node.x - targetX, node.y - targetY);
+                    // BOOSTED VISIBILITY: 0.3 opacity so screen feels alive
+                    const baseOpacity = 0.3;
 
+                    // Dynamic Size: Nodes "breathe" slightly
+                    const size = 2 + (Math.sin(Date.now() * 0.005 + node.x) * 0.5);
+
+                    ctx.fillStyle = `rgba(0, 255, 65, ${baseOpacity})`;
+                    ctx.fillRect(node.x - size / 2, node.y - size / 2, size, size);
+
+                    // Enhanced hint when close
                     if (dist < 200) {
-                        // Draw faint ring
                         const opacity = 1 - (dist / 200);
-                        ctx.strokeStyle = `rgba(0, 255, 65, ${opacity * 0.5})`;
+
+                        // Axis-matched nodes glow brighter
+                        const axisMatch = !node.axis || node.axis === activeAxis;
+                        const hintOpacity = axisMatch ? opacity * 0.8 : opacity * 0.3;
+                        const hintColor = axisMatch
+                            ? `rgba(0, 255, 65, ${hintOpacity})`
+                            : `rgba(100, 100, 100, ${hintOpacity})`;
+
+                        ctx.strokeStyle = hintColor;
+
+                        // Connection line to cursor when very close and axis matches
+                        if (dist < 100 && axisMatch) {
+                            ctx.beginPath();
+                            ctx.moveTo(node.x, node.y);
+                            ctx.lineTo(targetX, targetY);
+                            ctx.stroke();
+                        }
+
+                        // Node Halo
                         ctx.beginPath();
-                        ctx.arc(node.x, node.y, 5 + Math.random() * 5, 0, Math.PI * 2);
+                        ctx.arc(node.x, node.y, 5 + Math.random() * 3, 0, Math.PI * 2);
                         ctx.stroke();
 
                         // Glitch line
@@ -687,13 +1446,14 @@
 
 
         // --- AUTO PILOT (IDLE STATE) ---
+        let autoScanWaitUntil = 0; // Timestamp when we can pick new target
 
         function updateAutoPilot() {
             if (Date.now() - lastInteractionTime > IDLE_THRESHOLD) {
                 isIdle = true;
 
                 // If we don't have a target, pick the nearest UNDISCOVERED node
-                if (!autoScanTarget) {
+                if (!autoScanTarget && Date.now() > autoScanWaitUntil) {
                     // Find random undiscovered
                     const available = nodes.filter(n => !n.discovered);
                     if (available.length > 0) {
@@ -710,6 +1470,8 @@
                         autoScanTarget = { x: width / 2, y: height / 2, currentX: mouseX, currentY: mouseY };
                     }
                 }
+
+                if (!autoScanTarget) return;
 
                 // Move virtual cursor towards target
                 const dx = autoScanTarget.x - autoScanTarget.currentX;
@@ -728,13 +1490,17 @@
                 // Trigger audio logic with VIRTUAL coordinates
                 handleAudioProximity(autoScanTarget.currentX, autoScanTarget.currentY);
 
-                // If we are super close, pick a new target after a while
-                if (Math.hypot(dx, dy) < 10) {
-                    // Let it sit for a second (handled by capture logic), then reset target to null to pick new one
-                    // But capture logic happens inside handleAudioProximity
-                    if (autoScanTarget.node && autoScanTarget.node.discovered) {
-                        // Move to next
-                        setTimeout(() => { autoScanTarget = null; }, 2000);
+                // If we are at the node and it's discovered, start stillness timer
+                if (Math.hypot(dx, dy) < 10 && autoScanTarget.node && autoScanTarget.node.discovered) {
+                    // Track when we arrived at this node
+                    if (!autoScanTarget.arrivedAt) {
+                        autoScanTarget.arrivedAt = Date.now();
+                    }
+
+                    // Wait 2 seconds after arriving before moving on
+                    if (Date.now() - autoScanTarget.arrivedAt > 2000) {
+                        autoScanWaitUntil = Date.now() + 500; // Short buffer before next target
+                        autoScanTarget = null;
                     }
                 }
             } else {
@@ -752,6 +1518,7 @@
             // Init
             resize();
             initNodes();
+            initFocusDial();
             draw();
 
             // Play a startup sound or unlock audio context
