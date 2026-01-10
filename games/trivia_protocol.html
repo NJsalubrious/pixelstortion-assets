@@ -253,47 +253,646 @@
         // Cipher game data - Questions and puzzles for each protocol
         const cipherPuzzles = {
             ethel: [
-                { cipher: "MIRROR + STUNT = HIT BLUNT", question: "In the song 'Ride,' what does Ethel see that her peer group ignores?", options: ["Social anxiety and withdrawal", "Predictive simulation of victim impact", "Standard oppositional defiance", "Fear of legal consequences"], correct: 1, intel: "The system labels her 'withdrawn.' The reality is hyper-empathy. She isn't lacking social cues; she is modeling the 'hit' the victim takes.", timeLimit: 20 },
-                { cipher: "DIRECT LINE != PARALLAX ERROR", question: "In 'The Drop,' what is Ethel's primary objective at the cliff edge?", options: ["Thrill-seeking/Impulsivity", "Testing life-ending ideation", "Validation of objective geometry over subjective perspective", "Seeking peer approval through risk"], correct: 2, intel: "The fall is physics, not pathology. Ethel isn't testing her bravery; she is testing the 'shaped lenses' of others.", timeLimit: 22 },
-                { cipher: "FUNCTION > CONFORMITY", question: "What does Ethel define as the primary function of 'Normal' in a corrupt system?", options: ["A healthy social bond", "Camouflage for collective denial and harm", "A lack of technical aptitude", "Emotional stability"], correct: 1, intel: "Ethel identifies that 'normal' is a leash of politeness. Her 'abrasiveness' is actually a high-functioning refusal to soften the naming of harm.", timeLimit: 20 },
-                { cipher: "99th REASONING / ROTE DEFICIT = MISREAD", question: "Why did the school system label Ethel as having 'deficits'?", options: ["Inability to process complex data", "Lack of cognitive potential", "Failure to conform to rote metrics despite high fluid reasoning", "General cognitive impairment"], correct: 2, intel: "Ethel scored in the 99th percentile for fluid reasoning but tanked rote tests. The system measured conformity, not capacity.", timeLimit: 22 },
-                { cipher: "CRAZY HOUSE = WON'T BREAK", question: "Why did Ethel frame her move into Dominic's house as a 'decision'?", options: ["She wanted the Mosman lifestyle", "She was bribed by Dominic", "To stay psychologically intact while buying time", "She was afraid of the social worker"], correct: 2, intel: "At 17, admitting you are a prisoner causes a psychological break. Ethel 'built the box' and walked in, dressing the lack of choice as a decision.", timeLimit: 25 },
-                { cipher: "SHARP TEETH + STEEL KEY = BANK VAULT", question: "What did the 'sharp' steel key found after the crash literally unlock?", options: ["Gran's industrial chemistry lab", "A bank vault with unredacted files and an AFP contact", "The ignition of the Honda CB1000", "A hidden diary in the farm shed"], correct: 1, intel: "RECOVERY LOG: It led to a bank vault where Gran had stored the 'unspoken alliance'—unredacted court files and a direct number for an AFP officer.", timeLimit: 20 },
-                { cipher: "QUESTION FURNITURE - OPTICS = CLARITY", question: "What is Ethel's strategy during her courtroom testimony?", options: ["To lie to protect Dominic", "To cry for the jury's sympathy", "To provide clipped, fact-framed answers", "To refuse to speak at all"], correct: 2, intel: "LEGAL STRATEGY: Ethel knows lawyers use 'optics' to bury truth. She provides answers that are 'Nothing True, Nothing Refuted.'", timeLimit: 22 },
-                { cipher: "CATALYST RISE + FAKE DATA = THE OUTLIER", question: "What did Ethel uncover at the research lab?", options: ["The lab was underfunded", "Human trials were starting on fake data", "Her boss was stealing her intellectual property", "The equipment was not calibrated"], correct: 1, intel: "DATA AUDIT: Ethel noted the ratios others ignored. She realized human trials were about to start based on fake data.", timeLimit: 22 },
-                { cipher: "RESONANCE + ACTION = THE HIT", question: "Why does Ethel's response to harm appear 'clipped' or 'flat' to outside observers?", options: ["She is suppressing her emotions to fit in", "She has been desensitized by her upbringing", "She experiences raw affective resonance but channels it into forensic fix-action", "She lacks the ability to understand others' pain"], correct: 2, intel: "Ethel doesn't perform empathy; she executes it. Her 'flat' affect is the 'bracing' of a high-IQ mind experiencing intense affective resonance.", timeLimit: 20 },
-                { cipher: "INPUT: [MORTALITY CLUSTER] >>> STATUS: [?]", question: "In the 'Normal' intro, why does Ethel say people choose to stay quiet about the faked data?", options: ["THEY WANT THE COMPANY TO SUCCEED", "THEY ARE AFRAID OF THE LAW", "THEY DISAGREE WITH THE FINDINGS", "THEY PRETEND NOT TO KNOW"], correct: 3, intel: "SYSTEM LOG: 'People will pretend not to know until someone makes them look.' This isn't a lack of information; it's a surplus of comfort.", timeLimit: 20 },
-                { cipher: "WHISTLEBLOWER PATH: [LEAK PROTOCOL]", question: "When the company used 'politeness as a leash' to keep her quiet, what was Ethel's final response?", options: ["SHE REFORMED THE SYSTEM", "SHE WENT TO THE PRESS", "SHE QUIT THE LAB", "SHE SIGNED THE NDA"], correct: 1, intel: "'If I name it early, it's because I've seen how long people pretend not to know until someone makes them look.'", timeLimit: 22 },
-                { cipher: "PERFORMANCE SCAN: [RED NOSE REFUSAL]", question: "The CEO 'talks fast and pushes hard' to sell the drug. What role does Ethel refuse to 'perform' to keep the peace?", options: ["THE LOYAL SOLDIER", "THE SILENT PARTNER", "THE CLOWN", "THE ACCIDENT"], correct: 2, intel: "'I won't play the clown.' The CEO needs a smile to feel safe. Ethel refuses the performance.", timeLimit: 20 }
+                {
+                    cipher: "PROCEDURE ≠ SAFETY",
+                    question: "Why does Ethel distrust process-first decision making?",
+                    options: [
+                        "Because procedures are often outdated",
+                        "Because process can outlive the risk it was meant to manage",
+                        "Because human judgment should override rules",
+                        "Because procedures slow response time"
+                    ],
+                    correct: 1,
+                    intel: "Process is often mistaken for protection. Once the context shifts, the checklist becomes decorative.",
+                    timeLimit: 22
+                },
+
+                {
+                    cipher: "DOCUMENTATION ≠ ACCOUNTABILITY",
+                    question: "What does Ethel identify as the failure point in post-incident reviews?",
+                    options: [
+                        "The substitution of narrative coherence for responsibility",
+                        "Incomplete data collection",
+                        "Emotional bias from stakeholders",
+                        "Insufficient external oversight"
+                    ],
+                    correct: 0,
+                    intel: "When the story makes sense, people stop asking who approved it.",
+                    timeLimit: 20
+                },
+
+                {
+                    cipher: "CONSENSUS = DILUTION",
+                    question: "Why does Ethel treat consensus decisions with suspicion?",
+                    options: [
+                        "Because shared ownership reduces individual liability",
+                        "Because they take too long to reach",
+                        "Because they often reflect political compromise",
+                        "Because they discourage innovation"
+                    ],
+                    correct: 0,
+                    intel: "If everyone agreed, no one decided.",
+                    timeLimit: 22
+                },
+
+                {
+                    cipher: "RISK LANGUAGE = BLUNTING TOOL",
+                    question: "What is the function of softened risk language?",
+                    options: [
+                        "To avoid public panic",
+                        "To make unacceptable outcomes sound manageable",
+                        "To remain legally precise",
+                        "To preserve stakeholder confidence"
+                    ],
+                    correct: 1,
+                    intel: "Adverse outcomes is a way of not saying who gets hurt.",
+                    timeLimit: 20
+                },
+
+                {
+                    cipher: "ESCALATION ≠ FAILURE",
+                    question: "Why does Ethel escalate issues earlier than protocol recommends?",
+                    options: [
+                        "Because she lacks patience for hierarchy",
+                        "Because she distrusts middle management",
+                        "Because delay compounds downstream harm",
+                        "Because she prefers decisive action"
+                    ],
+                    correct: 2,
+                    intel: "Escalation is only seen as failure by systems that measure calm instead of damage.",
+                    timeLimit: 22
+                },
+
+                {
+                    cipher: "POLITENESS = RISK MASK",
+                    question: "When does politeness become dangerous?",
+                    options: [
+                        "When it undermines authority",
+                        "When it slows communication",
+                        "When it prevents naming an imminent outcome",
+                        "When it causes interpersonal friction"
+                    ],
+                    correct: 2,
+                    intel: "Courtesy is not neutral. It has a cost curve.",
+                    timeLimit: 20
+                },
+
+                {
+                    cipher: "ASSUMED COMPETENCE = BLIND SPOT",
+                    question: "What does Ethel see as the risk of credential-based trust?",
+                    options: [
+                        "It discourages peer review",
+                        "It creates power imbalance",
+                        "It replaces verification with reputation",
+                        "It slows corrective feedback"
+                    ],
+                    correct: 2,
+                    intel: "Competence that isn’t checked becomes mythology.",
+                    timeLimit: 22
+                },
+
+                {
+                    cipher: "SCOPE = RESPONSIBILITY FILTER",
+                    question: "How is 'out of scope' most often used?",
+                    options: [
+                        "To maintain project focus",
+                        "To protect limited resources",
+                        "To exclude foreseeable consequences",
+                        "To avoid duplication of effort"
+                    ],
+                    correct: 2,
+                    intel: "If you narrow the scope enough, nothing is your fault.",
+                    timeLimit: 20
+                },
+
+                {
+                    cipher: "METRICS ≠ IMPACT",
+                    question: "Why does Ethel resist metric-only evaluation?",
+                    options: [
+                        "Because metrics lag real-world events",
+                        "Because they are vulnerable to manipulation",
+                        "Because they abstract harm into tolerable numbers",
+                        "Because they require expert interpretation"
+                    ],
+                    correct: 2,
+                    intel: "Numbers behave. Outcomes don’t.",
+                    timeLimit: 22
+                },
+
+                {
+                    cipher: "SILENCE = LEASH",
+                    question: "Why does Ethel treat silence during decision windows as an active force?",
+                    options: [
+                        "Because it creates ambiguity",
+                        "Because it delays alignment",
+                        "Because it signals uncertainty",
+                        "Because it coerces compliance without record"
+                    ],
+                    correct: 3,
+                    intel: "This is not hesitation. This is control through omission. If no one speaks, the outcome still lands — it just lands unowned.",
+                    timeLimit: 25
+                },
+
+                {
+                    cipher: "STABILITY ≠ SAFETY",
+                    question: "Why does Ethel challenge systems that appear stable?",
+                    options: [
+                        "Because stability resists improvement",
+                        "Because stability hides inefficiency",
+                        "Because stability creates complacency",
+                        "Because stability can indicate suppressed failure"
+                    ],
+                    correct: 3,
+                    intel: "Nothing breaks loudly if it’s being held together quietly.",
+                    timeLimit: 22
+                },
+
+                {
+                    cipher: "AUTHORITY ≠ CLARITY",
+                    question: "What does Ethel see as the danger of deferring to authority?",
+                    options: [
+                        "It discourages independent thinking",
+                        "It slows corrective action",
+                        "It undermines collaboration",
+                        "It substitutes rank for analysis"
+                    ],
+                    correct: 3,
+                    intel: "Titles don’t improve signal quality.",
+                    timeLimit: 20
+                },
+
+                {
+                    cipher: "DELAY = DECISION",
+                    question: "How does Ethel interpret prolonged indecision?",
+                    options: [
+                        "As uncertainty that needs more data",
+                        "As a failure of leadership",
+                        "As a necessary pause",
+                        "As a choice to accept the default outcome"
+                    ],
+                    correct: 3,
+                    intel: "If you don’t choose, the system chooses for you.",
+                    timeLimit: 22
+                },
+
+                {
+                    cipher: "GOOD INTENT ≠ SAFE DESIGN",
+                    question: "Why does Ethel reject intent-based justifications?",
+                    options: [
+                        "Because intent is difficult to verify",
+                        "Because intent can change",
+                        "Because intent complicates enforcement",
+                        "Because outcomes are indifferent to motive"
+                    ],
+                    correct: 3,
+                    intel: "The damage doesn’t care what you meant.",
+                    timeLimit: 20
+                },
+
+                {
+                    cipher: "CLARITY IS NOT AGGRESSION",
+                    question: "Why does Ethel accept being labelled 'abrasive'?",
+                    options: [
+                        "Because she lacks social finesse",
+                        "Because she prioritises efficiency",
+                        "Because she doesn’t value consensus",
+                        "Because precision feels hostile to vague systems"
+                    ],
+                    correct: 3,
+                    intel: "Clarity only sounds aggressive to processes built on blur.",
+                    timeLimit: 18
+                }
             ],
             isla: [
-                { cipher: "NAPKIN SMILE - GLOSS = SYSTEMIC ROT", question: "Isla describes her mother as 'Polished Vomit.' What is the root of this perception?", options: ["Distorted sensory processing", "Recognition of a performative facade masking instability", "Standard adolescent rebellion", "Manic irritability"], correct: 1, intel: "Isla identifies the 'masking' of her mother. 'Polished Vomit' is her descriptor for 'cultured stability', a beautiful surface used to hide systemic neglect.", timeLimit: 20 },
-                { cipher: "LATE NIGHT BURGER + CAR CHASE = PERFORMANCE ART", question: "Why does Isla engage in the 'Tunnel Chase' with the Married Banker?", options: ["Mania-induced reckless behavior", "Weaponized Mania as a defensive deterrent", "A simple theft of a high-value asset", "Standard attention-seeking behavior"], correct: 1, intel: "This isn't 'acting out.' Isla uses performance art to mirror the banker's predatory patterns back to him.", timeLimit: 25 },
-                { cipher: "PORCELAIN STRIKE + SINGING HINGE = SURVIVAL", question: "In 'Raise the Fourth,' what does the 'hinge' represent for Isla?", options: ["A literal broken door", "A symbolic desire for death", "Her voice as an autonomous survival mechanism", "A symptom of fragmented identity"], correct: 2, intel: "Even when Isla is struck like 'porcelain,' she preserves the 'hinge'—her voice. She isn't fragmented; she is choosing which part continues to 'sing.'", timeLimit: 20 },
-                { cipher: "MIRROR INHERITANCE - VOICE = PYRE", question: "How does Isla describe her 'inheritance' from her father?", options: ["Material wealth and social status", "An unavoidable mirror of their pathology", "A half-mind mirror she refuses to return", "A gift of artistic talent"], correct: 2, intel: "Isla identifies that she carries 'half its mind.' By acknowledging the 'scorched root,' she separates her voice from the inheritance.", timeLimit: 22 },
-                { cipher: "SLEAZE CURRENCY / NO COMPLIANCE = DETONATION", question: "Why does Isla scream in the studio during her 'audition' with the Shiny Headed Man?", options: ["Auditory hallucinations", "Calculated refusal to barter worth for access", "Inability to handle professional rejection", "A panic attack caused by men in power"], correct: 1, intel: "This isn't a lack of discipline. Isla recognizes the 'sleaze wrapped in influence' and chooses to 'frighten the shit out of him' rather than comply.", timeLimit: 25 },
-                { cipher: "NEEDLE GIFT + BLACK BOXES = EMPIRE BLEED", question: "What is Isla's objective when she steals her dealer's phone and locks him in his own bathroom?", options: ["Self-destructive addiction spiral", "Confirm Dominic's involvement and hit sent", "A desperate search for comfort", "Accidental discovery of evidence"], correct: 1, intel: "Drug dealer. Fentanyl. A setup disguised. Neat. And she reacted the way Isla reacts when she's cornered. With force and shape.", timeLimit: 22 },
-                { cipher: "CRAZY HOUSE / CBD LIGHTS = DRIVE", question: "In 'Peek-A-Boo,' what happens when Ethel won't let Isla ride the bike?", options: ["She crashes", "Red light, key yanked, Isla's off", "She sells the bike", "She escapes to the coast"], correct: 1, intel: "Rivalry becomes recognition. Isla wants to steer, but Ethel drives. In the 'crazy house,' they find a shared frequency.", timeLimit: 20 },
-                { cipher: "LOCKS GATES IGNITION = PATTERN READ", question: "What does Ethel claim Isla is 'reading' when she breaks a code?", options: ["The user's face", "User behavioral patterns", "Magnetic signatures", "Luck and chance"], correct: 1, intel: "Isla doesn't guess; she tracks. She reads the 'syntax' of the person behind the lock.", timeLimit: 20 },
-                { cipher: "SMUG TOASTER = PSYCH EVAL", question: "Isla once rewired a toaster because it 'looked smug.' What was she actually testing?", options: ["Electronic circuit flaws", "The limits of house rules", "Structural integrity of objects", "Her own technical dominance"], correct: 1, intel: "Isla tests the 'system' of the house by interacting with mundane objects in 'abnormal' ways. It isn't madness; it's the constant probing of the perimeter.", timeLimit: 22 },
-                { cipher: "USB STUN = SYSTEM DETONATION", question: "What did Isla do at her mother's wedding to Dominic?", options: ["Cried for help", "Fled the country", "Released hidden accounts via projector", "Assaulted the groom"], correct: 2, intel: "Isla used the wedding—a ceremony of 'Polished Vomit'—to detonate truth. She slipped a USB in, projecting hidden accounts and affairs.", timeLimit: 18 },
-                { cipher: "ART == PAIN", question: "How does Isla define the source of her music?", options: ["Melody of normality", "Weaponized trauma and spectacle", "Commercial success", "Classical training"], correct: 1, intel: "Isla rejects 'therapy' through art. She uses the stage to detonate silence. 'Art is Pain' isn't a cliché for her; it's the process of turning a scorched root into weaponized sound.", timeLimit: 20 },
-                { cipher: "FRACTURE = SPLIT IN TIME", question: "In 'Broken Edge,' Isla describes her sanity stuttering. What is she refusing to hide?", options: ["Her bank balance", "The noise", "Her addiction", "The knife edge truth"], correct: 3, intel: "Isla refuses to mend what is broken. She describes herself as a 'knife edge truth' split inside. While others hide the fracture, she exposes it.", timeLimit: 22 }
-            ],
-            dominic: [
-                { cipher: "STRAIN DETECTION = SCAPEGOAT SIGNATURE", question: "Why does Dominic encourage the engineer's shortcut in 'Structural Psychopathy'?", options: ["To maximize profit and efficiency", "To ensure an engineer's signature is on the flaw for future leverage", "General over-optimism about build quality", "To help a stressed employee finish early"], correct: 1, intel: "Dominic identifies 'limping prey', the engineer under strain. He doesn't just want a building; he wants a fall guy.", timeLimit: 20 },
-                { cipher: "RHYTHM MATCH = REMOVAL OF CHOICE", question: "How does Dominic achieve 'compliance' with his cellmate in prison?", options: ["Physical intimidation", "Sequence and pacing to bypass critical faculty", "Bribing him with resources", "Logical debate"], correct: 1, intel: "BEHAVIORAL DATA: Dominic removes friction by matching the target's rhythm. He doesn't lie; he sequences.", timeLimit: 22 },
-                { cipher: "HERO STEP == KILLER STEP", question: "What is the strategic function of Dominic's 'Hero' performance during a crisis?", options: ["To fulfill a genuine moral obligation to protect the vulnerable", "To overwrite the memory of a systemic failure with a narrative of individual action", "To demonstrate physical superiority over first responders", "To distract from his own hesitation in high-pressure scenarios"], correct: 1, intel: "Dominic isn't 'moving' while others 'freeze'. He is waiting for the 'long pause' of human hesitation to establish a monopoly on the narrative.", timeLimit: 22 },
-                { cipher: "COURTESY + PREDICTABLE RHYTHM = EXIT PERMISSION", question: "How does Dominic describe the mechanism of his escape?", options: ["Brute force and physical violence", "Exploiting the permissions granted by social courtesy", "High-tech hacking of security systems", "Pure luck and timing"], correct: 1, intel: "TACTICAL ANALYSIS: Dominic understands that 'gone isn't a moment; it's a series of permissions.' He uses the guard's 'belief' and 'rhythm' to bypass checks.", timeLimit: 20 },
-                { cipher: "FIRST MOVE > LONG PAUSE = REMEMBERED HAND", question: "In 'Hero Complex,' why does Dominic step in when others freeze?", options: ["An innate moral compass", "To ensure the world won't break apart", "To manufacture a memory that erases his hesitation", "To prove he is better than his peers"], correct: 2, intel: "COGNITIVE NOTE: Dominic waits for the 'hesitation' of others, then acts so that the 'hand that acts first is the hand remembered.'", timeLimit: 22 },
-                { cipher: "BAIL COST + GUILT MIRROR = DECISION BOX", question: "Why does Dominic frame Ethel's entry into his house as her 'decision'?", options: ["To respect autonomy", "To trap her in a psychological shell game of complicity", "To remove liability", "To help her grief"], correct: 1, intel: "JUSTIFICATION GLOSS: By framing her move as a 'deal' (paying Isla's bail), Dominic forces Ethel to 'dress her guilt' as a choice.", timeLimit: 25 },
-                { cipher: "HARMLESS TASK + IMPORTANT TASK = THE SPENT RESOURCE", question: "What is the final stage of Dominic's four-step process of manipulation?", options: ["Demanding a show of loyalty", "Giving them a task they can't take back", "Asking them to plan an escape", "Letting them rest after a job well done"], correct: 1, intel: "Dominic builds trust as currency. He starts with a harmless task to establish obedience, moves to an important one, and finally forces an action that creates permanent complicity.", timeLimit: 22 },
-                { cipher: "OBEDIENCE / BURDENS = CLEAR SPACE", question: "What does Dominic sell to his victims as the primary benefit of following his rules?", options: ["Protection from other inmates", "A way to prove their innocence", "Wealth and influence within the prison", "The clearing of mental space by removing the burden of choice"], correct: 3, intel: "Dominic sells obedience as a relief from the exhaustion of 'guessing' and 'wondering.' He asks, 'Why hold burdens that I already know how to carry?'", timeLimit: 20 },
-                { cipher: "RHYTHM > NOISE = POWER", question: "Why does Dominic claim that 'plans' and 'anger' are less effective than rhythm?", options: ["Because plans are too simple", "Because anger and noise burn out but steady rhythm outlasts them", "Because the guards don't like noise", "Because plans require too much paperwork"], correct: 1, intel: "Dominic is a parasitic architect. He knows that 'anger burns fast' and 'plans cloud.' He wins by outlasting the energy of others.", timeLimit: 22 },
-                { cipher: "PRE-EMPTIVE CLOSE == THE PATTERN", question: "How does Dominic view the moment a target finally asks for his help?", options: ["As something the target already decided without knowing it", "As a surprise victory", "As a sign of the target's weakness", "As a moment that requires a new negotiation"], correct: 0, intel: "Dominic believes choice is an illusion he manages. By the time a victim 'asks' to stop losing, he has already removed every other option.", timeLimit: 20 },
-                { cipher: "LEAN vs LEFT = THE SMART CHOICE", question: "Why do targets eventually choose to 'lean' on Dominic's structure?", options: ["Because they have no other friends", "Because of fear of being left behind", "Because he is the only one who doesn't lie", "Because they want to stop losing and believe leaning is the 'smart' alternative"], correct: 3, intel: "Dominic makes dependency look like pragmatism. He waits for the 'rushing' and 'grasping' of others to fail, then offers his structure as the only logical way to survive.", timeLimit: 22 },
-                { cipher: "LETHAL STACK + RETALIATION = BLAST RADIUS", question: "What was the intent behind the fentanyl 'dealer stack' incident?", options: ["A targeted murder designed to look like an addict's overdose", "To test Isla's loyalty to the household", "To protect the house from outside intruders", "To teach Isla how to handle the dealer's Russian contacts"], correct: 0, intel: "Dominic P.I. found Isla's drug dealer and persuaded him to sell her a lethal dose. The attempt failed because Isla identified the setup and retaliated.", timeLimit: 25 }
+
+                {
+                    cipher: "DOORWAY TEST",
+                    question: "Why does Isla always stand near exits?",
+                    options: [
+                        "Because she hates feeling boxed in",
+                        "Because it gives her better sightlines",
+                        "Because it shortens response time if something shifts",
+                        "Because she’s impatient"
+                    ],
+                    correct: 2,
+                    intel: "Positioning is decided before the room registers as a room.",
+                    timeLimit: 15
+                },
+
+                {
+                    cipher: "NO RECEIPTS",
+                    question: "Why does Isla avoid keeping records of small favours?",
+                    options: [
+                        "Because she doesn’t care about credit",
+                        "Because paperwork slows things down",
+                        "Because records turn help into leverage",
+                        "Because she forgets"
+                    ],
+                    correct: 2,
+                    intel: "Anything that can be tallied can be used later.",
+                    timeLimit: 15
+                },
+
+                {
+                    cipher: "EYE CONTACT",
+                    question: "Why does Isla break eye contact first?",
+                    options: [
+                        "Because she gets bored easily",
+                        "Because sustained eye contact invites escalation",
+                        "Because she’s hiding something",
+                        "Because it makes people uncomfortable"
+                    ],
+                    correct: 1,
+                    intel: "She reads faster than she signals.",
+                    timeLimit: 15
+                },
+
+                {
+                    cipher: "TOOLS, NOT TALISMANS",
+                    question: "Why does Isla keep objects that look meaningless?",
+                    options: [
+                        "Because she’s sentimental in odd ways",
+                        "Because they’re lucky",
+                        "Because they solve problems quietly",
+                        "Because she forgets to throw things out"
+                    ],
+                    correct: 2,
+                    intel: "Anything that worked once stays close.",
+                    timeLimit: 15
+                },
+
+                {
+                    cipher: "SMALL TALK",
+                    question: "Why does Isla derail polite conversation?",
+                    options: [
+                        "Because she enjoys making people nervous",
+                        "Because politeness hides information",
+                        "Because she lacks social awareness",
+                        "Because she prefers honesty"
+                    ],
+                    correct: 1,
+                    intel: "Politeness smooths over the part that matters.",
+                    timeLimit: 15
+                },
+
+                {
+                    cipher: "LOCKED ROOMS",
+                    question: "Why does Isla check bathrooms and side rooms first?",
+                    options: [
+                        "Because she’s curious",
+                        "Because enclosed spaces change behaviour",
+                        "Because she’s paranoid",
+                        "Because she doesn’t like crowds"
+                    ],
+                    correct: 1,
+                    intel: "Containment reveals intent faster than conversation.",
+                    timeLimit: 15
+                },
+
+                {
+                    cipher: "PHONE WEIGHT",
+                    question: "Why does Isla notice phones before faces?",
+                    options: [
+                        "Because she’s addicted to screens",
+                        "Because devices carry context people don’t",
+                        "Because she’s rude",
+                        "Because she doesn’t trust expressions"
+                    ],
+                    correct: 1,
+                    intel: "Patterns live where people forget to curate.",
+                    timeLimit: 15
+                },
+
+                {
+                    cipher: "LAUGHTER TIMING",
+                    question: "Why does Isla laugh at the wrong moment?",
+                    options: [
+                        "Because she’s socially off-beat",
+                        "Because humour diffuses tension",
+                        "Because the danger has already passed",
+                        "Because she doesn’t take things seriously"
+                    ],
+                    correct: 2,
+                    intel: "Relief arrives late. So does the laugh.",
+                    timeLimit: 15
+                },
+
+                {
+                    cipher: "NO WARNINGS",
+                    question: "Why does Isla act without announcing it?",
+                    options: [
+                        "Because she likes surprise",
+                        "Because warnings create counter-moves",
+                        "Because she’s impulsive",
+                        "Because she enjoys control"
+                    ],
+                    correct: 1,
+                    intel: "Advance notice helps the wrong side prepare.",
+                    timeLimit: 15
+                },
+
+                {
+                    cipher: "AFTER THE FACT",
+                    question: "Why does Isla go quiet after something blows up?",
+                    options: [
+                        "Because she’s ashamed",
+                        "Because she’s processing emotion",
+                        "Because the objective is already complete",
+                        "Because she’s dissociating"
+                    ],
+                    correct: 2,
+                    intel: "Once the structure moves, attention is unnecessary.",
+                    timeLimit: 15
+                },
+                {
+                    cipher: "BACKGROUND NOISE",
+                    question: "Why does Isla always register ambient sound?",
+                    options: [
+                        "Because silence makes her uneasy",
+                        "Because sound changes before behaviour does",
+                        "Because she’s easily distracted",
+                        "Because she likes busy environments"
+                    ],
+                    correct: 1,
+                    intel: "The room speaks before people do.",
+                    timeLimit: 15
+                },
+
+                {
+                    cipher: "OBJECT TEST",
+                    question: "Why does Isla touch things while talking?",
+                    options: [
+                        "Because she fidgets when anxious",
+                        "Because she’s grounding herself",
+                        "Because objects don’t perform",
+                        "Because it annoys people"
+                    ],
+                    correct: 2,
+                    intel: "Objects tell the truth about use.",
+                    timeLimit: 15
+                },
+
+                {
+                    cipher: "CHANNEL CLOSED",
+                    question: "Why does Isla stop responding when questions turn serious?",
+                    options: [
+                        "Because she shuts down under pressure",
+                        "Because the channel has become unsafe",
+                        "Because she doesn’t have an answer yet",
+                        "Because she wants control of the interaction"
+                    ],
+                    correct: 1,
+                    intel: "When the signal is misused, she cuts transmission.",
+                    timeLimit: 15
+                }
+                ,
+
+                {
+                    cipher: "EXIT FIRST",
+                    question: "Why does Isla leave before conversations conclude?",
+                    options: [
+                        "Because she gets bored quickly",
+                        "Because she doesn’t care about closure",
+                        "Because the useful information is already collected",
+                        "Because she avoids emotional moments"
+                    ],
+                    correct: 2,
+                    intel: "Once the signal stabilises, staying adds risk.",
+                    timeLimit: 15
+                },
+
+                {
+                    cipher: "UNPACKED BAGS",
+                    question: "Why does Isla keep her belongings loosely organised?",
+                    options: [
+                        "Because she’s messy",
+                        "Because she doesn’t plan ahead",
+                        "Because fixed order slows adaptation",
+                        "Because she’s careless"
+                    ],
+                    correct: 2,
+                    intel: "Flexibility beats neatness when conditions shift.",
+                    timeLimit: 15
+                }
+
+
             ]
+
+            ,
+            dominic: [
+
+                {
+                    cipher: "ARCHITECTURE != COPING",
+                    question: "Why Dominic compartmentalises his life?",
+                    options: [
+                        "To allow incompatible actions to coexist without friction",
+                        "To keep work and home life balanced",
+                        "To protect his family from difficult decisions",
+                        "To manage stress across competing responsibilities"
+                    ],
+                    correct: 0,
+                    intel: "Wrong answers are therapy-coded. Correct answer is design logic.",
+                    timeLimit: 20
+                },
+
+                {
+                    cipher: "CHARISMA = AFTERIMAGE",
+                    question: "Why does Dominic reject the idea that his influence is “charisma”?",
+                    options: [
+                        "Because he enjoys being admired",
+                        "Because “charisma” is a flattering lie that hides method",
+                        "Because it sounds like a compliment, and compliments disarm scrutiny",
+                        "Because it makes people feel safe around him"
+                    ],
+                    correct: 1,
+                    intel: "Option 4 is funny because it’s technically true.",
+                    timeLimit: 22
+                },
+
+                {
+                    cipher: "HELP → DEBT",
+                    question: "How does Dominic convert assistance into control?",
+                    options: [
+                        "By always asking first",
+                        "By timing relief so dependence forms naturally",
+                        "By choosing moments when refusal would feel impolite",
+                        "By reminding people of what he’s done for them"
+                    ],
+                    correct: 1,
+                    intel: "The “always asking first” option is quietly horrifying.",
+                    timeLimit: 22
+                },
+
+                {
+                    cipher: "SYNC → SUBMISSION",
+                    question: "What does Dominic mean by “matching rhythm”?",
+                    options: [
+                        "Reducing resistance by eliminating timing gaps",
+                        "Being very good at conversation",
+                        "Mirroring tone to build trust",
+                        "Adapting communication styles for rapport"
+                    ],
+                    correct: 0,
+                    intel: "This one should feel too clean.",
+                    timeLimit: 20
+                },
+
+                {
+                    cipher: "POLITENESS = LEASH",
+                    question: "Why is politeness so effective for Dominic?",
+                    options: [
+                        "It keeps situations civil",
+                        "It makes resistance feel socially incorrect",
+                        "It lowers people’s guard",
+                        "It signals respect and good intentions"
+                    ],
+                    correct: 1,
+                    intel: "The laugh here comes after the click.",
+                    timeLimit: 20
+                },
+
+                {
+                    cipher: "REPEAT → DISAPPEAR",
+                    question: "What happens once control becomes routine?",
+                    options: [
+                        "Everyone relaxes",
+                        "It stops being recognised as control at all",
+                        "People stop noticing it",
+                        "It feels less aggressive"
+                    ],
+                    correct: 1,
+                    intel: "Option 4 is darkly funny because Dominic would say it sincerely.",
+                    timeLimit: 20
+                },
+
+                {
+                    cipher: "PRESSURE → RELIEF → LOYALTY",
+                    question: "What is relief, to Dominic?",
+                    options: [
+                        "Something people remember",
+                        "A transaction that binds without paperwork",
+                        "A sign of trust",
+                        "A moment of safety"
+                    ],
+                    correct: 1,
+                    intel: "This one lands well if played deadpan.",
+                    timeLimit: 22
+                },
+
+                {
+                    cipher: "IMPLICIT > EXPLICIT",
+                    question: "Why does Dominic avoid naming what he’s doing?",
+                    options: [
+                        "Because he dislikes labels",
+                        "Because naming removes its efficiency",
+                        "To avoid confrontation",
+                        "To stay legally protected"
+                    ],
+                    correct: 1,
+                    intel: "Option 4 is funny in a “corporate bio” way.",
+                    timeLimit: 20
+                },
+
+                {
+                    cipher: "SPLIT ATTENTION = CAPACITY",
+                    question: "What does Ethel recognise in Dominic’s divided gaze?",
+                    options: [
+                        "Fatigue",
+                        "Parallel assessment without moral interference",
+                        "Professional discipline",
+                        "Emotional detachment"
+                    ],
+                    correct: 1,
+                    intel: "This should feel clinical, not dramatic.",
+                    timeLimit: 22
+                },
+
+                {
+                    cipher: "TRANSFER ≠ ESCORT",
+                    question: "How does Dominic view the act of “collecting” someone?",
+                    options: [
+                        "As a family duty",
+                        "As asset relocation",
+                        "As responsibility",
+                        "As protection"
+                    ],
+                    correct: 1,
+                    intel: "Option 4 is extremely dark-funny if you’ve heard the audio.",
+                    timeLimit: 20
+                },
+
+                {
+                    cipher: "VOLUME = IRRELEVANT",
+                    question: "Why does Dominic never raise his voice?",
+                    options: [
+                        "He doesn’t like shouting",
+                        "NOISE = WASTE",
+                        "He’s calm under pressure",
+                        "He’s disciplined"
+                    ],
+                    correct: 1,
+                    intel: "This one should feel almost boring — that’s the horror.",
+                    timeLimit: 18
+                },
+
+                {
+                    cipher: "SIMPLICITY = MISDIRECTION",
+                    question: "Why does Dominic present complex systems as “simple”?",
+                    options: [
+                        "Because he understands them well",
+                        "To discourage deeper inspection",
+                        "To appear confident",
+                        "To reassure others"
+                    ],
+                    correct: 1,
+                    intel: "That last option is almost correct — which makes it wrong.",
+                    timeLimit: 22
+                },
+
+                {
+                    cipher: "EVALUATION > RECOGNITION",
+                    question: "What does Dominic see when he looks at someone?",
+                    options: [
+                        "Their potential",
+                        "Their future utility",
+                        "Their loyalty",
+                        "Their emotional state"
+                    ],
+                    correct: 1,
+                    intel: "“Potential” is the corporate trap.",
+                    timeLimit: 20
+                },
+
+                {
+                    cipher: "SURVIVAL ≠ MORAL FAILURE",
+                    question: "Why does Dominic believe people identify with power?",
+                    options: [
+                        "Because they lack principles",
+                        "Because proximity reduces threat",
+                        "Because they admire strength",
+                        "Because they want protection"
+                    ],
+                    correct: 1,
+                    intel: "This one flips judgement back onto the system.",
+                    timeLimit: 22
+                },
+
+                {
+                    cipher: "OUTCOME > INTENT",
+                    question: "What is Dominic’s favourite kind of reputation?",
+                    options: [
+                        "Private citizen",
+                        "The kind that makes questions feel rude",
+                        "Gets things done",
+                        "Hard but fair"
+                    ],
+                    correct: 1,
+                    intel: "That last option should get a nervous laugh.",
+                    timeLimit: 18
+                }
+
+            ]
+
         };
 
         const finalIntel = {
