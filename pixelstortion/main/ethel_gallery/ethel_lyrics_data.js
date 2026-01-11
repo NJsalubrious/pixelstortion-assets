@@ -239,7 +239,7 @@ Bet she won't? You lose.`,
         artist: "Ethel",
         date: "FEB 2020 (TRIAL OPENING)",
         subtitle: "Public myth challenged · cost revealed",
-        videoId: "7-YkQOXPzYkkU",
+        videoId: "YkQOXPzYkkU",
         img: "Ethel_Hero_killer.jpg",
         story: `The song sits at the start of a trial that's been years coming.
 
