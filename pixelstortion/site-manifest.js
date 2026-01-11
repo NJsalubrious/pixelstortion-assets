@@ -17,32 +17,31 @@
 const PIXEL_MANIFEST = {
 
     // ===== MAIN PAGES =====
-    //HOME: 'https://raw.githack.com/NJsalubrious/pixelstortion-assets/916844b1d47502996a7e01d7f8265efc50cdcf3b/pixelstortion/main/index.html',
+
     HOME: 'https://rawcdn.githack.com/NJsalubrious/pixelstortion-assets/e9146eedbb595ac35042998df0f260dab2f69b74/pixelstortion/main/index.html',
 
-    
-    //SILENCE: 'https://raw.githack.com/NJsalubrious/pixelstortion-assets/5cbcf4d27b7c152395512698e64a7ccfcb90ce22/pixelstortion/main/silence/index.html',
+
     SILENCE: 'https://rawcdn.githack.com/NJsalubrious/pixelstortion-assets/e9146eedbb595ac35042998df0f260dab2f69b74/pixelstortion/main/silence/index.html',
 
-    //MATAALA: 'https://raw.githack.com/NJsalubrious/pixelstortion-assets/5cbcf4d27b7c152395512698e64a7ccfcb90ce22/pixelstortion/main/mataala/index.html',
-    MATAALA: 'https://rawcdn.githack.com/NJsalubrious/pixelstortion-assets/e9146eedbb595ac35042998df0f260dab2f69b74/pixelstortion/main/mataala/index.html'
+
+    MATAALA: 'https://rawcdn.githack.com/NJsalubrious/pixelstortion-assets/e9146eedbb595ac35042998df0f260dab2f69b74/pixelstortion/main/mataala/index.html',
 
     CINEMA: 'https://raw.githack.com/NJsalubrious/pixelstortion-assets/5cbcf4d27b7c152395512698e64a7ccfcb90ce22/pixelstortion/main/silentcinema/index.html',
 
     // ===== PROTOCOL GAMES =====
     GAMES: {
-        //ISLA: 'https://raw.githack.com/NJsalubrious/pixelstortion-assets/5cbcf4d27b7c152395512698e64a7ccfcb90ce22/games/isla_protocol.html',
+
         ISLA: 'https://rawcdn.githack.com/NJsalubrious/pixelstortion-assets/e9146eedbb595ac35042998df0f260dab2f69b74/games/isla_protocol.html',
-            
-        //TRIVIA: 'https://raw.githack.com/NJsalubrious/pixelstortion-assets/5cbcf4d27b7c152395512698e64a7ccfcb90ce22/games/trivia_protocol.html',
+
+
         TRIVIA: 'https://rawcdn.githack.com/NJsalubrious/pixelstortion-assets/e9146eedbb595ac35042998df0f260dab2f69b74/games/trivia_protocol.html',
-    
-        //DOMINIC: 'https://raw.githack.com/NJsalubrious/pixelstortion-assets/5cbcf4d27b7c152395512698e64a7ccfcb90ce22/games/Dominics_game.html',
+
+
         DOMINIC: 'https://rawcdn.githack.com/NJsalubrious/pixelstortion-assets/e9146eedbb595ac35042998df0f260dab2f69b74/games/Dominics_game.html',
 
-        //ETHEL: 'https://raw.githack.com/NJsalubrious/pixelstortion-assets/5cbcf4d27b7c152395512698e64a7ccfcb90ce22/games/ethel_scanner.html'
+
         ETHEL: 'https://rawcdn.githack.com/NJsalubrious/pixelstortion-assets/e9146eedbb595ac35042998df0f260dab2f69b74/games/ethel_scanner.html'
-    
+
     },
 
     // ===== EXTERNAL LINKS =====
