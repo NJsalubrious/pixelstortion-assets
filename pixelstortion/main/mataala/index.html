@@ -4,6 +4,11 @@
 
     <script type="text/javascript" id="www-widgetapi-script"
         src="https://www.youtube.com/s/player/50cc0679/www-widgetapi.vflset/www-widgetapi.js" async=""></script>
+
+    <!-- Centralized URL Manifest - MUST be loaded before other scripts -->
+    <script
+        src="https://raw.githack.com/NJsalubrious/pixelstortion-assets/893672eef0e85ff0b8197f80e4387ee9ab3e71c1/pixelstortion/site-manifest.js"></script>
+
     <script class="injected-ffc2e83d85">
         (function () {
             'use strict'; function q(b) { var c = 0; return function () { return c < b.length ? { done: !1, value: b[c++] } : { done: !0 } } } function t(b) { var c = typeof Symbol != "undefined" && Symbol.iterator && b[Symbol.iterator]; if (c) return c.call(b); if (typeof b.length == "number") return { next: q(b) }; throw Error(String(b) + " is not an iterable or ArrayLike"); } var u = typeof Object.defineProperties == "function" ? Object.defineProperty : function (b, c, g) { if (b == Array.prototype || b == Object.prototype) return b; b[c] = g.value; return b };
@@ -4798,9 +4803,8 @@ Image Sources:
                 <span class="block text-gray-500 text-sm font-mono cursor-default">
                     → NALANI - Historical Fiction
                 </span>
-                <a href="https://raw.githack.com/NJsalubrious/pixelstortion-assets/5cbcf4d27b7c152395512698e64a7ccfcb90ce22/pixelstortion/main/silence/index.html"
-                    class="block text-orange-400 hover:text-orange-300 transition-colors text-sm font-mono"
-                    onclick="try { window.parent.location.href='https://raw.githack.com/NJsalubrious/pixelstortion-assets/5cbcf4d27b7c152395512698e64a7ccfcb90ce22/pixelstortion/main/silence/index.html'; } catch(e) { window.location.href='https://raw.githack.com/NJsalubrious/pixelstortion-assets/5cbcf4d27b7c152395512698e64a7ccfcb90ce22/pixelstortion/main/silence/index.html'; } event.preventDefault();">
+                <a href="#" class="block text-orange-400 hover:text-orange-300 transition-colors text-sm font-mono"
+                    onclick="try { window.parent.location.href = PIXEL_MANIFEST.SILENCE; } catch(e) { window.location.href = PIXEL_MANIFEST.SILENCE; } event.preventDefault();">
                     → SILENCE - Crime Fiction
                 </a>
 

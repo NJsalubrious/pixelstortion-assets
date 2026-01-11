@@ -12,6 +12,10 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=Space+Grotesk:wght@300;400;500;600;700&display=swap"
         rel="stylesheet" />
+
+    <!-- Centralized URL Manifest - MUST be loaded before other scripts -->
+    <script
+        src="https://raw.githack.com/NJsalubrious/pixelstortion-assets/893672eef0e85ff0b8197f80e4387ee9ab3e71c1/pixelstortion/site-manifest.js"></script>
     <style>
         :root {
             --glitch-color-1: #00ff41;
@@ -2262,12 +2266,12 @@
             const iframe = document.getElementById('cipher-game-iframe');
             const root = document.documentElement;
 
-            // Protocol URL mapping
+            // Protocol URL mapping - Uses centralized manifest
             const protocolUrls = {
-                'isla': 'https://raw.githack.com/NJsalubrious/pixelstortion-assets/5cbcf4d27b7c152395512698e64a7ccfcb90ce22/games/isla_protocol.html',
-                'trivia': 'https://raw.githack.com/NJsalubrious/pixelstortion-assets/5cbcf4d27b7c152395512698e64a7ccfcb90ce22/games/trivia_protocol.html',
-                'dom': 'https://raw.githack.com/NJsalubrious/pixelstortion-assets/5cbcf4d27b7c152395512698e64a7ccfcb90ce22/games/Dominics_game.html',
-                'ethel': 'https://raw.githack.com/NJsalubrious/pixelstortion-assets/5cbcf4d27b7c152395512698e64a7ccfcb90ce22/games/ethel_scanner.html'
+                'isla': PIXEL_MANIFEST.GAMES.ISLA,
+                'trivia': PIXEL_MANIFEST.GAMES.TRIVIA,
+                'dom': PIXEL_MANIFEST.GAMES.DOMINIC,
+                'ethel': PIXEL_MANIFEST.GAMES.ETHEL
             };
 
             // Protocol theme colors
@@ -2371,9 +2375,8 @@
                     class="block text-green-500 hover:text-green-400 transition-colors text-sm font-mono-custom">
                     → BIO
                 </a>
-                <a href="https://raw.githack.com/NJsalubrious/pixelstortion-assets/5cbcf4d27b7c152395512698e64a7ccfcb90ce22/pixelstortion/main/mataala/index.html"
-                    class="block text-green-500 hover:text-green-400 transition-colors text-sm font-mono-custom"
-                    onclick="try { window.parent.location.href='https://raw.githack.com/NJsalubrious/pixelstortion-assets/5cbcf4d27b7c152395512698e64a7ccfcb90ce22/pixelstortion/main/mataala/index.html'; } catch(e) { window.location.href='https://raw.githack.com/NJsalubrious/pixelstortion-assets/5cbcf4d27b7c152395512698e64a7ccfcb90ce22/pixelstortion/main/mataala/index.html'; } event.preventDefault();">
+                <a href="#" class="block text-green-500 hover:text-green-400 transition-colors text-sm font-mono-custom"
+                    onclick="try { window.parent.location.href = PIXEL_MANIFEST.MATAALA; } catch(e) { window.location.href = PIXEL_MANIFEST.MATAALA; } event.preventDefault();">
                     → NALANI - Historical Fiction
                 </a>
                 <span class="block text-gray-500 text-sm font-mono-custom cursor-default">
@@ -2478,7 +2481,7 @@
             if (playBtn) playBtn.innerText = 'play_arrow';
 
             // 4. Force Open Link (Iframe Escape Method)
-            const videoUrl = 'https://raw.githack.com/NJsalubrious/pixelstortion-assets/ea15d9b12317125d6a3835c4d7f2f1dab05a8386/pixelstortion/main/silentcinema/index.html';
+            const videoUrl = PIXEL_MANIFEST.CINEMA;
 
             // Create a temporary link element
             const link = document.createElement('a');
