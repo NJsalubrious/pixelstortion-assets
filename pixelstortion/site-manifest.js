@@ -1,52 +1,37 @@
 /**
  * PIXELSTORTION - Centralized URL Manifest
  * =========================================
- * This is the "Source of Truth" for all site links.
+ * SIMPLE WORKFLOW:
+ * 1. Make changes to your files locally
+ * 2. Commit & Push via TortoiseGit  
+ * 3. Wait ~2 minutes for cache refresh
+ * 4. Changes are live!
  * 
- * HOW TO UPDATE:
- * 1. Push your new files to GitHub
- * 2. Get the new Githack URLs
- * 3. Update ONLY this file with new URLs
- * 4. All pages will automatically use the new links
- * 
- * CACHE BUSTING:
- * When you update a URL here, append ?v=X (increment X) to force refresh
- * Example: SILENCE: 'https://...silence/index.html?v=2'
+ * Using 'main' branch URLs = automatic updates, no commit hash juggling
  */
 
 const PIXEL_MANIFEST = {
 
     // ===== MAIN PAGES =====
+    HOME: 'https://raw.githack.com/NJsalubrious/pixelstortion-assets/main/pixelstortion/main/index.html',
 
-    HOME: 'https://rawcdn.githack.com/NJsalubrious/pixelstortion-assets/e9146eedbb595ac35042998df0f260dab2f69b74/pixelstortion/main/index.html',
+    SILENCE: 'https://raw.githack.com/NJsalubrious/pixelstortion-assets/main/pixelstortion/main/silence/index.html',
 
+    MATAALA: 'https://raw.githack.com/NJsalubrious/pixelstortion-assets/main/pixelstortion/main/mataala/index.html',
 
-    SILENCE: 'https://rawcdn.githack.com/NJsalubrious/pixelstortion-assets/e9146eedbb595ac35042998df0f260dab2f69b74/pixelstortion/main/silence/index.html',
-
-
-    MATAALA: 'https://rawcdn.githack.com/NJsalubrious/pixelstortion-assets/e9146eedbb595ac35042998df0f260dab2f69b74/pixelstortion/main/mataala/index.html',
-
-    CINEMA: 'https://raw.githack.com/NJsalubrious/pixelstortion-assets/5cbcf4d27b7c152395512698e64a7ccfcb90ce22/pixelstortion/main/silentcinema/index.html',
+    CINEMA: 'https://raw.githack.com/NJsalubrious/pixelstortion-assets/main/pixelstortion/main/silentcinema/index.html',
 
     // ===== PROTOCOL GAMES =====
     GAMES: {
-
-        ISLA: 'https://rawcdn.githack.com/NJsalubrious/pixelstortion-assets/e9146eedbb595ac35042998df0f260dab2f69b74/games/isla_protocol.html',
-
-
-        TRIVIA: 'https://rawcdn.githack.com/NJsalubrious/pixelstortion-assets/e9146eedbb595ac35042998df0f260dab2f69b74/games/trivia_protocol.html',
-
-
-        DOMINIC: 'https://rawcdn.githack.com/NJsalubrious/pixelstortion-assets/e9146eedbb595ac35042998df0f260dab2f69b74/games/Dominics_game.html',
-
-
-        ETHEL: 'https://rawcdn.githack.com/NJsalubrious/pixelstortion-assets/e9146eedbb595ac35042998df0f260dab2f69b74/games/ethel_scanner.html'
-
+        ISLA: 'https://raw.githack.com/NJsalubrious/pixelstortion-assets/main/games/isla_protocol.html',
+        TRIVIA: 'https://raw.githack.com/NJsalubrious/pixelstortion-assets/main/games/trivia_protocol.html',
+        DOMINIC: 'https://raw.githack.com/NJsalubrious/pixelstortion-assets/main/games/Dominics_game.html',
+        ETHEL: 'https://raw.githack.com/NJsalubrious/pixelstortion-assets/main/games/ethel_scanner.html'
     },
 
     // ===== EXTERNAL LINKS =====
     BIO: 'https://bio.pixelstortion.com'
 };
 
-// Make it globally available (for compatibility with older code)
+// Make it globally available
 window.PIXEL_MANIFEST = PIXEL_MANIFEST;
