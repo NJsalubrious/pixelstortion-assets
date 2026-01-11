@@ -2292,7 +2292,8 @@
                     ytPlayer.playVideo();
                 }
 
-                // Reset game (clear iframe)
+                // Reset game (clear iframe completely - both src AND srcdoc)
+                iframe.removeAttribute('srcdoc');
                 iframe.src = 'about:blank';
 
                 return;
@@ -2316,6 +2317,8 @@
             // Load the protocol URL
             const protocolUrl = protocolUrls[protocolName];
             if (protocolUrl) {
+                // Clear any stale srcdoc before loading new URL
+                iframe.removeAttribute('srcdoc');
                 iframe.src = protocolUrl;
             } else {
                 // Fallback for undefined protocols
