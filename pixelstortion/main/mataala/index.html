@@ -348,11 +348,7 @@
                     h = I(h, "/gen?"); var n = new URLSearchParams(h); h = k(n, "prompt"); var r = n.get("aspect"); r && r !== "1:1" && (h += "&aspect=" + r); (r = n.get("context_image_idx")) &&
                         (h += "&context_image_idx=" + r.split(",").map(Number).sort(function (y, A) { return y - A }).join(",")); (n = n.get("reimagine")) && (h += "&reimagine=" + n); return h
                 } function l(h) { return h.replace(/&aspect=\d+:\d+/, "") } function m(h) {
-                    h = h.replace(/[^a-zA-Z0-9-_]/g, " "); return "data:image/svg+xml," + encodeURIComponent('<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">\n      <style>\n        .s { stroke:#E57373; stroke-width:30; fill:none; stroke-linecap:round }\n        .t { font:bold 68px Arial; text-anchor:middle; dominant-baseline:middle }\n      
-        #visualizer - container {
-                        display: none!important;
-                    }
-</style >\n < g class= "s" >\n < circle cx = "256" cy = "256" r = "230" />\n < path d = "M120 120L392 392M392 120L120 392" />\n      </g >\n < text class= "t" x = "50%" y = "50%" > ' +
+                    h = h.replace(/[^a-zA-Z0-9-_]/g, " "); return "data:image/svg+xml," + encodeURIComponent('<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">\n      <style>\n        .s { stroke:#E57373; stroke-width:30; fill:none; stroke-linecap:round }\n        .t { font:bold 68px Arial; text-anchor:middle; dominant-baseline:middle }\n      </style>\n      <g class="s">\n        <circle cx="256" cy="256" r="230"/>\n        <path d="M120 120L392 392M392 120L120 392"/>\n      </g>\n      <text class="t" x="50%" y="50%">' +
                         h + "</text>\n    </svg>")
                 } function u(h) {
                     var n, r, y, A, B, P, L, J, H; return w(function (C) {
