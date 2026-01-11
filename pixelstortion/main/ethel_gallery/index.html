@@ -185,15 +185,112 @@
             background: #555;
         }
 
+        /* --- LYRICS DATA STREAM STYLING --- */
+        .lyrics-container {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 1.5rem;
+            position: relative;
+        }
+
+        /* Technical markers */
+        .lyrics-header,
+        .lyrics-footer {
+            font-size: 9px;
+            letter-spacing: 0.2em;
+            opacity: 0.3;
+            margin-bottom: 1rem;
+            font-family: 'Share Tech Mono', monospace;
+        }
+
+        .lyrics-footer {
+            margin-top: 1.5rem;
+            margin-bottom: 0;
+        }
+
+        /* Strophe dividers */
+        .strophe-divider {
+            width: 5%;
+            height: 1px;
+            background: currentColor;
+            opacity: 0.15;
+            margin: 1rem auto;
+        }
+
+        /* Individual lyric lines */
         .lyric-line {
-            margin-bottom: 0.5rem;
-            opacity: 0.7;
-            transition: opacity 0.2s;
+            margin-bottom: 0.25rem;
+            opacity: 0.55;
+            transition: all 0.2s ease;
+            padding: 0.15rem 0;
+            position: relative;
+            display: inline-block;
+            width: 100%;
         }
 
         .lyric-line:hover {
             opacity: 1;
-            color: white;
+        }
+
+        /* Ethel mode lyrics (mint green tint) */
+        .ethel-mode .lyric-line {
+            color: rgba(200, 255, 220, 0.7);
+        }
+
+        .ethel-mode .lyric-line:hover {
+            color: #a0ffc0;
+            text-shadow: 0 0 8px rgba(0, 255, 65, 0.4), 0 0 20px rgba(0, 255, 65, 0.2);
+        }
+
+        /* Isla mode lyrics (pale rose tint) */
+        .isla-mode .lyric-line {
+            color: rgba(255, 200, 220, 0.7);
+        }
+
+        .isla-mode .lyric-line:hover {
+            color: #ffc0d0;
+            text-shadow: 0 0 8px rgba(255, 0, 85, 0.4), 0 0 20px rgba(255, 0, 85, 0.2);
+        }
+
+        /* Empty lines (verse breaks) */
+        .lyric-line.empty-line {
+            height: 0.8rem;
+            opacity: 0;
+        }
+
+        /* Scanline effect for lyrics */
+        .lyrics-scanline {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.03), transparent);
+            animation: scanline-move 8s linear infinite;
+            pointer-events: none;
+        }
+
+        @keyframes scanline-move {
+            0% {
+                top: 0;
+            }
+
+            100% {
+                top: 100%;
+            }
+        }
+
+        /* Entrance animation for lyrics */
+        .lyric-line.animate-in {
+            animation: lyric-fade-in 0.3s ease forwards;
+            opacity: 0;
+            transform: translateY(5px);
+        }
+
+        @keyframes lyric-fade-in {
+            to {
+                opacity: 0.55;
+                transform: translateY(0);
+            }
         }
 
         /* Typewriter Cursor */
@@ -366,9 +463,13 @@
 
                     <!-- Lyrics View -->
                     <div id="view-lyrics" class="hidden transition-opacity duration-300">
-                        <div class="text-gray-400 font-tech text-xs md:text-sm leading-loose whitespace-pre-wrap text-center"
-                            id="lyrics-content">
-                            <!-- Injected -->
+                        <div class="lyrics-container">
+                            <div class="lyrics-scanline"></div>
+                            <div class="lyrics-header text-center">[START_TRANSCRIPT]</div>
+                            <div class="font-tech text-xs md:text-sm leading-loose text-center" id="lyrics-content">
+                                <!-- Injected line by line -->
+                            </div>
+                            <div class="lyrics-footer text-center">[EOF_SIGNAL_LOSS]</div>
                         </div>
                     </div>
 
@@ -758,7 +859,21 @@
 
             // Format Content
             document.getElementById('story-content').innerHTML = item.story.split('\n').filter(p => p.trim()).map(p => `<p>${p}</p>`).join('');
-            document.getElementById('lyrics-content').innerText = item.lyrics;
+
+            // Format Lyrics as individual hoverable lines with staggered animation
+            const lyricsContainer = document.getElementById('lyrics-content');
+            if (item.lyrics && item.lyrics.trim()) {
+                const lines = item.lyrics.split('\n');
+                lyricsContainer.innerHTML = lines.map((line, index) => {
+                    if (!line.trim()) {
+                        // Empty line = verse break
+                        return `<div class="lyric-line empty-line"></div>`;
+                    }
+                    return `<div class="lyric-line animate-in" style="animation-delay: ${index * 30}ms">${line}</div>`;
+                }).join('');
+            } else {
+                lyricsContainer.innerHTML = '<div class="lyric-line opacity-30">[NO AUDIO TRANSCRIPT AVAILABLE]</div>';
+            }
 
             // Reset Tabs
             switchTab('story');
