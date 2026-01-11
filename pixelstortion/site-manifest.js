@@ -30,7 +30,20 @@ const PIXEL_MANIFEST = {
     },
 
     // ===== EXTERNAL LINKS =====
-    BIO: 'https://bio.pixelstortion.com'
+    BIO: 'https://bio.pixelstortion.com',
+
+    // ===== ASSET BASES (for dynamic content) =====
+    ASSETS: {
+        // Song cover art - main branch = auto-updates on git push
+        SONG_COVERS: 'https://raw.githubusercontent.com/NJsalubrious/pixelstortion-assets/main/SongCovers/',
+
+        // Album/EP covers (legacy)
+        ALBUM_COVERS: 'https://raw.githubusercontent.com/NJsalubrious/pixelstortion-assets/main/album_ep_single_covers/',
+
+        // Gallery data files
+        GALLERY_DATA: './ethel_lyrics_data.js',
+        GALLERY_CONTENT: './song_content.txt'
+    }
 };
 
 // Make it globally available
