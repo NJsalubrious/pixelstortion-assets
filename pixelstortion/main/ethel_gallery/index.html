@@ -310,6 +310,12 @@
             #cover-art-section {
                 display: none !important;
             }
+
+            /* Shrink left panel to just fit video */
+            .left-visual-panel {
+                height: auto !important;
+                flex-shrink: 0;
+            }
         }
     </style>
 </head>
@@ -385,7 +391,8 @@
             </button>
 
             <!-- LEFT: Visual & Player -->
-            <div class="w-full md:w-5/12 h-[40%] md:h-full flex flex-col bg-black/40 border-r border-white/10 relative">
+            <div
+                class="left-visual-panel w-full md:w-5/12 h-[40%] md:h-full flex flex-col bg-black/40 border-r border-white/10 relative">
 
                 <!-- YouTube Embed -->
                 <div class="w-full aspect-video bg-black border-b border-white/10 relative z-20 shadow-lg">
