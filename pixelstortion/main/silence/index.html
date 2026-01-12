@@ -455,6 +455,24 @@
             box-shadow: -4px 0 15px rgba(0, 255, 65, 0.4);
         }
 
+        /* Cinema External Link - App-like appearance */
+        .right-panel-tab.cinema-external {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            border-radius: 8px 0 0 8px;
+            border-style: dashed;
+            background: rgba(0, 20, 0, 0.3);
+            gap: 2px;
+        }
+
+        .right-panel-tab.cinema-external:hover {
+            background: rgba(0, 40, 0, 0.6);
+            border-style: solid;
+        }
+
         /* Media Panel - Fullscreen from right */
         #media-panel {
             position: fixed;
@@ -1469,9 +1487,14 @@
 
     <!-- Right Side Panel Tabs -->
     <div id="right-panel-tabs">
-        <button onclick="toggleMediaPanel('cinema')" class="right-panel-tab">
-            VIDEOS
-        </button>
+        <!-- CINEMA: Opens in new tab (external app style) -->
+        <a href="#"
+            onclick="event.preventDefault(); if(ytPlayer && ytPlayer.pauseVideo) ytPlayer.pauseVideo(); window.open(PIXEL_MANIFEST.CINEMA, '_blank');"
+            class="right-panel-tab cinema-external" title="Opens in new tab">
+            <span class="material-symbols-outlined" style="font-size: 10px; margin-bottom: 4px;">open_in_new</span>
+            CINEMA
+        </a>
+        <!-- GALLERY: Opens in iframe panel -->
         <button onclick="toggleMediaPanel('gallery')" class="right-panel-tab">
             GALLERY
         </button>
@@ -1680,7 +1703,8 @@
                     'disablekb': 1,
                     'fs': 0,
                     'modestbranding': 1,
-                    'rel': 0
+                    'rel': 0,
+                    'playsinline': 1
                 },
                 events: {
                     'onReady': onPlayerReady,
