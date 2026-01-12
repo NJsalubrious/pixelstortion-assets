@@ -21,6 +21,8 @@ const PIXEL_MANIFEST = {
 
     CINEMA: 'https://raw.githack.com/NJsalubrious/pixelstortion-assets/main/pixelstortion/main/silentcinema/index.html',
 
+    ETHEL_GALLERY: 'https://raw.githack.com/NJsalubrious/pixelstortion-assets/main/pixelstortion/main/ethel_gallery/index.html',
+
     // ===== PROTOCOL GAMES =====
     GAMES: {
         ISLA: 'https://raw.githack.com/NJsalubrious/pixelstortion-assets/main/games/isla_protocol.html',
