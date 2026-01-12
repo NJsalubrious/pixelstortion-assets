@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>PixelStortion – Transport Sync Test (Git + YouTube)</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+<!-- YouTube IFrame API -->
+<script src="https://www.youtube.com/iframe_api"></script>
+
+<style>
+/* ===== VISUAL LAYOUT (MATCH REAL PAGE GEOMETRY) ===== */
+
+body {
+  margin: 0;
+  background: #050505;
+  color: #e0e0e0;
+  font-family: system-ui, monospace;
+}
+
+.wrapper {
+  width: 920px;
+  height: 520px;
+  margin: 60px auto;
+  border: 1px solid #333;
+  display: flex;
+  background: #000;
+}
+
+.left-panel {
+  width: 30%;
+  border-right: 1px solid #333;
+}
+
+.right-panel {
+  width: 70%;
+  position: relative;
+  overflow: hidden;
+}
+
+/* ===== IMAGE LAYER ===== */
+
+.story-image {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity 0.5s ease-in-out;
+}
+
+.story-image.active {
+  opacity: 1;
+}
+
+/* ===== YOUTUBE AUDIO LAYER ===== */
+
+#youtube-player {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;          /* invisible but alive */
+  z-index: -1;
+}
+
+/* ===== CONTROLS ===== */
+
+.controls {
+  width: 920px;
+  margin: 20px auto;
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+}
+
+button {
+  padding: 10px 20px;
+  font-size: 14px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="wrapper">
+  <div class="left-panel"></div>
+
+  <div class="right-panel">
+
+    <!-- Image buffers (double-buffered for crossfade) -->
+    <img id="imgA" class="story-image">
+    <img id="imgB" class="story-image">
+
+    <!-- YouTube audio -->
+    <div id="youtube-player"></div>
+  </div>
+</div>
+
+<div class="controls">
+  <button onclick="transportPlay()">PLAY</button>
+  <button onclick="transportPause()">PAUSE</button>
+  <button onclick="transportStop()">STOP</button>
+</div>
+
+<script>
+/* ======================================================
+   CONFIG (LOCKED TO YOUR REQUIREMENTS)
+   ====================================================== */
+
+const VIDEO_ID = "MhEeDcdscrs";
+const IMAGE_BASE_PATH = "assets/images/track6/";
+const IMAGE_COUNT = 30;
+
+const IMAGE_DURATION_MS = 7000;   // fixed 7s
+const FADE_DURATION_MS  = 500;    // fixed 0.5s
+
+/* ======================================================
+   STATE
+   ====================================================== */
+
+let ytPlayer = null;
+let transportState = "STOP";   // STOP | PLAY | PAUSE
+
+let imageIndex = 0;
+let activeSlot = "A";
+let imageTimer = null;
+
+/* ======================================================
+   IMAGE SEQUENCE (DETERMINISTIC)
+   ====================================================== */
+
+const imgA = document.getElementById("imgA");
+const imgB = document.getElementById("imgB");
+
+function imageUrl(index) {
+  const num = String(index + 1).padStart(3, "0");
+  return `${IMAGE_BASE_PATH}${num}.jpg`;
+}
+
+function showImage(index) {
+  const nextImg = activeSlot === "A" ? imgB : imgA;
+  const prevImg = activeSlot === "A" ? imgA : imgB;
+
+  nextImg.onload = () => {
+    nextImg.classList.add("active");
+    prevImg.classList.remove("active");
+    activeSlot = activeSlot === "A" ? "B" : "A";
+  };
+
+  nextImg.src = imageUrl(index);
+
+  // handle cached images
+  if (nextImg.complete && nextImg.naturalHeight !== 0) {
+    nextImg.onload();
+  }
+}
+
+function startImageSequence() {
+  stopImageSequence();
+
+  imageIndex = 0;
+  showImage(imageIndex);
+
+  imageTimer = setInterval(() => {
+    if (transportState !== "PLAY") return;
+
+    imageIndex = (imageIndex + 1) % IMAGE_COUNT;
+    showImage(imageIndex);
+
+  }, IMAGE_DURATION_MS);
+}
+
+function pauseImageSequence() {
+  clearInterval(imageTimer);
+  imageTimer = null;
+}
+
+function stopImageSequence() {
+  clearInterval(imageTimer);
+  imageTimer = null;
+  imageIndex = 0;
+
+  imgA.classList.remove("active");
+  imgB.classList.remove("active");
+}
+
+/* ======================================================
+   YOUTUBE
+   ====================================================== */
+
+function onYouTubeIframeAPIReady() {
+  ytPlayer = new YT.Player("youtube-player", {
+    width: "100%",
+    height: "100%",
+    videoId: VIDEO_ID,
+    playerVars: {
+      autoplay: 0,
+      controls: 0,
+      disablekb: 1,
+      modestbranding: 1,
+      rel: 0,
+      playsinline: 1
+    }
+  });
+}
+
+/* ======================================================
+   TRANSPORT CONTROLS (THE CORE TEST)
+   ====================================================== */
+
+function transportPlay() {
+  if (transportState === "PLAY") return;
+  transportState = "PLAY";
+
+  startImageSequence();
+  ytPlayer.playVideo();
+}
+
+function transportPause() {
+  if (transportState !== "PLAY") return;
+  transportState = "PAUSE";
+
+  pauseImageSequence();
+  ytPlayer.pauseVideo();
+}
+
+function transportStop() {
+  transportState = "STOP";
+
+  stopImageSequence();
+  ytPlayer.pauseVideo();
+  ytPlayer.seekTo(0, true);
+}
+</script>
+
+</body>
+</html>
