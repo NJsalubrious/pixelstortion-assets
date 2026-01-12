@@ -304,6 +304,13 @@
                 opacity: 0;
             }
         }
+
+        /* Mobile: Hide cover art section to maximize video/lyrics space */
+        @media (max-width: 767px) {
+            #cover-art-section {
+                display: none !important;
+            }
+        }
     </style>
 </head>
 
@@ -385,8 +392,8 @@
                     <div id="video-container" class="w-full h-full"></div>
                 </div>
 
-                <!-- Cover Art & Meta -->
-                <div class="flex-grow relative overflow-hidden flex flex-col p-6">
+                <!-- Cover Art & Meta (hidden on mobile) -->
+                <div id="cover-art-section" class="flex-grow relative overflow-hidden flex flex-col p-6">
                     <div class="flex-grow flex items-center justify-center relative">
                         <img id="modal-cover" src=""
                             class="max-h-[200px] md:max-h-[300px] w-auto shadow-[0_0_30px_rgba(0,0,0,0.5)] border border-white/10 z-10"
