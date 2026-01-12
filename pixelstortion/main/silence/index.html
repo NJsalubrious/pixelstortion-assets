@@ -1398,7 +1398,8 @@
                         </div>
 
                         <!-- YouTube Player (hidden by default, shown when showVideo: true) -->
-                        <div id="youtube-player" class="absolute inset-0 w-full h-full z-[-1]"></div>
+                        <div id="youtube-player"
+                            class="absolute inset-0 w-full h-full z-[-1] opacity-0 pointer-events-none"></div>
 
                         <div
                             class="absolute inset-0 bg-gradient-to-b from-black/30 via-black/40 to-black/60 z-0 pointer-events-none">
@@ -1695,8 +1696,6 @@
         // YouTube Player Setup
         function onYouTubeIframeAPIReady() {
             ytPlayer = new YT.Player('youtube-player', {
-                height: '0',
-                width: '0',
                 playerVars: {
                     'autoplay': 0,
                     'controls': 0,
