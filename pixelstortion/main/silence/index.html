@@ -412,61 +412,81 @@
             }
         }
 
-        /* Right Side Video Launcher Button */
-        #video-launcher {
+        /* Right Side Panel Tabs Container */
+        #right-panel-tabs {
             position: fixed;
             right: 0;
             top: 50%;
-            /* Vertically centered */
             transform: translateY(-50%);
             z-index: 8999;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
 
-            /* Dimensions - BIGGER FOR PC */
+        #right-panel-tabs.hidden {
+            display: none;
+        }
+
+        /* Right Side Tabs - Mirror style of left protocol tabs */
+        .right-panel-tab {
             writing-mode: vertical-rl;
             text-orientation: mixed;
-            padding: 24px 12px;
-
-            /* Visuals - VERY TRANSPARENT GREEN THEME */
+            padding: 16px 8px;
             background: rgba(0, 0, 0, 0.1);
-            /* Very transparent - barely visible */
             backdrop-filter: blur(4px);
-            /* Subtle blur for readability */
             border: 2px solid #00ff41;
-            /* Neon Green to match site theme */
             border-right: none;
-            /* Attach to screen edge */
             border-radius: 8px 0 0 8px;
-            /* CURVED CORNERS pointing inward */
-
-            /* Typography - BIGGER FONT */
             font-family: 'Courier Prime', monospace;
             font-weight: bold;
-            font-size: 14px;
-            letter-spacing: 3px;
+            font-size: 12px;
+            letter-spacing: 2px;
             color: #00ff41;
-            /* Green text */
-            text-shadow: 0 0 2px #00ff41;
-
             cursor: pointer;
             transition: all 0.3s ease;
+            box-shadow: none;
+            animation: none;
         }
 
-        #video-launcher:hover {
-            transform: translateY(-50%) translateX(-6px);
-            /* Slide LEFT into view */
+        .right-panel-tab:hover {
+            transform: translateX(-4px);
             background: rgba(0, 0, 0, 0.4);
-            /* More visible on hover */
             box-shadow: -4px 0 15px rgba(0, 255, 65, 0.4);
-            /* Green glow */
-            padding-top: 32px;
-            padding-bottom: 32px;
         }
 
-        /* Mobile Override for Video Launcher */
+        /* Media Panel - Fullscreen from right */
+        #media-panel {
+            position: fixed;
+            right: -100%;
+            top: 0;
+            width: 100%;
+            height: 100vh;
+            background: #000;
+            border-left: 1px solid var(--glitch-color-1);
+            box-shadow: -10px 0 40px rgba(0, 255, 65, 0.3);
+            transition: right 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            z-index: 9000;
+            overflow: hidden;
+        }
+
+        #media-panel.open {
+            right: 0;
+        }
+
+        /* Panel Open State - Fade right tabs out */
+        #media-panel.open~#right-panel-tabs {
+            opacity: 0.1;
+            pointer-events: none;
+        }
+
+        /* Mobile Override for Right Panel Tabs */
         @media (max-width: 767px) {
-            #video-launcher {
+            #right-panel-tabs {
                 top: 35% !important;
-                /* Align height with left tabs */
+            }
+
+            .right-panel-tab {
                 width: 16px !important;
                 padding: 14px 1px !important;
                 font-size: 6px !important;
@@ -474,12 +494,11 @@
                 border-width: 1px !important;
                 border-radius: 2px 0 0 2px !important;
                 background: rgba(0, 0, 0, 0.1) !important;
-                /* VERY TRANSPARENT on mobile */
                 backdrop-filter: blur(4px) !important;
             }
 
-            #video-launcher:hover {
-                transform: translateY(-50%) translateX(-2px) !important;
+            .right-panel-tab:hover {
+                transform: translateX(-2px) !important;
                 background: rgba(0, 0, 0, 0.4) !important;
             }
         }
@@ -1447,10 +1466,27 @@
 
     </div>
 
-    <!-- Video Archive Launcher Button -->
-    <button id="video-launcher" onclick="launchVideoArchive()">
-        VIDEOS
-    </button>
+    <!-- Right Side Panel Tabs -->
+    <div id="right-panel-tabs">
+        <button onclick="toggleMediaPanel('cinema')" class="right-panel-tab">
+            VIDEOS
+        </button>
+        <button onclick="toggleMediaPanel('gallery')" class="right-panel-tab">
+            GALLERY
+        </button>
+    </div>
+
+    <!-- Media Panel (Cinema/Gallery) -->
+    <div id="media-panel">
+        <button onclick="toggleMediaPanel()"
+            class="absolute top-4 left-4 text-gray-500 hover:text-white transition-colors z-50 p-2 bg-black/50 rounded-full"
+            title="Close">
+            <span class="material-symbols-outlined">close</span>
+        </button>
+
+        <iframe id="media-panel-iframe" src="about:blank" class="w-full h-full border-0 block"
+            allow="autoplay; fullscreen"></iframe>
+    </div>
 
     <div id="cipher-game-panel">
         <button onclick="toggleCipherGame()"
@@ -2460,40 +2496,51 @@
             setTimeout(() => selectTrack(trackId), 500);
         });
 
-        // --- VIDEO ARCHIVE LAUNCHER ---
-        function launchVideoArchive() {
-            // 1. Pause Main Audio (YouTube)
-            try {
-                if (ytPlayer && typeof ytPlayer.pauseVideo === 'function') {
-                    ytPlayer.pauseVideo();
-                    console.log('Main YouTube audio paused.');
-                }
-            } catch (e) { console.log('YT Player pause failed', e); }
+        // --- MEDIA PANEL (Cinema/Gallery) ---
+        let mediaPanelOpen = false;
 
-            // 2. Pause Backup Audio
-            if (window.audioPlayer && !window.audioPlayer.paused) {
-                window.audioPlayer.pause();
-                console.log('Backup audio paused.');
+        function toggleMediaPanel(type) {
+            const panel = document.getElementById('media-panel');
+            const iframe = document.getElementById('media-panel-iframe');
+
+            // Media URL mapping - Uses centralized manifest
+            const mediaUrls = {
+                'cinema': PIXEL_MANIFEST.CINEMA,
+                'gallery': PIXEL_MANIFEST.ETHEL_GALLERY
+            };
+
+            // If no type specified (close button clicked), close the panel
+            if (!type) {
+                panel.classList.remove('open');
+                mediaPanelOpen = false;
+
+                // Resume main site music
+                if (ytPlayer && typeof ytPlayer.playVideo === 'function') {
+                    ytPlayer.playVideo();
+                }
+
+                // Clear iframe
+                iframe.src = 'about:blank';
+                return;
             }
 
-            // 3. Update UI
-            const playBtn = document.getElementById('play-icon');
-            if (playBtn) playBtn.innerText = 'play_arrow';
+            // Opening a media panel
+            // Pause main site music
+            if (ytPlayer && typeof ytPlayer.pauseVideo === 'function') {
+                ytPlayer.pauseVideo();
+            }
 
-            // 4. Force Open Link (Iframe Escape Method)
-            const videoUrl = PIXEL_MANIFEST.CINEMA;
+            // Load the media URL
+            const mediaUrl = mediaUrls[type];
+            if (mediaUrl) {
+                iframe.src = mediaUrl;
+            } else {
+                iframe.src = 'about:blank';
+            }
 
-            // Create a temporary link element
-            const link = document.createElement('a');
-            link.href = videoUrl;
-            link.target = '_blank'; // Opens in new tab
-            link.rel = 'noopener noreferrer'; // Security best practice
-
-            // Append to body, click, and remove
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-
+            // Open the panel
+            panel.classList.add('open');
+            mediaPanelOpen = true;
         }
     </script>
 

@@ -344,10 +344,10 @@
 
         <!-- Intro Text -->
         <div id="intro-text" class="mb-8 max-w-4xl mx-auto text-center transition-all duration-500">
-            <h2 class="text-4xl md:text-6xl font-bold mb-2 text-white tracking-tighter uppercase glitch-text"
-                id="mode-title">LINEAR SEQUENCE</h2>
+            <h2 class="text-4xl md:text-6xl font-bold mb-2 tracking-tighter uppercase glitch-text"
+                style="color: #00ff41;" id="mode-title">LINEAR STORY</h2>
             <p class="text-gray-400 font-tech text-sm md:text-base max-w-2xl mx-auto" id="mode-desc">
-                Accessing chronological surveillance logs. Subject "Ethel" observes systemic anomalies.
+                Accessment. Chronological. Ethel's Story.
             </p>
         </div>
 
@@ -477,6 +477,9 @@
             </div>
         </div>
     </div>
+
+    <!-- YouTube IFrame API -->
+    <script src="https://www.youtube.com/iframe_api"></script>
 
     <!-- External Song Data (44 songs, main branch images) -->
     <script src="ethel_lyrics_data.js"></script>
@@ -756,8 +759,9 @@
                 btnIsla.className = "px-4 py-1 text-xs font-tech border border-gray-700 text-gray-500 hover:border-pink-500 hover:text-pink-400 hover:bg-pink-500/10 transition-all uppercase tracking-widest";
 
                 light.className = "w-2 h-2 bg-green-500 rounded-full animate-pulse shadow-[0_0_10px_#00ff41]";
-                title.innerText = "LINEAR SEQUENCE";
-                title.className = "text-4xl md:text-6xl font-bold mb-2 text-white tracking-tighter uppercase glitch-text";
+                title.innerText = "LINEAR STORY";
+                title.className = "text-4xl md:text-6xl font-bold mb-2 tracking-tighter uppercase glitch-text";
+                title.style.color = '#00ff41';
                 desc.innerText = "Accessing chronological surveillance logs. Subject \"Ethel\" observes systemic anomalies.";
             } else {
                 btnEthel.className = "px-4 py-1 text-xs font-tech border border-gray-700 text-gray-500 hover:border-green-500 hover:text-green-400 hover:bg-green-500/10 transition-all uppercase tracking-widest";
@@ -765,8 +769,9 @@
 
                 light.className = "w-2 h-2 bg-pink-500 rounded-full animate-pulse shadow-[0_0_10px_#ff0055]";
                 title.innerText = "HINDSIGHT GRID";
-                title.className = "text-4xl md:text-6xl font-bold mb-2 text-pink-500 tracking-tighter uppercase glitch-text";
-                desc.innerText = "Reconstructing collateral damage. Subject \"Isla\" provides retroactive context.";
+                title.className = "text-4xl md:text-6xl font-bold mb-2 tracking-tighter uppercase glitch-text";
+                title.style.color = '#ff0055';
+                desc.innerText = "Reconstructing collateral damage. Loud reflections of a past shaped by silence.";
             }
 
             renderGrid();
@@ -875,21 +880,32 @@
                 lyricsContainer.innerHTML = '<div class="lyric-line opacity-30">[NO AUDIO TRANSCRIPT AVAILABLE]</div>';
             }
 
-            // Reset Tabs
-            switchTab('story');
+            // Reset Tabs - Default to Lyrics
+            switchTab('lyrics');
 
-            // Embed YouTube
+            // Embed YouTube using IFrame API for end detection
             if (item.videoId) {
-                videoContainer.innerHTML = `
-                    <iframe 
-                        width="100%" 
-                        height="100%" 
-                        src="https://www.youtube.com/embed/${item.videoId}?autoplay=1&theme=dark&color=white&modestbranding=1" 
-                        title="YouTube video player" 
-                        frameborder="0" 
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-                        allowfullscreen>
-                    </iframe>`;
+                // Destroy existing player if any
+                if (window.ytPlayer) {
+                    window.ytPlayer.destroy();
+                    window.ytPlayer = null;
+                }
+                videoContainer.innerHTML = '<div id="yt-player-frame"></div>';
+
+                // Create player using API
+                window.ytPlayer = new YT.Player('yt-player-frame', {
+                    width: '100%',
+                    height: '100%',
+                    videoId: item.videoId,
+                    playerVars: {
+                        autoplay: 1,
+                        modestbranding: 1,
+                        rel: 0
+                    },
+                    events: {
+                        'onStateChange': onPlayerStateChange
+                    }
+                });
             } else {
                 videoContainer.innerHTML = '<div class="w-full h-full flex items-center justify-center text-gray-500 font-tech">NO AUDIO SOURCE</div>';
             }
@@ -908,6 +924,15 @@
             if (nextIndex < 0) nextIndex = filteredData.length - 1;
             if (nextIndex >= filteredData.length) nextIndex = 0;
             openReader(nextIndex);
+        }
+
+        // YouTube player state change handler - auto-advance when song ends
+        function onPlayerStateChange(event) {
+            // YT.PlayerState.ENDED === 0
+            if (event.data === 0) {
+                // Song finished, advance to next track
+                navigate(1);
+            }
         }
 
         function switchTab(tabName) {
