@@ -50,7 +50,7 @@ const PIXEL_MANIFEST = {
         GALLERY_MAP: 'https://pixelstortion.com/pixelstortion/main/assets_for_ethel_songs/gallery_map.json',
 
         // The base URL for all "The Files" archive pages
-        ARCHIVES_BASE: 'https://pixelstortion.com/pixelstortion/main/archives/'
+        ARCHIVES_BASE: 'https://pixelstortion.com/archives'
     }
 };
 
