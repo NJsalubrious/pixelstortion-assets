@@ -6,8 +6,8 @@
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
     <title>PixelStortion | Immersive Crime Series.</title>
 
-    <!-- Base URL for relative paths (images, assets) -->
-    <base href="https://pixelstortion.com/pixelstortion/">
+    <!-- Base URL for relative paths (images, assets) - points to where silence/ folder is -->
+    <base href="https://pixelstortion.com/pixelstortion/main/silence/">
 
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://www.youtube.com/iframe_api"></script>
@@ -1698,7 +1698,7 @@
         // Use the centralized manifest for gallery map URL
         const MAP_URL = (typeof PIXEL_MANIFEST !== 'undefined' && PIXEL_MANIFEST.ASSETS?.GALLERY_MAP)
             ? PIXEL_MANIFEST.ASSETS.GALLERY_MAP
-            : "https://pixelstortion.com/pixelstortion/assets_for_ethel_songs/gallery_map.json";
+            : "https://pixelstortion.com/assets_for_ethel_songs/gallery_map.json";
 
         // YouTube Player Setup
         function onYouTubeIframeAPIReady() {

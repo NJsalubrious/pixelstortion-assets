@@ -41,8 +41,8 @@ const PIXEL_MANIFEST = {
         GALLERY_DATA: './ethel_lyrics_data.js',
         GALLERY_CONTENT: './song_content.txt',
 
-        // The map that controls "The Story" images
-        GALLERY_MAP: 'https://pixelstortion.com/pixelstortion/assets_for_ethel_songs/gallery_map.json',
+        // The map that controls "The Story" images (at ROOT of repo)
+        GALLERY_MAP: 'https://pixelstortion.com/assets_for_ethel_songs/gallery_map.json',
 
         // The base URL for all "The Files" archive pages
         ARCHIVES_BASE: 'https://pixelstortion.com/archives/'
