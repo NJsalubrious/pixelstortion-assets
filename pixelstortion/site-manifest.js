@@ -1,13 +1,7 @@
 /**
  * PIXELSTORTION - Centralized URL Manifest
  * =========================================
- * SIMPLE WORKFLOW:
- * 1. Make changes to your files locally
- * 2. Commit & Push via TortoiseGit  
- * 3. Wait ~2 minutes for cache refresh
- * 4. Changes are live!
- * 
- * Using 'main' branch URLs = automatic updates, no commit hash juggling
+ 
  */
 
 const PIXEL_MANIFEST = {
