@@ -7,7 +7,7 @@
     <title>PixelStortion | Immersive Crime Series.</title>
 
     <!-- Base URL for relative paths (images, assets) -->
-    <base href="https://pixelstortion.com/pixelstortion/main/">
+    <base href="https://pixelstortion.com/pixelstortion/">
 
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://www.youtube.com/iframe_api"></script>
@@ -1698,7 +1698,7 @@
         // Use the centralized manifest for gallery map URL
         const MAP_URL = (typeof PIXEL_MANIFEST !== 'undefined' && PIXEL_MANIFEST.ASSETS?.GALLERY_MAP)
             ? PIXEL_MANIFEST.ASSETS.GALLERY_MAP
-            : "https://pixelstortion.com/pixelstortion/main/assets_for_ethel_songs/gallery_map.json";
+            : "https://pixelstortion.com/pixelstortion/assets_for_ethel_songs/gallery_map.json";
 
         // YouTube Player Setup
         function onYouTubeIframeAPIReady() {
@@ -2177,7 +2177,7 @@
 
                 const archivesBase = (typeof PIXEL_MANIFEST !== 'undefined' && PIXEL_MANIFEST.ASSETS?.ARCHIVES_BASE)
                     ? PIXEL_MANIFEST.ASSETS.ARCHIVES_BASE
-                    : 'https://pixelstortion.com/pixelstortion/main/archives/';
+                    : 'https://pixelstortion.com/archives/';
 
                 // Extract filename from the URL (handles both old and new URLs)
                 const filename = originalUrl.split('/').pop();
