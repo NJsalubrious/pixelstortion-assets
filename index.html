@@ -1,12 +1,179 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="utf-8">
-    <title>Redirecting...</title>
-    <meta http-equiv="refresh" content="0; url=./pixelstortion/main/index.html">
-    <link rel="canonical" href="./pixelstortion/main/index.html">
-  </head>
-  <body>
-    <p>Redirecting to <a href="./pixelstortion/main/index.html">PixelStortion</a>...</p>
-  </body>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PIXELSTORTION | UNDER CONSTRUCTION</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=Space+Grotesk:wght@700&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --matrix-green: #00ff41;
+            --error-red: #ff0055;
+        }
+
+        body {
+            background-color: #050505;
+            color: #e0e0e0;
+            font-family: 'Space Grotesk', sans-serif;
+            overflow: hidden;
+        }
+
+        /* The Glitch Header - Exact Match to Your Site */
+        .glitch-text {
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 900;
+            position: relative;
+            display: inline-block;
+            color: white;
+        }
+
+        .glitch-text::before,
+        .glitch-text::after {
+            content: attr(data-text);
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0.7;
+        }
+
+        .glitch-text::before {
+            left: 2px;
+            text-shadow: -2px 0 var(--error-red);
+            clip: rect(0, 0, 0, 0);
+            animation: glitch-anim 3s infinite;
+        }
+
+        .glitch-text::after {
+            left: -2px;
+            text-shadow: 2px 0 var(--matrix-green);
+            clip: rect(0, 0, 0, 0);
+            animation: glitch-anim2 3s infinite 0.5s;
+        }
+
+        @keyframes glitch-anim {
+
+            0%,
+            100% {
+                clip: rect(0, 0, 0, 0);
+            }
+
+            2% {
+                clip: rect(15px, 9999px, 18px, 0);
+                transform: skew(0.2deg);
+            }
+        }
+
+        @keyframes glitch-anim2 {
+
+            0%,
+            100% {
+                clip: rect(0, 0, 0, 0);
+            }
+
+            2% {
+                clip: rect(20px, 9999px, 24px, 0);
+                transform: skew(-0.2deg);
+            }
+        }
+
+        .scanlines {
+            position: fixed;
+            inset: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%);
+            background-size: 100% 4px;
+            pointer-events: none;
+            z-index: 9998;
+        }
+
+        /* Thin Side Tabs - Matching your left-side Protocol Tabs */
+        .side-tab {
+            writing-mode: vertical-rl;
+            padding: 16px 8px;
+            border: 1px solid rgba(0, 255, 65, 0.3);
+            border-left: none;
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(4px);
+            font-family: 'Courier Prime', monospace;
+            font-size: 12px;
+            font-weight: bold;
+            letter-spacing: 2px;
+            color: var(--matrix-green);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .side-tab:hover {
+            transform: translateX(4px);
+            background: rgba(0, 255, 65, 0.1);
+            color: white;
+        }
+    </style>
+</head>
+
+<body class="flex flex-col min-h-screen">
+    <div class="scanlines"></div>
+
+    <nav class="fixed top-0 w-full z-40 bg-black/90 border-b border-gray-800">
+        <div class="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
+            <h1 class="text-2xl font-bold glitch-text" data-text="PIXELSTORTION">PIXELSTORTION</h1>
+            <div class="font-mono text-[10px] text-green-500 uppercase tracking-widest animate-pulse">
+                System Maintenance // Node: SYD_AU
+            </div>
+        </div>
+    </nav>
+
+    <div class="fixed left-0 top-1/2 -translate-y-1/2 flex flex-col gap-2 z-50">
+        <a href="https://music.youtube.com/watch?v=6VABvgT-A3w&si=-D7fgFpbrXBzkgbm" target="_blank"
+            class="side-tab">ISLA</a>
+        <a href="https://www.youtube.com/watch?v=9YKXulK0EYw" target="_blank" class="side-tab"
+            style="color: #ff9d00; border-color: #ff9d00;">ETHEL</a>
+        <a href="https://music.youtube.com/playlist?list=OLAK5uy_njP-C2QlmemU-70_m8W9iazrJI_heQW7I" target="_blank"
+            class="side-tab" style="color: #ff0055; border-color: #ff0055;">DOMINIC</a>
+    </div>
+
+    <main class="flex-1 flex flex-col items-center justify-center text-center px-4 pt-16">
+        <div class="max-w-3xl space-y-12">
+            <div>
+                <h2 class="text-5xl md:text-8xl font-black text-white tracking-tighter leading-none glitch-text mb-4"
+                    data-text="UNDER CONSTRUCTION">
+                    UNDER<br />CONSTRUCTION
+                </h2>
+                <p class="text-xl md:text-2xl text-gray-500 font-light max-w-2xl mx-auto italic">
+                    "ISLA: Silence Is The Trauma"
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-left border-t border-gray-800 pt-8">
+                <div class="space-y-2">
+                    <p class="text-[10px] text-cyan-400 font-bold tracking-widest">ISLA // NOISE</p>
+                    <p class="text-xs text-gray-400 leading-relaxed">She exists to turn it all into noise — for those
+                        that live in silence.</p>
+                </div>
+                <div class="space-y-2">
+                    <p class="text-[10px] text-green-500 font-bold tracking-widest">ETHEL // FRICTION</p>
+                    <p class="text-xs text-gray-400 leading-relaxed">Some say she is abrasive but how else do you fight
+                        a system that won't listen?</p>
+                </div>
+                <div class="space-y-2">
+                    <p class="text-[10px] text-red-500 font-bold tracking-widest">DOMINIC // DANGER</p>
+                    <p class="text-xs text-gray-400 leading-relaxed">Danger is often a calm voice that seems to
+                        understand.</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="p-8 flex justify-center gap-8 font-mono text-[10px] tracking-[0.3em] text-gray-600 uppercase">
+        <a href="https://www.youtube.com/@PixelStortion" target="_blank" class="hover:text-white">[YOUTUBE]</a>
+        <a href="https://bio.pixelstortion.com" target="_blank" class="hover:text-white">[BIO]</a>
+        <a href="https://instagram.com/@pixelstortion" target="_blank" class="hover:text-white">[INTEL]</a>
+    </footer>
+</body>
+
 </html>
