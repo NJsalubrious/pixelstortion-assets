@@ -5,6 +5,10 @@
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
     <title>PixelStortion | Immersive Crime Series.</title>
+
+    <!-- Base URL for relative paths (images, assets) -->
+    <base href="https://pixelstortion.com/pixelstortion/main/">
+
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://www.youtube.com/iframe_api"></script>
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,1,0"
@@ -1691,7 +1695,10 @@
         ];
 
         // --- Configuration ---
-        const MAP_URL = "https://NJsalubrious.github.io/pixelstortion-assets/assets_for_ethel_songs/gallery_map.json";
+        // Use the centralized manifest for gallery map URL
+        const MAP_URL = (typeof PIXEL_MANIFEST !== 'undefined' && PIXEL_MANIFEST.ASSETS?.GALLERY_MAP)
+            ? PIXEL_MANIFEST.ASSETS.GALLERY_MAP
+            : "https://pixelstortion.com/pixelstortion/main/assets_for_ethel_songs/gallery_map.json";
 
         // YouTube Player Setup
         function onYouTubeIframeAPIReady() {
@@ -2163,8 +2170,23 @@
             // Set up the modal content immediately
             document.getElementById('modal-title').innerText = article.title;
 
+            // Helper: Resolve archive URL using manifest base
+            // Extracts filename from old njsalubrious.github.io URLs and applies new domain
+            function resolveArchiveUrl(originalUrl) {
+                if (!originalUrl) return null;
+
+                const archivesBase = (typeof PIXEL_MANIFEST !== 'undefined' && PIXEL_MANIFEST.ASSETS?.ARCHIVES_BASE)
+                    ? PIXEL_MANIFEST.ASSETS.ARCHIVES_BASE
+                    : 'https://pixelstortion.com/pixelstortion/main/archives/';
+
+                // Extract filename from the URL (handles both old and new URLs)
+                const filename = originalUrl.split('/').pop();
+                return archivesBase + filename;
+            }
+
             // Check if article has external URL (iframe mode)
-            if (article.url) {
+            const resolvedUrl = resolveArchiveUrl(article.url);
+            if (resolvedUrl) {
                 // Show loading indicator first
                 document.getElementById('modal-content').innerHTML = `
                     <div class="flex items-center justify-center h-full">
@@ -2186,7 +2208,7 @@
                 setTimeout(() => {
                     document.getElementById('modal-content').innerHTML = `
                         <iframe 
-                            src="${article.url}" 
+                            src="${resolvedUrl}" 
                             class="w-full border-0 block"
                             style="height: 100vh; min-height: 100vh;"
                             title="${article.title}"

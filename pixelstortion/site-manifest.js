@@ -23,7 +23,7 @@ const PIXEL_MANIFEST = {
 
     ETHEL_GALLERY: 'https://raw.githack.com/NJsalubrious/pixelstortion-assets/main/pixelstortion/main/ethel_gallery/index.html',
 
-    // ===== PROTOCOL GAMES =====
+    // ===== PROTOCOL GAMES ===== 
     GAMES: {
         ISLA: 'https://raw.githack.com/NJsalubrious/pixelstortion-assets/main/games/isla_protocol.html',
         TRIVIA: 'https://raw.githack.com/NJsalubrious/pixelstortion-assets/main/games/trivia_protocol.html',
@@ -44,7 +44,13 @@ const PIXEL_MANIFEST = {
 
         // Gallery data files
         GALLERY_DATA: './ethel_lyrics_data.js',
-        GALLERY_CONTENT: './song_content.txt'
+        GALLERY_CONTENT: './song_content.txt',
+
+        // The map that controls "The Story" images
+        GALLERY_MAP: 'https://pixelstortion.com/pixelstortion/main/assets_for_ethel_songs/gallery_map.json',
+
+        // The base URL for all "The Files" archive pages
+        ARCHIVES_BASE: 'https://pixelstortion.com/pixelstortion/main/archives/'
     }
 };
 
