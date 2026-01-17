@@ -19,10 +19,9 @@
             background-color: #050505;
             color: #e0e0e0;
             font-family: 'Space Grotesk', sans-serif;
-            overflow: hidden;
+            overflow-x: hidden;
         }
 
-        /* The Glitch Header - Exact Match to Your Site */
         .glitch-text {
             font-family: 'Space Grotesk', sans-serif;
             font-weight: 900;
@@ -91,27 +90,16 @@
             z-index: 9998;
         }
 
-        /* Thin Side Tabs - Matching your left-side Protocol Tabs */
-        .side-tab {
-            writing-mode: vertical-rl;
-            padding: 16px 8px;
-            border: 1px solid rgba(0, 255, 65, 0.3);
-            border-left: none;
-            background: rgba(0, 0, 0, 0.4);
-            backdrop-filter: blur(4px);
-            font-family: 'Courier Prime', monospace;
-            font-size: 12px;
-            font-weight: bold;
-            letter-spacing: 2px;
-            color: var(--matrix-green);
-            transition: all 0.3s ease;
+        .subject-node {
+            border-left: 2px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
             cursor: pointer;
         }
 
-        .side-tab:hover {
-            transform: translateX(4px);
-            background: rgba(0, 255, 65, 0.1);
-            color: white;
+        .subject-node:hover {
+            border-left-color: white;
+            background: rgba(255, 255, 255, 0.03);
+            transform: translateX(10px);
         }
     </style>
 </head>
@@ -120,56 +108,55 @@
     <div class="scanlines"></div>
 
     <nav class="fixed top-0 w-full z-40 bg-black/90 border-b border-gray-800">
-        <div class="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
+        <div class="max-w-7xl mx-auto px-4 h-16 flex items-center justify-center">
             <h1 class="text-2xl font-bold glitch-text" data-text="PIXELSTORTION">PIXELSTORTION</h1>
-            <div class="font-mono text-[10px] text-green-500 uppercase tracking-widest animate-pulse">
-                System Maintenance // Node: SYD_AU
-            </div>
         </div>
     </nav>
 
-    <div class="fixed left-0 top-1/2 -translate-y-1/2 flex flex-col gap-2 z-50">
-        <a href="https://music.youtube.com/watch?v=6VABvgT-A3w&si=-D7fgFpbrXBzkgbm" target="_blank"
-            class="side-tab">ISLA</a>
-        <a href="https://www.youtube.com/watch?v=9YKXulK0EYw" target="_blank" class="side-tab"
-            style="color: #ff9d00; border-color: #ff9d00;">ETHEL</a>
-        <a href="https://music.youtube.com/playlist?list=OLAK5uy_njP-C2QlmemU-70_m8W9iazrJI_heQW7I" target="_blank"
-            class="side-tab" style="color: #ff0055; border-color: #ff0055;">DOMINIC</a>
-    </div>
+    <main class="flex-1 flex flex-col items-center justify-center p-6 mt-16">
+        <div class="max-w-5xl w-full">
 
-    <main class="flex-1 flex flex-col items-center justify-center text-center px-4 pt-16">
-        <div class="max-w-3xl space-y-12">
-            <div>
-                <h2 class="text-5xl md:text-8xl font-black text-white tracking-tighter leading-none glitch-text mb-4"
+            <div class="mb-16 text-center">
+                <h2 class="text-5xl md:text-8xl font-black text-white tracking-tighter leading-tight glitch-text mb-4"
                     data-text="UNDER CONSTRUCTION">
                     UNDER<br />CONSTRUCTION
                 </h2>
-                <p class="text-xl md:text-2xl text-gray-500 font-light max-w-2xl mx-auto italic">
-                    "ISLA: Silence Is The Trauma"
-                </p>
+                <p class="text-gray-500 font-mono text-xs tracking-[0.4em] uppercase opacity-60">Architectural Node
+                    Re-Route In Progress</p>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-left border-t border-gray-800 pt-8">
-                <div class="space-y-2">
-                    <p class="text-[10px] text-cyan-400 font-bold tracking-widest">ISLA // NOISE</p>
-                    <p class="text-xs text-gray-400 leading-relaxed">She exists to turn it all into noise — for those
-                        that live in silence.</p>
-                </div>
-                <div class="space-y-2">
-                    <p class="text-[10px] text-green-500 font-bold tracking-widest">ETHEL // FRICTION</p>
-                    <p class="text-xs text-gray-400 leading-relaxed">Some say she is abrasive but how else do you fight
-                        a system that won't listen?</p>
-                </div>
-                <div class="space-y-2">
-                    <p class="text-[10px] text-red-500 font-bold tracking-widest">DOMINIC // DANGER</p>
-                    <p class="text-xs text-gray-400 leading-relaxed">Danger is often a calm voice that seems to
-                        understand.</p>
-                </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-12">
+
+                <a href="https://music.youtube.com/watch?v=6VABvgT-A3w&si=-D7fgFpbrXBzkgbm" target="_blank"
+                    class="subject-node p-6 group">
+                    <h3 class="text-cyan-400 font-bold tracking-[0.3em] text-sm mb-4">ISLA // NOISE</h3>
+                    <p class="text-white text-lg leading-snug group-hover:text-cyan-300 transition-colors">
+                        "Because most people like her don't make it. She exists to turn it all into noise — for those
+                        that live in silence."
+                    </p>
+                </a>
+
+                <a href="https://www.youtube.com/watch?v=9YKXulK0EYw" target="_blank" class="subject-node p-6 group">
+                    <h3 class="text-green-500 font-bold tracking-[0.3em] text-sm mb-4">ETHEL // FRICTION</h3>
+                    <p class="text-white text-lg leading-snug group-hover:text-green-300 transition-colors">
+                        "Some say she is abrasive but how else do you fight a system that won't listen?"
+                    </p>
+                </a>
+
+                <a href="https://music.youtube.com/playlist?list=OLAK5uy_njP-C2QlmemU-70_m8W9iazrJI_heQW7I"
+                    target="_blank" class="subject-node p-6 group">
+                    <h3 class="text-red-500 font-bold tracking-[0.3em] text-sm mb-4">DOMINIC // DANGER</h3>
+                    <p class="text-white text-lg leading-snug group-hover:text-red-400 transition-colors">
+                        "Danger is often a calm voice that seems to understand."
+                    </p>
+                </a>
+
             </div>
         </div>
     </main>
 
-    <footer class="p-8 flex justify-center gap-8 font-mono text-[10px] tracking-[0.3em] text-gray-600 uppercase">
+    <footer
+        class="p-12 flex flex-wrap justify-center gap-12 font-mono text-[10px] tracking-[0.4em] text-gray-600 uppercase">
         <a href="https://www.youtube.com/@PixelStortion" target="_blank" class="hover:text-white">[YOUTUBE]</a>
         <a href="https://bio.pixelstortion.com" target="_blank" class="hover:text-white">[BIO]</a>
         <a href="https://instagram.com/@pixelstortion" target="_blank" class="hover:text-white">[INTEL]</a>
