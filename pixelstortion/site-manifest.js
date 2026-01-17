@@ -2,6 +2,7 @@
  * PIXELSTORTION - Centralized URL Manifest
  * =========================================
  
+ 
  */
 
 const PIXEL_MANIFEST = {
@@ -19,10 +20,10 @@ const PIXEL_MANIFEST = {
 
     // ===== PROTOCOL GAMES ===== 
     GAMES: {
-        ISLA: 'https://raw.githack.com/NJsalubrious/pixelstortion-assets/main/games/isla_protocol.html',
-        TRIVIA: 'https://raw.githack.com/NJsalubrious/pixelstortion-assets/main/games/trivia_protocol.html',
-        DOMINIC: 'https://raw.githack.com/NJsalubrious/pixelstortion-assets/main/games/Dominics_game.html',
-        ETHEL: 'https://raw.githack.com/NJsalubrious/pixelstortion-assets/main/games/ethel_scanner.html'
+        ISLA: 'https://raw.githack.com/NJsalubrious/pixelstortion-assets/games/isla_protocol.html',
+        TRIVIA: 'https://raw.githack.com/NJsalubrious/pixelstortion-assets/games/trivia_protocol.html',
+        DOMINIC: 'https://raw.githack.com/NJsalubrious/pixelstortion-assets/games/Dominics_game.html',
+        ETHEL: 'https://raw.githack.com/NJsalubrious/pixelstortion-assets/games/ethel_scanner.html'
     },
 
     // ===== EXTERNAL LINKS =====
@@ -31,17 +32,17 @@ const PIXEL_MANIFEST = {
     // ===== ASSET BASES (for dynamic content) =====
     ASSETS: {
         // Song cover art - main branch = auto-updates on git push
-        SONG_COVERS: 'https://raw.githubusercontent.com/NJsalubrious/pixelstortion-assets/main/SongCovers/',
+        SONG_COVERS: 'https://raw.githubusercontent.com/NJsalubrious/pixelstortion-assets/SongCovers/',
 
         // Album/EP covers (legacy)
-        ALBUM_COVERS: 'https://raw.githubusercontent.com/NJsalubrious/pixelstortion-assets/main/album_ep_single_covers/',
+        ALBUM_COVERS: 'https://raw.githubusercontent.com/NJsalubrious/pixelstortion-assets/album_ep_single_covers/',
 
         // Gallery data files
         GALLERY_DATA: './ethel_lyrics_data.js',
         GALLERY_CONTENT: './song_content.txt',
 
         // The map that controls "The Story" images
-        GALLERY_MAP: 'https://pixelstortion.com/pixelstortion/main/assets_for_ethel_songs/gallery_map.json',
+        GALLERY_MAP: 'https://pixelstortion.com/pixelstortion/assets_for_ethel_songs/gallery_map.json',
 
         // The base URL for all "The Files" archive pages
         ARCHIVES_BASE: 'https://pixelstortion.com/archives'
