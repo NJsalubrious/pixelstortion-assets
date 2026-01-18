@@ -4,8 +4,8 @@
  * Updated: January 2026
  */
 
-// Using main branch = auto-updates when you push to git
-const IMG_BASE = "https://raw.githubusercontent.com/NJsalubrious/pixelstortion-assets/main/SongCovers/";
+// Using local library path for cover images
+const IMG_BASE = "/library/media_covers_song/";
 
 const ARCHIVE_DATA = [
     // =========================================================================
