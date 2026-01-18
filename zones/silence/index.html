@@ -7,7 +7,7 @@
     <title>PixelStortion | Immersive Crime Series.</title>
 
     <!-- Base URL for relative paths (images, assets) - points to where silence/ folder is -->
-    <base href="https://pixelstortion.com/pixelstortion/main/silence/">
+
 
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://www.youtube.com/iframe_api"></script>
@@ -18,8 +18,7 @@
         rel="stylesheet" />
 
     <!-- Centralized URL Manifest - MUST be loaded before other scripts -->
-    <script
-        src="https://raw.githack.com/NJsalubrious/pixelstortion-assets/main/pixelstortion/site-manifest.js"></script>
+    <script src="/site-manifest.js"></script>
     <style>
         :root {
             --glitch-color-1: #00ff41;
@@ -1698,7 +1697,7 @@
         // Use the centralized manifest for gallery map URL
         const MAP_URL = (typeof PIXEL_MANIFEST !== 'undefined' && PIXEL_MANIFEST.ASSETS?.GALLERY_MAP)
             ? PIXEL_MANIFEST.ASSETS.GALLERY_MAP
-            : "https://pixelstortion.com/assets_for_ethel_songs/gallery_map.json";
+            : "/library/char_ethel_media/gallery_map.json";
 
         // YouTube Player Setup
         function onYouTubeIframeAPIReady() {
@@ -1804,7 +1803,21 @@
                 console.log("Connecting to Archives...");
                 const response = await fetch(MAP_URL);
                 if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-                galleryMap = await response.json();
+                const rawMap = await response.json();
+
+                // Rewrite URLs based on manifest mode
+                if (typeof PIXEL_MANIFEST !== 'undefined' && PIXEL_MANIFEST.IS_LOCAL) {
+                    // Convert GitHub URLs to local paths
+                    const gitHubBase = 'https://NJsalubrious.github.io/pixelstortion-assets';
+                    for (const trackKey in rawMap) {
+                        rawMap[trackKey] = rawMap[trackKey].map(url =>
+                            url.replace(gitHubBase, '').replace('/assets_for_ethel_songs/', '/library/char_ethel_media/')
+                        );
+                    }
+                    console.log("🏠 LOCAL MODE: URLs rewritten to local paths");
+                }
+
+                galleryMap = rawMap;
                 console.log("Archives Decrypted. " + Object.keys(galleryMap).length + " tracks indexed.");
             } catch (e) {
                 console.error("Archive Connection Failed:", e);
