@@ -1,0 +1,854 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>THE RYKER CONSENSUS // SYSTEMIC FAILURE SIMULATOR</title>
+    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --neon-green: #00ff41;
+            --neon-red: #ff4444;
+            --neon-amber: #ff9500;
+            --neon-cyan: #00ffff;
+            --neon-purple: #9b59b6;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background: #050505;
+            color: #e0e0e0;
+            font-family: 'Share Tech Mono', monospace;
+            overflow: hidden;
+            height: 100vh;
+            cursor: crosshair;
+        }
+
+        /* CRT */
+        .scanlines {
+            background: linear-gradient(to bottom, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0) 50%, rgba(0, 0, 0, 0.12) 50%);
+            background-size: 100% 4px;
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 1000;
+        }
+
+        /* GLOBE CONTAINER */
+        #globe {
+            position: fixed;
+            inset: 0;
+            background: radial-gradient(ellipse at center, #0a0a12 0%, #000 100%);
+            overflow: hidden;
+        }
+
+        #globe::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background-image: linear-gradient(rgba(0, 255, 65, 0.02) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 255, 65, 0.02) 1px, transparent 1px);
+            background-size: 60px 60px;
+            pointer-events: none;
+        }
+
+        /* NODE - Small-to-Big Visual Physics */
+        .node {
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            transform: translate(-50%, -50%);
+            cursor: pointer;
+            z-index: 10;
+            transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), z-index 0s;
+        }
+
+        .node:hover {
+            transform: translate(-50%, -50%) scale(3);
+            z-index: 100;
+        }
+
+        .node.deployed {
+            opacity: 0.3;
+            pointer-events: none;
+        }
+
+        /* PROFILE IMAGE */
+        .node-img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--neon-green);
+            box-shadow: 0 0 10px var(--neon-green);
+            background: #111;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+
+        .node:hover .node-img {
+            border-color: #fff;
+            box-shadow: 0 0 20px #fff, 0 0 40px var(--neon-green);
+        }
+
+        .node.glitch .node-img {
+            border-color: var(--neon-cyan);
+            box-shadow: 0 0 10px var(--neon-cyan);
+        }
+
+        .node.antibody .node-img {
+            border-color: var(--neon-purple);
+            box-shadow: 0 0 10px var(--neon-purple);
+        }
+
+        .node.deployed .node-img {
+            border-color: var(--neon-red);
+            box-shadow: 0 0 10px var(--neon-red);
+        }
+
+        /* NAME LABEL */
+        .node-name {
+            position: absolute;
+            bottom: -16px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 7px;
+            color: #555;
+            white-space: nowrap;
+            text-align: center;
+            max-width: 70px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            transition: color 0.3s, font-size 0.3s;
+        }
+
+        .node:hover .node-name {
+            color: #fff;
+            font-size: 9px;
+        }
+
+        /* ORBITAL SATELLITES - 4 static cardinal positions, 3 switchable types */
+        .orbitals {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.3s;
+            /* NO rotation - labels must be readable */
+        }
+
+        .node:hover .orbitals.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        @keyframes orbit-container {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Orbital dot - clickable/tappable at cardinal positions */
+        .orbital {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .orbital:hover {
+            transform: scale(1.4);
+            z-index: 100;
+        }
+
+        /* 4 Cardinal positions */
+        .orbital:nth-child(1) {
+            top: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .orbital:nth-child(2) {
+            top: 50%;
+            right: -12px;
+            left: auto;
+            transform: translateY(-50%);
+        }
+
+        .orbital:nth-child(3) {
+            bottom: -12px;
+            top: auto;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .orbital:nth-child(4) {
+            top: 50%;
+            left: -12px;
+            transform: translateY(-50%);
+        }
+
+        /* Counter-scale orbitals when parent node is hovered (3x → 0.33x = 1x) */
+        .node:hover .orbital:nth-child(1) {
+            transform: translateX(-50%) scale(0.33);
+        }
+
+        .node:hover .orbital:nth-child(2) {
+            transform: translateY(-50%) scale(0.33);
+        }
+
+        .node:hover .orbital:nth-child(3) {
+            transform: translateX(-50%) scale(0.33);
+        }
+
+        .node:hover .orbital:nth-child(4) {
+            transform: translateY(-50%) scale(0.33);
+        }
+
+        /* Type colors */
+        .orbitals.vulns .orbital {
+            background: var(--neon-amber);
+            box-shadow: 0 0 4px var(--neon-amber);
+        }
+
+        .orbitals.skills .orbital {
+            background: var(--neon-cyan);
+            box-shadow: 0 0 4px var(--neon-cyan);
+        }
+
+        .orbitals.spheres .orbital {
+            background: #999;
+            box-shadow: 0 0 4px #999;
+        }
+
+        /* Labels - ALWAYS VISIBLE when satellite ring is active */
+        .orbital-label {
+            position: absolute;
+            font-size: 36px;
+            /* 36px * 0.33 scale = ~12px readable */
+            font-weight: bold;
+            white-space: nowrap;
+            opacity: 1;
+            pointer-events: none;
+            text-shadow: 0 0 6px #000, 0 0 12px #000;
+            background: rgba(0, 0, 0, 0.75);
+            padding: 6px 12px;
+            border-radius: 6px;
+            /* Scale down to counter parent's 3x scale */
+            transform: scale(0.33);
+            transform-origin: center;
+        }
+
+        /* Label colors by type */
+        .orbitals.vulns .orbital-label {
+            color: var(--neon-amber);
+        }
+
+        .orbitals.skills .orbital-label {
+            color: var(--neon-cyan);
+        }
+
+        .orbitals.spheres .orbital-label {
+            color: #ccc;
+        }
+
+        /* Label positions - outside orbitals at all 4 cardinal directions */
+        .orbital:nth-child(1) .orbital-label {
+            /* TOP satellite - label above */
+            top: auto;
+            right: auto;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%) scale(0.33);
+            margin-bottom: 8px;
+        }
+
+        .orbital:nth-child(2) .orbital-label {
+            /* RIGHT satellite - label to right */
+            top: 50%;
+            right: auto;
+            bottom: auto;
+            left: 100%;
+            transform: translateY(-50%) scale(0.33);
+            margin-left: 8px;
+        }
+
+        .orbital:nth-child(3) .orbital-label {
+            /* BOTTOM satellite - label below */
+            top: 100%;
+            right: auto;
+            bottom: auto;
+            left: 50%;
+            transform: translateX(-50%) scale(0.33);
+            margin-top: 8px;
+        }
+
+        .orbital:nth-child(4) .orbital-label {
+            /* LEFT satellite - label to left */
+            top: 50%;
+            right: 100%;
+            bottom: auto;
+            left: auto;
+            transform: translateY(-50%) scale(0.33);
+            margin-right: 8px;
+        }
+
+        @keyframes counter-rotate {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(-360deg);
+            }
+        }
+
+        /* Type indicator - text badge showing current satellite category */
+        .type-indicator {
+            position: absolute;
+            top: -20px;
+            left: 50%;
+            transform: translateX(-50%) scale(0.33);
+            font-size: 24px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            padding: 3px 9px;
+            border-radius: 6px;
+            background: rgba(0, 0, 0, 0.8);
+            border: 1px solid;
+            opacity: 0;
+            transition: opacity 0.3s;
+            white-space: nowrap;
+        }
+
+        .node:hover .type-indicator {
+            opacity: 1;
+        }
+
+        .type-indicator.vulns {
+            color: var(--neon-amber);
+            border-color: var(--neon-amber);
+        }
+
+        .type-indicator.skills {
+            color: var(--neon-cyan);
+            border-color: var(--neon-cyan);
+        }
+
+        .type-indicator.spheres {
+            color: #ccc;
+            border-color: #999;
+        }
+
+        .sphere {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+        }
+
+        .sphere.red {
+            background: var(--neon-red);
+            box-shadow: 0 0 4px var(--neon-red);
+        }
+
+        .sphere.blue {
+            background: var(--neon-cyan);
+            box-shadow: 0 0 4px var(--neon-cyan);
+        }
+
+        .sphere.grey {
+            background: #666;
+            box-shadow: 0 0 4px #666;
+        }
+
+        /* HUD */
+        #hud {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            padding: 15px 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 500;
+            background: linear-gradient(to bottom, rgba(0, 0, 0, 0.9), transparent);
+            pointer-events: none;
+        }
+
+        .hud-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 16px;
+            color: #fff;
+            letter-spacing: 4px;
+        }
+
+        .hud-sub {
+            font-size: 9px;
+            color: var(--neon-green);
+            margin-top: 2px;
+        }
+
+        .hud-stats {
+            display: flex;
+            gap: 25px;
+        }
+
+        .stat-label {
+            font-size: 8px;
+            color: #444;
+        }
+
+        .stat-value {
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .stat-value.green {
+            color: var(--neon-green);
+        }
+
+        .stat-value.amber {
+            color: var(--neon-amber);
+        }
+
+        .stat-value.red {
+            color: var(--neon-red);
+        }
+
+        /* FEED */
+        #feed {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 100px;
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.9), transparent);
+            z-index: 500;
+            padding: 10px 25px;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .feed-line {
+            font-size: 10px;
+            margin-bottom: 4px;
+            opacity: 0;
+            animation: feedIn 0.3s forwards;
+        }
+
+        @keyframes feedIn {
+            to {
+                opacity: 1;
+            }
+        }
+
+        .feed-line.cmd {
+            color: var(--neon-green);
+        }
+
+        .feed-line.warn {
+            color: var(--neon-amber);
+        }
+
+        .feed-line.danger {
+            color: var(--neon-red);
+        }
+
+        .feed-ts {
+            color: #333;
+            margin-right: 6px;
+        }
+
+        /* START OVERLAY */
+        #start {
+            position: fixed;
+            inset: 0;
+            background: #000;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+
+        #start.hidden {
+            display: none;
+        }
+
+        .start-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 24px;
+            color: #fff;
+            letter-spacing: 6px;
+            margin-bottom: 8px;
+        }
+
+        .start-sub {
+            color: var(--neon-green);
+            font-size: 10px;
+            letter-spacing: 2px;
+            margin-bottom: 25px;
+            opacity: 0.6;
+        }
+
+        .start-warn {
+            color: var(--neon-red);
+            font-size: 9px;
+            max-width: 350px;
+            text-align: center;
+            line-height: 1.4;
+            margin-bottom: 25px;
+        }
+
+        .start-click {
+            color: #444;
+            font-size: 10px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 0.4;
+            }
+
+            50% {
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="scanlines"></div>
+    <div id="globe"></div>
+
+    <div id="hud">
+        <div>
+            <div class="hud-title">RYKER CONSENSUS</div>
+            <div class="hud-sub">53 NODES • ORBITAL VULNERABILITIES</div>
+        </div>
+        <div class="hud-stats">
+            <div>
+                <div class="stat-label">CAPITAL</div>
+                <div class="stat-value green" id="stat-cap">$21.4B</div>
+            </div>
+            <div>
+                <div class="stat-label">VISIBILITY</div>
+                <div class="stat-value amber" id="stat-vis">15</div>
+            </div>
+            <div>
+                <div class="stat-label">DEPLOYED</div>
+                <div class="stat-value red" id="stat-dep">0</div>
+            </div>
+        </div>
+    </div>
+
+    <div id="feed"></div>
+
+    <div id="start">
+        <div class="start-title">THE RYKER CONSENSUS</div>
+        <div class="start-sub">SYSTEMIC FAILURE SIMULATOR</div>
+        <div class="start-warn">⚠ 53 nodes with orbiting vulnerabilities and spheres of influence. Audio on hover.
+            Profile images. Click to deploy.</div>
+        <div class="start-click">[ CLICK TO ENTER ]</div>
+    </div>
+
+    <audio id="audio" preload="auto"></audio>
+
+    <script src="ryker_assets.js"></script>
+    <script>
+        // Helper to access nodes from the external asset file
+        function getAllNodes() { return RYKER_NODES; }
+
+        const STATE = { X: 100, Y: 50, Z: 20, V: 15, deployedNodes: [] };
+        const globe = document.getElementById('globe');
+
+        document.getElementById('start').addEventListener('click', startEngine);
+
+        function startEngine() {
+            document.getElementById('start').classList.add('hidden');
+            renderNodes();
+            addFeed('NETWORK ONLINE', 'cmd');
+            addFeed('53 NODES DETECTED', 'cmd');
+        }
+
+        function renderNodes() {
+            const allNodes = getAllNodes();
+            const w = window.innerWidth;
+            const h = window.innerHeight;
+            const cols = 10;
+            const rows = Math.ceil(allNodes.length / cols);
+            const cellW = w / cols;
+            const cellH = (h - 180) / rows;
+
+            allNodes.forEach((n, i) => {
+                const col = i % cols;
+                const row = Math.floor(i / cols);
+                const x = cellW * col + cellW / 2 + (Math.random() - 0.5) * 20;
+                const y = 90 + cellH * row + cellH / 2 + (Math.random() - 0.5) * 15;
+
+                // Determine node class based on visualRole (THE MASK - what player sees)
+                const typeClass = n.visualRole === 'GLITCH' ? 'glitch' : (n.visualRole === 'VULTURE' ? 'antibody' : '');
+
+                const node = document.createElement('div');
+                node.className = `node ${typeClass}`;
+                node.style.left = x + 'px';
+                node.style.top = y + 'px';
+                node.style.animationDelay = (Math.random() * 4) + 's';
+                node.dataset.logicClass = n.logicClass; // Store TRUTH for game logic
+                node.dataset.visualRole = n.visualRole; // Store MASK for UI
+
+                // Profile image (from anchor)
+                const img = document.createElement('img');
+                img.className = 'node-img';
+                img.src = R2_PICS + encodeURIComponent(n.anchor.img);
+                img.alt = n.anchor.name;
+                img.onerror = () => { img.style.background = typeClass === 'glitch' ? 'var(--neon-cyan)' : 'var(--neon-green)'; };
+                node.appendChild(img);
+
+                // Name (from anchor)
+                const name = document.createElement('div');
+                name.className = 'node-name';
+                name.textContent = n.anchor.name;
+                node.appendChild(name);
+
+                // Helper: create 4-satellite orbital ring with DATA TYPE injection
+                function createRing(items, ringClass) {
+                    const ring = document.createElement('div');
+                    ring.className = `orbitals ${ringClass}`;
+                    // Always create exactly 4 orbitals at cardinal positions
+                    for (let idx = 0; idx < 4; idx++) {
+                        const orb = document.createElement('div');
+                        orb.className = 'orbital';
+                        // CHANGE: Use [VACANT] instead of '-' to visually prove the slot exists
+                        const item = items[idx] || { name: '[VACANT]', type: 'NONE' };
+
+                        // CRITICAL: Inject the logic TYPE into the DOM for gameplay mechanics
+                        orb.dataset.type = item.type || 'NONE';
+
+                        orb.title = `${item.name} [${item.type || 'NONE'}]`; // Tooltip helper
+
+                        const lbl = document.createElement('div');
+                        lbl.className = 'orbital-label';
+                        lbl.textContent = item.name || '[VACANT]';
+
+                        // DIM THE EMPTY SLOTS: Visual cue that this is a system placeholder
+                        if (item.name === '[VACANT]') {
+                            lbl.style.opacity = '0.4';
+                            lbl.style.color = '#555';
+                        }
+
+                        orb.appendChild(lbl);
+                        ring.appendChild(orb);
+                    }
+                    return ring;
+                }
+
+                // === 3 SWITCHABLE ORBITAL RINGS (only one active at a time) ===
+                const vulnRing = createRing(n.vulnerabilities, 'vulns active'); // Default active
+                const skillRing = createRing(n.skills, 'skills');
+                const sphereRing = createRing(n.spheres.map(s => ({ name: s.name, type: s.effect })), 'spheres');
+
+                node.appendChild(vulnRing);
+                node.appendChild(skillRing);
+                node.appendChild(sphereRing);
+
+                // Type indicator badge (shows current satellite category name)
+                const typeIndicator = document.createElement('div');
+                typeIndicator.className = 'type-indicator vulns';
+                typeIndicator.textContent = 'VULNS';
+                node.appendChild(typeIndicator);
+
+                // Store ring refs and current mode
+                const rings = [vulnRing, skillRing, sphereRing];
+                const modes = ['vulns', 'skills', 'spheres'];
+                const modeLabels = ['VULNS', 'SKILLS', 'SPHERES'];
+                let currentMode = 0;
+
+                // Function to cycle satellite types
+                function cycleSatelliteType(direction = 1) {
+                    currentMode = (currentMode + direction + 3) % 3;
+                    rings.forEach((r, idx) => r.classList.toggle('active', idx === currentMode));
+                    typeIndicator.className = `type-indicator ${modes[currentMode]}`;
+                    typeIndicator.textContent = modeLabels[currentMode];
+                }
+
+                // CLICK/TAP to cycle satellite types (mobile-friendly!)
+                node.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    cycleSatelliteType(1); // Forward cycle
+                });
+
+                // Scroll-wheel as optional desktop shortcut
+                node.addEventListener('wheel', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    cycleSatelliteType(e.deltaY > 0 ? 1 : -1);
+                }, { passive: false });
+
+                // Store full node data reference
+                node._nodeData = n;
+
+                globe.appendChild(node);
+            });
+
+            // Start proximity audio tracking
+            document.addEventListener('mousemove', handleAudioProximity);
+        }
+
+        // === AUDIO ENGINE - Proximity-based like ethel_scanner ===
+        let activeNodeIndex = -1;
+        let nodeElements = [];
+        const MAX_AUDIO_DISTANCE = 150; // pixels - audio starts at this distance
+        const LOCK_DISTANCE = 50; // pixels - full volume
+
+        function handleAudioProximity(e) {
+            const mouseX = e.clientX;
+            const mouseY = e.clientY;
+
+            // Get all node elements if not cached
+            if (nodeElements.length === 0) {
+                nodeElements = Array.from(document.querySelectorAll('.node'));
+            }
+
+            const allNodes = getAllNodes();
+            let closestDist = Infinity;
+            let closestNodeIndex = -1;
+
+            // Find closest node
+            allNodes.forEach((n, index) => {
+                if (STATE.deployedNodes.includes(n.id)) return;
+
+                const el = nodeElements[index];
+                if (!el) return;
+
+                const rect = el.getBoundingClientRect();
+                const nodeCenterX = rect.left + rect.width / 2;
+                const nodeCenterY = rect.top + rect.height / 2;
+                const dist = Math.hypot(nodeCenterX - mouseX, nodeCenterY - mouseY);
+
+                if (dist < closestDist) {
+                    closestDist = dist;
+                    closestNodeIndex = index;
+                }
+            });
+
+            // Handle audio based on proximity
+            if (closestNodeIndex !== -1 && closestDist < MAX_AUDIO_DISTANCE) {
+                const node = allNodes[closestNodeIndex];
+
+                // Calculate volume based on distance (closer = louder)
+                let vol = 1 - (closestDist / MAX_AUDIO_DISTANCE);
+                vol = Math.max(0, Math.min(1, vol * vol)); // Quadratic curve for smoother fade
+
+                const audio = document.getElementById('audio');
+
+                // Switch to new node if different
+                if (activeNodeIndex !== closestNodeIndex) {
+                    // Start new audio (from anchor)
+                    audio.src = R2_AUDIO + encodeURIComponent(node.anchor.audio);
+                    audio.loop = true;
+                    audio.currentTime = 0;
+                    audio.play().catch(() => { });
+                    activeNodeIndex = closestNodeIndex;
+                }
+
+                // Set volume based on proximity
+                audio.volume = vol;
+
+            } else {
+                // Too far from any node - fade out
+                if (activeNodeIndex !== -1) {
+                    fadeOutAudio();
+                    activeNodeIndex = -1;
+                }
+            }
+        }
+
+        function fadeOutAudio() {
+            const audio = document.getElementById('audio');
+            if (!audio || audio.paused) return;
+
+            let vol = audio.volume;
+            const fadeInterval = setInterval(() => {
+                vol = Math.max(0, vol - 0.1);
+                audio.volume = vol;
+                if (vol <= 0) {
+                    clearInterval(fadeInterval);
+                    audio.pause();
+                }
+            }, 30);
+        }
+
+        async function deployNode(n, el) {
+            if (STATE.deployedNodes.includes(n.id)) return;
+            STATE.deployedNodes.push(n.id);
+            el.classList.add('deployed');
+
+            // Play audio (from anchor)
+            const audio = document.getElementById('audio');
+            audio.src = R2_AUDIO + encodeURIComponent(n.anchor.audio);
+            audio.play().catch(() => { });
+
+            addFeed(`DEPLOY: ${n.anchor.name.toUpperCase()} [${n.type}]`, 'cmd');
+            await delay(500);
+
+            // Show skills available
+            if (n.skills && n.skills.length > 0) {
+                const skillNames = n.skills.map(s => s.name).join(' | ');
+                addFeed(`SKILLS: ${skillNames}`, 'warn');
+            }
+
+            await delay(400);
+            // Show vulnerabilities
+            if (n.vulnerabilities && n.vulnerabilities.length > 0) {
+                addFeed(`VULNS: ${n.vulnerabilities[0].name} (${n.vulnerabilities[0].type})`, 'danger');
+            }
+
+            updateHUD();
+        }
+
+        function updateHUD() {
+            document.getElementById('stat-cap').textContent = `$${(STATE.X / 100 * 21.4).toFixed(1)}B`;
+            document.getElementById('stat-vis').textContent = STATE.V;
+            document.getElementById('stat-dep').textContent = STATE.deployedNodes.length;
+        }
+
+        function addFeed(text, type = '') {
+            const feed = document.getElementById('feed');
+            const line = document.createElement('div');
+            line.className = `feed-line ${type}`;
+            const ts = document.createElement('span');
+            ts.className = 'feed-ts';
+            ts.textContent = new Date().toLocaleTimeString();
+            line.appendChild(ts);
+            line.appendChild(document.createTextNode(text));
+            feed.appendChild(line);
+            while (feed.children.length > 5) feed.removeChild(feed.firstChild);
+        }
+
+        function delay(ms) { return new Promise(r => setTimeout(r, ms)); }
+    </script>
+</body>
+
+</html>
