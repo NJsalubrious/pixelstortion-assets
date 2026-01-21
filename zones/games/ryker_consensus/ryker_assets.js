@@ -118,7 +118,7 @@ const RYKER_NODES = [
     },
     {
         id: 'sarah_k',
-        anchor: { name: "Sarah K", role: "Investigative Journo", img: "Investigative Journalist 'Sarah K'. Location-  TV station Focus- The Whole Picture..jpg", audio: "Investigative Journalist 'Sarah K'. Location- TV station Focus- The Whole Picture..wav", hoverScale: 3.0 },
+        anchor: { name: "Sarah K", role: "Investigative Journo", img: "Investigative Journalist 'Sarah K'. Location-  TV station Focus- The Whole Picture..jpg", audio: "Investigative Journalist 'Sarah K'. Location-  TV station Focus- The Whole Picture..wav", hoverScale: 3.0 },
         skills: [
             { name: 'Narrative Control', type: 'MEDIA' },
             { name: 'Forensic Accounting', type: 'INTEL' },
