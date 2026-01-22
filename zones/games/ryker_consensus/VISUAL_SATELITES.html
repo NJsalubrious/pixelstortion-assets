@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>RYKER CONSENSUS // OPERATOR TERMINAL</title>
+    <style>
+        :root {
+            --neon-green: #00ff41;
+            --neon-amber: #ff9500;
+            --neon-cyan: #00ffff;
+            --neon-red: #ff4444;
+            --neon-white: #e0e0e0;
+            --bg-dark: #050505;
+            --font-main: 'Courier New', Courier, monospace;
+        }
+
+        body {
+            margin: 0;
+            overflow: hidden;
+            background-color: var(--bg-dark);
+            font-family: var(--font-main);
+            color: var(--neon-green);
+            user-select: none;
+        }
+
+        /* --- UI OVERLAYS (from maptest.html) --- */
+        #ui-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .scanlines {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 100;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%),
+                linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+            background-size: 100% 2px, 3px 100%;
+        }
+
+        .vignette {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 101;
+            background: radial-gradient(circle, rgba(0, 0, 0, 0) 60%, rgba(0, 0, 0, 0.9) 100%);
+        }
+
+        /* --- HUD PANELS --- */
+        .hud-panel {
+            background: rgba(0, 10, 0, 0.85);
+            border: 1px solid var(--neon-green);
+            padding: 15px;
+            pointer-events: auto;
+            backdrop-filter: blur(4px);
+            box-shadow: 0 0 15px rgba(0, 255, 65, 0.1);
+            max-width: 350px;
+            transition: all 0.3s ease;
+        }
+
+        .hud-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .title-block h1 {
+            margin: 0;
+            font-size: 24px;
+            letter-spacing: 4px;
+            text-shadow: 0 0 10px var(--neon-green);
+            color: #fff;
+        }
+
+        .sub-text {
+            font-size: 10px;
+            color: var(--neon-green);
+            opacity: 0.7;
+            margin-top: 5px;
+        }
+
+        /* --- PROFILE / DOSSIER UI --- */
+        #dossier {
+            transform: translateX(120%);
+            opacity: 0;
+        }
+
+        #dossier.active {
+            transform: translateX(0);
+            opacity: 1;
+        }
+
+        .detail-header {
+            font-size: 18px;
+            border-bottom: 1px solid var(--neon-green);
+            margin-bottom: 10px;
+            padding-bottom: 5px;
+            color: #fff;
+            text-transform: uppercase;
+        }
+
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 4px;
+            font-size: 11px;
+        }
+
+        .mode-indicator {
+            text-align: center;
+            font-weight: bold;
+            padding: 4px;
+            margin-top: 10px;
+            border: 1px solid;
+            font-size: 12px;
+        }
+
+        .mode-vuln {
+            color: var(--neon-amber);
+            border-color: var(--neon-amber);
+        }
+
+        .mode-skill {
+            color: var(--neon-cyan);
+            border-color: var(--neon-cyan);
+        }
+
+        .mode-sphere {
+            color: var(--neon-white);
+            border-color: var(--neon-white);
+        }
+
+        /* --- START SCREEN --- */
+        #start-screen {
+            position: absolute;
+            inset: 0;
+            background: #000;
+            z-index: 200;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+
+        .blink {
+            animation: blinker 1s linear infinite;
+        }
+
+        @keyframes blinker {
+            50% {
+                opacity: 0;
+            }
+        }
+
+        #loader-bar {
+            width: 200px;
+            height: 2px;
+            background: #333;
+            margin-top: 20px;
+        }
+
+        #progress {
+            width: 0%;
+            height: 100%;
+            background: var(--neon-green);
+            transition: width 0.5s;
+        }
+
+        /* --- FEED --- */
+        #feed {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            width: 300px;
+            font-size: 10px;
+            pointer-events: none;
+        }
+
+        .feed-item {
+            margin-bottom: 4px;
+            text-shadow: 0 0 2px black;
+            opacity: 0;
+            animation: fadeIn 0.3s forwards;
+        }
+
+        @keyframes fadeIn {
+            to {
+                opacity: 1;
+            }
+        }
+    </style>
+    <!-- Three.js + Post Processing -->
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+                "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+            }
+        }
+    </script>
+</head>
+
+<body>
+
+    <div class="scanlines"></div>
+    <div class="vignette"></div>
+
+    <div id="ui-layer">
+        <div class="hud-top">
+            <div class="hud-panel title-block">
+                <h1>RYKER CONSENSUS</h1>
+                <div class="sub-text">
+                    NODES: 53<br>
+                    STATUS: MONITORING<br>
+                    COORDS: <span id="coords">000.000</span>
+                </div>
+            </div>
+
+            <div id="dossier" class="hud-panel">
+                <div class="detail-header" id="d-name">NO TARGET</div>
+                <div id="d-role" style="color: #888; margin-bottom: 10px; font-size: 12px;">Waiting for lock...</div>
+                <div id="d-content"></div>
+                <div id="d-mode" class="mode-indicator mode-vuln">VULNERABILITIES</div>
+            </div>
+        </div>
+
+        <div id="feed"></div>
+    </div>
+
+    <div id="start-screen">
+        <h1 style="font-size: 40px; letter-spacing: 10px; color: var(--neon-green);">RYKER</h1>
+        <div style="color: #666; margin-bottom: 20px;">SYSTEMIC FAILURE SIMULATOR // 3D TERMINAL</div>
+        <div style="border: 1px solid var(--neon-green); padding: 10px 30px;" class="blink">CLICK TO INITIALIZE</div>
+        <div id="loader-bar">
+            <div id="progress"></div>
+        </div>
+    </div>
+
+    <!-- MAIN SCRIPT -->
+    <script type="module">
+        import * as THREE from 'three';
+        import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+        import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
+        import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
+        import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
+        import { FilmPass } from 'three/addons/postprocessing/FilmPass.js';
+
+        // --- 1. DATA CONFIGURATION (Ryker Consensus) ---
+        const R2_PICS = 'https://pub-111e813bd5634cd8a9ecdd3d5c2a0916.r2.dev/dominicGlobaleNetworkProfilePics/';
+        // Placeholder audio base - using generic connection sounds logic mostly
+        const R2_AUDIO = 'https://pub-111e813bd5634cd8a9ecdd3d5c2a0916.r2.dev/Ethel_speaks/';
+
+        // Core 7 Nodes from Ryker Consensus
+        const CORE_NODES = [
+            { id: 'the_barista', anchor: { name: "Penelope", role: "The Barista", img: "The Barista. Role- Cafe Staff. Location-  Whitefish, Montana Corporate Lobby cafe. Focus- The  Flush.jpg" }, skills: [{ name: 'Counter-Surv', type: 'INTEL' }, { name: 'Leak Extraction', type: 'PSYCH' }, { name: 'Pattern Rec', type: 'SYS' }, { name: 'Social Eng', type: 'HUMINT' }], vulnerabilities: [{ name: 'Student Debt', type: 'FIN' }, { name: 'Stalker', type: 'THREAT' }, { name: 'Isolation', type: 'PSYCH' }, { name: 'Burnout', type: 'PHYS' }], spheres: [{ name: 'Cafe Staff', type: 'ACCESS' }, { name: 'Local PD', type: 'INTEL' }, { name: 'Students', type: 'MOB' }, { name: 'Suppliers', type: 'LOG' }] },
+            { id: 'agent_miller', anchor: { name: "Agent Miller", role: "FBI Field Agent", img: "Agent Allie Miller. Role- Female FBI Field Agent (Financial Crimes). Location- Newark, NJ. Focus- The Grud.jpg" }, skills: [{ name: 'Forensic Attrition', type: 'SYS' }, { name: 'Rogue Threat', type: 'CHAOS' }, { name: 'Warrant Access', type: 'LEGAL' }, { name: 'Firearms', type: 'FORCE' }], vulnerabilities: [{ name: 'Fathers Debt', type: 'FIN' }, { name: 'Reprimands', type: 'SYS' }, { name: 'Alcohol', type: 'HEALTH' }, { name: 'Gambling', type: 'FIN' }], spheres: [{ name: 'FBI Newark', type: 'POWER' }, { name: 'Informants', type: 'INTEL' }, { name: 'Local Courts', type: 'LEGAL' }, { name: 'Media', type: 'PR' }] },
+            { id: 'pieter_block', anchor: { name: "Pieter", role: "Harbor Safety", img: "Pieter The Block Role- Harbor Safety Inspector. Location- Rotterdam Port. Focus- Physics.jpg" }, skills: [{ name: 'Gate Denial', type: 'FORCE' }, { name: 'Manifest Edit', type: 'LOG' }, { name: 'Union Sway', type: 'POL' }, { name: 'Smuggling', type: 'CRIME' }], vulnerabilities: [{ name: 'Family', type: 'EXISTENTIAL' }, { name: 'Bribes', type: 'FIN' }, { name: 'Health', type: 'PHYS' }, { name: 'Pride', type: 'PSYCH' }], spheres: [{ name: 'Dock Workers', type: 'LABOR' }, { name: 'Customs', type: 'GOV' }, { name: 'Shipping', type: 'CORP' }, { name: 'Local Gangs', type: 'CRIME' }] },
+            { id: 'dr_alfayed', anchor: { name: "Dr. Al-Fayed", role: "Chief Coroner", img: "Dr. Al-Fayed. Role- Chief Coroner. Location- London. Focus- The Body.jpg" }, skills: [{ name: 'Evidence Hardening', type: 'OBJ' }, { name: 'Time of Death', type: 'MED' }, { name: 'Tox Screen', type: 'CHEM' }, { name: 'Access', type: 'PHYS' }], vulnerabilities: [{ name: 'Daughter', type: 'EXISTENTIAL' }, { name: 'Ethics', type: 'PSYCH' }, { name: 'Funding', type: 'FIN' }, { name: 'Reputation', type: 'SOC' }], spheres: [{ name: 'Morgue', type: 'MED' }, { name: 'Police', type: 'GOV' }, { name: 'University', type: 'EDU' }, { name: 'Press', type: 'MEDIA' }] },
+            { id: 'lachlan_sterling', anchor: { name: "Lachlan Sterling", role: "CEO Apexian", img: "Lachlan Sterling. CEO Apexian. Location- Barangaroo Penthouse. Cortisol- Low. Focus- Floor Space Ratio.jpg" }, skills: [{ name: 'Regulatory Capture', type: 'SYS' }, { name: 'Capital Flow', type: 'FIN' }, { name: 'Media Spin', type: 'PR' }, { name: 'Legal Shield', type: 'LAW' }], vulnerabilities: [{ name: 'Leverage', type: 'FIN' }, { name: 'Scandal', type: 'PR' }, { name: 'Ego', type: 'PSYCH' }, { name: 'Competitors', type: 'CORP' }], spheres: [{ name: 'Apexian Board', type: 'CORP' }, { name: 'Politics', type: 'GOV' }, { name: 'Banking', type: 'FIN' }, { name: 'Elite Circles', type: 'SOC' }] },
+            { id: 'marcus_vane', anchor: { name: "Marcus Vane", role: "Financier", img: "Marcus Vane. Location- Zurich. Cortisol- High. Focus- Transaction Velocity.jpg" }, skills: [{ name: 'Infinite Loop', type: 'SYS' }, { name: 'Laundering', type: 'FIN' }, { name: 'Offshore', type: 'LEGAL' }, { name: 'Speed', type: 'TECH' }], vulnerabilities: [{ name: 'Boredom', type: 'PSYCH' }, { name: 'SEC', type: 'LEGAL' }, { name: 'Cartel', type: 'THREAT' }, { name: 'Exposure', type: 'PR' }], spheres: [{ name: 'Swift Network', type: 'TECH' }, { name: 'Zurich Banks', type: 'FIN' }, { name: 'Crypto Mkts', type: 'FIN' }, { name: 'Shadow Banks', type: 'CRIME' }] },
+            { id: 'elena_corves', anchor: { name: "Elena Corves", role: "Asset Manager", img: "Elena_Corves._Location-_NYC._Cortisol-_Controlle.jpg" }, skills: [{ name: 'Timeline Gaps', type: 'INTEL' }, { name: 'Asset Hide', type: 'FIN' }, { name: 'Freeze Acct', type: 'SYS' }, { name: 'Audit', type: 'LEGAL' }], vulnerabilities: [{ name: 'Child', type: 'EXISTENTIAL' }, { name: 'Divorce', type: 'LEGAL' }, { name: 'Stress', type: 'HEALTH' }, { name: 'Mistake', type: 'PRF' }], spheres: [{ name: 'Wall St', type: 'FIN' }, { name: 'IRS', type: 'GOV' }, { name: 'Estate Law', type: 'LEGAL' }, { name: 'Private Equity', type: 'CORP' }] }
+        ];
+
+        // Fill up to 53 Nodes
+        let RYKER_NODES = [...CORE_NODES];
+        const ROLES = ["Analyst", "Drone Pilot", "Server Admin", "Local Cop", "Journalist", "Judge", "Nurse"];
+        while (RYKER_NODES.length < 53) {
+            const id = RYKER_NODES.length + 1;
+            RYKER_NODES.push({
+                id: `node_${id}`,
+                anchor: {
+                    name: `Node ${id.toString().padStart(3, '0')}`,
+                    role: ROLES[Math.floor(Math.random() * ROLES.length)],
+                    img: null
+                },
+                skills: Array(4).fill({ name: 'Encryption', type: 'SYS' }),
+                vulnerabilities: Array(4).fill({ name: 'Unsecured Port', type: 'TECH' }),
+                spheres: Array(4).fill({ name: 'Local Network', type: 'TECH' })
+            });
+        }
+
+        // --- 2. THREE.JS SETUP ---
+        const scene = new THREE.Scene();
+        // Fog for depth (Maptest feel)
+        scene.fog = new THREE.FogExp2(0x050505, 0.015);
+
+        const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.z = 35;
+        camera.position.y = 15;
+
+        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(window.devicePixelRatio);
+        document.body.appendChild(renderer.domElement);
+
+        const controls = new OrbitControls(camera, renderer.domElement);
+        controls.enableDamping = true;
+        controls.dampingFactor = 0.05;
+        controls.autoRotate = true;
+        controls.autoRotateSpeed = 0.3;
+        controls.minDistance = 10;
+        controls.maxDistance = 80;
+
+        // --- 3. AUDIO SYSTEM (Ethel Scanner Logic) ---
+        // We use a global listener but manage volume per node based on distance
+        const listener = new THREE.AudioListener();
+        camera.add(listener);
+
+        // --- 4. ENVIRONMENT (Maptest Grid + Globe) ---
+        const globeGroup = new THREE.Group();
+        scene.add(globeGroup);
+
+        // A. The Globe Point Cloud
+        const globeRadius = 12;
+        const particleCount = 2000;
+        const globGeom = new THREE.BufferGeometry();
+        const globPos = [];
+        const globCol = [];
+        const color1 = new THREE.Color(0x00ff41);
+        const color2 = new THREE.Color(0x004400);
+
+        for (let i = 0; i < particleCount; i++) {
+            const phi = Math.acos(1 - 2 * (i + 0.5) / particleCount);
+            const theta = Math.PI * (1 + Math.sqrt(5)) * (i + 0.5);
+            let x = Math.cos(theta) * Math.sin(phi) * globeRadius;
+            let y = Math.sin(theta) * Math.sin(phi) * globeRadius;
+            let z = Math.cos(phi) * globeRadius;
+
+            // Noise/Continents filter (simple)
+            if (Math.sin(x * 0.2) * Math.cos(y * 0.2) > -0.2) {
+                globPos.push(x, y, z);
+                const c = Math.random() > 0.8 ? color1 : color2;
+                globCol.push(c.r, c.g, c.b);
+            }
+        }
+        globGeom.setAttribute('position', new THREE.Float32BufferAttribute(globPos, 3));
+        globGeom.setAttribute('color', new THREE.Float32BufferAttribute(globCol, 3));
+
+        const globeMat = new THREE.PointsMaterial({ size: 0.15, vertexColors: true, transparent: true, opacity: 0.8 });
+        const globePoints = new THREE.Points(globGeom, globeMat);
+        globeGroup.add(globePoints);
+
+        // B. Background Grid (Maptest feel)
+        const gridGeom = new THREE.BufferGeometry();
+        const gridPos = [];
+        for (let i = 0; i < 1500; i++) {
+            const x = (Math.random() - 0.5) * 200;
+            const y = (Math.random() - 0.5) * 100;
+            const z = (Math.random() - 0.5) * 100;
+            // Keep away from center
+            if (Math.sqrt(x * x + y * y + z * z) > 30) {
+                gridPos.push(x, y, z);
+            }
+        }
+        gridGeom.setAttribute('position', new THREE.Float32BufferAttribute(gridPos, 3));
+        const gridMat = new THREE.PointsMaterial({ color: 0x004400, size: 0.2, transparent: true, opacity: 0.4 });
+        const bgGrid = new THREE.Points(gridGeom, gridMat);
+        scene.add(bgGrid);
+
+        // --- 5. NODES & ORBITALS (Ryker Consensus 3D) ---
+        const nodeMeshes = [];
+        const connectionLines = []; // Store lines for animation
+        const nodeRadius = globeRadius + 2; // Height above surface
+
+        // Shared Geometries
+        const satelliteGeo = new THREE.SphereGeometry(0.15, 8, 8);
+        const ringGeo = new THREE.TorusGeometry(1.5, 0.01, 8, 32);
+
+        // Shared Materials
+        const matVuln = new THREE.MeshBasicMaterial({ color: 0xff9500 });
+        const matSkill = new THREE.MeshBasicMaterial({ color: 0x00ffff });
+        const matSphere = new THREE.MeshBasicMaterial({ color: 0xe0e0e0 });
+        const matRing = new THREE.MeshBasicMaterial({ color: 0x00ff41, transparent: true, opacity: 0.2 });
+
+        // Glitch Shader for Profile
+        const profileVertexShader = `
+            varying vec2 vUv;
+            void main() {
+                vUv = uv;
+                gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+            }
+        `;
+        const profileFragmentShader = `
+            uniform sampler2D map;
+            uniform float time;
+            uniform float hoverState; 
+            varying vec2 vUv;
+            float random(vec2 st) { return fract(sin(dot(st.xy, vec2(12.9898,78.233))) * 43758.5453123); }
+            void main() {
+                vec2 uv = vUv;
+                // Glitch effect on hover
+                if(hoverState > 0.1) {
+                    float slice = floor(uv.y * 10.0);
+                    float offset = (random(vec2(slice, floor(time * 20.0))) - 0.5) * 0.05 * hoverState;
+                    uv.x += offset;
+                }
+                vec4 tex = texture2D(map, uv);
+                float dist = distance(uv, vec2(0.5));
+                if(dist > 0.5) discard; // Circular crop
+                if(dist > 0.48) gl_FragColor = vec4(0.0, 1.0, 0.25, 1.0); // Rim
+                else gl_FragColor = tex;
+            }
+        `;
+
+        RYKER_NODES.forEach((nodeData, i) => {
+            // 1. Position on Sphere (Fibonacci)
+            const phi = Math.acos(1 - 2 * (i + 0.5) / RYKER_NODES.length);
+            const theta = Math.PI * (1 + Math.sqrt(5)) * (i + 0.5);
+            const x = nodeRadius * Math.cos(theta) * Math.sin(phi);
+            const y = nodeRadius * Math.sin(theta) * Math.sin(phi);
+            const z = nodeRadius * Math.cos(phi);
+
+            const pivot = new THREE.Group();
+            pivot.position.set(x, y, z);
+            pivot.lookAt(0, 0, 0);
+            globeGroup.add(pivot);
+
+            // 2. Profile Mesh
+            const imgUrl = nodeData.anchor.img ? R2_PICS + encodeURIComponent(nodeData.anchor.img) : null;
+            // Use a 1x1 pixel white texture as fallback immediately
+            const tex = imgUrl ? new THREE.TextureLoader().load(imgUrl) : new THREE.TextureLoader().load('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=');
+
+            const profileMat = new THREE.ShaderMaterial({
+                uniforms: {
+                    map: { value: tex },
+                    time: { value: 0 },
+                    hoverState: { value: 0.0 }
+                },
+                vertexShader: profileVertexShader,
+                fragmentShader: profileFragmentShader,
+                transparent: true,
+                side: THREE.DoubleSide
+            });
+            const profileMesh = new THREE.Mesh(new THREE.PlaneGeometry(1.5, 1.5), profileMat);
+            // Billboarding handling manually in loop
+            pivot.add(profileMesh);
+
+            // 3. Orbital Groups (Vuln, Skill, Sphere)
+            const satellites = new THREE.Group();
+            pivot.add(satellites);
+
+            // Helper to create 4 satellites
+            function createOrbitals(material, radius) {
+                const g = new THREE.Group();
+                // Cardinal positions: Top, Right, Bottom, Left
+                const positions = [
+                    [0, radius, 0], [radius, 0, 0], [0, -radius, 0], [-radius, 0, 0]
+                ];
+                positions.forEach(p => {
+                    const m = new THREE.Mesh(satelliteGeo, material);
+                    m.position.set(p[0], p[1], 0); // Z is 0 relative to pivot face
+                    g.add(m);
+                });
+                g.visible = false; // Hidden by default
+                return g;
+            }
+
+            const groupVuln = createOrbitals(matVuln, 1.2);
+            const groupSkill = createOrbitals(matSkill, 1.2);
+            const groupSphere = createOrbitals(matSphere, 1.2);
+
+            satellites.add(groupVuln);
+            satellites.add(groupSkill);
+            satellites.add(groupSphere);
+
+            // Default visible
+            groupVuln.visible = true;
+
+            // 4. Ring (Static decoration)
+            const ring = new THREE.Mesh(ringGeo, matRing);
+            satellites.add(ring);
+
+            // Store ref
+            nodeMeshes.push({
+                id: nodeData.id,
+                data: nodeData,
+                pivot: pivot,
+                mesh: profileMesh,
+                satellites: {
+                    root: satellites,
+                    vuln: groupVuln,
+                    skill: groupSkill,
+                    sphere: groupSphere
+                },
+                currentMode: 0, // 0=Vuln, 1=Skill, 2=Sphere
+                worldPos: new THREE.Vector3()
+            });
+        });
+
+        // --- 6. CONNECTION LINES (Ethel Scanner Effect) ---
+        // Dynamic lines that appear when nodes are active
+        const lineMat = new THREE.LineBasicMaterial({ color: 0x00ff41, transparent: true, opacity: 0.0, blending: THREE.AdditiveBlending });
+        const MAX_LINES = 20;
+        const geometryPool = [];
+
+        // Init pool
+        for (let i = 0; i < MAX_LINES; i++) {
+            const g = new THREE.BufferGeometry();
+            g.setAttribute('position', new THREE.Float32BufferAttribute(new Float32Array(6), 3)); // 2 points
+            const l = new THREE.Line(g, lineMat.clone());
+            globeGroup.add(l);
+            geometryPool.push({ line: l, active: false, life: 0, target: null, start: null });
+        }
+
+        function spawnLine(startPos) {
+            // Find inactive line
+            const poolItem = geometryPool.find(i => !i.active);
+            if (!poolItem) return;
+
+            // Find random target node
+            const targetNode = nodeMeshes[Math.floor(Math.random() * nodeMeshes.length)];
+
+            poolItem.active = true;
+            poolItem.life = 1.0;
+            poolItem.start = startPos.clone();
+            poolItem.target = targetNode.pivot.position.clone(); // Local space relative to globeGroup
+
+            // Set Geometry
+            const posAttr = poolItem.line.geometry.attributes.position;
+            posAttr.setXYZ(0, startPos.x, startPos.y, startPos.z);
+            posAttr.setXYZ(1, poolItem.target.x, poolItem.target.y, poolItem.target.z);
+            posAttr.needsUpdate = true;
+            poolItem.line.material.opacity = 0.5;
+        }
+
+        // --- 7. INTERACTION LOGIC ---
+        const raycaster = new THREE.Raycaster();
+        const mouse = new THREE.Vector2();
+        let hoveredNode = null;
+        let activeAudioNode = null;
+
+        window.addEventListener('mousemove', (event) => {
+            mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+            mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+        });
+
+        window.addEventListener('click', (event) => {
+            if (hoveredNode) {
+                // Cycle Mode
+                const n = hoveredNode;
+                n.currentMode = (n.currentMode + 1) % 3;
+
+                // Update Visibility
+                n.satellites.vuln.visible = (n.currentMode === 0);
+                n.satellites.skill.visible = (n.currentMode === 1);
+                n.satellites.sphere.visible = (n.currentMode === 2);
+
+                // Update UI Color
+                updateHUDColor(n.currentMode);
+                updateHUDContent(n.data, n.currentMode);
+
+                // Spawn feedback line
+                spawnLine(n.pivot.position);
+            }
+        });
+
+        // --- 8. POST PROCESSING ---
+        const composer = new EffectComposer(renderer);
+        const renderPass = new RenderPass(scene, camera);
+        composer.addPass(renderPass);
+
+        const bloomPass = new UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 1.5, 0.4, 0.85);
+        bloomPass.threshold = 0.1;
+        bloomPass.strength = 0.8;
+        bloomPass.radius = 0.2;
+        composer.addPass(bloomPass);
+
+        const filmPass = new FilmPass(0.35, 0.025, 648, false);
+        composer.addPass(filmPass);
+
+        // --- 9. ANIMATION LOOP ---
+        const clock = new THREE.Clock();
+
+        function animate() {
+            requestAnimationFrame(animate);
+            const time = clock.getElapsedTime();
+            const delta = clock.getDelta();
+
+            // 1. Globe Rotation (Slow idle)
+            if (!hoveredNode) {
+                globeGroup.rotation.y += 0.0005;
+                controls.autoRotate = true;
+            } else {
+                controls.autoRotate = false;
+            }
+            controls.update();
+
+            // 2. Raycasting
+            raycaster.setFromCamera(mouse, camera);
+            // Intersect with profile planes
+            const intersects = raycaster.intersectObjects(nodeMeshes.map(n => n.mesh));
+
+            if (intersects.length > 0) {
+                const hit = nodeMeshes.find(n => n.mesh === intersects[0].object);
+                if (hit !== hoveredNode) {
+                    hoveredNode = hit;
+                    document.body.style.cursor = 'pointer';
+                    // Trigger UI Update
+                    updateHUD(hit);
+                    // Trigger Audio (simulated)
+                    addFeed(`SIGNAL DETECTED: ${hit.data.anchor.name.toUpperCase()}`);
+                }
+            } else {
+                if (hoveredNode) {
+                    hoveredNode = null;
+                    document.body.style.cursor = 'default';
+                    hideHUD();
+                }
+            }
+
+            // 3. Update Nodes (Billboarding + Shaders)
+            nodeMeshes.forEach(n => {
+                // Update World Pos for audio/lines
+                n.pivot.getWorldPosition(n.worldPos);
+
+                // Billboarding
+                n.mesh.lookAt(camera.position);
+
+                // Shader Time
+                n.mesh.material.uniforms.time.value = time;
+
+                // Hover Scale
+                const isHovered = (hoveredNode && hoveredNode.id === n.id);
+                const targetScale = isHovered ? 2.5 : 1.0;
+                n.mesh.scale.setScalar(THREE.MathUtils.lerp(n.mesh.scale.x, targetScale, 0.1));
+                n.mesh.material.uniforms.hoverState.value = isHovered ? 1.0 : 0.0;
+
+                // Rotate Satellites
+                n.satellites.root.lookAt(camera.position); // Rings face camera too
+                n.satellites.root.rotation.z += 0.01; // Spin rings
+            });
+
+            // 4. Audio Proximity Logic (Ethel Scanner)
+            // Find closest node to camera
+            let closestDist = Infinity;
+            let closestNode = null;
+            nodeMeshes.forEach(n => {
+                const dist = camera.position.distanceTo(n.worldPos);
+                if (dist < closestDist) {
+                    closestDist = dist;
+                    closestNode = n;
+                }
+            });
+
+            // Update UI Coords based on center ray
+            const centerRay = new THREE.Raycaster();
+            centerRay.setFromCamera(new THREE.Vector2(0, 0), camera);
+            const centerPoint = centerRay.ray.at(20, new THREE.Vector3()); // Arbitrary point
+            document.getElementById('coords').textContent = `${Math.abs(camera.position.x).toFixed(3)}.${Math.abs(camera.position.z).toFixed(3)}`;
+
+            // 5. Update Connection Lines
+            geometryPool.forEach(item => {
+                if (item.active) {
+                    item.life -= delta * 0.5; // Fade speed
+                    item.line.material.opacity = item.life;
+
+                    // Jitter effect
+                    const jitter = 0.2;
+                    item.line.position.set(
+                        (Math.random() - 0.5) * jitter,
+                        (Math.random() - 0.5) * jitter,
+                        (Math.random() - 0.5) * jitter
+                    );
+
+                    if (item.life <= 0) {
+                        item.active = false;
+                        item.line.material.opacity = 0;
+                    }
+                }
+            });
+
+            // Render
+            composer.render();
+        }
+
+        // --- HUD FUNCTIONS ---
+        const hudName = document.getElementById('d-name');
+        const hudRole = document.getElementById('d-role');
+        const hudContent = document.getElementById('d-content');
+        const hudPanel = document.getElementById('dossier');
+        const hudMode = document.getElementById('d-mode');
+
+        function updateHUD(node) {
+            hudPanel.classList.add('active');
+            hudName.textContent = node.data.anchor.name;
+            hudRole.textContent = node.data.anchor.role.toUpperCase();
+
+            // Initial render of content based on current mode
+            updateHUDContent(node.data, node.currentMode);
+            updateHUDColor(node.currentMode);
+        }
+
+        function updateHUDContent(data, mode) {
+            let html = '';
+            let items = [];
+            let label = '';
+
+            if (mode === 0) { items = data.vulnerabilities; label = 'VULNERABILITIES'; }
+            else if (mode === 1) { items = data.skills; label = 'SKILLS'; }
+            else { items = data.spheres; label = 'SPHERES'; }
+
+            hudMode.textContent = label;
+
+            items.forEach(item => {
+                html += `<div class="detail-row">
+                    <span style="font-weight:bold">${item.name}</span>
+                    <span style="opacity:0.7">[${item.type}]</span>
+                </div>`;
+            });
+            hudContent.innerHTML = html;
+        }
+
+        function updateHUDColor(mode) {
+            hudMode.className = 'mode-indicator';
+            if (mode === 0) hudMode.classList.add('mode-vuln');
+            else if (mode === 1) hudMode.classList.add('mode-skill');
+            else hudMode.classList.add('mode-sphere');
+        }
+
+        function hideHUD() {
+            hudPanel.classList.remove('active');
+        }
+
+        function addFeed(text) {
+            const feed = document.getElementById('feed');
+            const div = document.createElement('div');
+            div.className = 'feed-item';
+            div.textContent = `>> ${text}`;
+            feed.prepend(div);
+            if (feed.children.length > 5) feed.removeChild(feed.lastChild);
+        }
+
+        // --- STARTUP ---
+        document.getElementById('start-screen').addEventListener('click', async () => {
+            const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            await audioCtx.resume();
+
+            document.getElementById('progress').style.width = '100%';
+            setTimeout(() => {
+                document.getElementById('start-screen').style.opacity = 0;
+                setTimeout(() => {
+                    document.getElementById('start-screen').remove();
+                    animate();
+                    addFeed("TERMINAL ONLINE");
+                    addFeed("CONNECTED TO RYKER NODE GRAPH");
+                }, 1000);
+            }, 500);
+        });
+
+        // Resize
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            composer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+    </script>
+</body>
+
+</html>
