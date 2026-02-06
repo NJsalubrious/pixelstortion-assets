@@ -97,7 +97,6 @@ function selectTrack(id) {
 
     currentTrackId = id;
     const track = tracks.find(t => t.id === id);
-    console.log('selectTrack called:', id, 'track found:', !!track, 'videoId:', track?.videoId);
 
     // UI Updates
     document.getElementById('current-track-title').innerText = track.title;
@@ -133,7 +132,6 @@ function selectTrack(id) {
 
 
     // Play YouTube Video (only if protocol panel is NOT open)
-    console.log('ytPlayer check:', !!ytPlayer, 'loadVideoById:', !!ytPlayer?.loadVideoById, 'track.videoId:', track?.videoId);
     if (ytPlayer && ytPlayer.loadVideoById && track.videoId) {
         // If protocol panel is open, just cue the video (don't auto-play)
         if (protocolPanelOpen) {
@@ -144,7 +142,6 @@ function selectTrack(id) {
             console.log("Protocol panel open - cueing video without auto-play");
         } else {
             // Normal behavior - load and auto-play
-            console.log('Loading video:', track.videoId);
             ytPlayer.loadVideoById({
                 videoId: track.videoId,
                 suggestedQuality: 'hd720'
