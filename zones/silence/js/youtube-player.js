@@ -151,11 +151,25 @@ function selectTrack(id) {
 
         // --- CHECK: SHOW VIDEO OR SHOW GALLERY? ---
         if (track.showVideo === true) {
-            // VIDEO MODE: Bring player to front, hide gallery
-            if (ytIframe) ytIframe.style.zIndex = "20"; // Above gallery (z-index 0) but below controls (z-index 20+)
-            console.log("Video Mode Active: Gallery disabled");
+            // VIDEO MODE: Move player ON-SCREEN into the gallery area
+            if (ytIframe) {
+                ytIframe.style.position = 'absolute';
+                ytIframe.style.left = '0';
+                ytIframe.style.top = '0';
+                ytIframe.style.width = '100%';
+                ytIframe.style.height = '100%';
+                ytIframe.style.zIndex = '20'; // Above gallery
+            }
+            console.log("Video Mode Active: Gallery disabled, player on-screen");
         } else {
-            // GALLERY MODE: Keep player hidden, start slides
+            // GALLERY MODE: Keep player OFF-SCREEN (audio only), start slides
+            if (ytIframe) {
+                ytIframe.style.position = 'fixed';
+                ytIframe.style.left = '-9999px';
+                ytIframe.style.top = '-9999px';
+                ytIframe.style.width = '1px';
+                ytIframe.style.height = '1px';
+            }
             const folderKey = `track_${id.toString().padStart(2, '0')}`;
             if (galleryMap[folderKey] && galleryMap[folderKey].length > 0) {
                 startGallery(galleryMap[folderKey]);
