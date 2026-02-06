@@ -13,7 +13,7 @@
 // ║  true  = Local testing (images from /library/...)             ║
 // ║  false = Production (images from GitHub Pages)                ║
 // ╚═══════════════════════════════════════════════════════════════╝
-const USE_LOCAL_IMAGES = true;
+const USE_LOCAL_IMAGES = false;
 
 // Base URLs for image assets
 const IMAGE_BASE = USE_LOCAL_IMAGES
