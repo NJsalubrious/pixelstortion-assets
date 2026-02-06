@@ -4,14 +4,15 @@
 // YouTube Player Setup - Called by YouTube API when ready
 function onYouTubeIframeAPIReady() {
     ytPlayer = new YT.Player('youtube-player', {
+        height: '0',
+        width: '0',
         playerVars: {
             'autoplay': 0,
             'controls': 0,
             'disablekb': 1,
             'fs': 0,
             'modestbranding': 1,
-            'rel': 0,
-            'playsinline': 1
+            'rel': 0
         },
         events: {
             'onReady': onPlayerReady,
