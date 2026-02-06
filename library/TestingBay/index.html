@@ -3,74 +3,120 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PIXELSTORTION | UNDER CONSTRUCTION</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>PIXELSTORTION | CHOOSE YOUR REALITY</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
-        href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=Space+Grotesk:wght@700&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=Space+Grotesk:wght@300;400;500;600;700&family=Bebas+Neue&family=Share+Tech+Mono&display=swap"
         rel="stylesheet">
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,1,0">
+
+    <!-- Centralized URL Manifest - MUST be loaded before other scripts -->
+    <script src="site-manifest.js"></script>
 
     <!-- External CSS -->
-    <link rel="stylesheet" href="css/index.css">
+    <link rel="stylesheet" href="css/home.css">
 </head>
 
-<body class="flex flex-col min-h-screen">
-    <div class="scanlines"></div>
+<body>
 
-    <nav class="fixed top-0 w-full z-40 bg-black/90 border-b border-gray-800">
-        <div class="max-w-7xl mx-auto px-4 h-16 flex items-center justify-center">
-            <h1 class="text-2xl font-bold glitch-text" data-text="PIXELSTORTION">PIXELSTORTION</h1>
-        </div>
-    </nav>
+    <div id="cursor"></div>
 
-    <main class="flex-1 flex flex-col items-center justify-center p-6 mt-16">
-        <div class="max-w-5xl w-full">
+    <div class="split-container group">
 
-            <div class="mb-16 text-center">
-                <h2 class="text-5xl md:text-8xl font-black text-white tracking-tighter leading-tight glitch-text mb-4"
-                    data-text="UNDER CONSTRUCTION">
-                    UNDER<br />CONSTRUCTION
+        <div class="panel left-panel" id="leftPanel">
+            <div id="staticCanvas"></div>
+
+            <div class="mobile-sliver-label text-green-500">SILENCE</div>
+
+            <div class="content-layer">
+                <div class="mb-4 inline-flex items-center gap-2 border border-green-900 bg-black/80 px-3 py-1">
+                    <span class="material-symbols-outlined text-green-500 text-sm animate-pulse">lock</span>
+                    <span class="font-mono text-[10px] text-green-500 tracking-[0.2em]">ENCRYPTED</span>
+                </div>
+
+                <h2 class="text-4xl md:text-7xl font-bold text-white mb-6 tracking-tighter" id="glitchTitle">
+                    SILENCE
                 </h2>
-                <p class="text-gray-500 font-mono text-xs tracking-[0.4em] uppercase opacity-60">Architectural Node
-                    Re-Route In Progress</p>
-            </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-12">
+                <h3 id="subtitleText" class="font-mono text-sm md:text-xl text-green-500/50 mb-8 tracking-[0.3em]">IS
+                    THE TRAUMA</h3>
 
-                <a href="https://music.youtube.com/watch?v=6VABvgT-A3w&si=-D7fgFpbrXBzkgbm" target="_blank"
-                    class="subject-node p-6 group">
-                    <h3 class="text-cyan-400 font-bold tracking-[0.3em] text-sm mb-4">ISLA // NOISE</h3>
-                    <p class="text-white text-lg leading-snug group-hover:text-cyan-300 transition-colors">
-                        "Because most people like her don't make it. She exists to turn it all into noise — for those
-                        that live in silence."
-                    </p>
+                <div class="text-left font-mono text-xs md:text-sm leading-7 space-y-2 max-w-sm mx-auto">
+                    <div>
+                        <span class="text-gray-500">STATUS:</span>
+                        <span class="redacted-wrapper">SILENCE<span class="redacted-bar"></span></span>
+                    </div>
+                    <div>
+                        <span class="text-gray-500">MESSAGE:</span>
+                        <span class="redacted-wrapper">"Silence isn't absence."<span class="redacted-bar"></span></span>
+                    </div>
+                </div>
+
+                <div class="mobile-hint text-green-500">[ TAP TO ARM ]</div>
+
+                <a href="#" class="btn-tech"
+                    onclick="event.stopPropagation(); window.top.location.href = PIXEL_MANIFEST.SILENCE; return false;">
+                    ENTER
                 </a>
-
-                <a href="https://www.youtube.com/watch?v=9YKXulK0EYw" target="_blank" class="subject-node p-6 group">
-                    <h3 class="text-green-500 font-bold tracking-[0.3em] text-sm mb-4">ETHEL // FRICTION</h3>
-                    <p class="text-white text-lg leading-snug group-hover:text-green-300 transition-colors">
-                        "Some say she is abrasive but how else do you fight a system that won't listen?"
-                    </p>
-                </a>
-
-                <a href="https://music.youtube.com/playlist?list=OLAK5uy_njP-C2QlmemU-70_m8W9iazrJI_heQW7I"
-                    target="_blank" class="subject-node p-6 group">
-                    <h3 class="text-red-500 font-bold tracking-[0.3em] text-sm mb-4">DOMINIC // DANGER</h3>
-                    <p class="text-white text-lg leading-snug group-hover:text-red-400 transition-colors">
-                        "Danger is often a calm voice that seems to understand."
-                    </p>
-                </a>
-
             </div>
         </div>
-    </main>
 
-    <footer
-        class="p-12 flex flex-wrap justify-center gap-12 font-mono text-[10px] tracking-[0.4em] text-gray-600 uppercase">
-        <a href="https://www.youtube.com/@PixelStortion" target="_blank" class="hover:text-white">[YOUTUBE]</a>
-        <a href="https://bio.pixelstortion.com" target="_blank" class="hover:text-white">[BIO]</a>
-        <a href="https://instagram.com/@pixelstortion" target="_blank" class="hover:text-white">[INTEL]</a>
-    </footer>
+        <div class="fissure"></div>
+
+        <div class="panel right-panel" id="rightPanel">
+            <img src="https://lh3.googleusercontent.com/gg-dl/ABS2GSmcodSdYCgwQuT4Mrue8Hw-f4HEY0g2LcIPgmbEvc3I1GB26-IE051za1DkUhNOw2XvDLVbM_ToGq3Bj0Gv_toMCP-idJA8_HNBb9RDegC5qdH3dBW8jKpZ4yuZDgc3JsZnJG5AogwXM7SkmwG0i8xvXQKYFCccjVmMaJWx8NQSsqWXSg"
+                alt="Warzone" class="bg-war" id="bgWar">
+
+            <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-black/80 pointer-events-none">
+            </div>
+
+            <div class="mobile-sliver-label text-orange-500">MATAALA</div>
+
+            <div class="content-layer">
+                <div
+                    class="mb-4 inline-flex items-center gap-2 border border-red-900/50 bg-black/60 px-3 py-1 backdrop-blur-sm">
+                    <span class="w-2 h-2 rounded-full bg-red-500 animate-pulse shadow-[0_0_8px_red]"></span>
+                    <span class="font-mono text-[10px] text-red-500 tracking-[0.2em] font-bold">CARELESS HANDS</span>
+                </div>
+
+                <div class="nalani-container mx-auto">
+                    <div class="nalani-mask">
+                        <div class="nalani-fill"></div>
+                        <div class="fire-turbulence"></div>
+                    </div>
+                </div>
+
+                <div class="font-mono text-orange-100/80 text-xs md:text-sm tracking-widest mt-4 drop-shadow-md">
+                    <p class="mb-1">HE'LL COME WITH TRADE</p>
+                    <p class="text-orange-500 font-bold text-base md:text-lg">THEN TAKE THE BLADE.</p>
+                </div>
+
+                <div class="mobile-hint text-orange-500">[ TAP TO ARM ]</div>
+
+                <a href="#" class="btn-war"
+                    onclick="event.stopPropagation(); window.top.location.href = PIXEL_MANIFEST.MATAALA; return false;">
+                    ENTER
+                </a>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Hidden audio element for character song snippets -->
+    <audio id="characterAudio" preload="none"></audio>
+
+    <!-- External JavaScript (load order matters!) -->
+    <script src="js/home/config.js"></script>
+    <script src="js/home/audio-controller.js"></script>
+    <script src="js/home/panel-interaction.js"></script>
+    <script src="js/home/visuals.js"></script>
+    <script src="js/home/glitch-effects.js"></script>
+    <script src="js/home/main.js"></script>
+
 </body>
 
 </html>
