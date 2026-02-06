@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>RYKER CONSENSUS // VOLUMETRIC INTERFACE</title>
+    <style>
+        :root {
+            --neon-green: #00ff41;
+            --neon-amber: #ff9500;
+            --neon-cyan: #00ffff;
+            --neon-red: #ff4444;
+            --bg-dark: #050505;
+        }
+
+        body {
+            margin: 0;
+            overflow: hidden;
+            background-color: var(--bg-dark);
+            font-family: 'Courier New', Courier, monospace;
+            color: var(--neon-green);
+        }
+
+        /* UI OVERLAYS */
+        #ui-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        /* HUD ELEMENTS */
+        .hud-panel {
+            position: absolute;
+            background: rgba(0, 10, 0, 0.8);
+            border: 1px solid var(--neon-green);
+            padding: 10px;
+            pointer-events: auto;
+            backdrop-filter: blur(4px);
+        }
+
+        #top-bar {
+            top: 20px;
+            left: 20px;
+            right: 20px;
+            height: 60px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid var(--neon-green);
+            background: linear-gradient(to bottom, #000, transparent);
+        }
+
+        .title {
+            font-size: 24px;
+            font-weight: bold;
+            letter-spacing: 4px;
+            text-shadow: 0 0 10px var(--neon-green);
+        }
+
+        #node-details {
+            bottom: 20px;
+            right: 20px;
+            width: 300px;
+            height: auto;
+            min-height: 150px;
+            transform: translateX(120%);
+            transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        #node-details.active {
+            transform: translateX(0);
+        }
+
+        .detail-header {
+            font-size: 18px;
+            border-bottom: 1px solid var(--neon-green);
+            margin-bottom: 10px;
+            padding-bottom: 5px;
+            color: #fff;
+        }
+
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 4px;
+            font-size: 12px;
+        }
+
+        .label-vuln {
+            color: var(--neon-amber);
+        }
+
+        .label-skill {
+            color: var(--neon-cyan);
+        }
+
+        /* START SCREEN */
+        #start-screen {
+            position: absolute;
+            inset: 0;
+            background: #000;
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+
+        .blink {
+            animation: blinker 1s linear infinite;
+        }
+
+        @keyframes blinker {
+            50% {
+                opacity: 0;
+            }
+        }
+
+        /* 3D LABEL ANCHORS */
+        .node-label {
+            position: absolute;
+            color: var(--neon-green);
+            font-size: 10px;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 2px 6px;
+            border: 1px solid var(--neon-green);
+            pointer-events: none;
+            user-select: none;
+            opacity: 0;
+            /* Hidden by default */
+            transition: opacity 0.2s;
+            white-space: nowrap;
+        }
+
+        .node-label.visible {
+            opacity: 1;
+        }
+
+        /* Loading Bar */
+        #loader {
+            width: 200px;
+            height: 2px;
+            background: #333;
+            margin-top: 20px;
+        }
+
+        #progress {
+            width: 0%;
+            height: 100%;
+            background: var(--neon-green);
+            transition: width 0.5s;
+        }
+    </style>
+    <!-- Three.js + Post Processing -->
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+                "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+            }
+        }
+    </script>
+</head>
+
+<body>
+
+    <div id="ui-layer">
+        <div id="top-bar">
+            <div class="title">RYKER CONSENSUS <span class="blink">_VOLUMETRIC</span></div>
+            <div style="font-size: 12px;">
+                NODES: 53<br>
+                STATUS: MONITORING
+            </div>
+        </div>
+
+        <div id="node-details" class="hud-panel">
+            <div class="detail-header" id="detail-name">NO TARGET</div>
+            <div id="detail-role" style="color: #888; margin-bottom: 10px;">Waiting for lock...</div>
+            <div id="detail-content"></div>
+        </div>
+    </div>
+
+    <div id="start-screen">
+        <h1 style="font-size: 40px; letter-spacing: 10px; color: var(--neon-green);">RYKER</h1>
+        <div style="color: #666; margin-bottom: 20px;">SYSTEMIC FAILURE SIMULATOR // 3D KERNEL</div>
+        <div style="border: 1px solid var(--neon-green); padding: 10px 30px;" class="blink">CLICK TO INITIALIZE</div>
+        <div id="loader">
+            <div id="progress"></div>
+        </div>
+    </div>
+
+    <!-- MAIN SCRIPT -->
+    <script type="module">
+        import * as THREE from 'three';
+        import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+        import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
+        import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
+        import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
+        import { ShaderPass } from 'three/addons/postprocessing/ShaderPass.js';
+        import { FilmPass } from 'three/addons/postprocessing/FilmPass.js';
+
+        // --- 1. DATA (RYKER NODES) ---
+        // (Copied strictly from your ryker_assets.js, condensed for this file)
+        const R2_PICS = 'https://pub-111e813bd5634cd8a9ecdd3d5c2a0916.r2.dev/dominicGlobaleNetworkProfilePics/';
+
+        const RYKER_NODES = [
+            // Sample of nodes (Using full logic in production, here using the provided list structure)
+            { id: 'the_barista', anchor: { name: "Penelope", role: "The Barista", img: "The Barista. Role- Cafe Staff. Location-  Whitefish, Montana Corporate Lobby cafe. Focus- The  Flush.jpg" }, skills: [{ name: 'Counter-Surv', type: 'INTEL' }, { name: 'Leak Extraction', type: 'PSYCH' }], vulnerabilities: [{ name: 'Student Debt', type: 'FIN' }, { name: 'Stalker', type: 'THREAT' }] },
+            { id: 'agent_miller', anchor: { name: "Agent Miller", role: "FBI Field Agent", img: "Agent Allie Miller. Role- Female FBI Field Agent (Financial Crimes). Location- Newark, NJ. Focus- The Grud.jpg" }, skills: [{ name: 'Forensic Attrition', type: 'SYS' }, { name: 'Rogue Threat', type: 'CHAOS' }], vulnerabilities: [{ name: 'Fathers Debt', type: 'FIN' }, { name: 'Reprimands', type: 'SYS' }] },
+            { id: 'pieter_block', anchor: { name: "Pieter", role: "Harbor Safety", img: "Pieter The Block Role- Harbor Safety Inspector. Location- Rotterdam Port. Focus- Physics.jpg" }, skills: [{ name: 'Gate Denial', type: 'FORCE' }], vulnerabilities: [{ name: 'Family', type: 'EXISTENTIAL' }] },
+            { id: 'dr_alfayed', anchor: { name: "Dr. Al-Fayed", role: "Chief Coroner", img: "Dr. Al-Fayed. Role- Chief Coroner. Location- London. Focus- The Body.jpg" }, skills: [{ name: 'Evidence Hardening', type: 'OBJ' }], vulnerabilities: [{ name: 'Daughter', type: 'EXISTENTIAL' }] },
+            { id: 'lachlan_sterling', anchor: { name: "Lachlan Sterling", role: "CEO Apexian", img: "Lachlan Sterling. CEO Apexian. Location- Barangaroo Penthouse. Cortisol- Low. Focus- Floor Space Ratio.jpg" }, skills: [{ name: 'Regulatory Capture', type: 'SYS' }], vulnerabilities: [{ name: 'Leverage', type: 'FIN' }] },
+            { id: 'marcus_vane', anchor: { name: "Marcus Vane", role: "Financier", img: "Marcus Vane. Location- Zurich. Cortisol- High. Focus- Transaction Velocity.jpg" }, skills: [{ name: 'Infinite Loop', type: 'SYS' }], vulnerabilities: [{ name: 'Boredom', type: 'PSYCH' }] },
+            { id: 'elena_corves', anchor: { name: "Elena Corves", role: "Asset Manager", img: "Elena_Corves._Location-_NYC._Cortisol-_Controlle.jpg" }, skills: [{ name: 'Timeline Gaps', type: 'INTEL' }], vulnerabilities: [{ name: 'Child', type: 'EXISTENTIAL' }] },
+            // ... (In a real deployment, we'd include all 53. For this prototype, I'll generate the rest procedurally to show the "mass" effect)
+        ];
+
+        // Fill up to 53 nodes for visual density if the array is short
+        while (RYKER_NODES.length < 53) {
+            RYKER_NODES.push({
+                id: `node_${RYKER_NODES.length}`,
+                anchor: { name: `Unknown Node ${RYKER_NODES.length}`, role: "Encrypted", img: null },
+                skills: [{ name: 'Encryption', type: 'SYS' }],
+                vulnerabilities: [{ name: 'Signal Trace', type: 'INTEL' }]
+            });
+        }
+
+        // --- 2. SETUP ---
+        const scene = new THREE.Scene();
+        scene.fog = new THREE.FogExp2(0x000000, 0.02); // Distance fog
+
+        const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.z = 25;
+        camera.position.y = 10;
+
+        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(window.devicePixelRatio);
+        document.body.appendChild(renderer.domElement);
+
+        const controls = new OrbitControls(camera, renderer.domElement);
+        controls.enableDamping = true;
+        controls.dampingFactor = 0.05;
+        controls.autoRotate = true;
+        controls.autoRotateSpeed = 0.5;
+        controls.minDistance = 15;
+        controls.maxDistance = 60;
+
+        // --- 3. AUDIO SYSTEM ---
+        const listener = new THREE.AudioListener();
+        camera.add(listener);
+        const audioLoader = new THREE.AudioLoader();
+        let analyser;
+        let audioUniform = { value: 0.0 };
+
+        // --- 4. THE GLOBE (POINT CLOUD) ---
+        // We use a mathematical distribution to create a sphere, then noise to filter "landmasses"
+        const globeGroup = new THREE.Group();
+        scene.add(globeGroup);
+
+        const globeRadius = 10;
+        const particleCount = 45000;
+        const geometry = new THREE.BufferGeometry();
+        const positions = [];
+        const colors = [];
+        const sizes = [];
+
+        const color1 = new THREE.Color(0x00ff41); // Matrix Green
+        const color2 = new THREE.Color(0x004400); // Darker Green
+
+        // Simple pseudo-noise function
+        function noise(x, y, z) {
+            return Math.sin(x * 5) * Math.cos(y * 5) * Math.sin(z * 5);
+        }
+
+        for (let i = 0; i < particleCount; i++) {
+            // Fibonacci Sphere distribution for even spread
+            const phi = Math.acos(1 - 2 * (i + 0.5) / particleCount);
+            const theta = Math.PI * (1 + Math.sqrt(5)) * (i + 0.5);
+
+            let x = Math.cos(theta) * Math.sin(phi);
+            let y = Math.sin(theta) * Math.sin(phi);
+            let z = Math.cos(phi);
+
+            // Noise filter to create "continents"
+            const n = noise(x * 2, y * 2, z * 2);
+
+            // Only keep points that satisfy the "land" condition (or are "data streams")
+            // This creates gaps in the sphere for a more techy look
+            if (n > -0.2) {
+                x *= globeRadius;
+                y *= globeRadius;
+                z *= globeRadius;
+
+                positions.push(x, y, z);
+
+                // Color based on "depth" or randomness
+                const col = Math.random() > 0.8 ? color1 : color2;
+                colors.push(col.r, col.g, col.b);
+
+                // Size variation
+                sizes.push(Math.random() * 0.15);
+            }
+        }
+
+        geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+        geometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
+        geometry.setAttribute('size', new THREE.Float32BufferAttribute(sizes, 1));
+
+        // Custom Shader for the dots
+        const dotMaterial = new THREE.ShaderMaterial({
+            uniforms: {
+                time: { value: 0 },
+                color: { value: new THREE.Color(0xffffff) },
+                audioLevel: audioUniform
+            },
+            vertexShader: `
+                attribute float size;
+                attribute vec3 color;
+                varying vec3 vColor;
+                uniform float time;
+                uniform float audioLevel;
+                void main() {
+                    vColor = color;
+                    vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
+                    
+                    // Audio reactive pulse size
+                    float pulse = 1.0 + (audioLevel * 2.0 * sin(time * 5.0 + position.x));
+                    
+                    gl_PointSize = size * (300.0 / -mvPosition.z) * pulse;
+                    gl_Position = projectionMatrix * mvPosition;
+                }
+            `,
+            fragmentShader: `
+                uniform vec3 color;
+                varying vec3 vColor;
+                void main() {
+                    // Circular particle
+                    if (length(gl_PointCoord - vec2(0.5, 0.5)) > 0.475) discard;
+                    gl_FragColor = vec4(color * vColor, 0.8);
+                }
+            `,
+            transparent: true,
+            blending: THREE.AdditiveBlending,
+            depthWrite: false
+        });
+
+        const globePoints = new THREE.Points(geometry, dotMaterial);
+        globeGroup.add(globePoints);
+
+        // --- 5. NODES & RINGS ---
+        const nodesGroup = new THREE.Group();
+        globeGroup.add(nodesGroup);
+        const connectionGroup = new THREE.Group();
+        globeGroup.add(connectionGroup);
+
+        const nodeMeshes = [];
+        const labelElements = [];
+
+        // Profile Picture Shader (Glitch Effect)
+        const profileVertexShader = `
+            varying vec2 vUv;
+            void main() {
+                vUv = uv;
+                gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+            }
+        `;
+
+        const profileFragmentShader = `
+            uniform sampler2D map;
+            uniform float time;
+            uniform float glitchIntensity;
+            varying vec2 vUv;
+
+            float random(vec2 st) {
+                return fract(sin(dot(st.xy, vec2(12.9898,78.233))) * 43758.5453123);
+            }
+
+            void main() {
+                vec2 uv = vUv;
+                
+                // GLITCH OFFSET
+                if(glitchIntensity > 0.1) {
+                    float slice = floor(uv.y * 10.0);
+                    float offset = (random(vec2(slice, floor(time * 20.0))) - 0.5) * 0.1 * glitchIntensity;
+                    uv.x += offset;
+                }
+
+                // CHROMATIC ABERRATION
+                float r = texture2D(map, uv + vec2(0.01 * glitchIntensity, 0.0)).r;
+                float g = texture2D(map, uv).g;
+                float b = texture2D(map, uv - vec2(0.01 * glitchIntensity, 0.0)).b;
+
+                // Scanline
+                float scan = sin(uv.y * 100.0 + time * 10.0) * 0.1;
+
+                vec3 color = vec3(r, g, b) - scan;
+                
+                // Circle crop
+                float dist = distance(uv, vec2(0.5));
+                if(dist > 0.5) discard;
+
+                // Ring border
+                if(dist > 0.48) color = vec3(0.0, 1.0, 0.25); // Neon green ring
+
+                gl_FragColor = vec4(color, 1.0);
+            }
+        `;
+
+        // Distribute nodes evenly using Fibonacci sphere again, but slightly offset from surface
+        const nodeRadius = globeRadius + 1.5;
+
+        RYKER_NODES.forEach((nodeData, i) => {
+            // Position
+            const phi = Math.acos(1 - 2 * (i + 0.5) / RYKER_NODES.length);
+            const theta = Math.PI * (1 + Math.sqrt(5)) * (i + 0.5);
+
+            const x = nodeRadius * Math.cos(theta) * Math.sin(phi);
+            const y = nodeRadius * Math.sin(theta) * Math.sin(phi);
+            const z = nodeRadius * Math.cos(phi);
+
+            const nodePivot = new THREE.Group();
+            nodePivot.position.set(x, y, z);
+            nodePivot.lookAt(0, 0, 0); // Orient towards center initially
+            nodesGroup.add(nodePivot);
+
+            // 1. PROFILE PICTURE (Billboard)
+            const texture = new THREE.TextureLoader().load(
+                nodeData.anchor.img ? R2_PICS + encodeURIComponent(nodeData.anchor.img) : 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII='
+            );
+
+            const profileMat = new THREE.ShaderMaterial({
+                uniforms: {
+                    map: { value: texture },
+                    time: { value: 0 },
+                    glitchIntensity: { value: 0.0 } // Controlled by audio/hover
+                },
+                vertexShader: profileVertexShader,
+                fragmentShader: profileFragmentShader,
+                transparent: true,
+                side: THREE.DoubleSide
+            });
+
+            const profileGeo = new THREE.PlaneGeometry(1.5, 1.5);
+            const profileMesh = new THREE.Mesh(profileGeo, profileMat);
+            profileMesh.userData = { id: nodeData.id, data: nodeData, isNode: true };
+
+            // Important: Billboard behavior handle in animation loop manually or lookAt camera
+            nodePivot.add(profileMesh);
+
+            // 2. HOLOGRAPHIC RINGS (Satellites)
+            const ringsGroup = new THREE.Group();
+            nodePivot.add(ringsGroup);
+
+            // Skill Ring (Cyan)
+            const skillRingGeo = new THREE.TorusGeometry(1.0, 0.02, 16, 50);
+            const skillRingMat = new THREE.MeshBasicMaterial({ color: 0x00ffff, transparent: true, opacity: 0.3 });
+            const skillRing = new THREE.Mesh(skillRingGeo, skillRingMat);
+            skillRing.rotation.x = Math.PI / 2;
+            ringsGroup.add(skillRing);
+
+            // Vuln Ring (Amber)
+            const vulnRingGeo = new THREE.TorusGeometry(1.2, 0.02, 16, 50);
+            const vulnRingMat = new THREE.MeshBasicMaterial({ color: 0xff9500, transparent: true, opacity: 0.3 });
+            const vulnRing = new THREE.Mesh(vulnRingGeo, vulnRingMat);
+            vulnRing.rotation.y = Math.PI / 2;
+            ringsGroup.add(vulnRing);
+
+            // Sphere Ring (Grey)
+            const sphereRingGeo = new THREE.TorusGeometry(1.4, 0.01, 16, 50);
+            const sphereRingMat = new THREE.MeshBasicMaterial({ color: 0x888888, transparent: true, opacity: 0.2 });
+            const sphereRing = new THREE.Mesh(sphereRingGeo, sphereRingMat);
+            ringsGroup.add(sphereRing);
+
+            // Store for animation
+            nodeMeshes.push({
+                pivot: nodePivot,
+                mesh: profileMesh,
+                rings: ringsGroup,
+                mat: profileMat,
+                baseScale: 1,
+                worldPos: new THREE.Vector3(x, y, z),
+                data: nodeData
+            });
+
+            // Create HTML Label
+            const labelDiv = document.createElement('div');
+            labelDiv.className = 'node-label';
+            labelDiv.textContent = nodeData.anchor.name;
+            document.body.appendChild(labelDiv);
+            labelElements.push({ div: labelDiv, pos: new THREE.Vector3(x, y, z), visible: false });
+
+            // 3. CONNECTIONS (Geodesic Arcs)
+            // Connect to nearest 2 neighbors for visual web
+            // (In real app, logic defines this. Here: Proximity)
+            // Just drawing a few for effect
+        });
+
+        // Generate Connections
+        const lineMaterial = new THREE.LineBasicMaterial({
+            color: 0x00ff41,
+            transparent: true,
+            opacity: 0.15,
+            blending: THREE.AdditiveBlending
+        });
+
+        for (let i = 0; i < RYKER_NODES.length; i++) {
+            // Connect to random other node
+            if (Math.random() > 0.7) {
+                const targetIdx = Math.floor(Math.random() * RYKER_NODES.length);
+                if (targetIdx === i) continue;
+
+                const start = nodeMeshes[i].worldPos;
+                const end = nodeMeshes[targetIdx].worldPos;
+
+                // Create curve (Great Circle approximation via cubic bezier)
+                const mid = start.clone().add(end).multiplyScalar(0.5).normalize().multiplyScalar(globeRadius + 4); // Loft high
+
+                const curve = new THREE.QuadraticBezierCurve3(start, mid, end);
+                const points = curve.getPoints(20);
+                const geometry = new THREE.BufferGeometry().setFromPoints(points);
+
+                const line = new THREE.Line(geometry, lineMaterial);
+                connectionGroup.add(line);
+            }
+        }
+
+
+        // --- 6. RAYCASTER & INTERACTION ---
+        const raycaster = new THREE.Raycaster();
+        const mouse = new THREE.Vector2();
+        let hoveredNode = null;
+
+        function onMouseMove(event) {
+            mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+            mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+        }
+        window.addEventListener('mousemove', onMouseMove, false);
+
+        // --- 7. POST PROCESSING ---
+        const composer = new EffectComposer(renderer);
+
+        const renderPass = new RenderPass(scene, camera);
+        composer.addPass(renderPass);
+
+        // 1. Bloom (Neon Glow)
+        const bloomPass = new UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 1.5, 0.4, 0.85);
+        bloomPass.threshold = 0.1;
+        bloomPass.strength = 1.2; // High bloom
+        bloomPass.radius = 0.5;
+        composer.addPass(bloomPass);
+
+        // 2. Scanlines / CRT
+        const filmPass = new FilmPass(
+            0.35,   // noise intensity
+            0.5,  // scanline intensity
+            648,    // scanline count
+            false   // grayscale
+        );
+        composer.addPass(filmPass);
+
+        // --- 8. ANIMATION LOOP ---
+        const clock = new THREE.Clock();
+
+        function animate() {
+            requestAnimationFrame(animate);
+            const time = clock.getElapsedTime();
+            const delta = clock.getDelta();
+
+            // 1. Audio Data
+            if (analyser) {
+                const data = analyser.getAverageFrequency();
+                audioUniform.value = data / 128.0; // Normalized 0-1
+            } else {
+                // Simulate audio pulse if no audio playing
+                audioUniform.value = (Math.sin(time * 2) + 1) * 0.1;
+            }
+
+            // 2. Globe Rotation
+            globeGroup.rotation.y += 0.001;
+
+            // 3. Update Nodes
+            // Raycast for hover
+            raycaster.setFromCamera(mouse, camera);
+            const intersects = raycaster.intersectObjects(nodeMeshes.map(n => n.mesh));
+
+            let currentHover = null;
+            if (intersects.length > 0) {
+                currentHover = intersects[0].object.userData;
+            }
+
+            // UI Logic
+            const detailsPanel = document.getElementById('node-details');
+            if (currentHover && (!hoveredNode || hoveredNode.id !== currentHover.id)) {
+                // HOVER START
+                hoveredNode = currentHover;
+                document.body.style.cursor = 'pointer';
+                controls.autoRotate = false;
+
+                // Update HUD
+                detailsPanel.classList.add('active');
+                document.getElementById('detail-name').textContent = currentHover.data.anchor.name;
+                document.getElementById('detail-role').textContent = currentHover.data.anchor.role.toUpperCase();
+
+                let html = '';
+                if (currentHover.data.vulnerabilities) {
+                    html += `<div style="margin-top:8px; font-weight:bold; color:#fff">VULNERABILITIES</div>`;
+                    currentHover.data.vulnerabilities.forEach(v => {
+                        html += `<div class="detail-row"><span class="label-vuln">${v.name}</span><span>${v.type}</span></div>`;
+                    });
+                }
+                if (currentHover.data.skills) {
+                    html += `<div style="margin-top:8px; font-weight:bold; color:#fff">SKILLS</div>`;
+                    currentHover.data.skills.forEach(s => {
+                        html += `<div class="detail-row"><span class="label-skill">${s.name}</span><span>${s.type}</span></div>`;
+                    });
+                }
+                document.getElementById('detail-content').innerHTML = html;
+
+                // Play Glitch Sound (simulated via Web Audio if complex, or just visual here)
+
+            } else if (!currentHover && hoveredNode) {
+                // HOVER END
+                hoveredNode = null;
+                document.body.style.cursor = 'default';
+                controls.autoRotate = true;
+                detailsPanel.classList.remove('active');
+            }
+
+            // Animate Individual Nodes
+            nodeMeshes.forEach((n, idx) => {
+                // Billboarding: Make mesh face camera
+                n.mesh.lookAt(camera.position);
+
+                // Update Shader Time
+                n.mat.uniforms.time.value = time;
+
+                // Hover State Logic
+                const isHovered = hoveredNode && hoveredNode.id === n.data.id;
+
+                // Scale target
+                const targetScale = isHovered ? 2.5 : 1.0;
+                n.mesh.scale.setScalar(THREE.MathUtils.lerp(n.mesh.scale.x, targetScale, 0.1));
+
+                // Glitch intensity (high on audio + hover)
+                const audioKick = audioUniform.value * 2.0;
+                n.mat.uniforms.glitchIntensity.value = isHovered ? 0.5 + audioKick : 0.0 + (audioKick * 0.2); // Idle glitching too
+
+                // Rotate Rings (Gyroscopic effect)
+                n.rings.rotation.x += 0.01;
+                n.rings.rotation.y += 0.015;
+                n.rings.rotation.z += 0.005;
+
+                // Expand rings on hover
+                const ringScale = isHovered ? 1.5 : 0.0; // Hide rings when not hovered? Or just small.
+                // Actually user requested: "Expand outward... when player hovers"
+                // Let's keep rings small/hidden and expand out.
+                // Currently set opacity to visible. Let's lerp scale.
+                const currentRingScale = n.rings.scale.x;
+                const targetRingScale = isHovered ? 1.2 : 0.1;
+                const lerpedRingScale = THREE.MathUtils.lerp(currentRingScale, targetRingScale, 0.1);
+                n.rings.scale.setScalar(lerpedRingScale);
+
+                // Ring Colors - pulse on beat
+                n.rings.children.forEach(r => {
+                    if (r.material.opacity) r.material.opacity = isHovered ? 0.8 : 0.0;
+                });
+
+                // Update Label Position (Project 3D to 2D)
+                // We must update position based on the group's world position (including globe rotation)
+                n.mesh.getWorldPosition(n.worldPos); // Update the vector
+                n.worldPos.project(camera);
+
+                const x = (n.worldPos.x * .5 + .5) * window.innerWidth;
+                const y = (n.worldPos.y * -.5 + .5) * window.innerHeight;
+
+                const label = labelElements[idx];
+                label.div.style.transform = `translate(-50%, -50%) translate(${x}px, ${y - 30}px)`; // Offset up
+
+                // Visibility check (is it behind the globe?)
+                // Simple dot product check or raycast check. 
+                // Simple distance check: if z > 1, it's behind camera. 
+                // For globe occlusion: distance from camera to node < distance from camera to center? No.
+                // Simple hack: if n.worldPos.z (NDC) is close to 1, it's far.
+                // Better: check opacity based on normal dot product (fresnel)
+
+                // Only show label if hovered or close to center?
+                if (isHovered) {
+                    label.div.classList.add('visible');
+                    label.div.style.zIndex = 100;
+                } else {
+                    label.div.classList.remove('visible');
+                    label.div.style.zIndex = 1;
+                }
+            });
+
+            // 4. Render
+            composer.render();
+        }
+
+        // --- 9. STARTUP HANDLER ---
+        document.getElementById('start-screen').addEventListener('click', async () => {
+            // Audio Context Resume
+            const AudioContext = window.AudioContext || window.webkitAudioContext;
+            const audioCtx = new AudioContext();
+            await audioCtx.resume();
+
+            // Setup simple analyser
+            analyser = new THREE.AudioAnalyser(new THREE.Audio(listener), 32);
+            // In a real app, we'd hook this to the <audio> elements playing the voice logs.
+            // For this demo, the visualiser runs on 'ghost' data or mic if we hooked it up.
+
+            // Transition UI
+            document.getElementById('progress').style.width = '100%';
+            setTimeout(() => {
+                document.getElementById('start-screen').style.opacity = 0;
+                setTimeout(() => document.getElementById('start-screen').remove(), 1000);
+            }, 500);
+
+            animate();
+        });
+
+        // Resize Handler
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            composer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+    </script>
+</body>
+
+</html>

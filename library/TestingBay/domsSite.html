@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NSW Correctional Maintenance Log v4</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Courier+Prime:ital,wght@0,400;0,700;1,400&display=swap"
+        rel="stylesheet">
+
+    <style>
+        :root {
+            --term-green: #33ff00;
+            --term-amber: #ffb000;
+            --term-red: #ff3333;
+            --void: #050505;
+        }
+
+        body {
+            font-family: 'Share Tech Mono', monospace;
+            background-color: var(--void);
+            color: #ccc;
+            overflow: hidden;
+            height: 100vh;
+            width: 100vw;
+            margin: 0;
+        }
+
+        /* The 404 Flicker Styles */
+        #decoy-404 {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: white;
+            color: black;
+            font-family: 'Times New Roman', serif;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            padding: 40px;
+            box-sizing: border-box;
+        }
+
+        /* Glitch Animation Classes */
+        .glitch-text {
+            position: relative;
+        }
+
+        @keyframes glitch-skew {
+            0% {
+                transform: skew(0deg);
+            }
+
+            20% {
+                transform: skew(-20deg);
+            }
+
+            40% {
+                transform: skew(20deg);
+            }
+
+            60% {
+                transform: skew(-5deg);
+            }
+
+            80% {
+                transform: skew(5deg);
+            }
+
+            100% {
+                transform: skew(0deg);
+            }
+        }
+
+        .glitching {
+            animation: glitch-skew 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) both infinite;
+            color: var(--term-red) !important;
+            text-shadow: 2px 0 red, -2px 0 blue;
+        }
+
+        /* CRT Scanline Effect */
+        .scanlines {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to bottom,
+                    rgba(255, 255, 255, 0),
+                    rgba(255, 255, 255, 0) 50%,
+                    rgba(0, 0, 0, 0.1) 50%,
+                    rgba(0, 0, 0, 0.1));
+            background-size: 100% 4px;
+            pointer-events: none;
+            z-index: 50;
+        }
+
+        /* Blueprint Styles */
+        .blueprint-grid {
+            background-image:
+                linear-gradient(rgba(0, 50, 255, 0.1) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 50, 255, 0.1) 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+
+        .blueprint-area:hover {
+            background-color: rgba(51, 255, 0, 0.1);
+            border: 1px solid var(--term-green);
+            cursor: crosshair;
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 5px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #000;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #333;
+        }
+
+        /* Animations */
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.5;
+            }
+        }
+
+        .animate-blink {
+            animation: pulse 1s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+
+        @keyframes waveform {
+            0% {
+                height: 10%;
+            }
+
+            50% {
+                height: 100%;
+            }
+
+            100% {
+                height: 10%;
+            }
+        }
+
+        .bar {
+            width: 4px;
+            background: var(--term-green);
+            animation: waveform 1s infinite ease-in-out;
+            margin: 0 2px;
+        }
+
+        /* Typewriter Cursor */
+        .cursor-blink {
+            display: inline-block;
+            width: 10px;
+            height: 1em;
+            background-color: var(--term-green);
+            animation: pulse 0.8s infinite;
+            vertical-align: bottom;
+        }
+
+        .disabled-link {
+            opacity: 0.3;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+
+        /* Pure Black Mirror Mode */
+        .mirror-mode * {
+            display: none !important;
+        }
+
+        .mirror-mode .mirror-only {
+            display: flex !important;
+        }
+
+        .mirror-mode {
+            background-color: #000000 !important;
+        }
+    </style>
+</head>
+
+<body class="bg-black text-gray-300">
+
+    <!-- I. The Entry Sequence: 404 Decoy -->
+    <div id="decoy-404">
+        <h1 class="text-3xl font-bold mb-4">404 Not Found</h1>
+        <p>The requested URL /nsw-correctional/maint/log_v4 was not found on this server.</p>
+        <hr class="my-4 border-gray-300">
+        <p class="text-sm text-gray-500">Apache/2.4.41 (Ubuntu) Server at nsw-correctional-maintenance-log-v4.com Port
+            80</p>
+    </div>
+
+    <!-- The Main Interface (Initially Hidden) -->
+    <div id="main-interface" class="hidden h-full flex flex-col relative opacity-0 transition-opacity duration-1000">
+
+        <!-- CRT Overlay -->
+        <div class="scanlines"></div>
+
+        <!-- Top Bar / Command Prompt -->
+        <div class="h-16 border-b border-gray-800 flex items-center justify-between px-6 bg-black z-20">
+            <div class="text-xs text-gray-600 tracking-widest">
+                SYSTEM: NSW_CORR_V4 // <span id="clock">00:00:00</span>
+            </div>
+
+            <!-- III. User Action 1: The Authority Test -->
+            <div class="flex items-center">
+                <span class="text-green-500 mr-2">></span>
+                <input type="text" id="cmd-input"
+                    class="bg-transparent border-none text-green-500 font-mono focus:outline-none uppercase w-48 tracking-widest"
+                    placeholder="" autocomplete="off" autofocus>
+                <div class="cursor-blink"></div>
+            </div>
+        </div>
+
+        <div class="flex flex-1 overflow-hidden">
+            <!-- II. Navigation Sidebar -->
+            <div class="w-64 border-r border-gray-800 p-6 flex flex-col justify-between bg-black z-10 transition-all duration-500"
+                id="sidebar">
+                <div class="space-y-6">
+                    <div class="text-xs text-gray-600 mb-8 border-b border-gray-800 pb-2">DIRECTORY</div>
+
+                    <button onclick="navigate('archive')" id="nav-archive"
+                        class="block w-full text-left text-sm hover:text-white hover:pl-2 transition-all duration-200 text-gray-500">
+                        [01] ARCHIVE
+                    </button>
+
+                    <button onclick="navigate('audio')" id="nav-audio"
+                        class="block w-full text-left text-sm hover:text-white hover:pl-2 transition-all duration-200 text-gray-500">
+                        [02] THE SAME BREATH
+                    </button>
+
+                    <button onclick="navigate('binary')" id="nav-binary"
+                        class="block w-full text-left text-sm hover:text-white hover:pl-2 transition-all duration-200 text-gray-500">
+                        [03] THE BINARY
+                    </button>
+
+                    <div class="pt-8 opacity-50">
+                        <button onclick="triggerMirror()" id="nav-inmate"
+                            class="block w-full text-left text-sm text-red-900 cursor-not-allowed">
+                            [LOCKED] INMATE REHABILITATION
+                        </button>
+                    </div>
+                </div>
+
+                <div class="text-[10px] text-gray-700 font-sans">
+                    STATUS: UNSECURE<br>
+                    IP: MASKED
+                </div>
+            </div>
+
+            <!-- Main Content Area -->
+            <div class="flex-1 relative bg-black p-8 overflow-y-auto" id="content-display">
+
+                <!-- DEFAULT STATE: EMPTY / MONOLOGUE SUBTITLES -->
+                <div id="view-default" class="h-full flex items-center justify-center text-center opacity-30">
+                    <p class="text-sm max-w-md" id="monologue-display">
+                        // AWAITING INPUT...
+                    </p>
+                </div>
+
+                <!-- III. The Roster (Result of "CREDENTIALS") -->
+                <div id="view-roster" class="hidden h-full">
+                    <h2 class="text-green-500 text-lg mb-6 border-b border-green-900 pb-2 tracking-widest">NIGHT SHIFT
+                        ROSTER // SECTOR 4</h2>
+                    <table class="w-full text-sm text-left border-collapse">
+                        <thead>
+                            <tr class="text-gray-500 border-b border-gray-800">
+                                <th class="py-2">OFFICER ID</th>
+                                <th class="py-2">NAME</th>
+                                <th class="py-2">ASSIGNMENT</th>
+                                <th class="py-2">STATUS</th>
+                            </tr>
+                        </thead>
+                        <tbody class="font-mono text-gray-400">
+                            <tr class="border-b border-gray-900">
+                                <td class="py-3">899-22</td>
+                                <td>Davids, J.</td>
+                                <td>Perimeter</td>
+                                <td class="text-green-700">ACTIVE</td>
+                            </tr>
+                            <tr class="border-b border-gray-900 bg-green-900/10" id="target-row">
+                                <td class="py-3">442-19</td>
+                                <td>MILLER, T.</td>
+                                <td id="miller-loc">SECTOR 4 (CELL DOOR)</td>
+                                <td id="miller-status" class="text-green-500">STATIONARY GUARD</td>
+                            </tr>
+                            <tr class="border-b border-gray-900">
+                                <td class="py-3">102-44</td>
+                                <td>Zhang, L.</td>
+                                <td>Control Room</td>
+                                <td class="text-green-700">ACTIVE</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- IV. The Archive (Blueprints) -->
+                <div id="view-archive" class="hidden h-full flex flex-col">
+                    <div class="flex justify-between items-end mb-4">
+                        <h2 class="text-blue-500 text-lg tracking-widest">WESTSIDE TOWERS // STRUCTURAL</h2>
+                        <span class="text-xs text-gray-600">SCHEMATIC: A-114</span>
+                    </div>
+
+                    <div class="flex-1 border border-blue-900 blueprint-grid relative overflow-hidden group">
+                        <!-- Simple CSS Representation of a Building Blueprint -->
+                        <div class="absolute bottom-0 left-10 w-40 h-64 border-2 border-blue-800 opacity-50"></div>
+                        <div class="absolute bottom-0 left-60 w-40 h-80 border-2 border-blue-800 opacity-50"></div>
+
+                        <!-- The 4th Floor Interactive Area -->
+                        <div class="absolute bottom-32 left-10 w-40 h-10 border border-blue-500 bg-blue-500/10 blueprint-area cursor-pointer transition-all duration-300"
+                            id="floor-4-trigger">
+                            <span
+                                class="absolute -right-20 top-2 text-[10px] text-blue-400 opacity-0 group-hover:opacity-100 transition-opacity">>
+                                4TH FLOOR</span>
+                        </div>
+
+                        <!-- Labels -->
+                        <div class="absolute top-10 right-10 text-right">
+                            <div class="text-[10px] text-blue-800">GRID: 40x40</div>
+                            <div class="text-[10px] text-blue-800">SCALE: 1:100</div>
+                        </div>
+
+                        <!-- The Reveal Popup -->
+                        <div id="spec-popup"
+                            class="hidden absolute top-10 left-10 bg-black border border-blue-500 p-4 w-64 shadow-lg shadow-blue-900/20 z-20">
+                            <div class="text-xs text-blue-300 mb-2 border-b border-blue-900 pb-1">SPECIFICATION ALERT
+                            </div>
+                            <div class="grid grid-cols-2 gap-2 text-[10px] mb-3">
+                                <div class="text-gray-500">MATERIAL REQ:</div>
+                                <div class="text-white">STEEL GRADE A</div>
+                                <div class="text-gray-500">INSTALLED:</div>
+                                <div class="text-red-500 blink">STEEL GRADE B</div>
+                                <div class="text-gray-500">THICKNESS:</div>
+                                <div class="text-white">-3mm VARIANCE</div>
+                            </div>
+                            <div class="bg-blue-900/20 p-2 border-l-2 border-white">
+                                <div class="text-[10px] text-gray-400">LIQUIDITY GAIN</div>
+                                <div class="text-lg text-white font-bold">$4,200,000.00</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- V. The Same Breath (Audio) -->
+                <div id="view-audio" class="hidden h-full flex flex-col items-center justify-center">
+                    <div class="w-full max-w-lg">
+                        <div class="flex justify-between text-xs text-gray-600 mb-2">
+                            <span>REC_DATE: 11-04-2024</span>
+                            <span>SOURCE: UNKNOWN</span>
+                        </div>
+
+                        <!-- Waveform Visualizer -->
+                        <div class="h-32 flex items-center justify-center gap-1 mb-8 opacity-50" id="visualizer">
+                            <!-- Bars generated by JS -->
+                        </div>
+
+                        <!-- Captions -->
+                        <div class="text-center space-y-4">
+                            <p class="text-lg text-gray-400 italic font-serif">"We saved on the transport..."</p>
+                            <div class="h-1 w-full bg-gray-900 rounded overflow-hidden">
+                                <div class="h-full bg-green-600 animate-[pulse_3s_infinite]" style="width: 45%"></div>
+                            </div>
+                            <p class="text-xs text-gray-600 uppercase tracking-widest mt-4">Playback Speed: 1.0x</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- VI. The Binary (Ledger) -->
+                <div id="view-binary" class="hidden h-full flex flex-col">
+                    <div class="text-center border-b border-gray-800 pb-4 mb-4">
+                        <h2 class="text-xl tracking-[0.5em] text-white">THE BINARY</h2>
+                        <div class="text-[10px] text-gray-600 mt-1">FISCAL YEAR END</div>
+                    </div>
+
+                    <div class="flex flex-1 gap-4">
+                        <!-- Good Column -->
+                        <div class="flex-1 border-r border-gray-900 pr-4">
+                            <h3 class="text-xs text-gray-500 mb-4 text-center">ASSETS (PUBLIC)</h3>
+                            <ul class="space-y-3 text-sm text-gray-400">
+                                <li class="flex justify-between"><span class="text-gray-600">+</span> <span>St. Mary's
+                                        Wing</span></li>
+                                <li class="flex justify-between"><span class="text-gray-600">+</span> <span>Westside
+                                        Housing</span></li>
+                                <li class="flex justify-between"><span class="text-gray-600">+</span> <span>Scholarship
+                                        Fund (x50)</span></li>
+                                <li class="flex justify-between"><span class="text-gray-600">+</span> <span>Community
+                                        Parks</span></li>
+                                <li class="flex justify-between"><span class="text-gray-600">+</span> <span>Library
+                                        Renovation</span></li>
+                            </ul>
+                        </div>
+
+                        <!-- Bad Column -->
+                        <div class="flex-1 pl-4">
+                            <h3 class="text-xs text-gray-500 mb-4 text-center">LIABILITIES (HIDDEN)</h3>
+                            <ul class="space-y-3 text-sm text-gray-400">
+                                <li class="flex justify-between"><span class="text-red-900">-</span> <span>Northern Rd
+                                        Casuality</span></li>
+                                <li class="flex justify-between"><span class="text-red-900">-</span> <span>Union
+                                        Bribes</span></li>
+                                <li class="flex justify-between"><span class="text-red-900">-</span> <span>Structural
+                                        Variances</span></li>
+                                <li class="flex justify-between"><span class="text-red-900">-</span> <span>Silence
+                                        Payments</span></li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="border-t border-gray-800 mt-4 pt-4 text-center">
+                        <div class="text-[10px] text-gray-500 mb-1">CALCULATED RESULT</div>
+                        <div class="text-2xl text-white font-bold tracking-widest">NET POSITIVE</div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Monologue Subtitles (Fixed Bottom) -->
+        <div
+            class="fixed bottom-6 left-1/2 transform -translate-x-1/2 text-center w-full px-4 pointer-events-none z-40">
+            <p id="voiceover-text"
+                class="text-gray-500 text-sm bg-black/80 px-4 py-2 inline-block rounded font-serif italic transition-opacity duration-500 opacity-0">
+                <!-- Dynamic Content -->
+            </p>
+        </div>
+
+    </div>
+
+    <!-- VIII. The Final Action: Proceed Button -->
+    <div id="proceed-container"
+        class="fixed top-0 left-0 w-full h-full flex items-center justify-center z-[100] hidden mirror-only">
+        <button id="btn-proceed" onclick="finish()"
+            class="border border-white text-white px-10 py-4 tracking-[0.5em] text-sm hover:bg-white hover:text-black transition-all duration-700 opacity-0">
+            PROCEED
+        </button>
+    </div>
+
+    <script>
+        // --- 0. Initialization & Flicker ---
+        const decoy = document.getElementById('decoy-404');
+        const main = document.getElementById('main-interface');
+        const voiceover = document.getElementById('voiceover-text');
+        const cmdInput = document.getElementById('cmd-input');
+
+        window.onload = function () {
+            setTimeout(() => {
+                decoy.style.display = 'none';
+                main.classList.remove('hidden');
+                // Trigger reflow
+                void main.offsetWidth;
+                main.classList.remove('opacity-0');
+
+                // Audio Context Simulation (Subtitle)
+                playVoice("Stay. I can hear you breathing...");
+
+                setTimeout(() => {
+                    playVoice("There’s a cursor blinking in the top right. Type CREDENTIALS.");
+                }, 4000);
+
+            }, 1500); // 1.5s Flicker
+        };
+
+        // --- Utility: Voiceover Subtitles ---
+        function playVoice(text) {
+            voiceover.textContent = text;
+            voiceover.classList.remove('opacity-0');
+
+            // Auto hide after reading time
+            setTimeout(() => {
+                voiceover.classList.add('opacity-0');
+            }, Math.max(3000, text.length * 50));
+        }
+
+        // --- III. Action 1: The Authority Test ---
+        cmdInput.addEventListener('keydown', function (e) {
+            if (e.key === 'Enter') {
+                if (this.value.trim().toUpperCase() === 'CREDENTIALS') {
+                    showView('roster');
+                    playVoice("Details matter. They are the only things that are real.");
+
+                    // The Glitch Effect
+                    setTimeout(() => {
+                        const loc = document.getElementById('miller-loc');
+                        const status = document.getElementById('miller-status');
+                        const row = document.getElementById('target-row');
+
+                        playVoice("He's actually in the breakroom... finishing a coffee I paid for.");
+
+                        // Glitch animation
+                        status.classList.add('glitching');
+                        loc.classList.add('glitching');
+
+                        setTimeout(() => {
+                            loc.innerText = "BREAKROOM // VENDING";
+                            status.innerText = "COMPROMISED";
+                            status.classList.replace('text-green-500', 'text-red-500');
+                            row.classList.replace('bg-green-900/10', 'bg-red-900/10');
+
+                            status.classList.remove('glitching');
+                            loc.classList.remove('glitching');
+
+                            setTimeout(() => playVoice("If you're looking for the Builder... click ARCHIVE."), 2000);
+                        }, 500); // Short glitch duration
+                    }, 2000); // Delay before reveal
+                } else {
+                    this.value = '';
+                    this.placeholder = 'INVALID';
+                    setTimeout(() => this.placeholder = '', 1000);
+                }
+            }
+        });
+
+        // --- Navigation Logic ---
+        function navigate(viewName) {
+            showView(viewName);
+
+            if (viewName === 'archive') {
+                playVoice("Look closely at the structural notes for the fourth floor...");
+            }
+            if (viewName === 'audio') {
+                playVoice("It's an audio-only section... peaceful, actually.");
+                initVisualizer();
+            }
+            if (viewName === 'binary') {
+                playVoice("If the universe is a balance sheet, I am technically a saint.");
+
+                setTimeout(() => {
+                    playVoice("Before you move on... Lean back. Look at your reflection.");
+                    // Enable the locked button visually (logic handled in triggerMirror)
+                    const inmateBtn = document.getElementById('nav-inmate');
+                    inmateBtn.classList.remove('opacity-50', 'cursor-not-allowed', 'text-red-900');
+                    inmateBtn.classList.add('text-white', 'animate-blink');
+                    inmateBtn.innerText = "[04] INMATE REHABILITATION";
+                }, 4000);
+            }
+        }
+
+        function showView(name) {
+            // Hide all views
+            ['default', 'roster', 'archive', 'audio', 'binary'].forEach(v => {
+                document.getElementById('view-' + v).classList.add('hidden');
+            });
+            // Show target
+            const target = document.getElementById('view-' + name);
+            if (target) target.classList.remove('hidden');
+        }
+
+        // --- IV. Action 2: Archive Interactions ---
+        const floor4 = document.getElementById('floor-4-trigger');
+        const popup = document.getElementById('spec-popup');
+
+        floor4.addEventListener('mouseenter', () => {
+            popup.classList.remove('hidden');
+            playVoice("A few millimeters of variance... for a few million in liquidity.");
+        });
+        floor4.addEventListener('mouseleave', () => {
+            popup.classList.add('hidden');
+        });
+
+        // --- V. Action 3: Visualizer ---
+        function initVisualizer() {
+            const container = document.getElementById('visualizer');
+            container.innerHTML = '';
+            for (let i = 0; i < 40; i++) {
+                let d = document.createElement('div');
+                d.className = 'bar';
+                d.style.height = Math.random() * 100 + '%';
+                d.style.animationDuration = (Math.random() * 0.5 + 0.5) + 's';
+                container.appendChild(d);
+            }
+        }
+
+        // --- VII. Action 5: The Mirror ---
+        function triggerMirror() {
+            // This button is technically fake/disabled until the narrative point, 
+            // but the prompt implies clicking it fails or triggers the mirror sequence
+
+            playVoice("You aren't here because you hate me...");
+
+            // 1. Fade everything out
+            document.body.classList.add('mirror-mode');
+
+            // 2. Audio cues getting louder (text)
+            setTimeout(() => {
+                playVoice("You're here because you're tired of rules that don't work.");
+            }, 3000);
+
+            // 3. Show Proceed Button
+            setTimeout(() => {
+                playVoice("I've cleared a path for you.");
+                const proceedCont = document.getElementById('proceed-container');
+                const proceedBtn = document.getElementById('btn-proceed');
+                proceedCont.classList.remove('hidden');
+
+                // Fade in button
+                setTimeout(() => {
+                    proceedBtn.classList.remove('opacity-0');
+                }, 100);
+
+            }, 6000);
+        }
+
+        // --- VIII. Final Action ---
+        function finish() {
+            const btn = document.getElementById('btn-proceed');
+            btn.innerHTML = "ACCESS GRANTED";
+            btn.classList.add('bg-white', 'text-black');
+
+            // Sound effect visual cue
+            playVoice("*HEAVY DOOR UNLATCHING SOUND*");
+
+            setTimeout(() => {
+                alert("Simulated: Download Initiated / Newsletter Popup");
+                location.reload(); // Reset for demo purposes
+            }, 2000);
+        }
+
+        // Clock
+        setInterval(() => {
+            const now = new Date();
+            document.getElementById('clock').innerText = now.toISOString().split('T')[1].split('.')[0];
+        }, 1000);
+
+    </script>
+</body>
+
+</html>
