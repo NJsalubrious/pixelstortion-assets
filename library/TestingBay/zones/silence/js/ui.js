@@ -154,7 +154,7 @@ function renderGames() {
     const games = Object.entries(PIXEL_MANIFEST.GAMES);
 
     container.innerHTML = games.map(([key, game], index) => `
-        <div class="group relative bg-black border border-gray-800 hover:border-green-500/50 transition-all duration-500 overflow-hidden cursor-pointer" 
+        <div class="group relative bg-black border border-gray-800 hover:border-gray-600 transition-all duration-500 overflow-hidden cursor-pointer" 
              onclick="openGameModal('${key}')"
              style="animation: fadeInUp 0.6s ease forwards ${index * 0.1}s; opacity: 0;">
             <div class="aspect-[3/4] overflow-hidden relative">
@@ -166,9 +166,10 @@ function renderGames() {
                 <div class="absolute inset-0 bg-black/60 group-hover:bg-black/20 transition-all duration-500"></div>
                 <!-- Gradient overlay -->
                 <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent"></div>
-                <!-- Game name -->
-                <div class="absolute bottom-0 left-0 right-0 p-4 text-center">
-                    <h3 class="text-lg font-bold text-white group-hover:text-green-400 transition-colors">${game.name}</h3>
+                <!-- Game name (matching profile styling) -->
+                <div class="absolute bottom-0 left-0 p-4 md:p-6">
+                    <h3 class="text-xl md:text-2xl font-bold text-white mb-1">${game.name}</h3>
+                    <p class="font-mono-custom text-xs tracking-wider text-green-500 group-hover:text-green-400">PLAY NOW</p>
                 </div>
             </div>
         </div>
@@ -190,8 +191,14 @@ function openGameModal(gameKey) {
         modalContent.className = 'relative w-full max-w-2xl h-[80vh] bg-black rounded-lg overflow-hidden';
     }
 
-    // Load game URL
-    iframe.src = game.url;
+    // Resolve game URL - always use relative path from current page (zones/silence/)
+    // This works for both local file:// and GitHub Pages (even in subdirectories)
+    // Convert /zones/games/... to ../games/...
+    let gameUrl = game.url.replace('/zones/', '../');
+
+    console.log('Original URL:', game.url);
+    console.log('Resolved URL:', gameUrl);
+    iframe.src = gameUrl;
 
     // Pause main site music
     if (ytPlayer && typeof ytPlayer.pauseVideo === 'function') {
