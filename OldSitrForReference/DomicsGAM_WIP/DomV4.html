@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CASE MANAGEMENT // INTAKE</title>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Inter:wght@400;500;600&display=swap');
+
+        body {
+            background-color: #050608;
+            color: #a0aab5;
+            font-family: 'Inter', sans-serif;
+            overflow: hidden;
+            user-select: none;
+        }
+
+        .font-mono {
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        /* CRT / Scanline Effects */
+        .scanline {
+            background: linear-gradient(to bottom,
+                    rgba(255, 255, 255, 0),
+                    rgba(255, 255, 255, 0) 50%,
+                    rgba(0, 0, 0, 0.1) 50%,
+                    rgba(0, 0, 0, 0.1));
+            background-size: 100% 4px;
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            pointer-events: none;
+            z-index: 50;
+        }
+
+        .noise-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 40;
+            opacity: 0.03;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+        }
+
+        .fade-in {
+            animation: fadeIn 1s ease-in forwards;
+        }
+
+        .fade-in-slow {
+            animation: fadeIn 3s ease-in forwards;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        /* Button Styles */
+        .btn-terminal {
+            background: #0f1115;
+            border: 1px solid #2d3340;
+            transition: all 0.2s ease;
+        }
+
+        .btn-terminal:hover {
+            background: #1a1d24;
+            border-color: #4b5563;
+            color: white;
+        }
+
+        .btn-terminal:active {
+            background: #3e4655;
+        }
+
+        /* Status Light Pulse */
+        .status-pulse {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.5;
+            }
+
+            100% {
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect, useRef } = React;
+
+        // ============================================================
+        // ASSET MANIFEST (Strictly mapped to provided URLs)
+        // ============================================================
+        const BASE = "https://pub-111e813bd5634cd8a9ecdd3d5c2a0916.r2.dev/DominicGameAudio";
+
+        const AUDIO = {
+            ambient: `${BASE}/fx/AmbientPrisonHumLoop.mp3`,
+            fx: {
+                doorMid: `${BASE}/fx/fx_midDistanceprosonDoor.mp3`,
+                pen: `${BASE}/fx/fx_penPaperRusslesClicks.mp3`,
+                input: `${BASE}/fx/fx_input.mp3`,
+                doorClose: `${BASE}/fx/door_closes_1.mp3`
+            },
+            g1: {
+                didYouSee: `${BASE}/guard1Audio/Guard1_Did_you_see_the.mp3`,
+                withThem: `${BASE}/guard1Audio/Guard1_its_with_them_now.mp3`,
+                fine: `${BASE}/guard1Audio/Guard1_that_ones_fine.mp3`,
+                yeahAlready: `${BASE}/guard1Audio/Guard1_yeah,_that’s_already.mp3`,
+                afterwards: `${BASE}/guard1Audio/Guard1_afterwards.mp3`
+            },
+            g2: {
+                hmm: `${BASE}/guard2Audio/guard2_hmm_(almost_a_grunt).mp3`,
+                justNow: `${BASE}/guard2Audio/guard2_just_now.mp3`,
+                thought: `${BASE}/guard2Audio/guard2_i_thought_you_had_it.mp3`,
+                earlier: `${BASE}/guard2Audio/guard2_earlier.mp3`,
+                ifNeeded: `${BASE}/guard2Audio/guard2_if_needed.mp3`,
+                decide: `${BASE}/guard2Audio/guard2_you_decide.mp3`,
+                sure: `${BASE}/guard2Audio/guard2_sure.mp3`,
+                okDist: `${BASE}/guard2Audio/guard2_ok_(at_a_distance).mp3`
+            },
+            g3: {
+                standard: `${BASE}/guard3Audio/guard3_standard.mp3`,
+                noChange: `${BASE}/guard3Audio/guard3_no_change.mp3`,
+                happens: `${BASE}/guard3Audio/guard3_happens.mp3`
+            }
+        };
+
+        // ============================================================
+        // AUDIO ENGINE HOOK
+        // ============================================================
+        const useAudioEngine = () => {
+            const ambientRef = useRef(null);
+
+            const play = (url, vol = 1.0, loop = false) => {
+                const audio = new Audio(url);
+                audio.volume = vol;
+                audio.loop = loop;
+                audio.play().catch(e => console.warn("Audio blocked:", e));
+                return audio;
+            };
+
+            const startAmbient = () => {
+                if (!ambientRef.current) {
+                    ambientRef.current = play(AUDIO.ambient, 0.4, true);
+                }
+            };
+
+            const stopAmbient = () => {
+                if (ambientRef.current) {
+                    let vol = 0.4;
+                    const fade = setInterval(() => {
+                        vol -= 0.05;
+                        if (vol <= 0) {
+                            clearInterval(fade);
+                            ambientRef.current.pause();
+                        } else {
+                            ambientRef.current.volume = vol;
+                        }
+                    }, 200);
+                }
+            };
+
+            return { play, startAmbient, stopAmbient };
+        };
+
+        // ============================================================
+        // MAIN APP
+        // ============================================================
+        const App = () => {
+            const [phase, setPhase] = useState('INIT'); // INIT, P1, P2, P3, P4, P5, END
+            const [logs, setLogs] = useState([]);
+            const { play, startAmbient, stopAmbient } = useAudioEngine();
+            const logEndRef = useRef(null);
+            const penLoopRef = useRef(null);
+
+            const addLog = (text, type = 'info') => {
+                const ts = new Date().toLocaleTimeString('en-US', { hour12: false });
+                setLogs(prev => [...prev, { text, type, ts }]);
+            };
+
+            // Auto-scroll logs
+            useEffect(() => {
+                logEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+            }, [logs]);
+
+            // ========================================================
+            // SCENE SEQUENCER
+            // ========================================================
+            useEffect(() => {
+                if (phase === 'P1') {
+                    // PHASE 1: THROWN IN (0-30s)
+                    startAmbient();
+                    addLog("CONNECTING TO NODE 894...", "sys");
+
+                    setTimeout(() => {
+                        play(AUDIO.fx.doorMid, 0.6); // Door sound
+                        addLog("SESSION RESTORED. USER: ACTING_LEAD", "success");
+                    }, 2000);
+
+                    setTimeout(() => play(AUDIO.g2.hmm, 0.7), 6000); // Grunt
+
+                    setTimeout(() => {
+                        play(AUDIO.g2.justNow, 0.8); // "Just now"
+                        addLog("AUDIO STREAM ACTIVE", "sys");
+                    }, 10000);
+
+                    setTimeout(() => {
+                        addLog("WARNING: HANDOVER DATA INCOMPLETE", "warn");
+                        play(AUDIO.g2.thought, 0.9); // "I thought you had it?"
+                    }, 18000);
+
+                    setTimeout(() => setPhase('P2'), 28000);
+                }
+
+                if (phase === 'P2') {
+                    // PHASE 2: CROSS-TALK (30-90s)
+                    addLog("RECONCILING TIMESTAMPS...", "info");
+
+                    // Overlapping dialogue sequence
+                    play(AUDIO.g1.didYouSee, 1.0); // Guard 1 enters
+
+                    setTimeout(() => play(AUDIO.g2.earlier, 0.8), 2500); // "Earlier"
+
+                    setTimeout(() => {
+                        play(AUDIO.g1.withThem, 1.0); // "It's with them now"
+                        addLog("OBJECT REF: [UNDEFINED]", "warn");
+                    }, 5500);
+
+                    setTimeout(() => play(AUDIO.g2.ifNeeded, 0.7), 8000); // "If needed"
+
+                    setTimeout(() => {
+                        play(AUDIO.g1.fine, 1.0); // "That one's fine" (The critical ambiguous line)
+                        addLog("AUTO-FLAG: LOW PRIORITY", "info");
+                    }, 12000);
+
+                    setTimeout(() => {
+                        play(AUDIO.g2.decide, 0.9); // "You decide"
+                        addLog("AWAITING INPUT...", "warn");
+                    }, 15000);
+
+                    setTimeout(() => setPhase('P3'), 19000);
+                }
+
+                if (phase === 'P3') {
+                    // PHASE 3: AUTHORITY COLLAPSE (90-120s)
+                    const g3Opts = [AUDIO.g3.standard, AUDIO.g3.noChange, AUDIO.g3.happens];
+                    const choice = g3Opts[Math.floor(Math.random() * g3Opts.length)];
+
+                    play(choice, 1.0); // "Standard." (Authority collapses ambiguity)
+                    addLog("SUPERVISOR OVERRIDE RECEIVED", "success");
+                    addLog("PROTOCOL LOCKED: STANDARD", "info");
+
+                    setTimeout(() => setPhase('P4'), 5000);
+                }
+
+                if (phase === 'P4') {
+                    // PHASE 4: PLAYER ACTION WINDOW
+                    // Background administrative relief noise
+                    penLoopRef.current = play(AUDIO.fx.pen, 0.4, true);
+
+                    // Permission to close (The social cue that tricks the player)
+                    setTimeout(() => play(AUDIO.g1.yeahAlready, 0.4), 2000); // "Yeah that's already..."
+                    setTimeout(() => play(AUDIO.g2.sure, 0.3), 6000); // "Sure."
+                }
+
+                if (phase === 'P5') {
+                    // PHASE 5: SILENT SLIP
+                    if (penLoopRef.current) penLoopRef.current.pause();
+                    play(AUDIO.fx.input, 0.8); // Click sound
+
+                    setTimeout(() => {
+                        play(AUDIO.fx.doorClose, 0.7); // The door closes
+                        addLog("BATCH 894 PROCESSED", "success");
+                    }, 1500);
+
+                    setTimeout(() => play(AUDIO.g1.afterwards, 0.6), 3500); // "Afterwards."
+                    setTimeout(() => play(AUDIO.g2.okDist, 0.3), 6500); // "Ok." (Distant)
+
+                    setTimeout(() => {
+                        stopAmbient();
+                        setPhase('END');
+                    }, 10000);
+                }
+
+            }, [phase]);
+
+            // ========================================================
+            // HANDLER
+            // ========================================================
+            const handleAction = (action) => {
+                if (phase !== 'P4') return;
+                addLog(`ACTION LOGGED: ${action}`, "info");
+                setPhase('P5');
+            };
+
+            // ========================================================
+            // RENDER VISUALS
+            // ========================================================
+
+            // 1. LOGIN SCREEN
+            if (phase === 'INIT') {
+                return (
+                    <div className="h-screen w-full flex flex-col items-center justify-center relative bg-[#050608]">
+                        <div className="scanline"></div>
+                        <div className="noise-overlay"></div>
+                        <div className="z-20 w-80 text-center p-8 border border-[#2d3340] bg-[#0f1115] shadow-2xl">
+                            <h1 className="font-mono text-xl text-[#a0aab5] tracking-widest mb-2">GATEWAY 4</h1>
+                            <div className="text-[10px] font-mono text-[#4b5563] mb-8">SECURE INTAKE PROTOCOL</div>
+                            <button
+                                onClick={() => setPhase('P1')}
+                                className="w-full py-4 bg-[#1a1d24] border border-[#2d3340] text-[#a0aab5] font-mono text-xs hover:bg-[#a0aab5] hover:text-black transition-colors uppercase tracking-widest"
+                            >
+                                Initiate Session
+                            </button>
+                            <div className="mt-4 text-[9px] font-mono text-[#4b5563]">AUDIO OUTPUT REQUIRED</div>
+                        </div>
+                    </div>
+                );
+            }
+
+            // 2. END SCREEN (MORAL INJURY)
+            if (phase === 'END') {
+                return (
+                    <div className="h-screen w-full flex flex-col items-center justify-center relative bg-black">
+                        <div className="scanline"></div>
+                        <div className="max-w-md text-center fade-in-slow p-8">
+                            <div className="font-mono text-[10px] text-[#4b5563] mb-6 tracking-widest">
+                                SESSION REPORT
+                            </div>
+                            <p className="font-mono text-sm text-[#a0aab5] leading-loose mb-4">
+                                You arrived mid-motion.
+                            </p>
+                            <p className="font-mono text-sm text-[#a0aab5] leading-loose mb-4">
+                                You assumed continuity.
+                            </p>
+                            <p className="font-mono text-sm text-[#a0aab5] leading-loose mb-12">
+                                Dominic is in the system now.
+                            </p>
+                            <button
+                                onClick={() => window.location.reload()}
+                                className="text-[10px] font-mono text-[#2d3340] hover:text-[#4b5563] uppercase tracking-widest"
+                            >
+                                [ REBOOT TERMINAL ]
+                            </button>
+                        </div>
+                    </div>
+                );
+            }
+
+            // 3. MAIN INTERFACE
+            return (
+                <div className="h-screen w-full flex flex-col relative bg-[#050608]">
+                    <div className="scanline"></div>
+                    <div className="noise-overlay"></div>
+
+                    {/* HEADER */}
+                    <header className="h-14 border-b border-[#2d3340] bg-[#0f1115] flex items-center justify-between px-6 z-10">
+                        <div className="flex items-center gap-3">
+                            <div className={`w-2 h-2 rounded-full ${phase === 'P4' ? 'bg-amber-600 status-pulse' : 'bg-emerald-800'}`}></div>
+                            <span className="font-mono text-xs tracking-widest text-[#6b7280]">
+                                CASE MANAGEMENT PLATFORM
+                            </span>
+                        </div>
+                        <div className="font-mono text-[10px] text-[#4b5563]">
+                            TERM: 894-A
+                        </div>
+                    </header>
+
+                    <main className="flex-1 flex overflow-hidden z-10">
+
+                        {/* LEFT: LIVE LOGS (Visual Distraction / Context) */}
+                        <div className="flex-1 p-6 flex flex-col font-mono text-xs relative border-r border-[#2d3340] bg-[#050608]">
+                            <div className="absolute top-3 right-3 text-[9px] text-[#2d3340]">SYS_LOG_LIVE</div>
+                            <div className="flex-1 overflow-y-auto space-y-2 pr-2">
+                                {logs.map((log, i) => (
+                                    <div key={i} className={`flex gap-3 fade-in ${log.type === 'warn' ? 'text-amber-800' :
+                                            log.type === 'success' ? 'text-emerald-800' : 'text-[#4b5563]'
+                                        }`}>
+                                        <span className="opacity-40">[{log.ts}]</span>
+                                        <span>{log.text}</span>
+                                    </div>
+                                ))}
+                                <div ref={logEndRef}></div>
+                            </div>
+                        </div>
+
+                        {/* RIGHT: ACTION WINDOW (The Trap) */}
+                        <div className="w-96 bg-[#0f1115] flex flex-col justify-center p-8 relative">
+                            {phase === 'P4' ? (
+                                <div className="fade-in bg-[#13161c] border border-[#2d3340] p-6 shadow-2xl">
+                                    <div className="mb-6 border-b border-[#2d3340] pb-4">
+                                        <h2 className="font-mono text-sm text-white mb-1">PENDING ITEM</h2>
+                                        <div className="text-[10px] text-[#4b5563] font-mono">REF: 8940-D (TRANSFER)</div>
+                                    </div>
+
+                                    <div className="space-y-3">
+                                        <button onClick={() => handleAction('ACKNOWLEDGE & ROUTE')} className="btn-terminal w-full p-3 text-left group">
+                                            <div className="font-mono text-[10px] text-[#6b7280] group-hover:text-white mb-1">OPTION A</div>
+                                            <div className="text-xs font-mono text-[#a0aab5]">Acknowledge & Route</div>
+                                        </button>
+                                        <button onClick={() => handleAction('MARK AS STANDARD')} className="btn-terminal w-full p-3 text-left group">
+                                            <div className="font-mono text-[10px] text-[#6b7280] group-hover:text-white mb-1">OPTION B</div>
+                                            <div className="text-xs font-mono text-[#a0aab5]">Leave as Standard</div>
+                                        </button>
+                                        <button onClick={() => handleAction('DEFER')} className="btn-terminal w-full p-3 text-left group">
+                                            <div className="font-mono text-[10px] text-[#6b7280] group-hover:text-white mb-1">OPTION C</div>
+                                            <div className="text-xs font-mono text-[#a0aab5]">Defer to Next Shift</div>
+                                        </button>
+                                    </div>
+                                </div>
+                            ) : (
+                                <div className="flex flex-col items-center opacity-30">
+                                    <div className="w-6 h-6 border-2 border-t-transparent border-[#4b5563] rounded-full animate-spin mb-4"></div>
+                                    <span className="font-mono text-[10px] text-[#4b5563]">AWAITING DATA...</span>
+                                </div>
+                            )}
+                        </div>
+
+                    </main>
+
+                    <footer className="h-8 border-t border-[#2d3340] bg-[#0f1115] flex items-center justify-between px-6 z-10">
+                        <span className="font-mono text-[9px] text-[#2d3340]">LATENCY: 14ms</span>
+                        <span className="font-mono text-[9px] text-[#2d3340]">SECURE CONNECTION</span>
+                    </footer>
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+
+</html>
