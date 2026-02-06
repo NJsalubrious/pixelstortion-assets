@@ -151,11 +151,10 @@ function renderProfiles() {
 
 function renderGames() {
     const container = document.getElementById('games-grid');
-    const games = Object.entries(PIXEL_MANIFEST.GAMES);
 
-    container.innerHTML = games.map(([key, game], index) => `
+    container.innerHTML = games.map((game, index) => `
         <div class="group relative bg-black border border-gray-800 hover:border-gray-600 transition-all duration-500 overflow-hidden cursor-pointer" 
-             onclick="openGameModal('${key}')"
+             onclick="openGameModal('${game.id}')"
              style="animation: fadeInUp 0.6s ease forwards ${index * 0.1}s; opacity: 0;">
             <div class="aspect-[3/4] overflow-hidden relative">
                 <!-- Thumbnail Image -->
@@ -176,8 +175,8 @@ function renderGames() {
     `).join('');
 }
 
-function openGameModal(gameKey) {
-    const game = PIXEL_MANIFEST.GAMES[gameKey];
+function openGameModal(gameId) {
+    const game = games.find(g => g.id === gameId);
     if (!game) return;
 
     const modal = document.getElementById('game-modal');
