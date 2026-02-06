@@ -1,8 +1,8 @@
 // youtube-player.js - YouTube API callbacks and player control
-// Note: onYouTubeIframeAPIReady is defined inline in index.html to handle race condition
+// Note: onYouTubeIframeAPIReady MUST be global for YouTube API to find it
 
-// Initialize YouTube Player - Called by shim when API is ready
-function initYouTubePlayer() {
+// YouTube Player Setup - Called by YouTube API when ready
+function onYouTubeIframeAPIReady() {
     ytPlayer = new YT.Player('youtube-player', {
         playerVars: {
             'autoplay': 0,
@@ -18,11 +18,6 @@ function initYouTubePlayer() {
             'onStateChange': onPlayerStateChange
         }
     });
-}
-
-// Check if YouTube API already fired before this script loaded
-if (typeof ytApiReady !== 'undefined' && ytApiReady === true) {
-    initYouTubePlayer();
 }
 
 function onPlayerReady(event) {
