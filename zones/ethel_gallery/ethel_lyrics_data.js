@@ -5,7 +5,7 @@
  */
 
 // Using main branch = auto-updates when you push to git
-const IMG_BASE = "https://raw.githubusercontent.com/NJsalubrious/pixelstortion-assets/library/media_covers_album/";
+const IMG_BASE = "../../library/media_covers_album/";
 
 const ARCHIVE_DATA = [
     // =========================================================================
