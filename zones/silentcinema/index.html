@@ -369,7 +369,7 @@
         <div id="video-frame"
             class="flex-1 relative bg-black flex items-center justify-center overflow-hidden border-b border-[#222]">
             <div id="youtube-player" class="w-full h-full absolute inset-0"></div>
-            <div id="interaction-shield" class="absolute inset-0 z-50 pointer-events-auto" onclick="togglePlay()"></div>
+            <div id="interaction-shield" class="absolute inset-0 z-50 pointer-events-none"></div>
 
             <div id="fs-tools" class="hidden absolute top-6 right-6 z-50 flex gap-3">
                 <button onclick="toggleMobileTracklist(true)"
@@ -889,7 +889,7 @@
         function onYouTubeIframeAPIReady() {
             player = new YT.Player('youtube-player', {
                 height: '100%', width: '100%',
-                playerVars: { 'controls': 0, 'showinfo': 0, 'rel': 0, 'modestbranding': 1, 'iv_load_policy': 3, 'fs': 0, 'disablekb': 1 },
+                playerVars: { 'controls': 1, 'showinfo': 0, 'rel': 0, 'modestbranding': 1, 'iv_load_policy': 3, 'fs': 0, 'disablekb': 1 },
                 events: {
                     'onReady': () => {
                         renderMenu();
