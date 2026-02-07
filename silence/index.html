@@ -1,0 +1,2573 @@
+<!DOCTYPE html>
+<html class="scroll-smooth" lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>PixelStortion | Immersive Crime Series.</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://www.youtube.com/iframe_api"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,1,0"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=Space+Grotesk:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet" />
+
+    <!-- Centralized URL Manifest - MUST be loaded before other scripts -->
+    <script
+        src="https://raw.githack.com/NJsalubrious/pixelstortion-assets/main/pixelstortion/site-manifest.js"></script>
+    <style>
+        :root {
+            --glitch-color-1: #00ff41;
+            --glitch-color-2: #ff0055;
+            --bg-dark: #050505;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: #e0e0e0;
+            font-family: 'Space Grotesk', sans-serif;
+            overflow: hidden;
+        }
+
+        /* Hide cursor on touch devices */
+        @media (hover: none) and (pointer: coarse) {
+
+            html,
+            body,
+            * {
+                cursor: none !important;
+            }
+
+            /* Fix dark overlay to extend to borders on mobile */
+            .character-video+div {
+                inset: -1px !important;
+            }
+        }
+
+        /* Iframe modal styles */
+        #modal-content iframe {
+            min-height: 500px;
+        }
+
+        @media (max-width: 768px) {
+            #modal-content iframe {
+                height: 60vh;
+            }
+        }
+
+        .font-mono-custom {
+            font-family: 'Courier Prime', monospace;
+        }
+
+        /* Glitch & Scanlines */
+        .glitch-text {
+            position: relative;
+            display: inline-block;
+        }
+
+        .glitch-text::before,
+        .glitch-text::after {
+            content: attr(data-text);
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0.7;
+        }
+
+        .glitch-text::before {
+            left: 2px;
+            text-shadow: -2px 0 var(--glitch-color-2);
+            clip: rect(0, 0, 0, 0);
+            animation: glitch-anim 3s infinite;
+        }
+
+        .glitch-text::after {
+            left: -2px;
+            text-shadow: 2px 0 var(--glitch-color-1);
+            clip: rect(0, 0, 0, 0);
+            animation: glitch-anim2 3s infinite 0.5s;
+        }
+
+        @keyframes glitch-anim {
+            0% {
+                clip: rect(0, 0, 0, 0);
+            }
+
+            2% {
+                clip: rect(15px, 9999px, 18px, 0);
+                transform: skew(0.2deg);
+            }
+
+            4% {
+                clip: rect(0, 0, 0, 0);
+            }
+
+            94% {
+                clip: rect(0, 0, 0, 0);
+            }
+
+            96% {
+                clip: rect(8px, 9999px, 12px, 0);
+                transform: skew(-0.15deg);
+            }
+
+            98% {
+                clip: rect(0, 0, 0, 0);
+            }
+
+            100% {
+                clip: rect(0, 0, 0, 0);
+            }
+        }
+
+        @keyframes glitch-anim2 {
+            0% {
+                clip: rect(0, 0, 0, 0);
+            }
+
+            2% {
+                clip: rect(20px, 9999px, 24px, 0);
+                transform: skew(-0.2deg);
+            }
+
+            4% {
+                clip: rect(0, 0, 0, 0);
+            }
+
+            94% {
+                clip: rect(0, 0, 0, 0);
+            }
+
+            96% {
+                clip: rect(12px, 9999px, 16px, 0);
+                transform: skew(0.15deg);
+            }
+
+            98% {
+                clip: rect(0, 0, 0, 0);
+            }
+
+            100% {
+                clip: rect(0, 0, 0, 0);
+            }
+        }
+
+        .scanlines {
+            background: linear-gradient(to bottom, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0) 50%, rgba(0, 0, 0, 0.1) 50%, rgba(0, 0, 0, 0.1));
+            background-size: 100% 4px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            pointer-events: none;
+            z-index: 9998;
+            animation: scanline-move 8s linear infinite;
+        }
+
+        @keyframes scanline-move {
+            0% {
+                transform: translateY(0);
+            }
+
+            100% {
+                transform: translateY(4px);
+            }
+        }
+
+        /* Force top padding for content sections below fixed navbar */
+        #files-section,
+        #profiles-section,
+        #audio-section {
+            padding-top: 120px !important;
+        }
+
+        /* Cursor Effects */
+        .cursor-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--glitch-color-1);
+            border-radius: 50%;
+            position: fixed;
+            top: -4px;
+            left: -4px;
+            pointer-events: none;
+            z-index: 10000;
+            mix-blend-mode: screen;
+            transition: transform 0.05s ease;
+        }
+
+        .cursor-glow {
+            width: 120px;
+            height: 120px;
+            background: radial-gradient(circle, rgba(0, 255, 65, 0.15) 0%, rgba(0, 255, 65, 0) 70%);
+            border-radius: 50%;
+            position: fixed;
+            top: -60px;
+            left: -60px;
+            pointer-events: none;
+            z-index: 9999;
+            mix-blend-mode: screen;
+            transition: transform 0.2s ease;
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #000;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #333;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+
+        .active-tab {
+            border-bottom: 2px solid var(--glitch-color-1);
+            color: var(--glitch-color-1);
+        }
+
+        .track-active {
+            background-color: #1a1a1a;
+            border-left: 2px solid #00ff41;
+        }
+
+        /* Audio Visualizer Bars */
+        .bar {
+            width: 4px;
+            background: var(--glitch-color-1);
+            margin: 0 1px;
+            height: 5px;
+            opacity: 0.3;
+            transition: height 0.1s ease;
+        }
+
+        .playing .bar {
+            animation: sound 0.5s infinite ease-in-out alternate;
+        }
+
+        @keyframes sound {
+            0% {
+                height: 10%;
+                opacity: 0.5;
+            }
+
+            100% {
+                height: 80%;
+                opacity: 1;
+            }
+        }
+
+        /* Gallery Transitions */
+        .story-image {
+            opacity: 0;
+            transition: opacity 1.5s ease-in-out;
+        }
+
+        .story-image.active-slide {
+            opacity: 1.0;
+        }
+
+        /* Focus Mode */
+        .focus-mode #current-track-title,
+        .focus-mode #current-track-artist,
+        .focus-mode #current-track-date,
+        .focus-mode #lyrics-display {
+            opacity: 0;
+            pointer-events: none;
+            transform: translateY(10px);
+            transition: all 0.8s ease-in-out;
+        }
+
+        .focus-mode .story-image.active-slide {
+            opacity: 1.0 !important;
+        }
+
+        .focus-mode #visualizer-container {
+            opacity: 0 !important;
+            transition: opacity 0.8s ease-in-out;
+        }
+
+        #focus-btn {
+            transition: opacity 0.8s ease-in-out;
+        }
+
+        .focus-mode #focus-btn {
+            opacity: 0.3;
+        }
+
+        .focus-mode #focus-btn:hover {
+            opacity: 0.8;
+        }
+
+        /* Protocol Tabs Container */
+        #protocol-tabs {
+            position: fixed;
+            left: 0;
+            top: 50%;
+            /* Centered vertically like the old button */
+            transform: translateY(-50%);
+            z-index: 8999;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            /* Small gap between the stacked tabs */
+        }
+
+        #protocol-tabs.hidden {
+            display: none;
+        }
+
+        /* THE TABS - Transparent with readable text */
+        .protocol-tab {
+            /* 1. Base Layout & Dimensions */
+            writing-mode: vertical-rl;
+            padding: 16px 8px;
+            /* Exact match to old desktop padding */
+            border-left: none;
+
+            /* 2. Visuals - VERY TRANSPARENT */
+            background: rgba(0, 0, 0, 0.1);
+            /* Very transparent - barely visible */
+            backdrop-filter: blur(4px);
+            /* Subtle blur for readability */
+            border: 2px solid;
+            /* Color handled inline */
+            border-left: none;
+            /* Attach to screen */
+
+            /* 3. Typography */
+            font-family: 'Courier Prime', monospace;
+            font-weight: bold;
+            letter-spacing: 2px;
+            color: inherit;
+            /* Inherits inline color */
+
+            /* 4. Behavior */
+            cursor: pointer;
+            transition: all 0.3s ease;
+
+            /* 5. "Minus the Glows" (Removed box-shadow/animation) */
+            box-shadow: none;
+            animation: none;
+        }
+
+        .protocol-tab:hover {
+            transform: translateX(4px);
+            /* Exact match to old hover slide */
+            background: rgba(0, 0, 0, 0.4);
+            /* More visible on hover */
+        }
+
+        /* Panel Open State - Fade tabs out */
+        #cipher-game-panel.open~#protocol-tabs {
+            opacity: 0.1;
+            pointer-events: none;
+        }
+
+        /* === MOBILE OVERRIDE (CRITICAL for "Thin" look) === */
+        /* Exact values from silence_oldCipher.html mobile media query */
+        @media (max-width: 767px) {
+            #protocol-tabs {
+                top: 35% !important;
+                /* Moves them up from the center */
+                transform: translateY(-50%);
+            }
+
+            .protocol-tab {
+                width: 16px !important;
+                /* Forces the ultra-thin look */
+                padding: 14px 1px !important;
+                /* Minimal padding */
+                font-size: 6px !important;
+                /* Micro font */
+                border-radius: 0 2px 2px 0 !important;
+                background: rgba(0, 0, 0, 0.1) !important;
+                /* VERY TRANSPARENT - barely visible */
+                backdrop-filter: blur(4px) !important;
+                /* Readability blur */
+                border-width: 1px !important;
+                letter-spacing: 0px !important;
+            }
+
+            .protocol-tab:hover {
+                transform: translateX(2px) !important;
+                background: rgba(0, 0, 0, 0.4) !important;
+                /* More visible on hover */
+            }
+        }
+
+        /* Right Side Panel Tabs Container */
+        #right-panel-tabs {
+            position: fixed;
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 8999;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        #right-panel-tabs.hidden {
+            display: none;
+        }
+
+        /* Right Side Tabs - Mirror style of left protocol tabs */
+        .right-panel-tab {
+            writing-mode: vertical-rl;
+            text-orientation: mixed;
+            padding: 16px 8px;
+            background: rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(4px);
+            border: 2px solid #00ff41;
+            border-right: none;
+            border-radius: 8px 0 0 8px;
+            font-family: 'Courier Prime', monospace;
+            font-weight: bold;
+            font-size: 12px;
+            letter-spacing: 2px;
+            color: #00ff41;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: none;
+            animation: none;
+        }
+
+        .right-panel-tab:hover {
+            transform: translateX(-4px);
+            background: rgba(0, 0, 0, 0.4);
+            box-shadow: -4px 0 15px rgba(0, 255, 65, 0.4);
+        }
+
+        /* Cinema External Link - App-like appearance */
+        .right-panel-tab.cinema-external {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            border-radius: 8px 0 0 8px;
+            border-style: dashed;
+            background: rgba(0, 20, 0, 0.3);
+            gap: 2px;
+        }
+
+        .right-panel-tab.cinema-external:hover {
+            background: rgba(0, 40, 0, 0.6);
+            border-style: solid;
+        }
+
+        /* Media Panel - Fullscreen from right */
+        #media-panel {
+            position: fixed;
+            right: -100%;
+            top: 0;
+            width: 100%;
+            height: 100vh;
+            background: #000;
+            border-left: 1px solid var(--glitch-color-1);
+            box-shadow: -10px 0 40px rgba(0, 255, 65, 0.3);
+            transition: right 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            z-index: 9000;
+            overflow: hidden;
+        }
+
+        #media-panel.open {
+            right: 0;
+        }
+
+        /* Panel Open State - Fade right tabs out */
+        #media-panel.open~#right-panel-tabs {
+            opacity: 0.1;
+            pointer-events: none;
+        }
+
+        /* Mobile Override for Right Panel Tabs */
+        @media (max-width: 767px) {
+            #right-panel-tabs {
+                top: 35% !important;
+            }
+
+            .right-panel-tab {
+                width: 16px !important;
+                padding: 14px 1px !important;
+                font-size: 6px !important;
+                letter-spacing: 0px !important;
+                border-width: 1px !important;
+                border-radius: 2px 0 0 2px !important;
+                background: rgba(0, 0, 0, 0.1) !important;
+                backdrop-filter: blur(4px) !important;
+            }
+
+            .right-panel-tab:hover {
+                transform: translateX(-2px) !important;
+                background: rgba(0, 0, 0, 0.4) !important;
+            }
+        }
+
+        /* Cipher Game Styles */
+        #cipher-game-panel {
+            position: fixed;
+            left: -620px;
+            /* Adjusted to hide fully */
+            top: 80px;
+            width: 600px;
+            /* WIDER FOR PC */
+            height: calc(100vh - 100px);
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
+            border: 1px solid var(--glitch-color-1);
+            border-left: none;
+            box-shadow: 0 0 40px rgba(0, 255, 65, 0.3);
+            transition: left 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            z-index: 9000;
+            overflow-y: hidden;
+            /* Hide scrollbars for iframe */
+        }
+
+        #cipher-game-panel.open {
+            left: 0;
+        }
+
+        #game-toggle-btn {
+            position: fixed;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            background: linear-gradient(135deg, #000 0%, #1a1a1a 100%);
+            border: 2px solid var(--glitch-color-1);
+            border-left: none;
+            padding: 16px 8px;
+            writing-mode: vertical-rl;
+            cursor: pointer;
+            z-index: 8999;
+            color: var(--glitch-color-1);
+            font-family: 'Courier Prime', monospace;
+            font-weight: bold;
+            letter-spacing: 2px;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 20px rgba(0, 255, 65, 0.4);
+            animation: pulse-border 2s infinite;
+        }
+
+        @keyframes pulse-border {
+
+            0%,
+            100% {
+                box-shadow: 0 0 20px rgba(0, 255, 65, 0.4);
+            }
+
+            50% {
+                box-shadow: 0 0 30px rgba(0, 255, 65, 0.8);
+            }
+        }
+
+        #game-toggle-btn:hover {
+            background: var(--glitch-color-1);
+            color: #000;
+            box-shadow: 0 0 40px rgba(0, 255, 65, 1);
+            transform: translateY(-50%) translateX(4px);
+        }
+
+        #cipher-game-panel.open+#game-toggle-btn {
+            display: none !important;
+        }
+
+        .cipher-option {
+            background: #0a0a0a;
+            border: 1px solid #333;
+            padding: 12px;
+            margin: 8px 0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Courier Prime', monospace;
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+        }
+
+        .cipher-option:hover {
+            border-color: var(--glitch-color-1);
+            background: #1a1a1a;
+            transform: translateX(4px);
+        }
+
+        .cipher-option.correct {
+            border-color: var(--glitch-color-1);
+            background: rgba(0, 255, 65, 0.1);
+            animation: pulse-green 0.5s ease;
+        }
+
+        .cipher-option.wrong {
+            border-color: var(--glitch-color-2);
+            background: rgba(255, 0, 85, 0.1);
+            animation: shake 0.5s ease;
+        }
+
+        @keyframes pulse-green {
+
+            0%,
+            100% {
+                box-shadow: 0 0 0 rgba(0, 255, 65, 0);
+            }
+
+            50% {
+                box-shadow: 0 0 20px rgba(0, 255, 65, 0.8);
+            }
+        }
+
+        @keyframes shake {
+
+            0%,
+            100% {
+                transform: translateX(0);
+            }
+
+            25% {
+                transform: translateX(-10px);
+            }
+
+            75% {
+                transform: translateX(10px);
+            }
+        }
+
+        .intel-reward {
+            background: linear-gradient(135deg, #1a1a1a 0%, #0a0a0a 100%);
+            border: 1px solid var(--glitch-color-1);
+            padding: 16px;
+            margin: 12px 0;
+            font-size: 11px;
+            line-height: 1.6;
+            animation: fadeInUp 0.5s ease;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Timer Styles */
+        .timer-display {
+            background: rgba(255, 0, 0, 0.1);
+            border: 1px solid #333;
+            padding: 12px;
+            margin-bottom: 16px;
+            font-family: 'Courier Prime', monospace;
+        }
+
+        .timer-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--glitch-color-1);
+            transition: all 0.3s ease;
+        }
+
+        .timer-value.critical {
+            color: var(--glitch-color-2);
+            animation: pulse-timer 0.5s infinite;
+        }
+
+        @keyframes pulse-timer {
+
+            0%,
+            100% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.1);
+            }
+        }
+
+        .timer-bar {
+            width: 100%;
+            height: 4px;
+            background: #1a1a1a;
+            border-radius: 2px;
+            overflow: hidden;
+            margin-top: 8px;
+        }
+
+        .timer-fill {
+            height: 100%;
+            transition: width 1s linear;
+        }
+
+        /* Profile bars */
+        .profile-bar {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin: 8px 0;
+            font-size: 11px;
+            font-family: 'Courier Prime', monospace;
+            color: #888;
+        }
+
+        .profile-bar span {
+            width: 100px;
+            flex-shrink: 0;
+        }
+
+        .bar-fill {
+            height: 6px;
+            background: linear-gradient(to right, var(--glitch-color-1), #00ccff);
+            border-radius: 3px;
+            transition: width 0.5s ease;
+        }
+
+        /* Force YouTube iframe to fill container */
+        #youtube-player {
+            width: 100% !important;
+            height: 100% !important;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        /* ========== MOBILE RESPONSIVE STYLES ========== */
+
+        /* Hide cursor effects on touch devices */
+        @media (hover: none) and (pointer: coarse) {
+
+            .cursor-dot,
+            .cursor-glow {
+                display: none;
+            }
+        }
+
+        /* Mobile adjustments for screens under 768px */
+        @media (max-width: 767px) {
+
+            /* Cipher Game Panel - Full screen on mobile */
+            #cipher-game-panel {
+                left: -100%;
+                top: 0;
+                width: 100%;
+                height: 100vh;
+                border: none;
+                border-bottom: 1px solid var(--glitch-color-1);
+            }
+
+            #cipher-game-panel.open {
+                left: 0;
+            }
+
+            #game-toggle-btn {
+                left: 0;
+                top: 50%;
+                bottom: auto;
+                width: 16px !important;
+                transform: translateY(-50%);
+                writing-mode: vertical-rl;
+                padding: 14px 1px;
+                font-size: 6px;
+                border-radius: 0 2px 2px 0;
+                background: rgba(0, 0, 0, 0.8) !important;
+                border: 1px solid var(--glitch-color-1) !important;
+                border-left: none !important;
+                color: var(--glitch-color-1) !important;
+                z-index: 9999 !important;
+                opacity: 0.5 !important;
+                text-align: center !important;
+                letter-spacing: 0px !important;
+                line-height: 0.8 !important;
+            }
+
+            #game-toggle-btn:hover {
+                transform: translateY(-50%) translateX(2px);
+                opacity: 0.8 !important;
+            }
+
+            /* Cipher options - better touch targets */
+            .cipher-option {
+                padding: 16px 12px;
+                font-size: 14px;
+                line-height: 1.5;
+            }
+
+            .intel-reward {
+                font-size: 12px;
+                padding: 14px;
+            }
+
+            /* ===== AUDIO SECTION - MOBILE OPTIMIZATION ===== */
+
+            /* Audio section header - COMPLETELY HIDDEN */
+            #audio-section>div>header {
+                display: none !important;
+                height: 0 !important;
+                min-height: 0 !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                border: none !important;
+                overflow: hidden !important;
+            }
+
+            /* Main audio container - Full height, no padding */
+            #audio-section {
+                padding: 64px 0 0 0 !important;
+                /* Top padding clears the navbar */
+                min-height: 100vh !important;
+            }
+
+            #audio-section>div {
+                padding: 0 !important;
+                margin: 0 !important;
+            }
+
+            /* Audio section container - Stack vertically, eliminate gaps */
+            #audio-section .bg-gray-900\/50 {
+                flex-direction: column !important;
+                height: calc(100vh - 64px) !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                gap: 0 !important;
+            }
+
+            /* ===== PLAYLIST SECTION - ULTRA COMPACT ===== */
+
+            /* Playlist wrapper - compact height */
+            #audio-section .w-full.md\:w-1\/3 {
+                width: 100% !important;
+                max-height: 140px !important;
+                height: 140px !important;
+                min-height: 140px !important;
+                border-right: none !important;
+                border-bottom: 1px solid #333 !important;
+                overflow: hidden !important;
+                flex-shrink: 0 !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                background: #000 !important;
+            }
+
+            /* Playlist header - COMPLETELY REMOVED */
+            #audio-section .p-4.bg-black\/60 {
+                display: none !important;
+                height: 0 !important;
+                min-height: 0 !important;
+                padding: 0 !important;
+                margin: 0 !important;
+                overflow: hidden !important;
+            }
+
+            /* Playlist container - maximum available space */
+            #playlist-container {
+                max-height: 140px !important;
+                height: 140px !important;
+                overflow-y: auto !important;
+                scrollbar-width: thin !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                -webkit-overflow-scrolling: touch;
+            }
+
+            /* Playlist scrollbar styling */
+            #playlist-container::-webkit-scrollbar {
+                width: 4px !important;
+            }
+
+            #playlist-container::-webkit-scrollbar-thumb {
+                background: #333 !important;
+                border-radius: 2px;
+            }
+
+            /* Individual track items - ULTRA COMPACT */
+            #playlist-container>div {
+                padding: 6px 8px !important;
+                min-height: auto !important;
+                border-bottom: 1px solid #1a1a1a !important;
+            }
+
+            /* Track flex container - tight spacing */
+            #playlist-container>div .flex.items-center {
+                gap: 6px !important;
+            }
+
+            /* Track numbers - smaller */
+            #playlist-container>div .text-xs.font-mono-custom {
+                font-size: 8px !important;
+                min-width: 16px;
+            }
+
+            /* Track titles - compact but readable */
+            #playlist-container>div .text-sm.font-medium {
+                font-size: 10px !important;
+                line-height: 1.3 !important;
+                font-weight: 500 !important;
+            }
+
+            /* Track time and date - micro text */
+            #playlist-container>div .text-right {
+                min-width: 45px;
+            }
+
+            #playlist-container>div .text-right .text-xs {
+                font-size: 8px !important;
+                line-height: 1.2 !important;
+            }
+
+            /* Active track highlight - visible but subtle */
+            .track-active {
+                background-color: #1a1a1a !important;
+                border-left: 2px solid #00ff41 !important;
+            }
+
+            /* ===== GALLERY SECTION - NO GAPS, FULL VISIBILITY ===== */
+
+            /* Gallery/Visual container - Fill remaining space, NO GAPS */
+            #audio-section .w-full.md\:w-2\/3 {
+                width: 100% !important;
+                height: calc(100vh - 64px - 140px - 70px) !important;
+                min-height: calc(100vh - 64px - 140px - 70px) !important;
+                max-height: calc(100vh - 64px - 140px - 70px) !important;
+                flex: none !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                overflow: hidden !important;
+                background: #000 !important;
+            }
+
+            /* Gallery content wrapper - NO GAPS */
+            #audio-section .flex-1.relative {
+                width: 100% !important;
+                height: 100% !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                overflow: hidden !important;
+                position: relative !important;
+                flex: none !important;
+                display: block !important;
+            }
+
+            /* Story gallery - FULL VISIBILITY */
+            #story-gallery {
+                width: 100% !important;
+                height: 100% !important;
+                position: absolute !important;
+                top: 0 !important;
+                left: 0 !important;
+                right: 0 !important;
+                bottom: 0 !important;
+                display: block !important;
+                visibility: visible !important;
+                z-index: 2 !important;
+                overflow: hidden !important;
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+
+            /* Gallery images - proper display */
+            #story-gallery img,
+            #story-gallery .story-image {
+                width: 100% !important;
+                height: 100% !important;
+                object-fit: cover !important;
+                object-position: center !important;
+                display: block !important;
+                position: absolute !important;
+                top: 0 !important;
+                left: 0 !important;
+                visibility: visible !important;
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+
+            /* HIDE TEXT OVERLAYS ON MOBILE - Show only images and play button */
+            #audio-section .absolute.inset-0.bg-gradient-to-b,
+            #audio-section .absolute.inset-0.bg-black\/20,
+            #audio-section .relative.z-10.p-8,
+            #current-track-title,
+            #current-track-date,
+            #current-track-artist,
+            #lyrics-display {
+                display: none !important;
+                visibility: hidden !important;
+                height: 0 !important;
+                width: 0 !important;
+                overflow: hidden !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                position: absolute !important;
+                z-index: -1 !important;
+            }
+
+            /* Hide content inside gallery wrapper but keep controls visible */
+            #audio-section .flex-1.relative>*:not(#story-gallery):not(#visualizer-container) {
+                display: none !important;
+                visibility: hidden !important;
+            }
+
+            /* Mobile: Position play button at bottom left, hide extras */
+            #audio-section .h-24 {
+                justify-content: flex-start !important;
+            }
+
+            #audio-section .h-24 .text-right {
+                display: none !important;
+            }
+
+            #focus-btn {
+                display: none !important;
+            }
+
+            /* ===== PLAYER CONTROLS - FIXED BOTTOM ===== */
+
+            /* Controls bar - fixed at bottom, accessible */
+            #audio-section .h-24 {
+                position: fixed !important;
+                bottom: 0 !important;
+                left: 0 !important;
+                right: 0 !important;
+                height: 70px !important;
+                min-height: 70px !important;
+                padding: 8px 12px !important;
+                flex-shrink: 0 !important;
+                z-index: 10000 !important;
+                background: rgba(0, 0, 0, 0.95) !important;
+                border-top: 1px solid #333 !important;
+                backdrop-filter: blur(10px);
+                margin: 0 !important;
+            }
+
+            /* Play button - prominent */
+            #play-btn {
+                width: 48px !important;
+                height: 48px !important;
+                flex-shrink: 0;
+            }
+
+            #play-btn .material-symbols-outlined {
+                font-size: 32px !important;
+            }
+
+            /* Focus button - smaller */
+            #focus-btn {
+                width: 40px !important;
+                height: 40px !important;
+                flex-shrink: 0;
+            }
+
+            #focus-btn .material-symbols-outlined {
+                font-size: 20px !important;
+            }
+
+            /* Player status - compact */
+            #player-status {
+                font-size: 10px !important;
+            }
+
+            /* Visualizer - minimal on mobile */
+            #visualizer-container {
+                height: 40px !important;
+                padding-bottom: 4px !important;
+                display: none !important;
+                /* Hide visualizer on mobile for cleaner look */
+            }
+
+            .bar {
+                width: 2px !important;
+                margin: 0 0.5px !important;
+            }
+
+            /* ===== HOME SECTION ===== */
+            #home-section {
+                justify-content: flex-start !important;
+                padding-top: 6rem !important;
+                /* Pushes content down below the navbar */
+            }
+
+            #home-section h2 {
+                font-size: 2.5rem !important;
+                line-height: 1.1 !important;
+            }
+
+            #home-section p {
+                font-size: 1rem !important;
+            }
+
+            #home-section .inline-block {
+                font-size: 9px !important;
+                padding: 8px 12px !important;
+            }
+
+            /* ===== FILES SECTION ===== */
+            #files-section {
+                padding-bottom: 2rem !important;
+            }
+
+            #files-section .max-w-6xl {
+                padding: 0 !important;
+            }
+
+            #files-section header {
+                padding: 1rem !important;
+                margin-bottom: 1rem !important;
+            }
+
+            #files-section h2 {
+                font-size: 1.75rem !important;
+            }
+
+            #files-grid>div {
+                margin: 0 1rem 1.5rem 1rem !important;
+            }
+
+            /* ===== PROFILES SECTION ===== */
+            #profiles-section h2 {
+                font-size: 1.75rem !important;
+            }
+
+            #profiles-section header {
+                padding: 1rem !important;
+            }
+
+            #profiles-grid>div {
+                margin-bottom: 2rem;
+            }
+
+            /* ===== MODAL ===== */
+            #info-modal .absolute.top-1\/2 {
+                width: 95% !important;
+                max-width: 95% !important;
+                max-height: 85vh !important;
+            }
+
+            #modal-content {
+                padding: 1.25rem !important;
+            }
+
+            /* Timer display */
+            .timer-display {
+                padding: 8px;
+                margin-bottom: 10px;
+            }
+
+            .timer-value {
+                font-size: 18px !important;
+            }
+
+            /* Profile bars */
+            .profile-bar {
+                gap: 6px;
+                font-size: 9px;
+            }
+
+            .profile-bar span {
+                width: 70px;
+            }
+
+            /* Navigation */
+            nav h1 {
+                font-size: 1.15rem !important;
+            }
+
+            nav .material-symbols-outlined {
+                font-size: 24px;
+            }
+
+            /* Buttons */
+            button {
+                font-size: 13px !important;
+            }
+        }
+
+        /* Small mobile devices (under 375px) */
+        @media (max-width: 374px) {
+            #home-section h2 {
+                font-size: 2rem !important;
+            }
+
+            nav h1 {
+                font-size: 1rem !important;
+            }
+
+            .cipher-option {
+                padding: 12px 8px;
+                font-size: 12px;
+            }
+
+            #playlist-container>div .text-sm.font-medium {
+                font-size: 9px !important;
+            }
+
+            #play-btn {
+                width: 44px !important;
+                height: 44px !important;
+            }
+        }
+
+        /* Landscape mobile orientation */
+        @media (max-width: 767px) and (orientation: landscape) {
+            #home-section {
+                padding: 1.5rem 1rem;
+            }
+
+            #home-section h2 {
+                font-size: 2rem !important;
+            }
+
+            #audio-section .w-full.md\:w-1\/3 {
+                max-height: 120px !important;
+                height: 120px !important;
+            }
+
+            #playlist-container {
+                max-height: 120px !important;
+                height: 120px !important;
+            }
+        }
+    </style>
+</head>
+
+<body class="selection:bg-green-900 selection:text-white">
+
+    <div class="cursor-glow" id="cursor-glow"></div>
+    <div class="cursor-dot" id="cursor-dot"></div>
+    <div class="scanlines"></div>
+
+    <nav class="fixed top-0 w-full z-40 bg-black/90 border-b border-gray-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex-shrink-0 cursor-pointer" onclick="openBioPopup()">
+                    <h1 class="text-2xl font-bold tracking-tighter text-white glitch-text" data-text="PIXELSTORTION">
+                        PIXELSTORTION</h1>
+                </div>
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-8 font-mono-custom text-sm">
+                        <button
+                            class="text-gray-300 hover:text-white px-3 py-2 rounded-md font-medium transition-colors active-tab"
+                            id="nav-home" onclick="switchTab('home')">TRANSMISSION</button>
+                        <button
+                            class="text-gray-300 hover:text-white px-3 py-2 rounded-md font-medium transition-colors"
+                            id="nav-files" onclick="switchTab('files')">THE FILES</button>
+                        <button
+                            class="text-gray-300 hover:text-white px-3 py-2 rounded-md font-medium transition-colors"
+                            id="nav-profiles" onclick="switchTab('profiles')">SUBJECTS</button>
+                        <button
+                            class="text-gray-300 hover:text-white px-3 py-2 rounded-md font-medium transition-colors"
+                            id="nav-audio" onclick="switchTab('audio')">THE STORY</button>
+                    </div>
+                </div>
+                <div class="-mr-2 flex md:hidden">
+                    <button
+                        class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-white hover:bg-gray-800 focus:outline-none"
+                        onclick="toggleMobileMenu()">
+                        <span class="material-symbols-outlined">menu</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="md:hidden hidden bg-black border-b border-gray-800 fixed top-16 w-full z-30" id="mobile-menu">
+        <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3 font-mono-custom">
+            <button
+                class="text-gray-300 hover:text-white block px-3 py-2 rounded-md text-base font-medium w-full text-left"
+                onclick="switchTab('home')">TRANSMISSION</button>
+            <button
+                class="text-gray-300 hover:text-white block px-3 py-2 rounded-md text-base font-medium w-full text-left"
+                onclick="switchTab('files')">THE FILES</button>
+            <button
+                class="text-gray-300 hover:text-white block px-3 py-2 rounded-md text-base font-medium w-full text-left"
+                onclick="switchTab('profiles')">SUBJECTS</button>
+            <button
+                class="text-gray-300 hover:text-white block px-3 py-2 rounded-md text-base font-medium w-full text-left"
+                onclick="switchTab('audio')">THE STORY</button>
+        </div>
+    </div>
+
+    <main class="h-screen relative overflow-hidden">
+
+        <section class="relative w-full h-full flex flex-col items-center justify-center overflow-hidden"
+            id="home-section">
+            <canvas class="absolute top-0 left-0 w-full h-full z-0 opacity-20" id="noiseCanvas"></canvas>
+            <div class="relative z-10 text-center px-4 max-w-4xl mx-auto space-y-8">
+                <div
+                    class="inline-block border border-green-500/30 bg-black/50 px-4 py-1 rounded-full backdrop-blur-sm mb-4">
+                    <span
+                        class="text-green-500 font-mono-custom text-xs tracking-widest uppercase flex items-center gap-2">
+                        <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+                        System Online // Secure Connection
+                    </span>
+                </div>
+                <h2
+                    class="text-5xl md:text-8xl font-black text-white tracking-tighter leading-none mb-6 mix-blend-difference">
+                    SILENCE IS<br />THE TRAUMA
+                </h2>
+                <p class="text-xl md:text-2xl text-gray-400 font-light max-w-2xl mx-auto leading-relaxed">
+                    An immersive original music crime series<br />
+                    <span class="text-white font-medium">Three lives. One storm.</span>
+
+                </p>
+                <div class="flex flex-col sm:flex-row gap-4 justify-center pt-8">
+                    <button
+                        class="px-8 py-4 bg-white text-black font-bold text-lg hover:bg-gray-200 transition-colors uppercase tracking-widest font-mono-custom flex items-center justify-center gap-2"
+                        onclick="switchTab('files')">
+                        Access Archives
+                    </button>
+                    <button
+                        class="px-8 py-4 border border-white/30 text-white font-bold text-lg hover:bg-white/10 transition-colors uppercase tracking-widest font-mono-custom flex items-center justify-center gap-2"
+                        onclick="switchTab('audio')">
+                        <span class="material-symbols-outlined text-xl">play_circle</span> Listen
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <section class="hidden h-full overflow-y-auto p-6 md:p-12 pb-24 pt-28" id="files-section">
+            <div class="max-w-6xl mx-auto">
+                <header class="mb-12 border-b border-gray-800 pb-6 flex justify-between items-end">
+                    <div>
+                        <h2 class="text-4xl md:text-5xl font-bold text-white mb-2">THE ARCHIVES</h2>
+                        <p class="font-mono-custom text-gray-500 text-sm">CLASSIFIED DOCUMENTS // CLEARANCE LEVEL 4</p>
+                    </div>
+                </header>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="files-grid">
+                </div>
+            </div>
+        </section>
+
+        <section class="hidden h-full overflow-y-auto p-6 md:p-12 bg-zinc-950 pb-24 pt-28" id="profiles-section">
+            <div class="max-w-7xl mx-auto">
+                <header class="mb-12 border-b border-gray-800 pb-6">
+                    <h2 class="text-4xl md:text-5xl font-bold text-white mb-2">SUBJECT PROFILES</h2>
+                    <p class="font-mono-custom text-gray-500 text-sm">KEY PLAYERS IN THE RYKER SYNDICATE CASE</p>
+                </header>
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8" id="profiles-grid">
+                </div>
+            </div>
+        </section>
+
+        <section class="hidden min-h-[calc(100vh-4rem)] p-6 md:p-12 flex flex-col items-center pt-28"
+            id="audio-section">
+            <div class="w-full max-w-5xl">
+                <header class="mb-8 border-b border-gray-800 pb-6 flex justify-between items-center">
+                    <div>
+                        <h2 class="text-4xl font-bold text-white mb-2">THE STORY</h2>
+                        <p class="font-mono-custom text-gray-500 text-sm">ETHEL’S ORIGIN STORY — an ongoing visual
+                            exploration of the narrative</p>
+                    </div>
+                </header>
+
+                <div
+                    class="bg-gray-900/50 backdrop-blur-md rounded-xl border border-gray-800 overflow-hidden flex flex-col md:flex-row h-[600px]">
+
+                    <div class="w-full md:w-1/3 border-r border-gray-800 overflow-y-auto bg-black/40">
+                        <div class="p-4 bg-black/60 border-b border-gray-800 sticky top-0 z-10">
+                            <h3 class="text-xs font-mono-custom text-gray-400 uppercase tracking-widest">Decrypted
+                                Tracks</h3>
+                        </div>
+                        <div id="playlist-container" class="divide-y divide-gray-800/50">
+                        </div>
+                    </div>
+
+                    <div class="w-full md:w-2/3 flex flex-col relative bg-black">
+
+                        <div id="story-gallery" class="absolute inset-0 overflow-hidden">
+                            <img id="story-bg-1" src="https://via.placeholder.com/800x600/330000/ffffff?text=Story+1"
+                                class="absolute inset-0 w-full h-full object-cover story-image opacity-0 z-0 transition-opacity duration-1000">
+                            <img id="story-bg-2" src="https://via.placeholder.com/800x600/003300/ffffff?text=Story+2"
+                                class="absolute inset-0 w-full h-full object-cover story-image opacity-0 z-0 transition-opacity duration-1000">
+                            <img id="story-bg-3" src="https://via.placeholder.com/800x600/000033/ffffff?text=Story+3"
+                                class="absolute inset-0 w-full h-full object-cover story-image opacity-0 z-0 transition-opacity duration-1000">
+                        </div>
+
+                        <!-- YouTube Player (hidden by default, shown when showVideo: true) -->
+                        <div id="youtube-player" class="absolute inset-0 w-full h-full z-[-1]"></div>
+
+                        <div
+                            class="absolute inset-0 bg-gradient-to-b from-black/30 via-black/40 to-black/60 z-0 pointer-events-none">
+                        </div>
+                        <div class="absolute inset-0 bg-black/20 z-0 pointer-events-none mix-blend-multiply"></div>
+
+                        <div class="flex-1 relative flex items-center justify-center overflow-hidden z-10">
+                            <div class="relative z-10 p-8 text-center max-w-lg">
+                                <h4 id="current-track-title" class="text-2xl font-bold text-white mb-2 tracking-tight">
+                                    Select a Track</h4>
+
+                                <h5 id="current-track-date"
+                                    class="text-green-500 font-mono-custom text-xs tracking-[0.2em] mb-4 uppercase opacity-80">
+                                    TIMELINE: WAITING...
+                                </h5>
+
+                                <p id="current-track-artist" class="text-gray-500 font-mono-custom text-xs mb-8">DATA
+                                    SOURCE: OFFLINE</p>
+
+                                <div id="lyrics-display"
+                                    class="font-mono-custom text-gray-300 text-sm md:text-base leading-relaxed h-48 overflow-y-auto pr-2 scrollbar-thin">
+                                    [Audio stream encryption active. Select a file to decrypt playback.]
+                                </div>
+                            </div>
+
+                            <div id="visualizer-container"
+                                class="absolute bottom-0 left-0 right-0 h-32 flex items-end justify-center pb-0 gap-[2px] opacity-0 transition-opacity duration-500 z-10"
+                                style="display: none !important;">
+                            </div>
+                        </div>
+
+                        <div
+                            class="h-24 bg-zinc-900 border-t border-gray-800 p-4 flex items-center justify-between z-20 relative">
+                            <div class="flex items-center gap-4">
+                                <button id="play-btn" onclick="togglePlay()"
+                                    class="w-12 h-12 rounded-full bg-white text-black flex items-center justify-center hover:bg-green-400 transition-colors">
+                                    <span class="material-symbols-outlined text-3xl">play_arrow</span>
+                                </button>
+                                <button id="focus-btn" onclick="toggleFocusMode()"
+                                    class="w-10 h-10 rounded border border-gray-600 text-gray-400 flex items-center justify-center hover:bg-gray-800 hover:text-green-400 transition-colors font-mono-custom text-xs"
+                                    title="Visual Focus Mode">
+                                    <span class="material-symbols-outlined text-lg">filter_center_focus</span>
+                                </button>
+                            </div>
+                            <div class="flex-1 text-center px-4">
+                                <p class="text-[9px] font-mono-custom text-gray-600 leading-tight">
+                                    PROJECT STATUS: UNDER CONSTRUCTION<br>
+                                    VISUALS VARY: CONTAINS FINAL MOVIES | DRAFT IMAGES | PLACEHOLDERS
+                                </p>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-xs font-mono-custom text-gray-500">SYSTEM STATUS</p>
+                                <p id="player-status" class="text-xs text-green-500 font-bold">IDLE</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+
+
+    <!-- Protocol Tabs Container -->
+    <div id="protocol-tabs">
+        <button onclick="toggleCipherGame('isla')" class="protocol-tab"
+            style="color: rgba(0, 255, 65, 0.7); border-color: rgba(0, 255, 65, 0.3);" data-protocol="isla">
+            ISLA
+        </button>
+
+        <button onclick="toggleCipherGame('trivia')" class="protocol-tab"
+            style="color: rgba(0, 255, 65, 0.7); border-color: rgba(0, 255, 65, 0.3);" data-protocol="trivia">
+            TRIVIA
+        </button>
+        <button onclick="toggleCipherGame('ethel')" class="protocol-tab"
+            style="color: rgba(255, 157, 0, 0.7); border-color: rgb(255, 157, 0);" data-protocol="ethel">
+            ETHEL
+        </button>
+        <button onclick="toggleCipherGame('dom')" class="protocol-tab"
+            style="color: rgba(0, 255, 65, 0.7); border-color: rgba(0, 255, 65, 0.3);" data-protocol="dom">
+            DOMINIC
+        </button>
+
+    </div>
+
+    <!-- Right Side Panel Tabs -->
+    <div id="right-panel-tabs">
+        <!-- CINEMA: Opens in new tab (external app style) -->
+        <a href="#"
+            onclick="event.preventDefault(); if(ytPlayer && ytPlayer.pauseVideo) ytPlayer.pauseVideo(); window.open(PIXEL_MANIFEST.CINEMA, '_blank');"
+            class="right-panel-tab cinema-external" title="Opens in new tab">
+            <span class="material-symbols-outlined" style="font-size: 10px; margin-bottom: 4px;">open_in_new</span>
+            CINEMA
+        </a>
+        <!-- GALLERY: Opens in iframe panel -->
+        <button onclick="toggleMediaPanel('gallery')" class="right-panel-tab">
+            GALLERY
+        </button>
+    </div>
+
+    <!-- Media Panel (Cinema/Gallery) -->
+    <div id="media-panel">
+        <button onclick="toggleMediaPanel()"
+            class="absolute top-4 left-4 text-gray-500 hover:text-white transition-colors z-50 p-2 bg-black/50 rounded-full"
+            title="Close">
+            <span class="material-symbols-outlined">close</span>
+        </button>
+
+        <iframe id="media-panel-iframe" src="about:blank" class="w-full h-full border-0 block"
+            allow="autoplay; fullscreen"></iframe>
+    </div>
+
+    <div id="cipher-game-panel">
+        <button onclick="toggleCipherGame()"
+            class="absolute top-2 right-2 text-gray-500 hover:text-white transition-colors z-50 p-2 bg-black/50 rounded-full"
+            title="Close Protocol">
+            <span class="material-symbols-outlined">close</span>
+        </button>
+
+        <iframe id="cipher-game-iframe" src="about:blank" class="w-full h-full border-0 block"
+            allow="autoplay; fullscreen">
+        </iframe>
+    </div>
+
+    <div class="fixed inset-0 z-50 hidden" id="info-modal">
+        <div class="absolute inset-0 bg-black/45 backdrop-blur-sm" onclick="closeModal()"></div>
+        <div class="absolute inset-0 w-full h-full bg-black p-0 overflow-y-auto">
+            <!-- Close button (moved outside header for independent control) -->
+            <button
+                class="absolute top-4 right-4 z-50 text-gray-400 hover:text-white bg-black/50 rounded-full p-2 transition-colors"
+                onclick="closeModal()">
+                <span class="material-symbols-outlined">close</span>
+            </button>
+
+            <div class="flex justify-between items-center p-4 border-b border-gray-700 bg-black sticky top-0">
+                <h3 class="text-xl font-bold text-white font-mono-custom" id="modal-title">FILE CONTENT</h3>
+            </div>
+            <div class="p-8 h-full" id="modal-content"></div>
+        </div>
+    </div>
+
+    <script>
+        // --- All tracks with complete data from CorrectGalleryVersion ---
+        const tracks = [
+            { id: 1, title: "Ethel's Introduction", videoId: "YKQk4G_XJ1w", time: "1:01", lyric: "Some look at me and see cold...", galleryPath: "assets/images/track1/", imageCount: 11, storyDate: "2024 (ARCHIVE REVIEW)" },
+            { id: 2, title: "The Drop 1", videoId: "zHWwhom80go", time: "3:17", lyric: "I was there for a pixel on satellite...", galleryPath: "assets/images/track2/", imageCount: 33, storyDate: "NOV 14, 2016 (AGE 15)" },
+            { id: 3, title: "Ethel's Intro: The Drop", videoId: "lV4572kA1RE", time: "1:10", lyric: "It wasn't a cliff to me. It was geometry...", galleryPath: "assets/images/track3/", imageCount: 12, storyDate: "2024 (ARCHIVE REVIEW)" },
+            { id: 4, title: "The Drop 2", videoId: "K0ILO8MwX4Y", time: "2:41", lyric: "Geometry never changes but perspectives do...", galleryPath: "assets/images/track4/", imageCount: 27, storyDate: "NOV 14, 2016 (AGE 15)" },
+            { id: 5, title: "Ethel's Intro: Polished Vomit", videoId: "VKJaSC_-0sM", time: "2:00", lyric: "Lets talk about Isla...", galleryPath: "assets/images/track5/", imageCount: 20, storyDate: "2024 (ARCHIVE REVIEW)" },
+            { id: 6, title: "Polished Vomit", videoId: "MhEeDcdscrs", time: "3:00", lyric: "\"Polished Vomit\" is Isla at a wedding...", galleryPath: "assets/images/track6/", imageCount: 30, storyDate: "FEB 14, 2019 (THE WEDDING)" },
+            { id: 7, title: "Ethel's Intro: Dominic's Intent", videoId: "Jl8T2gWUVMY", time: "2:17", lyric: "There's a thing people do...", galleryPath: "assets/images/track7/", imageCount: 23, storyDate: "2024 (ARCHIVE REVIEW)" },
+            { id: 8, title: "Structural Psychopathy", videoId: "8rvIVBLZg2o", time: "4:36", lyric: "People don't see the cause...", galleryPath: "assets/images/track8/", imageCount: 46, storyDate: "MAR 2019 (PROFILE)" },
+            { id: 9, title: "Ethel's Intro: Ride", videoId: "Wvu0JIV1ePQ", time: "1:11", lyric: "Seventeen. Still with Gran and Pop...", galleryPath: "assets/images/track9/", imageCount: 12, storyDate: "2024 (ARCHIVE REVIEW)" },
+            { id: 10, title: "Ride", videoId: "0sgcZRtPO6s", time: "3:38", lyric: "When others slipped into easy crime...", galleryPath: "assets/images/track10/", imageCount: 37, storyDate: "JAN 20, 2019 (AGE 17)" },
+            { id: 11, title: "Ethel's Intro: Grief", videoId: "95wQ9YZUbcA", time: "1:07", lyric: "Those rides… they were how I thought...", galleryPath: "assets/images/track11/", imageCount: 12, storyDate: "2024 (ARCHIVE REVIEW)" },
+            { id: 12, title: "Grief", videoId: "PMy76HBgpL8", time: "3:29", lyric: "Bank vault room smelled cold and empty...", galleryPath: "assets/images/track12/", imageCount: 35, storyDate: "FEB 28, 2019 (THE CRASH)" },
+            { id: 13, title: "Ethel's Intro: Gotta Move", videoId: "IuyKvsxwBgY", time: "2:06", lyric: "That's where my red dirt ends...", galleryPath: "assets/images/track13/", imageCount: 21, storyDate: "2024 (ARCHIVE REVIEW)" },
+            { id: 14, title: "Gotta Move", videoId: "06qE_-OeIT0", time: "3:53", lyric: "You don't place me. You pass me...", galleryPath: "assets/images/track14/", imageCount: 39, storyDate: "MAR 02, 2019 (LEAVING HOME)" },
+            { id: 15, title: "Ethel's Intro: Won't Break", videoId: "oPOEgISVQYk", time: "2:01", lyric: "I didn't get a real choice...", galleryPath: "assets/images/track15/", imageCount: 21, storyDate: "2024 (ARCHIVE REVIEW)" },
+            { id: 16, title: "Won't Break Where Others End", videoId: "fJNMlT7UeW0", time: "4:56", lyric: "Don't light a candle...", galleryPath: "assets/images/track16/", imageCount: 50, storyDate: "MAR 05, 2019 (MOSMAN)" },
+            { id: 17, title: "Ethel's Intro: Big House", videoId: "8UvIT2TgY_Y", time: "1:36", lyric: "The drive to Mosman wasn't scenic...", galleryPath: "assets/images/track17/", imageCount: 16, storyDate: "2024 (ARCHIVE REVIEW)" },
+            { id: 18, title: "Big House", videoId: "mj9MGf-VzJY", time: "4:28", lyric: "Mosman. Money...", galleryPath: "assets/images/track18/", imageCount: 45, storyDate: "MAR 05, 2019" },
+            { id: 19, title: "Ethel's Intro: Peek-A-Boo", videoId: "GaSUHEFlJVc", time: "2:09", lyric: "We met in what Isla calls \"the crazy house\"...", galleryPath: "assets/images/track19/", imageCount: 22, storyDate: "2024 (ARCHIVE REVIEW)" },
+            { id: 20, title: "Peek-A-Boo", videoId: "qbFxG7sK0pE", time: "3:14", lyric: "Isla was chaos wrapped in neon...", galleryPath: "assets/images/track20/", imageCount: 33, storyDate: "MAR 10, 2019" },
+            { id: 21, title: "Ethel's Intro: Northern Road", videoId: "dIh_CL7h7zU", time: "2:10", lyric: "My father Dominic was rarely there...", galleryPath: "assets/images/track21/", imageCount: 22, storyDate: "2024 (ARCHIVE REVIEW)" },
+            { id: 22, title: "Northern Road", videoId: "P19KBEQdVjQ", time: "4:51", lyric: "Here is all we know...", galleryPath: "assets/images/track22/", imageCount: 49, storyDate: "MAR 15, 2019" },
+            { id: 23, title: "Ethel's Intro: Isla Hates Bankers", videoId: "VNln5R2iF9E", time: "1:55", lyric: "Isla can open anything...", galleryPath: "assets/images/track23/", imageCount: 20, storyDate: "2024 (ARCHIVE REVIEW)" },
+            { id: 24, title: "Isla Hates Married Bankers", videoId: "sXKAs0U8eO8", time: "2:20", lyric: "Isla somehow gets this man at 2am...", galleryPath: "assets/images/track24/", imageCount: 24, storyDate: "MAY 2019" },
+            { id: 25, title: "Ethel's Intro: I Built A Box", videoId: "L-K0MrEKOAc", time: "2:22", lyric: "Isla fought the world by detonating it...", galleryPath: "assets/images/track25/", imageCount: 24, storyDate: "2024 (ARCHIVE REVIEW)" },
+            { id: 26, title: "I Built A Box", videoId: "0F_prk5dGC4", time: "5:10", lyric: "And then his head exploded...", galleryPath: "assets/images/track26/", imageCount: 52, storyDate: "JUN 2019 (THE SAFE HOUSE)" },
+            { id: 27, title: "Ethel's Intro: Burning Bridges", videoId: "VUrJP86DHrU", time: "1:55", lyric: "Isla and me didn't put him in a cage...", galleryPath: "assets/images/track27/", imageCount: 20, storyDate: "2024 (ARCHIVE REVIEW)" },
+            { id: 28, title: "Isla's Burning Dominic's Bridge", videoId: "nVKkwb4EnRc", time: "1:10", lyric: "She did it the way people do...", galleryPath: "assets/images/track28/", imageCount: 12, storyDate: "AUG 2019 (THE LEAK)" },
+            { id: 29, title: "Ethel's Intro: For You!!!", videoId: "qtkHwKNnAo8", time: "1:32", lyric: "I thought the worst part was...", galleryPath: "assets/images/track29/", imageCount: 16, storyDate: "2024 (ARCHIVE REVIEW)" },
+            { id: 30, title: "For You!!!", videoId: "f8o7zb3F-Xk", showVideo: true, time: "3:21", lyric: "Freeze has a limit...", galleryPath: "assets/images/track30/", imageCount: 34, storyDate: "SEP 2019" },
+            { id: 31, title: "Ethel's Intro: Broken Edge", videoId: "ox_vABajRIw", time: "0:54", lyric: "Is Isla reckless? Sure...", galleryPath: "assets/images/track31/", imageCount: 9, storyDate: "2024 (ARCHIVE REVIEW)" },
+            { id: 32, title: "Isla's Broken Edge", videoId: "_gvv_W5_x10", showVideo: true, time: "3:34", lyric: "Dominic's mistake, saw simple vice...", galleryPath: "assets/images/track32/", imageCount: 36, storyDate: "OCT 2019" },
+            { id: 33, title: "Ethel's Intro: Hero Complex", videoId: "mAZKRxhPMCg", time: "1:29", lyric: "My father built cities...", galleryPath: "assets/images/track33/", imageCount: 15, storyDate: "2024 (ARCHIVE REVIEW)" },
+            { id: 34, title: "Hero Complex", videoId: "YkQOXPzYkkU", time: "3:53", lyric: "Some call it alpha...", galleryPath: "assets/images/track34/", imageCount: 39, storyDate: "FEB 2020 (THE TRIAL START)" },
+            { id: 35, title: "Ethel's Intro: Nothing True", videoId: "tpnmyIxM1p8", time: "1:19", lyric: "It looks cautious, even rigid...", galleryPath: "assets/images/track35/", imageCount: 14, storyDate: "2024 (ARCHIVE REVIEW)" },
+            { id: 36, title: "Nothing True", videoId: "Ghg7pC3ms3I", time: "3:34", lyric: "They wanted yes. They wanted no...", galleryPath: "assets/images/track36/", imageCount: 36, storyDate: "APR 2020 (THE TESTIMONY)" },
+            { id: 37, title: "Ethel's Intro: Thank Me Later", videoId: "oPOEgISVQYk", time: "2:01", lyric: "Step 1: Remove doubt...", galleryPath: "assets/images/track37/", imageCount: 21, storyDate: "2024 (ARCHIVE REVIEW)" },
+            { id: 38, title: "You Will Thank Me Later", videoId: "n6OgobffCzo", time: "3:24", lyric: "Anger burns fast...", galleryPath: "assets/images/track38/", imageCount: 34, storyDate: "JUN 2020 (PRISON)" },
+            { id: 39, title: "No Sparrow Caught Mid Flight", videoId: "t6vLU0uqIfc", time: "3:18", lyric: "The trial's done...", galleryPath: "assets/images/track39/", imageCount: 33, storyDate: "DEC 2020 (POST-TRIAL)" },
+            { id: 40, title: "Ethel's Intro: Dominic's Escape", videoId: "kB5lGHjUqUY", time: "1:38", lyric: "Dominic understands the average person...", galleryPath: "assets/images/track40/", imageCount: 17, storyDate: "2024 (ARCHIVE REVIEW)" },
+            { id: 41, title: "Dominic's Escape", videoId: "6eZwBGXGSO4", time: "3:52", lyric: "I don't lie. I sequence...", galleryPath: "assets/images/track41/", imageCount: 39, storyDate: "JAN 2024 (THE ESCAPE)" },
+            { id: 42, title: "Ethel's Story - Overview", videoId: "dLUClmr_Pf4", time: "6:06", lyric: "I was misread early...", galleryPath: "assets/images/track42/", imageCount: 61, storyDate: "2024 (ARCHIVE REVIEW)" },
+            { id: 43, title: "Ethel's Conclusion", videoId: "D5afy4FucwA", time: "2:36", lyric: "Where anger stopped being a problem...", galleryPath: "assets/images/track43/", imageCount: 26, storyDate: "2024 (ARCHIVE REVIEW)" },
+            { id: 44, title: "Ethel:Spoken: Projection", videoId: "AOktpmGD0Po", time: "2:03", lyric: "People rarely look for the strings. Not if they're tucked out of sight. Not once the show's in motion. Outcome. Tone. Convenience. They won't ask why. Not if the aggressor  steps back. Projection runs on that gap. Takes your reaction and runs it through their story. Then hands it back already warped with their fingerprints. Projection isn't just deflection. It's a full blown rewrite. It's how someone can jab you in the chest and still get the room to feel bad for them.", galleryPath: "assets/images/track44/", imageCount: 3 },
+            { id: 45, title: "Platform 18", videoId: "VC6vQGPyF4c", time: "5:14", lyric: "What was that? That thing just then? After the bold name, what came in? They think chaos. She wants facts. Nice guy yells Stop!! He's Playing cop! Another voice, loud, says Relax. Woman yanks her daughter back. Then the screen? It reloads again.", galleryPath: "assets/images/track45/", imageCount: 3 },
+            { id: 46, title: "Kinley (Guilt Money)", videoId: "Ac3cRsmjKpE", showVideo: true, time: "3:13", lyric: "Guilt money, guilt money, Bullseye lit in legalese. If it sticks, they split the fees. No one looking, no one sees. It's all too twisted for simple minds. So they shrug it off, call it fine.", galleryPath: "assets/images/track46/", imageCount: 3 },
+            { id: 47, title: "Ants On The Vine", videoId: "CaBcQ2aSjog", showVideo: true, time: "3:42", lyric: "Self-serve the lie I'll stitch the cost. Fake the fight I'll rig the loss. I don't shift or sway. I level ground. I built this bite from a heavier sound", galleryPath: "assets/images/track47/", imageCount: 3 },
+            { id: 48, title: "Rattled", videoId: "Fs7BXBOVnvY", showVideo: true, time: "3:50", lyric: "And that guy? Kinley? He doesn't move like that. He doesn't get caught like that. He chokes you with procedure. Sues you for looking. Turns harm into silence. Calls your response the problem. Publicly. Repeatedly. Hands out of frame. And her? \"Input.\" \"Output.\" \"Jail.\" \"Done yet?\" \"Why not?\" \"Your system's broke!\" \"Fix it!\" \"Now!\" Wash. Repeat. But this game's rigged. Runs slow.", galleryPath: "assets/images/track48/", imageCount: 3 },
+            { id: 49, title: "Clipboard Man", videoId: "ZAhqNWTHTGU", time: "4:57", lyric: "A quiet chase told in reverse. I know Clipboard Man isn't the threat. He's the signal. A reflection. When surveillance folds back on itself, I set my own decoy in motion. A private investigator. A moving mirror. Assessment without panic. Kinley's people are tracking me. I am tracking them.", galleryPath: "assets/images/track49/", imageCount: 3 },
+            { id: 50, title: "Make A Mistake On Purpose", videoId: "s9Z8dgRk-Q8", showVideo: true, time: "3:59", lyric: "Three years with my father after the crash taught her where pressure hides, how shame gets used and how a particular type of person plays. Now I'm asking the question: Can you make a mistake on purpose? ", galleryPath: "assets/images/track50/", imageCount: 3 },
+            { id: 51, title: "Red Stick", videoId: "iTOKsLS3jhM", time: "3:59", lyric: "It began  with a test. Subtle. Deliberate. Seemingly harmless. A red stick wedged in the front wheel of my bike. Nothing dramatic but also not random. A message to measure reaction.", galleryPath: "assets/images/track51/", imageCount: 3 },
+            { id: 52, title: "Harms Ghost", videoId: "WZ3P96AJfEc", showVideo: true, time: "3:28", lyric: "While you're paused. Weighing shame. They're three steps in. Rewriting names. Me? I move. When the damage is nil. If I get it wrong. I pay that bill. ", galleryPath: "assets/images/track52/", imageCount: 5 },
+            { id: 53, title: "Ethe's Intro: Normal?!", videoId: "V0hvxqMWcnE", time: "1:44", lyric: "Some situations have clear consequences. Avoidable but not avoided. This is such a situation. A situation where we clearly see what could have been if people didn't conform with the leash of silence. I'm wired to see consequence first. I won't play along with collective denial. In my world, normal can sometimes be the camouflage that lets corruption breathe.", galleryPath: "assets/images/track53/", imageCount: 3 },
+            { id: 54, title: "Normal?!", videoId: "8GCXnOQI60g", showVideo: true, time: "2:56", lyric: "They think everyone's the same underneath. Like if you could get away with it. You would. Talk fast. Push hard. Cut corners. Let someone else carry the mess. They don't say it cruel. They say it like fact. Like it's just how things are. Like the ones who don't play that way Are hiding something. But I've been in rooms where that logic cost lives. Where silence was a tactic. And politeness, the leash.", galleryPath: "assets/images/track54/", imageCount: 3 },
+            { id: 55, title: "This isn't therapy (Isla)", videoId: "0tzOaukuBns", time: "3:37", lyric: "This isn't therapy begins after Dominic's trial ends, in an inner west Sydney flat she never asked for but couldn't refuse. The walls are hers, though the reason why isn't spoken. Expelled from the Sydney Conservatorium of Music after a clash that no one can quite retell the same way, Isla continues pushing her musical career with a band drawn from those who saw the same fire others tried to discipline out of her.  The song is her reset. A refusal to apologies for intensity. It's reclamation of a sort, the sound of someone testing out how to turn what broke her into something that can't be contained.", galleryPath: "assets/images/track55/", imageCount: 3 },
+            { id: 56, title: "A Drop From the Forth (Isla)", videoId: "6bwKDegeBHU", time: "5:31", lyric: "Raise the Fourth (Porcelain Version) opens in dissonance. Isla isn't hiding behind metaphor. She's tracing a moment she once imagined might end her and singing about it as if it already has.  In another version, the ending floods. Here, it freezes. A still surface. Porcelain. Beneath it sits a quiet, unnerving calm, the kind that only comes from surviving something the mind has already lived through once.", galleryPath: "assets/images/track56/", imageCount: 3 },
+            { id: 57, title: "The Porcelain Lie (Isla)", videoId: "GFkK21BdE9o", time: "2:24", lyric: " Raise the Fourth (Porcelain Version) sits in the space between memory and possibility. Isla imagines an event that never happened but could have. She views a version of herself frozen at the edge, seeing the scene play out from both inside and above.  For Isla, survival means seeing every possible ending and choosing to keep the hinge singing. Her mouth. Her voice. There are still doors ahead of her.", galleryPath: "assets/images/track57/", imageCount: 3 },
+            { id: 58, title: "Memory under Water (Isla)", videoId: "nk4Re7OjTTM", time: "5:52", lyric: "The imagery is delicate, but the meaning isn't. This isn't an elegy. It is an autopsy of silence . The kind of social composure that buries people long before they die. What she is describing is her mother's final walk. Quiet, deliberate, unseen.  Isla isn't asking for sympathy. She's confronting the inheritance of performance, the mask her mother taught her to wear like skin.", galleryPath: "assets/images/track58/", imageCount: 3 },
+            { id: 59, title: "Raise The Fourth (Isla)", videoId: "ey20cJsY82M", time: "5:15", lyric: "Raise the Fourth opens in dissonance.  Isla isn't hiding behind metaphor. She's tracing a moment she once imagined might end her and singing about it as if it already has.  In another version, the ending floods. Here, it freezes. A still surface. Porcelain. Beneath it sits a quiet, unnerving calm, the kind that only comes from surviving something the mind has already lived through once.", galleryPath: "assets/images/track59/", imageCount: 3 },
+            { id: 60, title: "Raise The Fourth Version 2 (Isla)", videoId: "fNVKsxe_EcM", time: "5:15", lyric: "Isla isn't hiding behind metaphor. She's tracing a moment she once imagined might end her and singing about it as if it already has. ", galleryPath: "assets/images/track60/", imageCount: 3 },
+            { id: 61, title: "Intro to Shiny Headed Radio Man (Isla)", videoId: "dK8mqLNRZ2Q", time: "2:24", lyric: "Isla's chasing an audition that could change everything, but the man who promised to open the door expects payment that isn't music. Typical. Isla's answer isn't retreat but confrontation wrapped in humour and noise.  The song catches her mid-decision, half-laughing, half-ready to detonate and very concerned underneath it all. She knows his type all to well.  If the bridge burns, so be it. She'll build her own stage from the ashes and make it louder.", galleryPath: "assets/images/track61/", imageCount: 3 },
+            { id: 62, title: "Shiny Headed Radio Man (Isla)", videoId: "UFZeKCcSMoE", time: "2:24", lyric: "The song spirals between humor and confrontation, performance and real anger. It's the sound of a woman refusing to barter her worth for permission, turning a power imbalance into a public reckoning, one scream at a time.", galleryPath: "assets/images/track62/", imageCount: 3 },
+            { id: 63, title: "Stanmore Farewell (Isla)", videoId: "-3m2_zUNBlo", time: "4:12", lyric: "The trial of Dominic has ended. The headlines have stopped including her with titles like Addict Girl. Things seem almost normal.  She's living in a small flat in Sydney's inner west, paid for with money she'll never discuss, playing gigs that half the crowd forgets and half will never stop talking about.  The song captures the push and pull between gratitude and restlessness. Loving the band she pulled together from the con. The small but creatively raw shows. The life she's built.  It's not a goodbye in anger, but in necessity. ", galleryPath: "assets/images/track63/", imageCount: 3 },
+            { id: 64, title: "Don't Wake Him Yet (Isla)", videoId: "NwqHLFYR1mA", time: "5:25", lyric: "Don't Wake Him Yet reaches back to when Isla was fifteen and ran away with a boy and her father's credit card.  It begins like a memory wrapped in adventure. A night flight with the glow of airports and the rush of escape. It darkens quietly, one mental image at a time.  A trip that starts in rebellion ends in loss, told through the eyes of a girl who has to keep moving while the world around her stares.  It's a memory caught in time as if it only just happened. Written by someone who lived through it and can finally bear to look back.", galleryPath: "assets/images/track64/", imageCount: 3 },
+            { id: 65, title: "What You Don't See (Isla)", videoId: "Y4VC6mh37NI", showVideo: true, time: "6:17", lyric: "What You Don't See tells the story of what survival feels like from isla's P.O.V. Not the movie version, but the quiet kind that reshapes thought, trust, and belonging. Isla sings about growing up inside control, where love and fear spoke in the same voice, and about finding a way to step beyond it without disappearing. The song carries the pain of what was done to her, yet it isn't about despair. It's about repair and the reclaiming of what should have been safe all along.", galleryPath: "assets/images/track65/", imageCount: 3 },
+            { id: 66, title: "Melody of Normality (Isla Live)", videoId: "a4TpIhna55k", showVideo: true, time: "4:12", lyric: "Isla turns trauman in art. Where the hell do you tink it all comes from? I nice little melody of normalidy? Hell no!", galleryPath: "assets/images/track66/", imageCount: 3 },
+            { id: 67, title: "Drop From the Fourth (Isla With Symphony)", videoId: "7UOZCk5vvbA", showVideo: true, time: "4:23", lyric: "Raise the Fourth (A Drop from the Fourth) is Isla at her most exposed. She's singing from that narrow edge between thought and action.  The lyrics unfold like a confession in motion, describing the build-up to a suicide that never happened, told as if it did. Each line drifts between clarity and disassociation, mapping how the mind rehearses its own absence.  It isn't a song about death, but about recognizing what could have been. A the moment of seeing how close it came. Raise the Fourth is both survival and witness, sung in the tense between falling and staying. Between leaving ones self on the cutting room floor and a mouth(hinge), that just won't stop singing.", galleryPath: "assets/images/track67/", imageCount: 3 },
+            { id: 68, title: "What you dont see (Isla With Symphony)", videoId: "hm2kp7LOhsg", time: "4:12", lyric: "What You Don't See tells the story of what survival feels like from isla's P.O.V. Not the movie version, but the quiet kind that reshapes thought, trust, and belonging. Isla sings about growing up inside control, where love and fear spoke in the same voice, and about finding a way to step beyond it without disappearing. The song carries the pain of what was done to her, yet it isn't about despair. It's about repair and the reclaiming of what should have been safe all along.", galleryPath: "assets/images/track68/", imageCount: 3 },
+            { id: 69, title: "Give it back (Isla)", videoId: "Aw2ZAkxp6b0", time: "4:12", lyric: "Give It Back sounds like a demand, but it's more layered than that. Isla is reaching toward the years that were never really hers. Towards the innocent kind you're meant to have. The phrase turns over on itself in that it has a double meaning. What she's really doing is promising to return everything taken from her, only louder.  Nothing in the song says it outright, yet you feel it. The stage becomes her witness box, the amps her proof. Its not an explanation but rather an answer.", galleryPath: "assets/images/track69/", imageCount: 3 },
+            { id: 70, title: "What This Was Always For (Isla With Symphony)", videoId: "X9EUb1_QC9c", time: "3:22", lyric: "ISLA hits like impact and endurance colliding. It's the first song she wrote with her new band with a sound built for distortion and defiance, with Isla's voice cutting clean through the chaos. The lyrics reclaim what was taken from her. Strength twisted into pain. Silence mistaken for control. She turns both back on themselves. The wall becomes noise. The damage becomes feedback. It's not just heavy, it's confrontation made musical. A statement.", galleryPath: "assets/images/track70/", imageCount: 3 },
+            { id: 71, title: "FIELD NOTES FROM THE LANGTANG TRAIL, 1966", videoId: "8nuKkf_oe1s", time: "3:21", lyric: "Field notes from distant paths...", galleryPath: "assets/images/track71/", imageCount: 3 }
+        ];
+
+        const articles = [
+            {
+                title: "THE RYKER REPORT",
+                date: "FEB 20, 2024",
+                sortDate: "2024-03-10",
+                author: "Dr. A.R. Cole (Leaked)",
+                excerpt: "Clinical Warning: The primary risk is not embedded in rage, but in rhythm.",
+                thumbnail: "https://github.com/NJsalubrious/pixelstortion-assets/raw/2d34debdaa508ac2e8aee0b94cbf36aa4218b7cc/archives/archive_thumbs/RykerReport.jpg",
+                url: "https://njsalubrious.github.io/pixelstortion-assets/archives/the_ryker_report.html"
+            },
+            {
+                title: "From Pymble to the Pit: ISLA",
+                date: "DEC 01, 2023",
+                sortDate: "2023-12-01",
+                author: "Eli Ward",
+                excerpt: "From Pymble to the Pit: How Isla Turned Silence Into Sound'.",
+                thumbnail: "https://github.com/NJsalubrious/pixelstortion-assets/raw/2d34debdaa508ac2e8aee0b94cbf36aa4218b7cc/archives/archive_thumbs/pymbleToThePit.jpg",
+                url: "https://njsalubrious.github.io/pixelstortion-assets/archives/ISLA_From_Pymble_to_the_Pit.html"
+            },
+            {
+                title: "THE MERIDIAN: NEPAL 1966 - FIELD NOTES",
+                date: "ARCHIVE RETRIEVAL",
+                sortDate: "2025-11-15",
+                author: "M. Harren, Anthropologist",
+                thumbnail: "https://github.com/NJsalubrious/pixelstortion-assets/raw/2d34debdaa508ac2e8aee0b94cbf36aa4218b7cc/archives/archive_thumbs/nepal.jpg",
+                url: "https://njsalubrious.github.io/pixelstortion-assets/archives/field-notes-from-the-langtang-trail.html"
+            },
+
+            {
+                title: "Isla's Emotional Return to the Stage - Cultural Review",
+                date: "2025",
+                sortDate: "2025-01-01",
+                author: "Eliza Trenholm",
+                excerpt: "'Pigeons walk like priests as the crowd leans in.' And then you realize she wasn't writing about a metaphor. She was describing a suicide that didn't happen, sung in past tense like it did.",
+                thumbnail: "https://github.com/NJsalubrious/pixelstortion-assets/raw/2d34debdaa508ac2e8aee0b94cbf36aa4218b7cc/archives/archive_thumbs/EmotionalReturn.jpg",
+                url: "https://njsalubrious.github.io/pixelstortion-assets/archives/Islas_Emotional_Return_to_the Stage.html"
+            },
+            {
+                title: "ISLA - FLIGHT TRAGEDY - 2017",
+                date: "NOV 11, 2025",
+                sortDate: "2025-11-11",
+                author: "ARCHIVE SEARCH QUERY",
+                excerpt: "This archive collects three foundational posts concerning the July 2017 'Flight Tragedy' event. This incident marks the first public, sensationalized record of Isla.",
+                thumbnail: "https://github.com/NJsalubrious/pixelstortion-assets/raw/2d34debdaa508ac2e8aee0b94cbf36aa4218b7cc/archives/archive_thumbs/flightTradgedy.jpg",
+                url: "https://njsalubrious.github.io/pixelstortion-assets/archives/Dont_wake_him_yet_Isla.html"
+            },
+            {
+                title: "ANALYSIS: NEGATIVE SPACE",
+                date: "ARCHIVE",
+                sortDate: "2025-11-11",
+                author: "Investigative Report",
+                excerpt: "A deep dive into the patterns of silence.",
+                thumbnail: "https://github.com/NJsalubrious/pixelstortion-assets/raw/2d34debdaa508ac2e8aee0b94cbf36aa4218b7cc/archives/archive_thumbs/negativeSpace.jpg",
+                url: "https://njsalubrious.github.io/pixelstortion-assets/archives/analysis-negative-space.html"
+            },
+            {
+                title: "ISLA AND THE QUIET TRUTH BEHIND THE NOISE",
+                date: "ARCHIVE",
+                sortDate: "2025-12-26",
+                author: "Julia Renn",
+                excerpt: "If you witness something terrible and then go back to work the next day and everyone pretends the world didn’t just split open inside you? That silence is the trauma. I make things for the people who live in that silence",
+                thumbnail: "https://github.com/NJsalubrious/pixelstortion-assets/raw/6006e262815452deca7e1044a94f721bbeb3e222/isla_art/islaArtShow_nextToDrawing.jpg",
+                url: "https://njsalubrious.github.io/pixelstortion-assets/archives/Drop_From_the_Fourth_Isla_art_show.html"
+            }
+        ];
+
+        const profiles = [
+            { id: 'dominic', name: 'DOMINIC RYKER', status: 'ESCAPED', color: '#ff0055', desc: '"The storm that never raises its voice." Former syndicate boss. Views control as a form of care.', notes: 'PSYCH EVAL', quote: '"The primary risk is not embedded in rage, but in rhythm."', bg: 'linear-gradient(135deg, #330000 0%, #000000 100%)', video: 'https://pub-111e813bd5634cd8a9ecdd3d5c2a0916.r2.dev/character_movies/Dominic_Character.mp4' },
+            { id: 'ethel', name: 'ETHEL', status: 'SURVEILLANCE', color: '#00ff41', desc: 'An observer. A chemist of human behavior. Maps micro-cues to survive her father\'s world.', notes: 'PERSONAL LOG', quote: '"Wrong beaker, wrong flame, I let it burn."', bg: 'linear-gradient(135deg, #003300 0%, #000000 100%)', video: 'https://pub-111e813bd5634cd8a9ecdd3d5c2a0916.r2.dev/character_movies/ETHEL_Character.mp4' },
+            { id: 'isla', name: 'ISLA', status: 'PUBLIC FIGURE', color: '#00ccff', desc: 'Singer. Turns trauma into sound. "Silence is the trauma."', notes: 'PRESS SNIPPET', quote: '"She makes things for the people who live in the silence."', bg: 'linear-gradient(135deg, #000033 0%, #000000 100%)', video: 'https://pub-111e813bd5634cd8a9ecdd3d5c2a0916.r2.dev/character_movies/ISLA_Character.mp4' }
+        ];
+
+        // --- Configuration ---
+        const MAP_URL = "https://NJsalubrious.github.io/pixelstortion-assets/assets_for_ethel_songs/gallery_map.json";
+
+        // YouTube Player Setup
+        function onYouTubeIframeAPIReady() {
+            ytPlayer = new YT.Player('youtube-player', {
+                height: '0',
+                width: '0',
+                playerVars: {
+                    'autoplay': 0,
+                    'controls': 0,
+                    'disablekb': 1,
+                    'fs': 0,
+                    'modestbranding': 1,
+                    'rel': 0
+                },
+                events: {
+                    'onReady': onPlayerReady,
+                    'onStateChange': onPlayerStateChange
+                }
+            });
+        }
+
+        function onPlayerReady(event) {
+            console.log("YouTube player ready");
+
+            // Visitor Selection - Play Track 71 or specific track from URL
+            const selectionMap = {
+                "default": 71,
+                "langtang": 71,
+                "emotional_return": 68,
+                "drop_from_the_fourth": 67,
+                "dont_wake_him": 64,
+                "pymble": 55,
+                "ryker_report": 38,
+                "negative_space": 8
+            };
+
+            const urlParams = new URLSearchParams(window.location.search);
+            const selectionParam = urlParams.get('selection');
+            let trackId = selectionMap["default"];
+
+            if (selectionParam) {
+                for (const [key, id] of Object.entries(selectionMap)) {
+                    if (key !== "default" && selectionParam.toLowerCase().includes(key)) {
+                        trackId = id;
+                        console.log(`Visitor Selection: ${key} -> Track ${id}`);
+                        break;
+                    }
+                }
+            }
+
+            // Play the selected track
+            setTimeout(() => selectTrack(trackId), 500);
+        }
+
+        function onPlayerStateChange(event) {
+
+            const status = document.getElementById('player-status');
+            const playBtn = document.getElementById('play-btn');
+            const visualizer = document.getElementById('visualizer-container');
+
+            if (event.data === YT.PlayerState.PLAYING) {
+                status.innerText = 'STREAMING';
+                playBtn.innerHTML = '<span class="material-symbols-outlined text-3xl">pause</span>';
+                visualizer.style.opacity = '1';
+                isPlaying = true;
+            } else if (event.data === YT.PlayerState.PAUSED) {
+                status.innerText = 'PAUSED';
+                playBtn.innerHTML = '<span class="material-symbols-outlined text-3xl">play_arrow</span>';
+                visualizer.style.opacity = '0.3';
+                isPlaying = false;
+            } else if (event.data === YT.PlayerState.ENDED) {
+                status.innerText = 'TRACK ENDED';
+                playBtn.innerHTML = '<span class="material-symbols-outlined text-3xl">play_arrow</span>';
+                visualizer.style.opacity = '0';
+                isPlaying = false;
+
+                // Auto-advance to next track
+                const nextId = currentTrackId + 1;
+                const nextTrack = tracks.find(t => t.id === nextId);
+
+                if (nextTrack) {
+                    selectTrack(nextId);
+                } else {
+                    status.innerText = "PLAYLIST ENDED";
+                }
+            }
+        }
+
+        // State
+        let currentTab = 'home';
+        let currentTrackId = null;
+        let ytPlayer = null;
+        let isPlaying = false;
+        let activePlayerType = null; // 'youtube' only
+        let galleryInterval = null;
+        let currentImageIndex = 0;
+        let activeImageElement = 1;
+        let galleryMap = {};
+        let protocolPanelOpen = false; // Track if a protocol tab is open
+
+        // Gallery Map Loader
+        async function loadGalleryMap() {
+            try {
+                console.log("Connecting to Archives...");
+                const response = await fetch(MAP_URL);
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                galleryMap = await response.json();
+                console.log("Archives Decrypted. " + Object.keys(galleryMap).length + " tracks indexed.");
+            } catch (e) {
+                console.error("Archive Connection Failed:", e);
+            }
+        }
+
+        // Story Gallery Functions
+        function startGallery(imageList) {
+            if (galleryInterval) clearInterval(galleryInterval);
+
+            currentImageIndex = 0;
+            activeImageElement = 1;
+
+            const track = tracks.find(t => t.id === currentTrackId);
+            // Default time per slide based on user preference: 6 seconds.
+            // We use the math to be precise: Total Duration / Image Count.
+            let timePerSlide = 6000;
+
+            if (track && track.time && imageList.length > 0) {
+                const timeParts = track.time.split(':');
+                const totalSeconds = parseInt(timeParts[0]) * 60 + parseInt(timeParts[1]);
+                // If the user provided image list matches the calculated count, this will result in ~6000ms.
+                // If the folder has FEWER images than expected, this number increases (slower).
+                // If the folder has MORE images, this number decreases (faster).
+                timePerSlide = (totalSeconds * 1000) / imageList.length;
+            }
+
+            console.log(`Starting gallery with ${imageList.length} images. Time per slide: ${(timePerSlide / 1000).toFixed(2)}s`);
+
+            showImage(imageList[0], 1);
+
+            galleryInterval = setInterval(() => {
+                // Check global isPlaying flag (works for both MP3 and YouTube)
+                if (isPlaying) {
+                    currentImageIndex = (currentImageIndex + 1) % imageList.length;
+                    activeImageElement = activeImageElement === 1 ? 2 : 1;
+                    showImage(imageList[currentImageIndex], activeImageElement);
+                }
+            }, timePerSlide);
+        }
+
+        function showImage(url, elementNum) {
+            const img = document.getElementById(`story-bg-${elementNum}`);
+            const otherImg = document.getElementById(`story-bg-${elementNum === 1 ? 2 : 1}`);
+
+            const temp = new Image();
+            temp.onload = () => {
+                img.src = url;
+                img.classList.add('active-slide');
+                otherImg.classList.remove('active-slide');
+            };
+            temp.src = url;
+        }
+
+        // Initialize Audio Player with robust Event Listeners
+
+        function selectTrack(id) {
+            // Don't restart if same track is already playing
+            if (currentTrackId === id) {
+                console.log(`Track ${id} already playing - skipping restart`);
+                return;
+            }
+
+            currentTrackId = id;
+            const track = tracks.find(t => t.id === id);
+
+            // UI Updates
+            document.getElementById('current-track-title').innerText = track.title;
+
+            // UPDATE DATE
+            const dateEl = document.getElementById('current-track-date');
+            if (track.storyDate) {
+                dateEl.innerText = `TIMELINE: ${track.storyDate}`;
+                dateEl.style.color = "#00ff41"; // Matrix Green
+            } else {
+                dateEl.innerText = "TIMELINE: REDACTED";
+                dateEl.style.color = "#555"; // Dim Gray
+            }
+
+            document.getElementById('current-track-artist').innerText = "SOURCE NODE: " + (track.videoId || "UNKNOWN");
+            document.getElementById('lyrics-display').innerText = track.lyric;
+            document.getElementById('lyrics-display').scrollTop = 0;
+
+            const ytIframe = document.getElementById('youtube-player'); // The actual iframe
+
+            // Highlight active track
+            document.querySelectorAll('[id^="track-"]').forEach(el => el.classList.remove('track-active'));
+            document.getElementById(`track-${id}`).classList.add('track-active');
+
+            // --- RESET STATES ---
+            // Stop Gallery Timer by default
+            if (galleryInterval) clearInterval(galleryInterval);
+
+            // Default: Hide YouTube Player behind gallery
+            if (ytIframe) ytIframe.style.zIndex = "-1";
+
+
+
+
+            // Play YouTube Video (only if protocol panel is NOT open)
+            if (ytPlayer && ytPlayer.loadVideoById && track.videoId) {
+                // If protocol panel is open, just cue the video (don't auto-play)
+                if (protocolPanelOpen) {
+                    ytPlayer.cueVideoById({
+                        videoId: track.videoId,
+                        suggestedQuality: 'hd720'
+                    });
+                    console.log("Protocol panel open - cueing video without auto-play");
+                } else {
+                    // Normal behavior - load and auto-play
+                    ytPlayer.loadVideoById({
+                        videoId: track.videoId,
+                        suggestedQuality: 'hd720'
+                    });
+                }
+                activePlayerType = 'youtube';
+
+
+                // --- CHECK: SHOW VIDEO OR SHOW GALLERY? ---
+                if (track.showVideo === true) {
+                    // VIDEO MODE: Bring player to front, hide gallery
+                    if (ytIframe) ytIframe.style.zIndex = "20"; // Above gallery (z-index 0) but below controls (z-index 20+)
+                    console.log("Video Mode Active: Gallery disabled");
+                } else {
+                    // GALLERY MODE: Keep player hidden, start slides
+                    const folderKey = `track_${id.toString().padStart(2, '0')}`;
+                    if (galleryMap[folderKey] && galleryMap[folderKey].length > 0) {
+                        startGallery(galleryMap[folderKey]);
+                    } else {
+                        const dummyList = [];
+                        for (let i = 1; i <= (track.imageCount || 3); i++) {
+                            const num = i < 10 ? '0' + i : i;
+                            dummyList.push(`${track.galleryPath || ''}${num}.jpg`);
+                        }
+                        startGallery(dummyList);
+                    }
+                }
+            }
+        }
+
+        function togglePlay() {
+            console.log('togglePlay called');
+
+            if (!currentTrackId) {
+                console.log('No track selected, selecting track 1');
+                selectTrack(1);
+                return;
+            }
+
+            console.log('ytPlayer:', ytPlayer);
+            console.log('activePlayerType:', activePlayerType);
+
+            if (ytPlayer && ytPlayer.getPlayerState) {
+                const state = ytPlayer.getPlayerState();
+                console.log('Player state:', state);
+
+                if (state === 1) { // Playing
+                    console.log('Pausing video');
+                    ytPlayer.pauseVideo();
+                } else {
+                    console.log('Playing video');
+                    ytPlayer.playVideo();
+                }
+            } else {
+                console.error('YouTube player not ready or getPlayerState not available');
+            }
+        }
+
+        function toggleFocusMode() {
+            document.body.classList.toggle('focus-mode');
+        }
+
+        // Cleanup gallery on page unload
+        window.addEventListener('beforeunload', () => {
+            if (galleryInterval) {
+                clearInterval(galleryInterval);
+            }
+        });
+
+        // Init
+        document.addEventListener('DOMContentLoaded', () => {
+            initNoiseCanvas();
+            renderFiles();
+            renderProfiles();
+            renderPlaylist();
+            createVisualizerBars();
+            initCursor();
+            loadGalleryMap();
+        });
+
+        function initCursor() {
+            const cursorDot = document.getElementById('cursor-dot');
+            const cursorGlow = document.getElementById('cursor-glow');
+
+            document.addEventListener('mousemove', (e) => {
+                if (cursorDot) cursorDot.style.transform = `translate(${e.clientX}px, ${e.clientY}px)`;
+                if (cursorGlow) cursorGlow.style.transform = `translate(${e.clientX}px, ${e.clientY}px)`;
+            });
+        }
+
+        function switchTab(tabId) {
+            document.querySelectorAll('nav button').forEach(btn => {
+                btn.classList.remove('active-tab', 'text-white');
+                btn.classList.add('text-gray-300');
+            });
+            const activeBtn = document.getElementById(`nav-${tabId}`);
+            if (activeBtn) {
+                activeBtn.classList.add('active-tab', 'text-white');
+                activeBtn.classList.remove('text-gray-300');
+            }
+            ['home-section', 'files-section', 'profiles-section', 'audio-section'].forEach(id => {
+                document.getElementById(id).classList.add('hidden');
+            });
+            document.getElementById(`${tabId}-section`).classList.remove('hidden');
+            document.getElementById('mobile-menu').classList.add('hidden');
+        }
+
+        function toggleMobileMenu() {
+            document.getElementById('mobile-menu').classList.toggle('hidden');
+        }
+
+        function renderFiles() {
+            const container = document.getElementById('files-grid');
+
+            // Sort articles by sortDate (newest first)
+            const sortedArticles = [...articles].sort((a, b) => {
+                return new Date(b.sortDate) - new Date(a.sortDate);
+            });
+
+            container.innerHTML = sortedArticles.map((article, index) => {
+                // Find original index for onclick handler
+                const originalIndex = articles.findIndex(a => a.title === article.title);
+
+                return `
+        <div class="bg-zinc-900 border border-gray-800 hover:border-gray-600 transition-colors group cursor-pointer" onclick="openArticle(${originalIndex})" style="animation: fadeInUp 0.6s ease forwards ${index * 0.1}s; opacity: 0;">
+            <div class="aspect-video overflow-hidden bg-black relative">
+                ${article.thumbnail ?
+                        `<img src="${article.thumbnail}" alt="${article.title}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">` :
+                        `<div class="w-full h-full" style="background: linear-gradient(135deg, #1a1a1a 0%, #0a0a0a 100%);"></div>`
+                    }
+                <div class="absolute bottom-2 left-2 bg-black/80 px-2 py-1 text-[10px] font-mono-custom text-white">REF: 00${index + 1}-A</div>
+            </div>
+            <div class="p-6">
+                <h3 class="text-xl font-bold text-white group-hover:text-green-500 transition-colors mb-1">${article.title}</h3>
+                <p class="text-xs font-mono-custom text-gray-500 mb-4">${article.date}</p>
+                <p class="text-gray-400 text-sm line-clamp-3">${article.excerpt}</p>
+            </div>
+        </div>
+    `;
+            }).join('');
+        }
+
+        function renderProfiles() {
+            const container = document.getElementById('profiles-grid');
+            container.innerHTML = profiles.map((profile, index) => `
+        <div class="group relative bg-black border border-gray-800 hover:border-gray-600 transition-all duration-500 overflow-hidden" style="animation: fadeInUp 0.6s ease forwards ${index * 0.15}s; opacity: 0;">
+            <div class="aspect-[3/4] overflow-hidden relative">
+                <!-- Video -->
+                <video class="character-video w-full h-full object-cover filter grayscale group-hover:filter-none transition-all duration-700" 
+                       muted loop playsinline preload="metadata">
+                    <source src="${profile.video}" type="video/mp4">
+                </video>
+                <!-- Dark overlay -->
+                <div class="absolute inset-0 bg-black/60 group-hover:bg-black/20 transition-all duration-500"></div>
+                <!-- Character initial overlay -->
+                <div class="absolute inset-0 flex items-center justify-center group-hover:opacity-0 transition-opacity duration-500">
+                    <span class="text-[20vw] md:text-[12rem] font-bold text-white/10 font-mono">${profile.name[0]}</span>
+                </div>
+                <!-- Gradient overlay -->
+                <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent"></div>
+                <!-- Character info -->
+                <div class="absolute bottom-0 left-0 p-6">
+                    <h3 class="text-3xl font-bold text-white mb-1">${profile.name}</h3>
+                    <p style="color: ${profile.color};" class="font-mono-custom text-xs tracking-wider">STATUS: ${profile.status}</p>
+                </div>
+            </div>
+            <div class="p-6 space-y-4">
+                <p class="text-gray-400 text-sm leading-relaxed">${profile.desc}</p>
+                <div class="border-t border-gray-800 pt-4">
+                    <p class="text-xs text-gray-500 font-mono-custom mb-2">${profile.notes}:</p>
+                    <p class="text-sm text-gray-300 italic">${profile.quote}</p>
+                </div>
+            </div>
+        </div>
+    `).join('');
+
+            // Add video interaction functionality
+            setTimeout(() => {
+                const characterVideos = document.querySelectorAll('.character-video');
+
+                // Intersection Observer for scroll-into-view on mobile
+                const observerOptions = {
+                    threshold: 0.5, // Play when 50% visible
+                    rootMargin: '0px'
+                };
+
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        const video = entry.target;
+                        if (entry.isIntersecting && window.innerWidth <= 768) {
+                            // On mobile, play when scrolled into view
+                            video.play().catch(err => console.log('Video play failed:', err));
+                        } else if (!entry.isIntersecting) {
+                            // Pause when out of view
+                            video.pause();
+                            video.currentTime = 0;
+                        }
+                    });
+                }, observerOptions);
+
+                characterVideos.forEach(video => {
+                    const parentCard = video.closest('.group');
+                    if (parentCard) {
+                        // Desktop: hover to play
+                        parentCard.addEventListener('mouseenter', function () {
+                            video.play().catch(err => console.log('Video play failed:', err));
+                        });
+                        parentCard.addEventListener('mouseleave', function () {
+                            if (window.innerWidth > 768) {
+                                // Only pause on desktop hover-out
+                                video.pause();
+                                video.currentTime = 0;
+                            }
+                        });
+
+                        // Click to play (if paused) - doesn't pause if already playing
+                        parentCard.addEventListener('click', function () {
+                            if (video.paused) {
+                                video.play().catch(err => console.log('Video play failed:', err));
+                            }
+                        });
+
+                        // Observe video for scroll-into-view
+                        observer.observe(video);
+                    }
+                });
+            }, 100);
+        }
+
+        function openArticle(index) {
+            const article = articles[index];
+
+            // Map articles to tracks (all 9 articles covered)
+            const articleToTrackMap = {
+                "THE MERIDIAN: NEPAL 1966 - FIELD NOTES": 71,  // Travelers (langtang)
+                "Isla's Emotional Return to the Stage - Cultural Review": 68,  // What You Don't See
+                "ISLA AND THE QUIET TRUTH BEHIND THE NOISE": 67,  // Drop From the Fourth
+                "ISLA - FLIGHT TRAGEDY - 2017": 64,  // Don't Wake Him Yet
+                "From Pymble to the Pit: ISLA": 55,  // This Isn't Therapy
+                "THE RYKER REPORT": 38,  // You Will Thank Me Later
+                "EXPULSION RECORD: ETHEL RYKER": 38,  // You Will Thank Me Later (Ryker-related)
+                "SURVEILLANCE LOG: MOSMAN HOUSE": 38,  // You Will Thank Me Later (Ryker-related)
+                "ANALYSIS: NEGATIVE SPACE": 8   // Structural Psychopathy
+            };
+
+            // START LOADING MUSIC FIRST - before opening modal
+            const trackId = articleToTrackMap[article.title];
+            if (trackId) {
+                console.log(`Archive opened: ${article.title} -> Playing Track ${trackId}`);
+                selectTrack(trackId);
+            }
+
+            // Set up the modal content immediately
+            document.getElementById('modal-title').innerText = article.title;
+
+            // Check if article has external URL (iframe mode)
+            if (article.url) {
+                // Show loading indicator first
+                document.getElementById('modal-content').innerHTML = `
+                    <div class="flex items-center justify-center h-full">
+                        <div class="text-center">
+                            <div class="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-green-500 mb-4"></div>
+                            <p class="text-gray-500 font-mono-custom text-sm">LOADING ARCHIVE...</p>
+                        </div>
+                    </div>
+                `;
+
+                // Show modal immediately
+                document.getElementById('info-modal').classList.remove('hidden');
+
+                // Hide header and remove padding for immersive view
+                document.getElementById('modal-title').parentElement.style.display = 'none';
+                document.getElementById('modal-content').classList.remove('p-8');
+
+                // Load iframe after a brief moment
+                setTimeout(() => {
+                    document.getElementById('modal-content').innerHTML = `
+                        <iframe 
+                            src="${article.url}" 
+                            class="w-full border-0 block"
+                            style="height: 100vh; min-height: 100vh;"
+                            title="${article.title}"
+                        ></iframe>
+                    `;
+                }, 100);
+            } else {
+                // Original content rendering
+                document.getElementById('modal-content').innerHTML = `
+                    <div class="flex justify-between text-xs font-mono-custom text-gray-500 mb-6 border-b border-gray-800 pb-2">
+                        <span>AUTHOR: ${article.author}</span>
+                        <span>DATE: ${article.date}</span>
+                    </div>
+                    <div class="prose prose-invert max-w-none text-gray-300 text-sm leading-relaxed">${article.content}</div>
+                `;
+
+                // Show header and padding for text view
+                document.getElementById('modal-title').parentElement.style.display = 'flex';
+                document.getElementById('modal-content').classList.add('p-8');
+
+                // Show modal
+                document.getElementById('info-modal').classList.remove('hidden');
+            }
+        }
+
+        function openModal(char) {
+            const profile = profiles.find(p => p.id === char);
+            if (!profile) return;
+
+            // Reset layout for profiles
+            document.getElementById('modal-title').parentElement.style.display = 'flex';
+            document.getElementById('modal-content').classList.add('p-8');
+
+            document.getElementById('modal-title').innerText = `SUBJECT: ${profile.name}`;
+            document.getElementById('modal-content').innerHTML = `
+        <div class="mb-4 p-3 bg-black/50 border border-gray-700" style="color: ${profile.color};">
+            STATUS: ${profile.status}
+        </div>
+        <p class="text-gray-300 text-sm leading-relaxed">${profile.desc}</p>
+        <div class="mt-4 border-t border-gray-800 pt-4">
+            <p class="text-xs text-gray-500 font-mono-custom mb-2">${profile.notes}:</p>
+            <p class="text-sm text-gray-300 italic">${profile.quote}</p>
+        </div>
+    `;
+            document.getElementById('info-modal').classList.remove('hidden');
+        }
+
+        function closeModal() {
+            // Reset defaults
+            document.getElementById('modal-title').parentElement.style.display = 'flex';
+            document.getElementById('modal-content').classList.add('p-8');
+
+            // Stop all iframes (including YouTube embeds) using postMessage
+            const modalContent = document.getElementById('modal-content');
+            const iframes = modalContent.querySelectorAll('iframe');
+
+            iframes.forEach(iframe => {
+                // For YouTube iframes, send pause command via postMessage
+                if (iframe.src.includes('youtube.com')) {
+                    iframe.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*');
+                    console.log('Sent pause command to YouTube iframe');
+                }
+
+                // Also reload the iframe as fallback for non-YouTube content
+                const src = iframe.src;
+                iframe.src = '';
+                setTimeout(() => {
+                    iframe.src = src;
+                }, 100);
+            });
+
+            // Hide modal
+            document.getElementById('info-modal').classList.add('hidden');
+
+            // Resume music when closing modal
+            if (ytPlayer && ytPlayer.playVideo) {
+                ytPlayer.playVideo();
+                console.log('Music resumed - closing archive modal');
+            }
+        }
+
+        function renderPlaylist() {
+            const container = document.getElementById('playlist-container');
+            container.innerHTML = tracks.map(track => `
+        <div id="track-${track.id}" class="p-3 border-b border-gray-800 hover:bg-zinc-800 cursor-pointer transition-colors flex justify-between items-center group" onclick="selectTrack(${track.id})">
+            <div class="flex items-center gap-3">
+                <span class="text-xs font-mono-custom text-gray-500 group-hover:text-green-500">${track.id < 10 ? '0' + track.id : track.id}</span>
+                <p class="text-sm font-medium text-gray-300 group-hover:text-white">${track.title}</p>
+            </div>
+            <div class="text-right">
+                <p class="text-xs font-mono-custom text-gray-500">${track.time}</p>
+                <p class="text-xs text-gray-600">${track.storyDate}</p>
+            </div>
+        </div>
+    `).join('');
+        }
+
+
+
+        function toggleFocusMode() {
+            document.getElementById('audio-section').classList.toggle('focus-mode');
+        }
+
+
+        function createVisualizerBars() {
+            const container = document.getElementById('visualizer-container');
+            let bars = '';
+            for (let i = 0; i < 60; i++) {
+                bars += `<div class="bar" style="height: ${Math.random() * 50 + 10}%; animation-delay: -${Math.random()}s"></div>`;
+            }
+            container.innerHTML = bars;
+        }
+
+        function initNoiseCanvas() {
+            const canvas = document.getElementById('noiseCanvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            const resize = () => { canvas.width = window.innerWidth; canvas.height = window.innerHeight; };
+            window.addEventListener('resize', resize);
+            resize();
+            function drawNoise() {
+                const w = canvas.width, h = canvas.height;
+                const idata = ctx.createImageData(w, h);
+                const buffer32 = new Uint32Array(idata.data.buffer);
+                for (let i = 0; i < buffer32.length; i++) {
+                    if (Math.random() < 0.03) buffer32[i] = 0xff000000 | (Math.random() * 0x202020);
+                }
+                ctx.putImageData(idata, 0, 0);
+                requestAnimationFrame(drawNoise);
+            }
+            drawNoise();
+        }
+
+        // --- CIPHER GAME ---
+        function toggleCipherGame(protocolName) {
+            const panel = document.getElementById('cipher-game-panel');
+            const iframe = document.getElementById('cipher-game-iframe');
+            const root = document.documentElement;
+
+            // Protocol URL mapping - Uses centralized manifest
+            const protocolUrls = {
+                'isla': PIXEL_MANIFEST.GAMES.ISLA,
+                'trivia': PIXEL_MANIFEST.GAMES.TRIVIA,
+                'dom': PIXEL_MANIFEST.GAMES.DOMINIC,
+                'ethel': PIXEL_MANIFEST.GAMES.ETHEL
+            };
+
+            // Protocol theme colors
+            const protocolThemes = {
+                'isla': { color1: '#ff00ff', color2: '#9d00ff' },
+                'trivia': { color1: '#00ff41', color2: '#00ff00' },
+                'dom': { color1: '#ff0055', color2: '#ff0000' },
+                'ethel': { color1: '#00d4ff', color2: '#0088ff' }
+            };
+
+            // If no protocol specified (close button clicked), close the panel
+            if (!protocolName) {
+                panel.classList.remove('open');
+                protocolPanelOpen = false; // Mark panel as closed
+
+                // Revert theme to default green
+                root.style.setProperty('--glitch-color-1', '#00ff41');
+                root.style.setProperty('--glitch-color-2', '#ff0055');
+
+                // Resume main site music
+                if (ytPlayer && typeof ytPlayer.playVideo === 'function') {
+                    ytPlayer.playVideo();
+                }
+
+                // Reset game (clear iframe completely - both src AND srcdoc)
+                iframe.removeAttribute('srcdoc');
+                iframe.src = 'about:blank';
+
+                return;
+            }
+
+            // Opening a protocol
+            const isAlreadyOpen = panel.classList.contains('open');
+
+            // Set the theme for the selected protocol
+            const theme = protocolThemes[protocolName];
+            if (theme) {
+                root.style.setProperty('--glitch-color-1', theme.color1);
+                root.style.setProperty('--glitch-color-2', theme.color2);
+            }
+
+            // Pause main site music
+            if (ytPlayer && typeof ytPlayer.pauseVideo === 'function') {
+                ytPlayer.pauseVideo();
+            }
+
+            // Load the protocol URL
+            const protocolUrl = protocolUrls[protocolName];
+            if (protocolUrl) {
+                // Clear any stale srcdoc before loading new URL
+                iframe.removeAttribute('srcdoc');
+                iframe.src = protocolUrl;
+            } else {
+                // Fallback for undefined protocols
+                iframe.src = 'about:blank';
+                iframe.srcdoc = `
+                    <html>
+                        <body style="background: #000; color: #ff0055; font-family: monospace; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0;">
+                            <div style="text-align: center;">
+                                <h1 style="font-size: 3rem; margin-bottom: 1rem;">ACCESS DENIED</h1>
+                                <p style="font-size: 1.2rem;">Protocol "${protocolName.toUpperCase()}" is currently unavailable.</p>
+                                <p style="font-size: 0.9rem; margin-top: 2rem; opacity: 0.7;">CLEARANCE LEVEL: INSUFFICIENT</p>
+                            </div>
+                        </body>
+                    </html>
+                `;
+            }
+
+            // Open the panel if not already open
+            if (!isAlreadyOpen) {
+                panel.classList.add('open');
+            }
+            protocolPanelOpen = true; // Mark panel as open (prevents music auto-start)
+        }
+
+    </script>
+
+    <!-- Bio Popup Modal -->
+    <div id="bioPopup"
+        class="fixed inset-0 bg-black/90 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4"
+        onclick="closeBioPopup()">
+        <div class="bg-gray-900 border border-green-500/30 rounded-lg max-w-2xl w-full p-8 relative"
+            onclick="event.stopPropagation()">
+            <!-- Close button -->
+            <button onclick="closeBioPopup()"
+                class="absolute top-4 right-4 text-green-500 hover:text-green-400 transition-colors">
+                <span class="material-symbols-outlined">close</span>
+            </button>
+
+            <!-- Bio Content -->
+            <h2 class="text-3xl font-bold text-green-500 mb-4 glitch-text" data-text="PIXELSTORTION">PIXELSTORTION</h2>
+            <div class="text-gray-300 space-y-4 font-mono-custom text-sm leading-relaxed">
+                <p>Pixelstortion has the goal of producing Adjacent Realities. Immersive narrative ecosystems that
+                    operate with the complexity and consequence of the real world.
+                </p>
+            </div>
+
+            <!-- Links Section -->
+            <div class="mt-6 space-y-2 border-t border-green-500/20 pt-6">
+                <a href="https://bio.pixelstortion.com" target="_blank"
+                    class="block text-green-500 hover:text-green-400 transition-colors text-sm font-mono-custom">
+                    → BIO
+                </a>
+                <a href="#" class="block text-green-500 hover:text-green-400 transition-colors text-sm font-mono-custom"
+                    onclick="try { window.parent.location.href = PIXEL_MANIFEST.MATAALA; } catch(e) { window.location.href = PIXEL_MANIFEST.MATAALA; } event.preventDefault();">
+                    → NALANI - Historical Fiction
+                </a>
+                <span class="block text-gray-500 text-sm font-mono-custom cursor-default">
+                    → SILENCE IS THE TRAUMA - Crime Fiction
+                </span>
+
+                <!-- Social Media Links -->
+                <a href="https://open.spotify.com/artist/3iSE6REoCh9Noh6hhzIytf?si=axB0ucGeQ9KFlcvAg0ziew"
+                    target="_blank"
+                    class="block text-green-500 hover:text-green-400 transition-colors text-sm font-mono-custom">
+                    → Spotify
+                </a>
+                <a href="https://www.youtube.com/@PixelStortion" target="_blank"
+                    class="block text-green-500 hover:text-green-400 transition-colors text-sm font-mono-custom">
+                    → YouTube
+                </a>
+                <a href="https://instagram.com/@pixelstortion" target="_blank"
+                    class="block text-green-500 hover:text-green-400 transition-colors text-sm font-mono-custom">
+                    → Instagram
+                </a>
+                <a href="https://www.tiktok.com/@pixelstortion" target="_blank"
+                    class="block text-green-500 hover:text-green-400 transition-colors text-sm font-mono-custom">
+                    → TikTok
+                </a>
+                <a href="https://facebook.com/PixelStortion" target="_blank"
+                    class="block text-green-500 hover:text-green-400 transition-colors text-sm font-mono-custom">
+                    → Facebook
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function openBioPopup() {
+            document.getElementById('bioPopup').classList.remove('hidden');
+            document.getElementById('bioPopup').classList.add('flex');
+        }
+
+        function closeBioPopup() {
+            document.getElementById('bioPopup').classList.add('hidden');
+            document.getElementById('bioPopup').classList.remove('flex');
+        }
+
+        // Close on Escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeBioPopup();
+            }
+        });
+
+        // INSTANT AUDIO - Just select the track on load
+        window.addEventListener('load', function () {
+            // Visitor Selection Map
+            const selectionMap = {
+                "default": 16,
+                "langtang": 71,
+                "emotional_return": 68,
+                "drop_from_the_fourth": 67,
+                "dont_wake_him": 64,
+                "pymble": 55,
+                "ryker_report": 38,
+                "negative_space": 8
+            };
+
+            // Check URL for selection parameter
+            const urlParams = new URLSearchParams(window.location.search);
+            const selectionParam = urlParams.get('selection');
+            let trackId = selectionMap["default"];
+
+            if (selectionParam) {
+                for (const [key, id] of Object.entries(selectionMap)) {
+                    if (key !== "default" && selectionParam.toLowerCase().includes(key)) {
+                        trackId = id;
+                        console.log(`Visitor Selection: ${key} -> Track ${id}`);
+                        break;
+                    }
+                }
+            }
+
+            // Just select the track - the media player handles everything
+            setTimeout(() => selectTrack(trackId), 500);
+        });
+
+        // --- MEDIA PANEL (Cinema/Gallery) ---
+        let mediaPanelOpen = false;
+
+        function toggleMediaPanel(type) {
+            const panel = document.getElementById('media-panel');
+            const iframe = document.getElementById('media-panel-iframe');
+
+            // Media URL mapping - Uses centralized manifest
+            const mediaUrls = {
+                'cinema': PIXEL_MANIFEST.CINEMA,
+                'gallery': PIXEL_MANIFEST.ETHEL_GALLERY
+            };
+
+            // If no type specified (close button clicked), close the panel
+            if (!type) {
+                panel.classList.remove('open');
+                mediaPanelOpen = false;
+
+                // Resume main site music
+                if (ytPlayer && typeof ytPlayer.playVideo === 'function') {
+                    ytPlayer.playVideo();
+                }
+
+                // Clear iframe
+                iframe.src = 'about:blank';
+                return;
+            }
+
+            // Opening a media panel
+            // Pause main site music
+            if (ytPlayer && typeof ytPlayer.pauseVideo === 'function') {
+                ytPlayer.pauseVideo();
+            }
+
+            // Load the media URL
+            const mediaUrl = mediaUrls[type];
+            if (mediaUrl) {
+                iframe.src = mediaUrl;
+            } else {
+                iframe.src = 'about:blank';
+            }
+
+            // Open the panel
+            panel.classList.add('open');
+            mediaPanelOpen = true;
+        }
+    </script>
+
+</body>
+
+</html>
