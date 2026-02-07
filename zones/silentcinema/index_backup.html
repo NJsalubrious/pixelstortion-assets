@@ -369,15 +369,7 @@
         <div id="video-frame"
             class="flex-1 relative bg-black flex items-center justify-center overflow-hidden border-b border-[#222]">
             <div id="youtube-player" class="w-full h-full absolute inset-0"></div>
-            <div id="interaction-shield" class="absolute inset-0 z-50 pointer-events-none"></div>
-
-            <div id="uplink-trigger" onclick="establishUplink()"
-                class="absolute inset-0 z-[60] flex items-center justify-center bg-black/90 cursor-pointer">
-                <div
-                    class="border border-green-500 p-6 text-green-500 font-mono-custom text-sm hover:bg-green-500 hover:text-black transition-all tracking-widest animate-pulse">
-                    [ ESTABLISH VISUAL UPLINK ]
-                </div>
-            </div>
+            <div id="interaction-shield" class="absolute inset-0 z-50 pointer-events-auto" onclick="togglePlay()"></div>
 
             <div id="fs-tools" class="hidden absolute top-6 right-6 z-50 flex gap-3">
                 <button onclick="toggleMobileTracklist(true)"
@@ -894,69 +886,14 @@
 
         // --- YOUTUBE & CONTROLS ---
 
-        let apiReady = false;
-
         function onYouTubeIframeAPIReady() {
-            apiReady = true;
-        }
-
-        function establishUplink() {
-            if (!apiReady) {
-                alert("Uplink unstable (API not ready). Please wait...");
-                return;
-            }
-
-            // 1. Remove the button
-            const btn = document.getElementById('uplink-trigger');
-            if (btn) btn.style.display = 'none';
-
-            // 2. Prepare the first track (so we don't load an empty player)
-            initPlayerWithFirstTrack();
-        }
-
-        async function initPlayerWithFirstTrack() {
-            // Manually fetch the list once to get the Start ID
-            const charsToFetch = activeCharId === 'all'
-                ? ['isla', 'ethel', 'dominic', 'sticky', 'kinley', 'clipboardMan']
-                : [activeCharId];
-
-            const promises = charsToFetch.map(async (cid) => STATIC_MEDIA[cid]?.[activeFilter] || []);
-            const results = await Promise.all(promises);
-            const initialTracks = results.flat();
-
-            // Set global state
-            currentTracks = initialTracks;
-
-            // If we have tracks, grab the first ID. If not, use a fallback or empty.
-            const firstVideoId = (initialTracks.length > 0) ? initialTracks[0].id : "";
-
-            // 3. CREATE THE PLAYER NOW (User just clicked!)
             player = new YT.Player('youtube-player', {
-                host: 'https://www.youtube-nocookie.com',
-                height: '100%',
-                width: '100%',
-                videoId: firstVideoId,
-                playerVars: {
-                    'autoplay': 1,
-                    'controls': 1,
-                    'origin': window.location.origin,
-                    'showinfo': 0,
-                    'rel': 0,
-                    'modestbranding': 1,
-                    'iv_load_policy': 3,
-                    'fs': 0,
-                    'disablekb': 1
-                },
+                height: '100%', width: '100%',
+                playerVars: { 'controls': 0, 'showinfo': 0, 'rel': 0, 'modestbranding': 1, 'iv_load_policy': 3, 'fs': 0, 'disablekb': 1 },
                 events: {
-                    'onReady': (event) => {
+                    'onReady': () => {
                         renderMenu();
-                        renderTracks();
-                        // Highlight the first track in the UI
-                        if (currentTracks.length > 0) {
-                            const rows = document.querySelectorAll(`[id="track-row-0"]`);
-                            rows.forEach(r => r.classList.add('active'));
-                            document.getElementById('current-title').innerText = currentTracks[0].title.toUpperCase();
-                        }
+                        updateTrackList(); // Initial Load (All + Videos)
                     },
                     'onStateChange': onPlayerStateChange
                 }
