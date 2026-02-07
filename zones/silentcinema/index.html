@@ -371,6 +371,14 @@
             <div id="youtube-player" class="w-full h-full absolute inset-0"></div>
             <div id="interaction-shield" class="absolute inset-0 z-50 pointer-events-none"></div>
 
+            <div id="uplink-trigger" onclick="establishUplink()"
+                class="absolute inset-0 z-[60] flex items-center justify-center bg-black/90 cursor-pointer">
+                <div
+                    class="border border-green-500 p-6 text-green-500 font-mono-custom text-sm hover:bg-green-500 hover:text-black transition-all tracking-widest animate-pulse">
+                    [ ESTABLISH VISUAL UPLINK ]
+                </div>
+            </div>
+
             <div id="fs-tools" class="hidden absolute top-6 right-6 z-50 flex gap-3">
                 <button onclick="toggleMobileTracklist(true)"
                     class="bg-black/80 text-white p-3 rounded-full border border-green-500 hover:bg-green-900/50 transition-colors shadow-lg">
@@ -888,16 +896,41 @@
 
         function onYouTubeIframeAPIReady() {
             player = new YT.Player('youtube-player', {
-                height: '100%', width: '100%',
-                playerVars: { 'controls': 1, 'showinfo': 0, 'rel': 0, 'modestbranding': 1, 'iv_load_policy': 3, 'fs': 0, 'disablekb': 1 },
+                host: 'https://www.youtube-nocookie.com',
+                height: '100%',
+                width: '100%',
+                playerVars: {
+                    'controls': 1,
+                    'origin': window.location.origin,
+                    'showinfo': 0,
+                    'rel': 0,
+                    'modestbranding': 1,
+                    'iv_load_policy': 3,
+                    'fs': 0,
+                    'disablekb': 1
+                },
                 events: {
-                    'onReady': () => {
-                        renderMenu();
-                        updateTrackList(); // Initial Load (All + Videos)
-                    },
+                    'onReady': onPlayerReady,
                     'onStateChange': onPlayerStateChange
                 }
             });
+        }
+
+        // New function to handle the "Ready" state without auto-playing
+        function onPlayerReady(event) {
+            renderMenu();
+            // DO NOT call updateTrackList() here.
+            // We wait for the user to click the "Establish Uplink" button.
+        }
+
+        function establishUplink() {
+            // 1. Remove the button
+            const btn = document.getElementById('uplink-trigger');
+            if (btn) btn.style.display = 'none';
+
+            // 2. NOW we load the data and play.
+            // Because this was triggered by a CLICK, YouTube trusts it.
+            updateTrackList();
         }
 
         function onPlayerStateChange(event) {
