@@ -935,13 +935,12 @@
             // If we have tracks, grab the first ID. If not, use a fallback or empty.
             const firstVideoId = (initialTracks.length > 0) ? initialTracks[0].id : "";
 
-            // 3. CREATE THE PLAYER NOW (User just clicked!)
+            // 3. CREATE THE PLAYER NOW — empty, no videoId (avoids Edge mobile bot detection)
             player = new YT.Player('youtube-player', {
                 height: '100%',
                 width: '100%',
-                videoId: firstVideoId,
                 playerVars: {
-                    'autoplay': window.innerWidth > 768 ? 1 : 0,
+                    'autoplay': 0,
                     'controls': 1,
                     'origin': window.location.origin,
                     'showinfo': 0,
@@ -962,8 +961,9 @@
                         }
                         renderMenu();
                         renderTracks();
-                        // Highlight the first track in the UI
-                        if (currentTracks.length > 0) {
+                        // Cue (don't auto-play) the first track now that player is ready
+                        if (currentTracks.length > 0 && firstVideoId) {
+                            player.cueVideoById(firstVideoId);
                             const rows = document.querySelectorAll(`[id="track-row-0"]`);
                             rows.forEach(r => r.classList.add('active'));
                             document.getElementById('current-title').innerText = currentTracks[0].title.toUpperCase();
