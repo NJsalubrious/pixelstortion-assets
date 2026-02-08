@@ -18,7 +18,7 @@
         rel="stylesheet" />
 
     <!-- Centralized URL Manifest - MUST be loaded before other scripts -->
-    <script src="/site-manifest.js"></script>
+    <script src="../../site-manifest.js"></script>
     <style>
         :root {
             --glitch-color-1: #00ff41;
@@ -1273,6 +1273,9 @@
                             id="nav-profiles" onclick="switchTab('profiles')">SUBJECTS</button>
                         <button
                             class="text-gray-300 hover:text-white px-3 py-2 rounded-md font-medium transition-colors"
+                            id="nav-games" onclick="switchTab('games')">GAMES</button>
+                        <button
+                            class="text-gray-300 hover:text-white px-3 py-2 rounded-md font-medium transition-colors"
                             id="nav-audio" onclick="switchTab('audio')">THE STORY</button>
                     </div>
                 </div>
@@ -1298,6 +1301,9 @@
             <button
                 class="text-gray-300 hover:text-white block px-3 py-2 rounded-md text-base font-medium w-full text-left"
                 onclick="switchTab('profiles')">SUBJECTS</button>
+            <button
+                class="text-gray-300 hover:text-white block px-3 py-2 rounded-md text-base font-medium w-full text-left"
+                onclick="switchTab('games')">GAMES</button>
             <button
                 class="text-gray-300 hover:text-white block px-3 py-2 rounded-md text-base font-medium w-full text-left"
                 onclick="switchTab('audio')">THE STORY</button>
@@ -1362,6 +1368,17 @@
                     <p class="font-mono-custom text-gray-500 text-sm">KEY PLAYERS IN THE RYKER SYNDICATE CASE</p>
                 </header>
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-8" id="profiles-grid">
+                </div>
+            </div>
+        </section>
+
+        <section class="hidden h-full overflow-y-auto p-6 md:p-12 bg-zinc-950 pb-24 pt-28" id="games-section">
+            <div class="max-w-7xl mx-auto">
+                <header class="mb-12 border-b border-gray-800 pb-6 mt-16">
+                    <h2 class="text-4xl md:text-5xl font-bold text-white mb-2">GAMES</h2>
+                    <p class="font-mono-custom text-gray-500 text-sm">FOR BETTER OR FOR WORSE</p>
+                </header>
+                <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4" id="games-grid">
                 </div>
             </div>
         </section>
@@ -1467,27 +1484,7 @@
 
 
 
-    <!-- Protocol Tabs Container -->
-    <div id="protocol-tabs">
-        <button onclick="toggleCipherGame('isla')" class="protocol-tab"
-            style="color: rgba(0, 255, 65, 0.7); border-color: rgba(0, 255, 65, 0.3);" data-protocol="isla">
-            ISLA
-        </button>
 
-        <button onclick="toggleCipherGame('trivia')" class="protocol-tab"
-            style="color: rgba(0, 255, 65, 0.7); border-color: rgba(0, 255, 65, 0.3);" data-protocol="trivia">
-            TRIVIA
-        </button>
-        <button onclick="toggleCipherGame('ethel')" class="protocol-tab"
-            style="color: rgba(255, 157, 0, 0.7); border-color: rgb(255, 157, 0);" data-protocol="ethel">
-            ETHEL
-        </button>
-        <button onclick="toggleCipherGame('dom')" class="protocol-tab"
-            style="color: rgba(0, 255, 65, 0.7); border-color: rgba(0, 255, 65, 0.3);" data-protocol="dom">
-            DOMINIC
-        </button>
-
-    </div>
 
     <!-- Right Side Panel Tabs -->
     <div id="right-panel-tabs">
@@ -2002,6 +1999,7 @@
             initNoiseCanvas();
             renderFiles();
             renderProfiles();
+            renderGames();
             renderPlaylist();
             createVisualizerBars();
             initCursor();
@@ -2028,7 +2026,7 @@
                 activeBtn.classList.add('active-tab', 'text-white');
                 activeBtn.classList.remove('text-gray-300');
             }
-            ['home-section', 'files-section', 'profiles-section', 'audio-section'].forEach(id => {
+            ['home-section', 'files-section', 'profiles-section', 'games-section', 'audio-section'].forEach(id => {
                 document.getElementById(id).classList.add('hidden');
             });
             document.getElementById(`${tabId}-section`).classList.remove('hidden');
@@ -2504,6 +2502,22 @@
         </div>
     </div>
 
+    <!-- Game Modal (Center Screen) -->
+    <div id="game-modal" class="fixed inset-0 bg-black/90 backdrop-blur-sm z-50 hidden items-center justify-center p-4"
+        onclick="closeGameModal()">
+        <div id="game-modal-content" class="relative w-full max-w-2xl h-[80vh] bg-black rounded-lg overflow-hidden"
+            onclick="event.stopPropagation()">
+            <!-- Close button -->
+            <button onclick="closeGameModal()"
+                class="absolute top-4 right-4 z-50 text-green-500 hover:text-green-400 transition-colors bg-black/50 rounded-full p-2">
+                <span class="material-symbols-outlined">close</span>
+            </button>
+            <!-- Game iframe -->
+            <iframe id="game-modal-iframe" src="about:blank" class="w-full h-full border-0"
+                allow="autoplay; fullscreen"></iframe>
+        </div>
+    </div>
+
     <script>
         function openBioPopup() {
             document.getElementById('bioPopup').classList.remove('hidden');
@@ -2519,8 +2533,103 @@
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') {
                 closeBioPopup();
+                closeGameModal();
             }
         });
+
+        // ============================================================
+        // GAMES SECTION
+        // ============================================================
+
+        // Build games array from manifest
+        const games = Object.entries(PIXEL_MANIFEST.GAMES).map(([key, game]) => ({
+            id: key.toLowerCase(),
+            name: game.name,
+            url: game.url,
+            thumb: game.thumb,
+            fullscreen: game.fullscreen
+        }));
+
+        // Resolve manifest root-relative paths to be relative to this page (zones/silence/)
+        function resolveManifestPath(path) {
+            if (path && path.startsWith('/')) {
+                return '../..' + path;
+            }
+            return path;
+        }
+
+        function renderGames() {
+            const container = document.getElementById('games-grid');
+
+            container.innerHTML = games.map((game, index) => `
+        <div class="group relative bg-black border border-gray-800 hover:border-gray-600 transition-all duration-500 overflow-hidden cursor-pointer" 
+             onclick="openGameModal('${game.id}')"
+             style="animation: fadeInUp 0.6s ease forwards ${index * 0.1}s; opacity: 0;">
+            <div class="aspect-[3/4] overflow-hidden relative">
+                <!-- Thumbnail Image -->
+                <img src="${resolveManifestPath(game.thumb)}" 
+                     alt="${game.name}" 
+                     class="w-full h-full object-cover filter grayscale group-hover:filter-none transition-all duration-700">
+                <!-- Dark overlay -->
+                <div class="absolute inset-0 bg-black/60 group-hover:bg-black/20 transition-all duration-500"></div>
+                <!-- Gradient overlay -->
+                <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent"></div>
+                <!-- Game name -->
+                <div class="absolute bottom-0 left-0 p-4 md:p-6">
+                    <h3 class="text-xl md:text-2xl font-bold text-white mb-1">${game.name}</h3>
+                    <p class="font-mono-custom text-xs tracking-wider text-green-500 group-hover:text-green-400">PLAY NOW</p>
+                </div>
+            </div>
+        </div>
+    `).join('');
+        }
+
+        function openGameModal(gameId) {
+            const game = games.find(g => g.id === gameId);
+            if (!game) return;
+
+            const modal = document.getElementById('game-modal');
+            const iframe = document.getElementById('game-modal-iframe');
+            const modalContent = document.getElementById('game-modal-content');
+
+            // Set modal size based on fullscreen flag
+            if (game.fullscreen) {
+                modalContent.className = 'relative w-[95vw] h-[90vh] bg-black rounded-lg overflow-hidden';
+            } else {
+                modalContent.className = 'relative w-full max-w-2xl h-[80vh] bg-black rounded-lg overflow-hidden';
+            }
+
+            // Resolve game URL - convert root-relative to page-relative
+            let gameUrl = resolveManifestPath(game.url);
+            console.log('Opening game:', game.name, '->', gameUrl);
+            iframe.src = gameUrl;
+
+            // Pause main site music
+            if (ytPlayer && typeof ytPlayer.pauseVideo === 'function') {
+                ytPlayer.pauseVideo();
+            }
+
+            // Show modal
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function closeGameModal() {
+            const modal = document.getElementById('game-modal');
+            const iframe = document.getElementById('game-modal-iframe');
+
+            // Clear iframe
+            iframe.src = 'about:blank';
+
+            // Resume music
+            if (ytPlayer && typeof ytPlayer.playVideo === 'function') {
+                ytPlayer.playVideo();
+            }
+
+            // Hide modal
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
 
         // INSTANT AUDIO - Just select the track on load
         window.addEventListener('load', function () {
