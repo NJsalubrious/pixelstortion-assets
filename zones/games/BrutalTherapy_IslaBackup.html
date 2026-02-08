@@ -416,6 +416,8 @@
             document.getElementById('verb-1').innerText = r.verbs[1];
             document.getElementById('micro-1').innerText = r.micros[1];
 
+            document.getElementById('choice-0').disabled = false;
+            document.getElementById('choice-1').disabled = false;
             document.getElementById('choice-0').onclick = () => choose(0);
             document.getElementById('choice-1').onclick = () => choose(1);
         }
