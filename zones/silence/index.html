@@ -1693,7 +1693,8 @@
                     'fs': 0,
                     'modestbranding': 1,
                     'rel': 0,
-                    'playsinline': 1
+                    'playsinline': 1,
+                    'origin': window.location.origin
                 },
                 events: {
                     'onReady': onPlayerReady,
@@ -1731,8 +1732,15 @@
                 }
             }
 
-            // Play the selected track
-            setTimeout(() => selectTrack(trackId), 500);
+            // On mobile, just cue the track (don't auto-play) to avoid YouTube bot detection
+            if (window.innerWidth <= 768) {
+                console.log('Mobile detected: track cued, tap play to start');
+                selectTrack(trackId);
+                // Pause immediately so user must tap play
+                setTimeout(() => { if (ytPlayer && ytPlayer.pauseVideo) ytPlayer.pauseVideo(); }, 800);
+            } else {
+                setTimeout(() => selectTrack(trackId), 500);
+            }
         }
 
         function onPlayerStateChange(event) {
@@ -2647,8 +2655,14 @@
                 }
             }
 
-            // Just select the track - the media player handles everything
-            setTimeout(() => selectTrack(trackId), 500);
+            // On mobile, just cue the track (don't auto-play) to avoid YouTube bot detection
+            if (window.innerWidth <= 768) {
+                console.log('Mobile detected: track cued, tap play to start');
+                selectTrack(trackId);
+                setTimeout(() => { if (ytPlayer && ytPlayer.pauseVideo) ytPlayer.pauseVideo(); }, 800);
+            } else {
+                setTimeout(() => selectTrack(trackId), 500);
+            }
         });
 
         // --- MEDIA PANEL (Cinema/Gallery) ---

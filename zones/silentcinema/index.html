@@ -937,7 +937,7 @@
                 width: '100%',
                 videoId: firstVideoId,
                 playerVars: {
-                    'autoplay': 1,
+                    'autoplay': window.innerWidth > 768 ? 1 : 0,
                     'controls': 1,
                     'origin': window.location.origin,
                     'showinfo': 0,
