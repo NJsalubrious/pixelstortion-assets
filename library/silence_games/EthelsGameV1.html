@@ -706,6 +706,9 @@
                 // This always advances to the next card
                 isProcessing = true;
 
+                // Stop any currently playing audio immediately
+                AudioEngine.stop();
+
                 // Visual Exit
                 card.classList.add('exit-left');
 
@@ -713,9 +716,12 @@
                 state.comfort += 20;
                 state.blurLevel = Math.min(4, state.blurLevel + 1);
 
-                // Play therapist audio + glitch SFX
-                AudioEngine.play(data.therapistAudio);
+                // Play glitch SFX first (150ms burst), then start therapist voice
+                // after the SFX clears — prevents audio contention/stuttering
                 SFX.glitchBlur();
+                setTimeout(() => {
+                    AudioEngine.play(data.therapistAudio);
+                }, 200);
 
                 // Cap values
                 state.evidence = Math.max(0, Math.min(100, state.evidence));
@@ -723,11 +729,11 @@
                 updateHUD();
 
                 if (state.evidence <= 0) {
-                    setTimeout(() => { isProcessing = false; endGame("gaslight"); }, 400);
+                    setTimeout(() => { isProcessing = false; endGame("gaslight"); }, 500);
                 } else {
                     state.index++;
                     hasInvestigated = false;
-                    setTimeout(() => { isProcessing = false; renderCard(state.index); }, 400);
+                    setTimeout(() => { isProcessing = false; renderCard(state.index); }, 500);
                 }
 
             } else {
