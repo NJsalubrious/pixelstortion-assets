@@ -37,7 +37,7 @@
             position: fixed;
             inset: 0;
             z-index: 1;
-            background: rgba(0, 0, 0, 0.82);
+            background: rgba(0, 0, 0, 0.72);
         }
 
         /* CRT Effects */
@@ -126,14 +126,14 @@
             inset: 0;
             background-size: cover;
             background-position: center;
-            opacity: 0.5;
+            opacity: 0.85;
             z-index: 0;
         }
 
         .card-bg-darken {
             position: absolute;
             inset: 0;
-            background: linear-gradient(180deg, rgba(0, 0, 0, 0.45) 0%, rgba(17, 17, 17, 0.8) 100%);
+            background: linear-gradient(180deg, rgba(0, 0, 0, 0.2) 0%, rgba(17, 17, 17, 0.55) 100%);
             z-index: 1;
         }
 
@@ -690,20 +690,25 @@
         // =============================================
         // SWIPE HANDLER (with audio + SFX)
         // =============================================
+        let isProcessing = false; // prevent double-clicks
+        let hasInvestigated = false; // track if current card was investigated
+
         function handleSwipe(dir) {
-            if (!state.gameStarted) return;
+            if (!state.gameStarted || isProcessing) return;
 
             const card = document.getElementById(`card-${state.index}`);
             if (!card) return;
 
             const data = CARDS[state.index];
 
-            // Visual Exit
-            card.classList.add(dir === 'left' ? 'exit-left' : 'exit-right');
-
-            // Logic + Audio
             if (dir === 'left') {
                 // REFRAME (Trap): Lose integrity, gain comfort, increase blur
+                // This always advances to the next card
+                isProcessing = true;
+
+                // Visual Exit
+                card.classList.add('exit-left');
+
                 state.evidence -= 20;
                 state.comfort += 20;
                 state.blurLevel = Math.min(4, state.blurLevel + 1);
@@ -711,28 +716,43 @@
                 // Play therapist audio + glitch SFX
                 AudioEngine.play(data.therapistAudio);
                 SFX.glitchBlur();
-            } else {
-                // INVESTIGATE (Truth): Gain integrity, lose comfort, clear blur
-                state.evidence += 10;
-                state.comfort -= 10;
-                state.blurLevel = Math.max(0, state.blurLevel - 1);
 
-                // Play Ethel audio + evidence lock SFX
+                // Cap values
+                state.evidence = Math.max(0, Math.min(100, state.evidence));
+                state.comfort = Math.max(0, Math.min(100, state.comfort));
+                updateHUD();
+
+                if (state.evidence <= 0) {
+                    setTimeout(() => { isProcessing = false; endGame("gaslight"); }, 400);
+                } else {
+                    state.index++;
+                    hasInvestigated = false;
+                    setTimeout(() => { isProcessing = false; renderCard(state.index); }, 400);
+                }
+
+            } else {
+                // INVESTIGATE (Truth): Play Ethel's audio and STAY on the current card
+                // This lets the player absorb the evidence before moving on
+
+                // Apply stat changes only on first investigate per card
+                if (!hasInvestigated) {
+                    state.evidence += 10;
+                    state.comfort -= 10;
+                    state.blurLevel = Math.max(0, state.blurLevel - 1);
+                    hasInvestigated = true;
+
+                    // Cap values
+                    state.evidence = Math.max(0, Math.min(100, state.evidence));
+                    state.comfort = Math.max(0, Math.min(100, state.comfort));
+                    updateHUD();
+                }
+
+                // Play Ethel audio + evidence lock SFX (replays if clicked again)
                 AudioEngine.play(data.ethelAudio);
                 SFX.evidenceLock();
-            }
 
-            // Cap values
-            state.evidence = Math.max(0, Math.min(100, state.evidence));
-            state.comfort = Math.max(0, Math.min(100, state.comfort));
-
-            updateHUD();
-
-            if (state.evidence <= 0) {
-                setTimeout(() => endGame("gaslight"), 400);
-            } else {
-                state.index++;
-                setTimeout(() => renderCard(state.index), 400);
+                // Don't advance — player stays on this card to investigate
+                // They must choose "Soften Reality" (Reframe) to move on
             }
         }
 
