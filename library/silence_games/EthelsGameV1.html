@@ -126,14 +126,14 @@
             inset: 0;
             background-size: cover;
             background-position: center;
-            opacity: 0.25;
+            opacity: 0.5;
             z-index: 0;
         }
 
         .card-bg-darken {
             position: absolute;
             inset: 0;
-            background: linear-gradient(180deg, rgba(0, 0, 0, 0.7) 0%, rgba(17, 17, 17, 0.95) 100%);
+            background: linear-gradient(180deg, rgba(0, 0, 0, 0.45) 0%, rgba(17, 17, 17, 0.8) 100%);
             z-index: 1;
         }
 
@@ -504,7 +504,6 @@
             ETHEL_C3: 'ETHEL_C3.mp3',
             ETHEL_C4: 'ETHEL_C4.mp3',
             ETHEL_C5: 'ETHEL_C5.mp3',
-            ETHEL_C6: 'ETHEL_C6.mp3',
 
             // End game
             ETHEL_WIN: 'ETHEL_WIN.mp3',
@@ -553,7 +552,7 @@
                 b: "He needed the asset. He used silence as a weapon. Document the coercion.",
                 image: 'IMG_CARD_DOMINIC.jpg',
                 therapistAudio: 'THERAPIST_C4',
-                ethelAudio: 'ETHEL_C4'
+                ethelAudio: null // No Ethel clip for this card
             },
             {
                 id: 5,
@@ -563,7 +562,7 @@
                 b: "Screenshot the hash. That wasn't a glitch, it was a signal. He has access.",
                 image: 'IMG_CARD_CODE.jpg',
                 therapistAudio: 'THERAPIST_C5',
-                ethelAudio: 'ETHEL_C5'
+                ethelAudio: 'ETHEL_C4' // "A name doesn't type itself. The commit existed..."
             },
             {
                 id: 6,
@@ -573,7 +572,7 @@
                 b: "He sees the rattle. He knows I'm right, but he knows the system is rigged.",
                 image: 'IMG_CARD_DETECTIVE.jpg',
                 therapistAudio: 'THERAPIST_C6',
-                ethelAudio: 'ETHEL_C6'
+                ethelAudio: 'ETHEL_C5' // "He wasn't offering help. He was identifying a leak..."
             },
             {
                 id: 7,
@@ -583,7 +582,7 @@
                 b: "Trust the pattern recognition. If inputs match the crash model, initiate exit.",
                 image: 'IMG_CARD_HARM.jpg',
                 therapistAudio: 'THERAPIST_C7',
-                ethelAudio: 'ETHEL_C6' // Only 6 Ethel clips; Card 7 reuses ETHEL_C6
+                ethelAudio: null // No Ethel clip for this card
             }
         ];
 
