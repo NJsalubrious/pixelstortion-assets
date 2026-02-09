@@ -70,6 +70,19 @@ const PIXEL_MANIFEST = {
             name: 'Forced Network Compliance V1.0',
             thumb: '/library/silence_games/Dominic_game_3.jpg',
             fullscreen: true
+        },
+        Isla_2: {
+            url: '/zones/games/BrutalTherapy_Isla.html',
+            name: 'Isla in Therapy V1.0',
+            thumb: '/library/silence_games/Isla_therapy_game.jpg',
+            fullscreen: true
+        },
+
+        Dominic_3: {
+            url: '/zones/games/WIP_game.html',
+            name: "Dominic's Game V1.0",
+            thumb: '/library/silence_games/Dominic_game_2.jpg',
+            fullscreen: true
         }
     },
 
