@@ -78,7 +78,7 @@ const PIXEL_MANIFEST = {
             fullscreen: false
         },
         DOMINIC_2: {
-            url: '/zones/games/ryker_consensus/ryker_consensus.html',
+            url: '/zones/games/ryker_consensus.html',
             name: 'Forced Network Compliance V1.0',
             thumb: '/library/silence_games/Dominic_game_3.jpg',
             fullscreen: true
