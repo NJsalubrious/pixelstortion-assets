@@ -41,6 +41,18 @@ const PIXEL_MANIFEST = {
 
     // 3. GAMES (Structured game data with url, name, thumbnail, fullscreen)
     GAMES: {
+        Dominic_4: {
+            url: '/zones/games/DominicsFreedom.html',
+            name: "Dominic's Freedom V1.0",
+            thumb: '/library/silence_games/Dominic_game_freedom_2.jpg',
+            fullscreen: true
+        },
+        Dominic_3: {
+            url: '/zones/games/DominicsGameTrailer.html',
+            name: "Dominic's Game V1.0",
+            thumb: '/library/silence_games/Dominic_game_2.jpg',
+            fullscreen: true
+        },
         ISLA: {
             url: '/zones/games/isla_protocol.html',
             name: "Isla's Phone V1.0",
@@ -77,16 +89,17 @@ const PIXEL_MANIFEST = {
             thumb: '/library/silence_games/Isla_therapy_game.jpg',
             fullscreen: true
         },
-
-        Dominic_3: {
-            url: '/zones/games/WIP_game.html',
-            name: "Dominic's Game V1.0",
-            thumb: '/library/silence_games/Dominic_game_2.jpg',
+        Dominic_5: {
+            url: '/zones/games/DominicsGameFreeWillTest.html',
+            name: "Dominic's Freedom V1.0",
+            thumb: '/library/silence_games/free_you_game_1.jpg',
             fullscreen: true
-        }
+        },
+
+
     },
 
-    // 4. DATA HOOKS
+    // 4. DATA HOOKS    
     ASSETS: {
         GALLERY_MAP: `${IMAGE_BASE}/gallery_map.json`,
         GALLERY_IMAGES: `${IMAGE_BASE}/images/`,
