@@ -43,31 +43,31 @@ const PIXEL_MANIFEST = {
     GAMES: {
         ISLA: {
             url: '/zones/games/isla_protocol.html',
-            name: "Isla's Phone",
+            name: "Isla's Phone V1.0",
             thumb: '/library/silence_games/isla_game_1.jpg',
             fullscreen: false
         },
         TRIVIA: {
             url: '/zones/games/trivia_protocol.html',
-            name: 'Silence Trivia',
+            name: 'Ryker Crime Trivia V1.0',
             thumb: '/library/silence_games/trivia_game_1.jpg',
             fullscreen: false
         },
         DOMINIC: {
             url: '/zones/games/Dominics_game.html',
-            name: 'RYKER - Systemic Failure',
+            name: 'Systemic Failure V1.0',
             thumb: '/library/silence_games/Dominic_game_1.jpg',
             fullscreen: false
         },
         ETHEL: {
             url: '/zones/games/ethel_scanner.html',
-            name: 'System Locked - Scanner',
+            name: 'Ethel\'s thought Scanner V1.0',
             thumb: '/library/silence_games/Ethel_game_2__SemanticScanner.jpg',
             fullscreen: false
         },
         DOMINIC_2: {
             url: '/zones/games/ryker_consensus/ryker_consensus.html',
-            name: 'Forced Compliance Loop',
+            name: 'Forced Network Compliance V1.0',
             thumb: '/library/silence_games/Dominic_game_3.jpg',
             fullscreen: true
         }
