@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>THE BINARY // NSW_CORR_LOG</title>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Courier+Prime:ital,wght@0,400;0,700;1,400&display=swap"
+        rel="stylesheet">
+    <style>
+        body {
+            background-color: #000;
+            overflow: hidden;
+        }
+
+        .crt-scanline {
+            background: linear-gradient(to bottom, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0) 50%, rgba(0, 0, 0, 0.1) 50%, rgba(0, 0, 0, 0.1));
+            background-size: 100% 4px;
+            pointer-events: none;
+        }
+
+        .text-glow {
+            text-shadow: 0 0 10px rgba(51, 255, 0, 0.7);
+        }
+
+        .text-glow-red {
+            text-shadow: 0 0 10px rgba(255, 50, 50, 0.7);
+        }
+
+        @keyframes blink {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0;
+            }
+        }
+
+        .cursor-blink {
+            animation: blink 1s step-end infinite;
+        }
+
+        @keyframes glitch {
+            0% {
+                transform: translate(0);
+            }
+
+            20% {
+                transform: translate(-2px, 2px);
+            }
+
+            40% {
+                transform: translate(-2px, -2px);
+            }
+
+            60% {
+                transform: translate(2px, 2px);
+            }
+
+            80% {
+                transform: translate(2px, -2px);
+            }
+
+            100% {
+                transform: translate(0);
+            }
+        }
+
+        .glitch-active {
+            animation: glitch 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94) both infinite;
+            color: red !important;
+        }
+
+        /* Blueprint hidden zone pattern */
+        .blueprint-bg {
+            background-image: radial-gradient(#1e3a8a 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect, useRef } = React;
+
+        // --- GAME STATES ---
+        const STAGE_404 = '404';
+        const STAGE_INTRO = 'INTRO';
+        const STAGE_TERMINAL = 'TERMINAL';
+        const STAGE_ROSTER = 'ROSTER';
+        const STAGE_ARCHIVE = 'ARCHIVE';
+        const STAGE_AUDIO = 'AUDIO';
+        const STAGE_BINARY = 'BINARY';
+        const STAGE_MIRROR = 'MIRROR';
+        const STAGE_FINAL = 'FINAL';
+
+        // --- ASSETS ---
+        const SCRIPT = {
+            intro: "Stay. I can hear you breathing... You're wondering why the screen is so dark.",
+            terminal: "There’s a cursor blinking in the top right. Type CREDENTIALS.",
+            roster_intro: "Details matter. They are the only things that are real.",
+            roster_glitch: "He’s actually in the breakroom, finishing a coffee I paid for.",
+            archive_intro: "If you’re looking for the Builder... look at the ARCHIVE.",
+            archive_task: "Look closely at the structural notes for the fourth floor. Find the variance.",
+            archive_found: "A math problem, really... A few millimeters of variance for a few million in liquidity.",
+            binary_intro: "If the universe is a balance sheet, I am technically a saint.",
+            mirror_intro: "Before you move on... Lean back. Take a breath. Look at the reflection of your own face in the monitor.",
+            mirror_reveal: "You aren't here because you hate me... You’re here because you’re tired of the rules that don't work.",
+            final: "I’ve cleared a path for you."
+        };
+
+        const App = () => {
+            const [stage, setStage] = useState(STAGE_404);
+            const [subtitles, setSubtitles] = useState("");
+            const [glitchIntensity, setGlitchIntensity] = useState(0);
+
+            // --- TYPEWRITER EFFECT ENGINE ---
+            const speak = (text, callback = null, speed = 50) => {
+                setSubtitles("");
+                let i = 0;
+                const timer = setInterval(() => {
+                    setSubtitles(text.substring(0, i + 1));
+                    i++;
+                    if (i === text.length) {
+                        clearInterval(timer);
+                        if (callback) setTimeout(callback, 1000);
+                    }
+                }, speed);
+            };
+
+            // --- STAGE 1: 404 FLICKER ---
+            useEffect(() => {
+                if (stage === STAGE_404) {
+                    const timer = setTimeout(() => {
+                        // Auto crash into darkness
+                        setStage(STAGE_INTRO);
+                    }, 2000); // 2 seconds of white screen
+                    return () => clearTimeout(timer);
+                }
+            }, [stage]);
+
+            // --- STAGE 2: INTRO ---
+            useEffect(() => {
+                if (stage === STAGE_INTRO) {
+                    speak(SCRIPT.intro, () => {
+                        speak(SCRIPT.terminal, () => setStage(STAGE_TERMINAL));
+                    });
+                }
+            }, [stage]);
+
+            return (
+                <div className="h-screen w-screen relative font-mono overflow-hidden select-none">
+                    {/* GLOBAL OVERLAYS */}
+                    <div className="absolute inset-0 crt-scanline z-50 pointer-events-none"></div>
+
+                    {/* STAGE RENDERER */}
+                    {stage === STAGE_404 && <View404 />}
+
+                    <div className={`h-full w-full bg-black text-green-500 transition-opacity duration-1000 flex flex-col ${stage === STAGE_404 ? 'opacity-0' : 'opacity-100'}`}>
+
+                        {/* HEADER HUD */}
+                        <div className={`flex justify-between p-4 border-b border-gray-900 transition-all duration-500 ${stage === STAGE_MIRROR ? 'opacity-0' : 'opacity-100'}`}>
+                            <div className="text-xs text-gray-600">SYS.LOG.v4 // {stage}</div>
+                            <div className="text-xs text-red-900 animate-pulse">REC ●</div>
+                        </div>
+
+                        {/* MAIN GAME AREA */}
+                        <div className="flex-1 relative flex items-center justify-center p-6">
+
+                            {stage === STAGE_TERMINAL && <TerminalGame onSuccess={() => {
+                                setStage(STAGE_ROSTER);
+                            }} />}
+
+                            {stage === STAGE_ROSTER && <RosterGame speak={speak} onComplete={() => setStage(STAGE_ARCHIVE)} />}
+
+                            {stage === STAGE_ARCHIVE && <ArchiveGame speak={speak} onComplete={() => setStage(STAGE_BINARY)} />}
+
+                            {stage === STAGE_BINARY && <BinaryGame speak={speak} onComplete={() => setStage(STAGE_MIRROR)} />}
+
+                            {stage === STAGE_MIRROR && <MirrorGame speak={speak} onComplete={() => setStage(STAGE_FINAL)} />}
+
+                            {stage === STAGE_FINAL && <FinalScreen />}
+
+                        </div>
+
+                        {/* SUBTITLE SYSTEM */}
+                        <div className={`h-24 bg-black border-t border-gray-900 p-4 flex items-center justify-center text-center transition-all duration-1000 ${stage === STAGE_MIRROR ? 'opacity-0' : 'opacity-100'}`}>
+                            <p className="text-white font-serif italic text-lg leading-relaxed max-w-2xl drop-shadow-md">
+                                {subtitles} <span className="animate-pulse">_</span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        // --- SUB-GAMES ---
+
+        const View404 = () => (
+            <div className="absolute inset-0 bg-white text-black flex flex-col items-center justify-center z-40 font-serif">
+                <h1 className="text-6xl font-bold mb-4">404 Not Found</h1>
+                <p>The requested URL /nsw-correctional was not found on this server.</p>
+                <div className="mt-8 text-xs text-gray-500">Apache/2.4.41 (Ubuntu) Server at Port 80</div>
+            </div>
+        );
+
+        const TerminalGame = ({ onSuccess }) => {
+            const [input, setInput] = useState("");
+            const [error, setError] = useState(false);
+            const inputRef = useRef(null);
+
+            useEffect(() => { inputRef.current?.focus(); }, []);
+
+            const handleKeyDown = (e) => {
+                if (e.key === 'Enter') {
+                    if (input.trim().toUpperCase() === 'CREDENTIALS') {
+                        onSuccess();
+                    } else {
+                        setError(true);
+                        setInput("");
+                        setTimeout(() => setError(false), 500);
+                    }
+                }
+            };
+
+            return (
+                <div className="w-full max-w-md">
+                    <div className="text-xs text-gray-500 mb-2">COMMAND PROMPT_</div>
+                    <div className={`border-2 p-4 bg-gray-900/50 flex items-center ${error ? 'border-red-500 shake' : 'border-green-500'}`}>
+                        <span className="mr-2 text-green-500">{'>'}</span>
+                        <input
+                            ref={inputRef}
+                            type="text"
+                            value={input}
+                            onChange={(e) => setInput(e.target.value)}
+                            onKeyDown={handleKeyDown}
+                            className="bg-transparent border-none outline-none text-green-400 font-mono w-full uppercase tracking-widest"
+                            autoFocus
+                        />
+                        <span className="w-2 h-4 bg-green-500 cursor-blink"></span>
+                    </div>
+                    {error && <div className="text-red-500 text-xs mt-2">ACCESS DENIED. TRY 'CREDENTIALS'</div>}
+                </div>
+            );
+        };
+
+        const RosterGame = ({ speak, onComplete }) => {
+            const [glitched, setGlitched] = useState(false);
+
+            useEffect(() => {
+                speak(SCRIPT.roster_intro);
+            }, []);
+
+            const triggerGlitch = () => {
+                if (glitched) return;
+                setGlitched(true);
+                speak(SCRIPT.roster_glitch, () => {
+                    setTimeout(onComplete, 4000);
+                });
+            };
+
+            return (
+                <div className="w-full max-w-2xl bg-gray-900/20 border border-gray-800 p-6">
+                    <h3 className="text-sm text-green-700 mb-4 border-b border-green-900 pb-2">NIGHT SHIFT ROSTER // SECTOR 4</h3>
+                    <div className="space-y-2">
+                        <RosterRow id="892" name="DAVIDS, J." loc="PERIMETER" status="ACTIVE" />
+
+                        {/* INTERACTIVE ROW */}
+                        <div
+                            onClick={triggerGlitch}
+                            className={`flex justify-between p-3 border cursor-pointer transition-all duration-200 group
+                            ${glitched ? 'border-red-500 bg-red-900/20 glitch-active' : 'border-green-900/50 hover:bg-green-900/20 hover:border-green-500'}`}
+                        >
+                            <div className="w-1/4 text-gray-400">ID: 442-19</div>
+                            <div className="w-1/4 font-bold text-white">MILLER, T.</div>
+                            <div className="w-1/4 text-xs text-gray-500">{glitched ? 'BREAKROOM' : 'SECTOR 4 (DOOR)'}</div>
+                            <div className={`w-1/4 text-right font-bold ${glitched ? 'text-red-500' : 'text-green-500'}`}>
+                                {glitched ? 'COMPROMISED' : 'STATIONARY'}
+                            </div>
+                        </div>
+
+                        <RosterRow id="104" name="ZHANG, L." loc="CONTROL" status="ACTIVE" />
+                    </div>
+                </div>
+            );
+        };
+
+        const RosterRow = ({ id, name, loc, status }) => (
+            <div className="flex justify-between p-3 border border-gray-900 opacity-50">
+                <div className="w-1/4 text-gray-500">ID: {id}</div>
+                <div className="w-1/4 text-gray-400">{name}</div>
+                <div className="w-1/4 text-xs text-gray-600">{loc}</div>
+                <div className="w-1/4 text-right text-green-800">{status}</div>
+            </div>
+        );
+
+        const ArchiveGame = ({ speak, onComplete }) => {
+            const [found, setFound] = useState(false);
+            const [hovering, setHovering] = useState(false);
+
+            useEffect(() => {
+                speak(SCRIPT.archive_intro, () => {
+                    speak(SCRIPT.archive_task);
+                });
+            }, []);
+
+            const handleFound = () => {
+                if (found) return;
+                setFound(true);
+                speak(SCRIPT.archive_found, () => {
+                    setTimeout(onComplete, 5000);
+                });
+            };
+
+            return (
+                <div className="w-full h-full flex flex-col items-center justify-center">
+                    <div className="relative border border-blue-900 w-64 h-80 blueprint-bg group overflow-hidden bg-blue-900/5">
+                        <div className="absolute top-2 left-2 text-[10px] text-blue-500">SCHEMATIC: A-114</div>
+
+                        {/* BUILDING SHAPES */}
+                        <div className="absolute bottom-0 left-10 w-20 h-60 border border-blue-800"></div>
+                        <div className="absolute bottom-0 right-10 w-20 h-40 border border-blue-800"></div>
+
+                        {/* HIDDEN INTERACTIVE ZONE */}
+                        <div
+                            onMouseEnter={() => setHovering(true)}
+                            onMouseLeave={() => setHovering(false)}
+                            onClick={handleFound}
+                            className={`absolute top-40 left-12 w-16 h-8 transition-all duration-300 cursor-crosshair
+                            ${found ? 'bg-red-500/20 border border-red-500' : 'hover:bg-blue-500/10'}`}
+                        >
+                            {/* The Reveal */}
+                            {(hovering || found) && (
+                                <div className="absolute -right-32 top-0 w-32 bg-black border border-white p-2 text-[10px] z-10">
+                                    <div className="text-gray-400">MATERIAL: GRADE B</div>
+                                    <div className="text-white font-bold">SAVED: $4.2M</div>
+                                    {found && <div className="text-red-500 animate-pulse mt-1">LOGGED</div>}
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                    <div className="mt-4 text-xs text-blue-800 animate-pulse">
+                        {found ? "VARIANCE DETECTED" : "SCAN BLUEPRINT FOR ANOMALIES"}
+                    </div>
+                </div>
+            );
+        };
+
+        const BinaryGame = ({ speak, onComplete }) => {
+            const [score, setScore] = useState(0);
+            const [showResult, setShowResult] = useState(false);
+
+            useEffect(() => {
+                speak(SCRIPT.binary_intro);
+
+                // Animate the balance sheet
+                let val = 0;
+                const interval = setInterval(() => {
+                    val += Math.floor(Math.random() * 100000);
+                    setScore(val);
+                    if (val > 4000000) {
+                        clearInterval(interval);
+                        setShowResult(true);
+                        setTimeout(onComplete, 4000);
+                    }
+                }, 100);
+
+                return () => clearInterval(interval);
+            }, []);
+
+            return (
+                <div className="w-full max-w-lg">
+                    <h2 className="text-center text-xl tracking-[0.5em] mb-8 text-white">THE BINARY</h2>
+                    <div className="flex justify-between mb-8 text-xs">
+                        <div className="text-gray-500">GOOD DEEDS</div>
+                        <div className="text-gray-500">NECESSARY EVILS</div>
+                    </div>
+
+                    {/* Visual Balance Scale */}
+                    <div className="h-2 w-full bg-gray-900 rounded overflow-hidden mb-8 relative">
+                        <div className="absolute top-0 left-0 h-full bg-white transition-all duration-300" style={{ width: showResult ? '55%' : '50%' }}></div>
+                    </div>
+
+                    <div className="text-center">
+                        <div className="text-[10px] text-gray-500 mb-2">CALCULATED WORTH</div>
+                        <div className="text-4xl font-bold font-mono text-white">
+                            ${score.toLocaleString()}
+                        </div>
+                        {showResult && (
+                            <div className="mt-4 text-green-500 tracking-widest animate-pulse border border-green-500 inline-block px-4 py-1">
+                                NET POSITIVE
+                            </div>
+                        )}
+                    </div>
+                </div>
+            );
+        };
+
+        const MirrorGame = ({ speak, onComplete }) => {
+            useEffect(() => {
+                speak(SCRIPT.mirror_intro, () => {
+                    setTimeout(() => {
+                        speak(SCRIPT.mirror_reveal, () => {
+                            setTimeout(onComplete, 3000);
+                        });
+                    }, 5000); // Time to look at self
+                });
+            }, []);
+
+            return (
+                <div className="absolute inset-0 bg-black z-50 flex flex-col items-center justify-center pointer-events-none">
+                    {/* The "Mirror" is simply pure blackness on a glossy screen */}
+                    <div className="opacity-0">Mirror Active</div>
+                </div>
+            );
+        };
+
+        const FinalScreen = () => {
+            return (
+                <div className="flex flex-col items-center justify-center animate-pulse">
+                    <div className="mb-8 text-sm text-gray-500 font-serif italic">"I've cleared a path for you."</div>
+                    <button
+                        onClick={() => alert("Simulation Complete. External Link Triggered.")}
+                        className="border border-white text-white px-12 py-4 tracking-[0.5em] hover:bg-white hover:text-black transition-colors duration-500"
+                    >
+                        PROCEED
+                    </button>
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NSW Correctional Maintenance Log v4.0.12</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Inter:wght@300;400;700&display=swap');
+
+        :root {
+            --bg-color: #050505;
+            --text-color: #e5e7eb;
+            --accent-color: #22c55e;
+            /* Green cursor */
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'Inter', sans-serif;
+            overflow: hidden;
+            height: 100vh;
+            cursor: crosshair;
+        }
+
+        .mono {
+            font-family: 'Space Mono', monospace;
+        }
+
+        /* Glitch Effect */
+        @keyframes glitch {
+            0% {
+                transform: translate(0);
+            }
+
+            20% {
+                transform: translate(-2px, 2px);
+            }
+
+            40% {
+                transform: translate(-2px, -2px);
+            }
+
+            60% {
+                transform: translate(2px, 2px);
+            }
+
+            80% {
+                transform: translate(2px, -2px);
+            }
+
+            100% {
+                transform: translate(0);
+            }
+        }
+
+        .glitch-active {
+            animation: glitch 0.15s infinite;
+            filter: hue-rotate(90deg) contrast(150%);
+        }
+
+        /* Scanlines */
+        .scanlines::before {
+            content: " ";
+            display: block;
+            position: absolute;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+            z-index: 50;
+            background-size: 100% 4px, 3px 100%;
+            pointer-events: none;
+        }
+
+        .terminal-cursor {
+            display: inline-block;
+            width: 10px;
+            height: 1.2em;
+            background-color: var(--accent-color);
+            animation: blink 1s step-end infinite;
+            vertical-align: middle;
+        }
+
+        @keyframes blink {
+
+            from,
+            to {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0;
+            }
+        }
+
+        .hidden-section {
+            display: none;
+        }
+
+        /* CRT Reflection Simulation */
+        .reflection-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at center, transparent 30%, rgba(0, 0, 0, 0.4) 100%);
+            pointer-events: none;
+            z-index: 100;
+        }
+
+        /* Blueprints */
+        .blueprint-line {
+            stroke: #374151;
+            stroke-width: 1;
+        }
+
+        .blueprint-highlight {
+            stroke: #ef4444;
+            stroke-width: 2;
+            stroke-dasharray: 4;
+            animation: dash 2s linear infinite;
+        }
+
+        @keyframes dash {
+            to {
+                stroke-dashoffset: -20;
+            }
+        }
+
+        .nav-btn {
+            transition: all 0.3s ease;
+            text-align: left;
+            padding: 0.5rem;
+            border-left: 2px solid transparent;
+        }
+
+        .nav-btn:hover {
+            border-left: 2px solid white;
+            padding-left: 1rem;
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .nav-btn.active {
+            border-left: 2px solid white;
+            padding-left: 1rem;
+        }
+    </style>
+</head>
+
+<body class="scanlines">
+
+    <!-- INITIAL 404 LAYER -->
+    <div id="layer-404" class="fixed inset-0 flex flex-col items-center justify-center bg-black z-[200]">
+        <div class="text-center">
+            <h1 class="text-6xl font-bold mono mb-4">404</h1>
+            <p class="text-gray-500 mb-8">The requested directory could not be found.</p>
+            <button onclick="initiateSequence()"
+                class="px-6 py-2 border border-gray-700 hover:border-white transition-colors text-xs uppercase tracking-widest mono">
+                Return to Home
+            </button>
+        </div>
+    </div>
+
+    <!-- MAIN INTERFACE (Hidden Initially) -->
+    <div id="main-interface" class="opacity-0 transition-opacity duration-1000 h-screen w-screen flex overflow-hidden">
+        <div class="reflection-overlay"></div>
+
+        <!-- Left Navigation -->
+        <nav class="w-64 border-r border-gray-800 p-8 flex flex-col justify-between z-10">
+            <div>
+                <div class="mb-12">
+                    <h2 class="text-xs uppercase tracking-[0.3em] text-gray-500 mb-1">Status</h2>
+                    <p class="text-xs mono text-green-500">SYSTEMS: NOMINAL</p>
+                </div>
+
+                <div class="space-y-6">
+                    <button onclick="showTier('archive')"
+                        class="nav-btn w-full block text-sm uppercase tracking-widest text-gray-400 hover:text-white active">01.
+                        ARCHIVE</button>
+                    <button onclick="showTier('breath')"
+                        class="nav-btn w-full block text-sm uppercase tracking-widest text-gray-400 hover:text-white">02.
+                        THE SAME BREATH</button>
+                    <button onclick="showTier('binary')"
+                        class="nav-btn w-full block text-sm uppercase tracking-widest text-gray-400 hover:text-white">03.
+                        THE BINARY</button>
+                    <button onclick="showTier('rehab')"
+                        class="nav-btn w-full block text-sm uppercase tracking-widest text-gray-600 hover:text-white opacity-20 hover:opacity-100 transition-opacity">??.
+                        INMATE REHAB</button>
+                </div>
+            </div>
+
+            <div class="text-[10px] mono text-gray-600 uppercase">
+                Ref: RY-0912-B <br>
+                Correctional Maint. V4
+            </div>
+        </nav>
+
+        <!-- Main Content Area -->
+        <main class="flex-1 relative overflow-hidden flex flex-col">
+            <!-- Header/Terminal -->
+            <header class="p-8 flex justify-between items-start z-10">
+                <div class="max-w-xl">
+                    <p id="subtitles" class="text-sm italic text-gray-400 h-12"></p>
+                </div>
+                <div class="bg-black border border-gray-800 p-4 w-64 mono text-[10px] shadow-2xl">
+                    <div class="flex justify-between mb-2">
+                        <span class="text-gray-500">COMMAND_PROMPT</span>
+                        <span class="text-green-500">v1.0</span>
+                    </div>
+                    <div id="terminal-output" class="text-gray-400 h-16 overflow-hidden mb-2">
+                        LOGIN SUCCESSFUL...<br>
+                        WAITING FOR INPUT...
+                    </div>
+                    <div class="flex items-center">
+                        <span class="mr-2">&gt;</span>
+                        <input type="text" id="command-input" class="bg-transparent outline-none w-full uppercase"
+                            autocomplete="off">
+                        <span class="terminal-cursor"></span>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Tiers Content -->
+            <div class="flex-1 p-8 overflow-y-auto relative">
+
+                <!-- TIER 1: ARCHIVE -->
+                <section id="tier-archive" class="tier-content h-full">
+                    <div class="mb-8">
+                        <h3 class="text-3xl font-light mb-2">Westside Towers - Structural Log</h3>
+                        <p class="text-xs text-gray-500 uppercase tracking-widest">Project: Infrastructure Summit 2019 /
+                            Archive Grade: TS</p>
+                    </div>
+                    <div
+                        class="relative bg-zinc-900 border border-zinc-800 p-4 rounded h-[60vh] overflow-hidden flex items-center justify-center">
+                        <svg viewBox="0 0 800 500" class="w-full h-full opacity-60">
+                            <g id="blueprint">
+                                <rect x="50" y="50" width="700" height="400" fill="none" class="blueprint-line" />
+                                <line x1="50" y1="150" x2="750" y2="150" class="blueprint-line" />
+                                <line x1="50" y1="300" x2="750" y2="300" class="blueprint-line" />
+                                <line x1="250" y1="50" x2="250" y2="450" class="blueprint-line" />
+                                <circle cx="400" cy="250" r="100" fill="none" class="blueprint-line" />
+                                <!-- The "Adjustment" -->
+                                <rect x="380" y="230" width="40" height="40" fill="none" class="blueprint-highlight" />
+                                <text x="430" y="240" fill="#ef4444" font-size="12" class="mono">SPEC ERR: -4.2mm
+                                    VARIANCE</text>
+                            </g>
+                        </svg>
+                        <div
+                            class="absolute bottom-8 right-8 max-w-sm bg-black/80 border border-red-900 p-4 backdrop-blur-sm">
+                            <p class="text-xs mono text-red-500 mb-2">ANNOTATION BY D. RYKER:</p>
+                            <p class="text-sm text-gray-300">"A math problem, really... A few millimeters of variance
+                                for a few million in liquidity... I call it an adjustment."</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- TIER 2: THE SAME BREATH -->
+                <section id="tier-breath"
+                    class="tier-content hidden-section h-full flex items-center justify-center bg-black fixed inset-0 z-50">
+                    <div class="text-center">
+                        <div
+                            class="w-16 h-16 border-2 border-gray-800 rounded-full flex items-center justify-center mb-8 mx-auto animate-pulse">
+                            <div class="w-2 h-2 bg-white rounded-full"></div>
+                        </div>
+                        <p class="text-gray-500 italic mono tracking-tighter">Northern Road Incident, Italy. 2021.</p>
+                        <p id="breath-status" class="mt-4 text-[10px] uppercase text-gray-700">Audio playback active.
+                            Screen lock engaged.</p>
+                        <button onclick="closeBreath()"
+                            class="mt-12 text-xs text-gray-600 hover:text-white uppercase tracking-widest border border-gray-800 px-4 py-2">Return
+                            to Terminal</button>
+                    </div>
+                </section>
+
+                <!-- TIER 3: THE BINARY -->
+                <section id="tier-binary" class="tier-content hidden-section h-full">
+                    <div class="grid grid-cols-2 gap-px bg-gray-800 border border-gray-800 h-full">
+                        <div class="bg-black p-8">
+                            <h4 class="text-xs uppercase text-gray-500 mb-8 mono">ASSETS / THE SAINT</h4>
+                            <ul id="assets-list" class="space-y-4 text-sm mono">
+                                <li class="text-green-900">+ [142] Affordable Homes Built</li>
+                                <li class="text-green-900">+ [003] Philanthropic Endowments</li>
+                                <li class="text-green-900">+ [012] Lives Extricated from Hostilities</li>
+                                <li class="text-green-900">+ [001] Infrastructure Stabilized</li>
+                            </ul>
+                        </div>
+                        <div class="bg-black p-8">
+                            <h4 class="text-xs uppercase text-gray-500 mb-8 mono">LIABILITIES / THE MONSTER</h4>
+                            <ul id="liabilities-list" class="space-y-4 text-sm mono">
+                                <li class="text-red-900">- [002] Necessary Terminations</li>
+                                <li class="text-red-900">- [001] Fraudulent Specification Audit</li>
+                                <li class="text-red-900">- [004] Structural Corrections</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="mt-4 flex justify-between items-center bg-white p-4 text-black font-bold">
+                        <span class="uppercase text-xs tracking-widest">Net Universe Balance</span>
+                        <span id="balance-counter" class="text-2xl mono">+ 0.000142</span>
+                    </div>
+                </section>
+
+                <!-- HIDDEN TIER: REHAB -->
+                <section id="tier-rehab" class="tier-content hidden-section h-full">
+                    <div class="h-full flex items-center justify-center">
+                        <div
+                            class="w-full max-w-4xl aspect-video bg-zinc-950 relative border-4 border-gray-900 overflow-hidden">
+                            <!-- Simulated CCTV Overlay -->
+                            <div class="absolute top-4 left-4 text-white mono text-xs z-10">CAM 04 - CELL BLOCK C</div>
+                            <div class="absolute top-4 right-4 text-white mono text-xs z-10" id="cctv-timer">23:42:01
+                            </div>
+                            <div
+                                class="absolute inset-0 opacity-20 pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')]">
+                            </div>
+
+                            <!-- Static/Noise effect -->
+                            <div class="absolute inset-0 flex items-center justify-center overflow-hidden">
+                                <div class="w-[200%] h-[200%] bg-zinc-900 flex flex-wrap opacity-10">
+                                    <div class="w-full h-1 bg-white mb-1"></div>
+                                </div>
+                                <div class="text-center text-gray-800 select-none">
+                                    <p class="mono text-4xl mb-4">[ NO SIGNAL ]</p>
+                                    <p class="max-w-md mx-auto italic text-xs">"He offers items. He offers rest. They
+                                        don't see the bars he's building around their minds."</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+            </div>
+
+            <!-- Footer / Exit -->
+            <footer class="p-8 flex justify-center border-t border-gray-900">
+                <button id="proceed-btn" onclick="finalExit()"
+                    class="opacity-0 pointer-events-none px-12 py-3 bg-white text-black font-bold tracking-widest hover:bg-gray-200 transition-all uppercase">
+                    PROCEED
+                </button>
+            </footer>
+        </main>
+    </div>
+
+    <!-- MODAL: Credentials -->
+    <div id="credentials-modal"
+        class="fixed inset-0 z-[300] flex items-center justify-center bg-black/90 hidden backdrop-blur-lg">
+        <div class="border border-gray-700 bg-zinc-950 p-8 w-full max-w-lg mono">
+            <div class="flex justify-between items-center mb-6 border-b border-gray-800 pb-2">
+                <span class="text-gray-500">NIGHT_SHIFT_ROSTER.pdf</span>
+                <button onclick="toggleModal('credentials-modal', false)"
+                    class="text-gray-500 hover:text-white">✕</button>
+            </div>
+            <div class="space-y-4 text-xs">
+                <div class="flex justify-between">
+                    <span>NAME: Officer Miller</span>
+                    <span class="text-yellow-600">[ STATUS: COMPROMISED ]</span>
+                </div>
+                <p class="text-gray-600">ASSIGNMENT: STATIONARY GUARD // CELL 402</p>
+                <p class="text-red-500">LOCATION: BREAKROOM (OFF-POST)</p>
+                <div class="h-px bg-gray-800 my-4"></div>
+                <p class="text-gray-400 italic">"He’s actually in the breakroom, finishing a coffee I paid for."</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- AUDIO ENGINE (Procedural Ambient Hum) ---
+        let audioCtx;
+        let humOsc;
+        let breathingOsc;
+
+        function startAmbientAudio() {
+            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+            // Low Frequency Hum
+            const masterGain = audioCtx.createGain();
+            masterGain.gain.setValueAtTime(0.05, audioCtx.currentTime);
+            masterGain.connect(audioCtx.destination);
+
+            const filter = audioCtx.createBiquadFilter();
+            filter.type = 'lowpass';
+            filter.frequency.setValueAtTime(100, audioCtx.currentTime);
+            filter.connect(masterGain);
+
+            const noise = audioCtx.createOscillator();
+            noise.type = 'sine';
+            noise.frequency.setValueAtTime(40, audioCtx.currentTime);
+            noise.connect(filter);
+            noise.start();
+
+            // Periodic "Breathing" (Subtle Volume Swell)
+            const breathGain = audioCtx.createGain();
+            breathGain.gain.setValueAtTime(0.01, audioCtx.currentTime);
+            breathGain.connect(audioCtx.destination);
+
+            function breath() {
+                const now = audioCtx.currentTime;
+                breathGain.gain.linearRampToValueAtTime(0.03, now + 2);
+                breathGain.gain.linearRampToValueAtTime(0.01, now + 4);
+                setTimeout(breath, 6000);
+            }
+            breath();
+        }
+
+        // --- MONOLOGUE SYSTEM ---
+        const monologue = [
+            "Stay. I can hear you breathing... and I imagine you can hear mine.",
+            "Look at the reflection of your own face in your monitor. See it?",
+            "That's the look of someone waiting for permission.",
+            "Type CREDENTIALS. Go on.",
+            "Miller won't be back for another ten minutes. He's actually in the breakroom...",
+            "If the universe is a balance sheet, I am technically a saint.",
+            "I’ve cleared a path for you."
+        ];
+
+        let monologueIndex = 0;
+        function playMonologue() {
+            const subtitleEl = document.getElementById('subtitles');
+            const utter = new SpeechSynthesisUtterance(monologue[monologueIndex]);
+
+            // Customize voice for "Calm Menace"
+            utter.pitch = 0.5;
+            utter.rate = 0.8;
+            utter.volume = 0.7;
+
+            subtitleEl.innerText = monologue[monologueIndex];
+
+            utter.onend = () => {
+                monologueIndex++;
+                if (monologueIndex < monologue.length) {
+                    setTimeout(playMonologue, 3000);
+                } else {
+                    showProceed();
+                }
+            };
+
+            window.speechSynthesis.speak(utter);
+        }
+
+        // --- CORE LOGIC ---
+        function initiateSequence() {
+            const body = document.body;
+            body.classList.add('glitch-active');
+
+            setTimeout(() => {
+                body.classList.remove('glitch-active');
+                document.getElementById('layer-404').style.display = 'none';
+                const main = document.getElementById('main-interface');
+                main.classList.remove('opacity-0');
+                main.classList.add('opacity-100');
+
+                startAmbientAudio();
+                playMonologue();
+                initCCTV();
+            }, 1500);
+        }
+
+        function showTier(tier) {
+            document.querySelectorAll('.tier-content').forEach(el => el.classList.add('hidden-section'));
+            document.getElementById(`tier-${tier}`).classList.remove('hidden-section');
+
+            document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+
+            if (tier === 'binary') animateBalance();
+        }
+
+        function closeBreath() {
+            showTier('archive');
+        }
+
+        function animateBalance() {
+            const el = document.getElementById('balance-counter');
+            let val = 0;
+            const target = 0.000142;
+            const interval = setInterval(() => {
+                val += 0.00001;
+                el.innerText = `+ ${val.toFixed(6)}`;
+                if (val >= target) clearInterval(interval);
+            }, 50);
+        }
+
+        function initCCTV() {
+            setInterval(() => {
+                const now = new Date();
+                document.getElementById('cctv-timer').innerText = now.toTimeString().split(' ')[0];
+            }, 1000);
+        }
+
+        function toggleModal(id, show) {
+            const el = document.getElementById(id);
+            if (show) el.classList.remove('hidden');
+            else el.classList.add('hidden');
+        }
+
+        // Terminal Interaction
+        const cmdInput = document.getElementById('command-input');
+        const terminalOutput = document.getElementById('terminal-output');
+
+        cmdInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                const cmd = cmdInput.value.toUpperCase().trim();
+                cmdInput.value = '';
+
+                if (cmd === 'CREDENTIALS') {
+                    terminalOutput.innerHTML += `<br>ACCESSING ROSTER...`;
+                    setTimeout(() => toggleModal('credentials-modal', true), 500);
+                } else {
+                    terminalOutput.innerHTML += `<br>INVALID COMMAND: ${cmd}`;
+                }
+                terminalOutput.scrollTop = terminalOutput.scrollHeight;
+            }
+        });
+
+        function showProceed() {
+            const btn = document.getElementById('proceed-btn');
+            btn.classList.remove('opacity-0', 'pointer-events-none');
+            btn.classList.add('opacity-100', 'pointer-events-auto');
+        }
+
+        function finalExit() {
+            const main = document.body;
+            main.style.transition = 'all 2s';
+            main.style.backgroundColor = 'white';
+            main.innerHTML = `<div class="h-screen w-screen flex items-center justify-center text-black mono text-xl font-bold animate-pulse">PATH CLEARED.</div>`;
+
+            // Final sound effect (clunk)
+            const exitOsc = audioCtx.createOscillator();
+            const g = audioCtx.createGain();
+            exitOsc.type = 'square';
+            exitOsc.frequency.setValueAtTime(40, audioCtx.currentTime);
+            g.gain.setValueAtTime(0.5, audioCtx.currentTime);
+            g.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.5);
+            exitOsc.connect(g);
+            g.connect(audioCtx.destination);
+            exitOsc.start();
+            exitOsc.stop(audioCtx.currentTime + 0.5);
+        }
+    </script>
+</body>
+
+</html>

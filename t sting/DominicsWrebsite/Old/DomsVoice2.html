@@ -1,0 +1,123 @@
+<script>
+    // --- AUDIO ENGINE ---
+    let drone;
+    let synth; // Added for distinct tones
+
+    async function initAudio() {
+        await Tone.start();
+        drone = new Tone.Oscillator(55, "sine").toDestination().start();
+        drone.volume.value = -20;
+
+        // Simple synth for UI sounds
+        synth = new Tone.Synth({
+            envelope: { attack: 0.005, decay: 0.1, sustain: 0, release: 0.1 }
+        }).toDestination();
+        synth.volume.value = -15;
+    }
+
+    function playTone(note) {
+        if (synth) synth.triggerAttackRelease(note || "C5", "16n");
+    }
+
+    // --- NAVIGATION & LOGIC ---
+    function show(id) {
+        // 1. Hide everything
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+
+        // 2. Wait for transition, then show new screen and trigger logic
+        setTimeout(() => {
+            const screen = document.getElementById('s' + id);
+            screen.classList.add('active');
+
+            // Only start the stillness mechanic IF we are on screen 2 AND it is active
+            if (id === 2) {
+                initStillness();
+            }
+        }, 100);
+    }
+
+    function start() {
+        initAudio();
+        show(1);
+    }
+
+    function next(id) {
+        playTone("C5");
+        show(id);
+        // Note: initStillness is now handled inside show() to ensure timing
+    }
+
+    // --- MECHANIC: STILLNESS ---
+    function initStillness() {
+        let progress = 0;
+        let lastX = 0, lastY = 0;
+        const bar = document.getElementById('fill');
+        const warn = document.getElementById('warn');
+
+        console.log("Surveillance Active."); // Debug proof
+
+        // The Loop
+        const check = setInterval(() => {
+            const screen = document.getElementById('s2');
+
+            // Safety Check: If we left the screen, kill the loop
+            if (!screen.classList.contains('active')) {
+                clearInterval(check);
+                return;
+            }
+
+            // CHARGE THE BAR
+            progress += 0.5; // Speed of charge
+            bar.style.width = progress + '%';
+
+            // SUCCESS CONDITION
+            if (progress >= 100) {
+                clearInterval(check);
+                playTone("G4"); // Success chime
+                setTimeout(() => next(3), 500);
+            }
+        }, 30);
+
+        // MOVEMENT PENALTY
+        // We define the listener function so we can remove it later if needed, 
+        // but for this simple version, a global listener is fine.
+        document.onmousemove = (e) => {
+            // Only punish if on the stillness screen
+            if (!document.getElementById('s2').classList.contains('active')) return;
+
+            const dist = Math.abs(e.clientX - lastX) + Math.abs(e.clientY - lastY);
+
+            // SENSITIVITY THRESHOLD
+            if (dist > 2) {
+                // Penalty: Drain the bar
+                progress = Math.max(0, progress - 5);
+                bar.style.width = progress + '%';
+
+                // Visual Feedback
+                warn.style.opacity = 1;
+                setTimeout(() => warn.style.opacity = 0, 200);
+            }
+            lastX = e.clientX;
+            lastY = e.clientY;
+        };
+    }
+
+    // --- MECHANIC: THE TRAP ---
+    function trap() {
+        playTone("A3");
+        document.getElementById('trap-msg').style.opacity = 1;
+        setTimeout(() => next(4), 2500);
+    }
+
+    // --- CURSOR FOLLOWER ---
+    const cursor = document.getElementById('cursor');
+    document.addEventListener('mousemove', e => {
+        cursor.style.left = e.clientX + 'px';
+        cursor.style.top = e.clientY + 'px';
+    });
+
+    document.querySelectorAll('.interactable').forEach(el => {
+        el.addEventListener('mouseenter', () => cursor.classList.add('active'));
+        el.addEventListener('mouseleave', () => cursor.classList.remove('active'));
+    });
+</script>

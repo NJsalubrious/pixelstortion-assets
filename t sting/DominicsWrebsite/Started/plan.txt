@@ -1,0 +1,93 @@
+After the it says binary.. and then the audio clicks and then it says ""proceed" the type appear again on the bottom left but the entire screen is a cctv prison  security feed. with nine vids. idles are loops
+[
+
+
+11 cctv cameras on the main screen that the player sees
+
+1. wheelChairHallway
+ 2. corridor 
+3. asphaltCarPark 
+4. factoryShelves 
+5. frontGate 
+6. garbagePileMess 
+7. glassWindowedHallWithRandomHospitalBed 
+8. HospitalWing 
+9. loadingBay 
+10. sideFence 
+11. SideStairsDecendToBackStreet 
+
+
+Dominic'\s game videos
+
+Location:
+https://pub-111e813bd5634cd8a9ecdd3d5c2a0916.r2.dev/DominicGameVideo 
+
+Current vids at this locations
+Prefix = camera location (CCTV)
+Suffix = video description
+
+
+loadingBay_SmokeStarts_idle.mp4
+
+sideFence_Idle.mp4
+
+sideFence_OneDarkGreyCarLeftToRight.mp4
+
+sideFence_slightFogRollingBy.mp4
+
+sideFence_twoCarsWhitThenBlackRightToLeft.mp4
+
+SideStairsDecendToBackStreet_idle.mp4
+
+SideStairsDecendToBackStreet_idleWithCarPassGlitch.mp4
+
+wheelChairHallway_idle.mp4
+
+wheelChairHallway_idleLong_Withglitch.mp4
+
+ corridor_idleMildGlitch_2.mp4
+
+asphaltCarPark_IdleLightBlinks.mp4
+
+asphaltCarPark_idleMotionless.mp4
+
+factoryShelves_idle.mp4
+
+factoryShelves_idleWithSlightGlitch.mp4
+
+frontGate_idleMotionless.mp4
+
+frontGate_idleSlightWaterSprayAcrossRoad.mp4
+
+frontGate_manSuddenlySnapsIntoFramOnThisSideOfTheGateAndWalkToprisonIngreyHoody.mp4
+
+frontGate_manWalksFromOurSideofgateToGateAndCrossesToLeftToEsitButDisappearsPillar.mp4
+
+frontGate_waterGropletsOnScreenAsCarApproachesTheLeaves.mp4
+
+frontGate_windRain.mp4
+
+garbagePileMess_idle.mp4
+
+garbagePileMess_idleSlightlyGlitchy.mp4
+
+glassWindowedHallWithRandomHospitalBed_idle.mp4
+
+glassWindowedHallWithRandomHospitalBed_idleGlitchy.mp4
+
+HospitalWing_idleStill.mp4
+
+HospitalWing_manWalksWownHallturnsLeft_anotherWalksFromLeft.mp4
+
+HospitalWing_OneManWalksByLeftToRight.mp4
+
+loadingBay_longIdle.mp4
+
+]
+
+now the bottom right type reads
+
+"hey this is just a game. It's a free game - a puzzle. Not real. I promise ;) "
+
+
+As this is a trailer we dont have to finish the game - lets just make the player feel a bit of the lagic. 

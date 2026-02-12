@@ -79,7 +79,7 @@ const PIXEL_MANIFEST = {
         },
         DOMINIC_2: {
             url: '/zones/games/RykerGame_DeletedPicsAudioSatellites.html',
-            name: 'Forced Network Compliance V1.0',
+            name: 'Forced Network Compliance V1.0', 
             thumb: '/library/silence_games/Dominic_game_3.jpg',
             fullscreen: true
         },
