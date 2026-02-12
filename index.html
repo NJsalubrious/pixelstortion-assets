@@ -93,8 +93,14 @@
                 z-index: 10;
             }
 
+            /* Symmetric Fading: When one panel is hovered, the other fades */
             .split-container:has(.panel:hover) .panel:not(:hover) {
                 filter: grayscale(100%) brightness(0.15) blur(3px);
+            }
+
+            .panel.active,
+            .panel:hover {
+                filter: none !important;
             }
 
             /* Reveal Buttons & Content on Hover */
@@ -140,6 +146,7 @@
             /* INACTIVE STATE: Crushed (The "Sliver") */
             .panel.inactive {
                 flex: 1;
+                /* Match default */
                 filter: grayscale(100%) brightness(0.2);
             }
 
@@ -212,7 +219,7 @@
 
         /* --- LEFT PANEL: SILENCE --- */
         .left-panel {
-            background: #000;
+            background: transparent;
         }
 
         /* --- REMOVED STATIC SVG NOISE --- */
@@ -228,55 +235,13 @@
             background: #000;
         }
 
-        /* --- DYNAMIC CURSOR MATCHING --- */
-
-        /* ETHEL (Amber) */
-        body:has(.left-panel.vibe-ethel) #cursor {
-            border-color: #ffaa33;
-            background: rgba(255, 170, 51, 0.1);
-            box-shadow: 0 0 20px rgba(255, 170, 51, 0.4);
-        }
-
-        /* ISLA (Blue/Purple) */
-        body:has(.left-panel.vibe-isla) #cursor {
-            border-color: #6b7aff;
-            background: rgba(107, 122, 255, 0.1);
-            box-shadow: 0 0 20px rgba(107, 122, 255, 0.4);
-        }
-
-        /* DOMINIC (Red) */
-        body:has(.left-panel.vibe-dominic) #cursor {
-            border-color: #ff3333;
-            background: rgba(255, 51, 51, 0.1);
-            box-shadow: 0 0 20px rgba(255, 51, 51, 0.4);
-        }
-
-        /* WITNESS (Red) */
-        body:has(.left-panel.vibe-witness) #cursor {
-            border-color: #ff3333;
-            background: rgba(255, 51, 51, 0.1);
-            box-shadow: 0 0 20px rgba(255, 51, 51, 0.4);
-        }
-
-        /* KINLEY (Dark Gray) */
-        body:has(.left-panel.vibe-kinley) #cursor {
-            border-color: #666;
-            background: rgba(100, 100, 100, 0.1);
-            box-shadow: 0 0 20px rgba(100, 100, 100, 0.4);
-        }
-
-        /* STICKY (Light Blue) */
-        body:has(.left-panel.vibe-sticky) #cursor {
-            border-color: #5dade2;
-            background: rgba(93, 173, 226, 0.1);
-            box-shadow: 0 0 20px rgba(93, 173, 226, 0.4);
-        }
+        /* Dynamic Cursor Removed */
 
         /* --- CHARACTER VIBE EFFECTS (Ramped Up) --- */
 
         /* VIBE: ISLA (Controlled Chaos) - Blue/Purple */
         .left-panel.vibe-isla {
-            background: #000;
+            background: transparent;
             transition: background 1s ease;
         }
 
@@ -333,7 +298,7 @@
 
         /* VIBE: ETHEL (Focused Momentum) - Warm Amber */
         .left-panel.vibe-ethel {
-            background: #000;
+            background: transparent;
             transition: background 1s ease;
         }
 
@@ -389,7 +354,7 @@
 
         /* VIBE: DOMINIC (Calm Menace) - Red Spider */
         .left-panel.vibe-dominic {
-            background: #000;
+            background: transparent;
             transition: background 1.5s ease;
         }
 
@@ -449,7 +414,7 @@
 
         /* VIBE: WITNESS (Unknown/Neutral) - Red Spider */
         .left-panel.vibe-witness {
-            background: #000;
+            background: transparent;
             transition: background 1s ease;
         }
 
@@ -505,7 +470,7 @@
 
         /* 5. KINLEY - Dark Gold (Corrupt Politician) */
         .left-panel.vibe-kinley {
-            background: #000;
+            background: transparent;
             transition: background 1s ease;
         }
 
@@ -579,7 +544,7 @@
 
         /* 6. STICKY - Light Blue (Honest Cop) */
         .left-panel.vibe-sticky {
-            background: #000;
+            background: transparent;
             transition: background 1s ease;
         }
 
@@ -712,7 +677,7 @@
 
         /* --- RIGHT PANEL: MATAALA --- */
         .right-panel {
-            background: #0a0200;
+            background: transparent;
         }
 
         .bg-war {
@@ -722,18 +687,22 @@
             height: 100%;
             object-fit: cover;
             opacity: 0.6;
+            mix-blend-mode: screen;
+            /* Blend black areas to transparent */
             filter: contrast(140%) brightness(0.5) sepia(30%);
             pointer-events: none;
         }
 
         .nalani-container {
             width: 100%;
-            max-width: 500px;
+            max-width: 80%;
+            /* Increased from 500px */
             aspect-ratio: 2.5/1;
             position: relative;
             margin: 0 auto;
-            filter: drop-shadow(0 0 15px rgba(255, 60, 0, 0.4));
-            transform: scale(0.9);
+            filter: drop-shadow(0 0 25px rgba(255, 60, 0, 0.6));
+            transform: scale(1.4);
+            /* Signficantly larger */
             transition: transform 0.6s;
         }
 
@@ -884,47 +853,13 @@
         /* --- CUSTOM CURSOR (Desktop Only) --- */
         @media (pointer: fine) {
             body {
-                cursor: none;
-            }
-
-            #cursor {
-                position: fixed;
-                top: 0;
-                left: 0;
-                width: 20px;
-                height: 20px;
-                border: 1px solid white;
-                border-radius: 50%;
-                pointer-events: none;
-                z-index: 9999;
-                transform: translate(-50%, -50%);
-                mix-blend-mode: difference;
-                transition: all 0.3s;
-            }
-
-            body.hover-left #cursor {
-                width: 60px;
-                height: 60px;
-                border-radius: 0;
-                background: rgba(0, 255, 65, 0.1);
-                border-color: var(--neon-green);
-            }
-
-            body.hover-right #cursor {
-                width: 60px;
-                height: 60px;
-                border-radius: 50%;
-                background: rgba(255, 69, 0, 0.1);
-                border-color: var(--fire-orange);
+                cursor: auto;
+                /* Revert to default cursor */
             }
         }
 
         @media (pointer: coarse),
         (max-width: 768px) {
-            #cursor {
-                display: none !important;
-            }
-
             body {
                 cursor: auto;
             }
@@ -998,691 +933,686 @@
 
 <body>
 
-    <div id="cursor"></div>
 
+    <canvas id="fluidCanvas" style="position: fixed; inset: 0; z-index: 0;"></canvas>
     <div class="split-container group">
 
         <div class="panel left-panel" id="leftPanel">
-            <canvas id="fluidCanvas"></canvas>
 
             <div class="mobile-sliver-label text-green-500">SILENCE</div>
 
-            <div class="content-layer">
-                <div class="mb-4 inline-flex items-center gap-2 border border-green-900 bg-black/80 px-3 py-1">
-                    <span class="material-symbols-outlined text-green-500 text-sm animate-pulse">lock</span>
-                    <span class="font-mono text-[10px] text-green-500 tracking-[0.2em]">ENCRYPTED</span>
-                </div>
-
+            <div class="content-layer flex flex-col h-full justify-center">
                 <h2 class="text-4xl md:text-7xl font-bold text-white mb-6 tracking-tighter" id="glitchTitle">
                     SILENCE
                 </h2>
 
                 <h3 id="subtitleText" class="font-mono text-sm md:text-xl text-green-500/50 mb-8 tracking-[0.3em]">
-                    IS
-                    THE TRAUMA</h3>
+                    IS THE TRAUMA
+                </h3>
 
-                <div class="text-left font-mono text-xs md:text-sm leading-7 space-y-2 max-w-sm mx-auto">
-                    <div>
-                        <span class="text-gray-500">STATUS:</span>
-                        <span class="redacted-wrapper">SILENCE<span class="redacted-bar"></span></span>
-                    </div>
-                    <div>
-                        <span class="text-gray-500">MESSAGE:</span>
-                        <span class="redacted-wrapper">"Silence isn't absence."<span class="redacted-bar"></span></span>
-                    </div>
+                <!-- Simplified Message Block -->
+                <div class="text-center font-mono text-xs md:text-sm leading-7 max-w-sm mx-auto mb-2">
+                    <span class="text-gray-500 uppercase tracking-widest mr-2">MESSAGE:</span>
+                    <span id="dynamicMessage" class="text-white/80">"Silence isn't absence."</span>
                 </div>
 
-                <div class="mobile-hint text-green-500">[ TAP TO ARM ]</div>
-
-                <a href="#" class="btn-tech"
-                    onclick="event.stopPropagation(); window.top.location.href = PIXEL_MANIFEST.SILENCE; return false;">
-                    ENTER
-                </a>
+                <div class="mt-6">
+                    <a href="#" class="btn-tech"
+                        onclick="event.stopPropagation(); window.top.location.href = PIXEL_MANIFEST.SILENCE; return false;">
+                        ENTER
+                    </a>
+                </div>
             </div>
+        </div> <!-- Close Left Panel -->
 
-            <div class="fissure"></div>
+        <div class="fissure"></div>
 
-            <div class="panel right-panel" id="rightPanel">
-                <img src="https://lh3.googleusercontent.com/gg-dl/ABS2GSmcodSdYCgwQuT4Mrue8Hw-f4HEY0g2LcIPgmbEvc3I1GB26-IE051za1DkUhNOw2XvDLVbM_ToGq3Bj0Gv_toMCP-idJA8_HNBb9RDegC5qdH3dBW8jKpZ4yuZDgc3JsZnJG5AogwXM7SkmwG0i8xvXQKYFCccjVmMaJWx8NQSsqWXSg"
-                    alt="Warzone" class="bg-war" id="bgWar">
+        <div class="panel right-panel" id="rightPanel">
+            <img src="https://lh3.googleusercontent.com/gg-dl/ABS2GSmcodSdYCgwQuT4Mrue8Hw-f4HEY0g2LcIPGmbEvc3I1GB26-IE051za1DkUhNOw2XvDLVbM_ToGq3Bj0Gv_toMCP-idJA8_HNBb9RDegC5qdH3dBW8jKpZ4yuZDgc3JsZnJG5AogwXM7SkmwG0i8xvXQKYFCccjVmMaJWx8NQSsqWXSg"
+                alt="Warzone" class="bg-war" id="bgWar">
+            <!-- Overlay Removed -->
+            <div class="mobile-sliver-label text-orange-500">MATAALA</div>
 
-                <div
-                    class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-black/80 pointer-events-none">
+            <div class="content-layer flex flex-col h-full justify-center">
+                <div class="nalani-container mx-auto mb-8">
+                    <div class="nalani-mask">
+                        <!-- Nalani Content -->
+                        <div class="nalani-fill"></div>
+                        <div class="fire-turbulence"></div>
+                    </div>
                 </div>
 
-                <div class="mobile-sliver-label text-orange-500">MATAALA</div>
+                <div class="font-mono text-orange-100/80 text-xs md:text-sm tracking-widest mb-2 drop-shadow-md">
+                    <p class="mb-1">HE'LL COME WITH TRADE</p>
+                    <p class="text-orange-500 font-bold text-base md:text-lg">THEN TAKE THE BLADE.</p>
+                </div>
 
-                <div class="content-layer">
-                    <div
-                        class="mb-4 inline-flex items-center gap-2 border border-red-900/50 bg-black/60 px-3 py-1 backdrop-blur-sm">
-                        <span class="w-2 h-2 rounded-full bg-red-500 animate-pulse shadow-[0_0_8px_red]"></span>
-                        <span class="font-mono text-[10px] text-red-500 tracking-[0.2em] font-bold">CARELESS
-                            HANDS</span>
-                    </div>
-
-                    <div class="nalani-container mx-auto">
-                        <div class="nalani-mask">
-                            <div class="nalani-fill"></div>
-                            <div class="fire-turbulence"></div>
-                        </div>
-                    </div>
-
-                    <div class="font-mono text-orange-100/80 text-xs md:text-sm tracking-widest mt-4 drop-shadow-md">
-                        <p class="mb-1">HE'LL COME WITH TRADE</p>
-                        <p class="text-orange-500 font-bold text-base md:text-lg">THEN TAKE THE BLADE.</p>
-                    </div>
-
-                    <div class="mobile-hint text-orange-500">[ TAP TO ARM ]</div>
-
+                <div class="mt-6">
                     <a href="#" class="btn-war"
                         onclick="event.stopPropagation(); window.top.location.href = PIXEL_MANIFEST.MATAALA; return false;">
                         ENTER
                     </a>
                 </div>
             </div>
-
         </div>
 
-        <!-- Hidden audio element for character song snippets -->
-        <audio id="characterAudio" preload="none"></audio>
+    </div>
+
+    <!-- Hidden audio element for character song snippets -->
+    <audio id="characterAudio" preload="none"></audio>
 
 
-        <!-- AUDIO ADVISORY -->
-        <div
-            class="fixed bottom-12 md:bottom-8 left-1/2 -translate-x-1/2 z-50 pointer-events-none user-select-none w-full px-4">
-            <div class="flex flex-col items-center gap-2 opacity-80 md:opacity-60 transition-opacity hover:opacity-100">
-                <div
-                    class="inline-flex items-center gap-3 border border-white/20 bg-black/60 px-5 py-2 backdrop-blur-md rounded-sm shadow-lg">
-                    <span
-                        class="material-symbols-outlined text-white/70 text-sm md:text-base animate-pulse">volume_up</span>
-                    <span class="font-mono text-xs md:text-sm text-white/80 tracking-[0.2em] uppercase font-bold">Audio
-                        Essential</span>
-                </div>
-                <div
-                    class="font-mono text-[10px] md:text-xs text-center text-white/50 tracking-[0.15em] bg-black/40 px-2 py-0.5 rounded">
-                    LOUD VOLUME HIGHLY RECOMMENDED
-                </div>
+    <!-- AUDIO ADVISORY -->
+    <div
+        class="fixed bottom-12 md:bottom-8 left-1/2 -translate-x-1/2 z-50 pointer-events-none user-select-none w-full px-4">
+        <div class="flex flex-col items-center gap-2 opacity-80 md:opacity-60 transition-opacity hover:opacity-100">
+            <div
+                class="inline-flex items-center gap-3 border border-white/20 bg-black/60 px-5 py-2 backdrop-blur-md rounded-sm shadow-lg">
+                <span
+                    class="material-symbols-outlined text-white/70 text-sm md:text-base animate-pulse">volume_up</span>
+                <span class="font-mono text-xs md:text-sm text-white/80 tracking-[0.2em] uppercase font-bold">Audio
+                    Essential</span>
+            </div>
+            <div
+                class="font-mono text-[10px] md:text-xs text-center text-white/50 tracking-[0.15em] bg-black/40 px-2 py-0.5 rounded">
+                LOUD VOLUME HIGHLY RECOMMENDED
             </div>
         </div>
+    </div>
 
-        <script>
-            // --- 1. MOBILE INTERACTION ENGINE ---
-            const leftPanel = document.getElementById('leftPanel');
-            const rightPanel = document.getElementById('rightPanel');
-            const body = document.body;
+    <script>
+        // --- 1. MOBILE INTERACTION ENGINE ---
+        const leftPanel = document.getElementById('leftPanel');
+        const rightPanel = document.getElementById('rightPanel');
+        const body = document.body;
 
-            function handlePanelTap(selected, other, hoverClass) {
-                // DESKTOP: Just handle cursor classes
-                if (window.innerWidth > 768) {
-                    body.classList.remove('hover-left', 'hover-right');
-                    body.classList.add(hoverClass);
-                    return;
-                }
-
-                // MOBILE: Allow switching between panels at any time
-                // Reset States
-                selected.classList.remove('inactive');
-                other.classList.remove('active');
-
-                // Set New State (Arm the selected panel)
-                selected.classList.add('active');
-                other.classList.add('inactive');
-
-                // Haptic feedback (Android)
-                if (navigator.vibrate) navigator.vibrate(15);
+        function handlePanelTap(selected, other, hoverClass) {
+            // DESKTOP: Update cursor classes
+            if (window.innerWidth > 768) {
+                body.classList.remove('hover-left', 'hover-right');
+                body.classList.add(hoverClass);
+                // allow fallthrough to update active/inactive classes for visual filters
             }
 
-            // Attach Events
-            leftPanel.addEventListener('click', (e) => {
-                // Ignore if clicking the button
-                if (e.target.closest('a')) return;
+            // SWITCH PANELS (Mobile & Desktop Visuals)
+            // Reset States
+            selected.classList.remove('inactive');
+            other.classList.remove('active');
+
+            // Set New State (Arm the selected panel)
+            selected.classList.add('active');
+            other.classList.add('inactive');
+
+            // Haptic feedback (Android)
+            if (navigator.vibrate) navigator.vibrate(15);
+        }
+
+        // Attach Events
+        leftPanel.addEventListener('click', (e) => {
+            // Ignore if clicking the button
+            if (e.target.closest('a')) return;
+            handlePanelTap(leftPanel, rightPanel, 'hover-left');
+        });
+
+        rightPanel.addEventListener('click', async (e) => {
+            if (e.target.closest('a')) return;
+
+            // IMMEDIATE UI FEEDBACK: Switch panels first
+            handlePanelTap(rightPanel, leftPanel, 'hover-right');
+
+            // [FLUID] Update specific config for NALANI (Fire)
+            if (window.fluidSim) {
+                fluidSim.updateConfig('NALANI');
+            }
+
+            // Trigger NALANI bounce animation
+            const nalaniContainer = document.querySelector('.nalani-container');
+            if (nalaniContainer) {
+                nalaniContainer.classList.remove('bounce');
+                // Force reflow to restart animation
+                void nalaniContainer.offsetWidth;
+                nalaniContainer.classList.add('bounce');
+            }
+
+            // Initialize NALANI audio controller if needed
+            if (!nalaniAudioController) {
+                console.log('Creating NALANI audio controller...');
+                const nalaniAudio = document.createElement('audio');
+                nalaniAudio.id = 'nalaniAudio';
+                nalaniAudio.preload = 'none';
+                document.body.appendChild(nalaniAudio);
+                nalaniAudioController = new AudioController(nalaniAudio);
+            }
+
+            // SHUFFLE FIX: Stop current track to ensure fresh start
+            if (nalaniAudioController.isPlaying) {
+                nalaniAudioController.stop();
+            }
+
+            // Select random NALANI track (different from last one if possible)
+            let selectedTrack;
+            if (nalaniTracks.length > 1) {
+                do {
+                    selectedTrack = nalaniTracks[Math.floor(Math.random() * nalaniTracks.length)];
+                } while (selectedTrack === lastNalaniTrack && nalaniTracks.length > 1);
+            } else {
+                selectedTrack = nalaniTracks[0];
+            }
+
+            lastNalaniTrack = selectedTrack;
+
+            console.log('Playing NALANI:', selectedTrack.text, selectedTrack.url);
+
+            // Play NALANI track
+            try {
+                await nalaniAudioController.playTrack(selectedTrack.url, 1500);
+                console.log('NALANI track started successfully');
+            } catch (error) {
+                console.error('NALANI playback error:', error);
+            }
+        });
+
+        // Desktop Hover Events
+        leftPanel.addEventListener('mouseenter', () => body.classList.add('hover-left'));
+        leftPanel.addEventListener('mouseleave', () => body.classList.remove('hover-left'));
+        rightPanel.addEventListener('mouseenter', () => body.classList.add('hover-right'));
+        rightPanel.addEventListener('mouseleave', () => body.classList.remove('hover-right'));
+
+        // --- MOBILE SWIPE DETECTION ---
+        let touchStartY = 0;
+        let touchEndY = 0;
+        const swipeThreshold = 50; // minimum distance for a swipe
+
+        document.addEventListener('touchstart', (e) => {
+            touchStartY = e.changedTouches[0].screenY;
+        }, { passive: true });
+
+        document.addEventListener('touchend', (e) => {
+            if (window.innerWidth > 768) return; // Only on mobile
+
+            touchEndY = e.changedTouches[0].screenY;
+            const swipeDistance = touchStartY - touchEndY;
+
+            // Swipe up (to see MATAALA/bottom panel)
+            if (swipeDistance > swipeThreshold) {
+                handlePanelTap(rightPanel, leftPanel, 'hover-right');
+            }
+            // Swipe down (to see SILENCE/top panel)
+            else if (swipeDistance < -swipeThreshold) {
+                handlePanelTap(leftPanel, rightPanel, 'hover-left');
+            }
+        }, { passive: true });
+
+
+        // --- 2. VISUALS: CURSOR REMOVED ---
+
+
+        // --- 4. VISUALS: GLITCH TEXT WITH CHARACTER EASTER EGG ---
+        const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+        const title = document.getElementById('glitchTitle');
+        const subtitle = document.getElementById('subtitleText'); // "IS THE TRAUMA" subtitle
+
+        // Audio tracks with character associations - 25 song snippets
+        const audioTracks = [
+            // ETHEL tracks (25 total) - STATUS: SURVEILLANCE
+            { character: "ETHEL", subtitle: "CIRCUIT BREAKER", status: "SURVEILLANCE", text: "If I second guess he writes the end.", url: "https://pub-111e813bd5634cd8a9ecdd3d5c2a0916.r2.dev/audio/Ethel_If_I_second_guess_he_writes_the_end.wav" },
+            //{ character: "ETHEL", subtitle: "CIRCUIT BREAKER", status: "SURVEILLANCE", text: "I rotate fate.", url: "https://pub-111e813bd5634cd8a9ecdd3d5c2a0916.r2.dev/audio/Ethel_I_rotate_fate.wav" },
+            { character: "ETHEL", subtitle: "CIRCUIT BREAKER", status: "SURVEILLANCE", text: "You made a cage for you.", url: "https://pub-111e813bd5634cd8a9ecdd3d5c2a0916.r2.dev/audio/Ethel_you_made_a_cage_for_you.wav" },
+            { character: "ETHEL", subtitle: "CIRCUIT BREAKER", status: "SURVEILLANCE", text: "The pub, that's the vantage.", url: "https://pub-111e813bd5634cd8a9ecdd3d5c2a0916.r2.dev/audio/Ethel_The_pub_thats_the_vantage.wav" },
+            { character: "ETHEL", subtitle: "CIRCUIT BREAKER", status: "SURVEILLANCE", text: "Testing their perspectives.", url: "https://pub-111e813bd5634cd8a9ecdd3d5c2a0916.r2.dev/audio/Ethel_Testing_their_perspectives.wav" },
+            { character: "ETHEL", subtitle: "CIRCUIT BREAKER", status: "SURVEILLANCE", text: "So I watched the systems, not the world they sell.", url: "https://pub-111e813bd5634cd8a9ecdd3d5c2a0916.r2.dev/audio/Ethel_So_I_watched_the_systems_not_the_world_the_sell.wav" },
+            { character: "ETHEL", subtitle: "CIRCUIT BREAKER", status: "SURVEILLANCE", text: "Note on the bike, ride it.", url: "https://pub-111e813bd5634cd8a9ecdd3d5c2a0916.r2.dev/audio/Ethel_Note_on_the_bike_ride_it.wav" },
+            { character: "ETHEL", subtitle: "CIRCUIT BREAKER", status: "SURVEILLANCE", text: "Normal buys the t-shirt.", url: "https://pub-111e813bd5634cd8a9ecdd3d5c2a0916.r2.dev/audio/Ethel_Normal_buys_the_t_shirt.wav" },
+            { character: "ETHEL", subtitle: "CIRCUIT BREAKER", status: "SURVEILLANCE", text: "My father not met, assessed.", url: "https://pub-111e813bd5634cd8a9ecdd3d5c2a0916.r2.dev/audio/Ethel_My_father_not_met_assessed.wav" },
+            // { character: "ETHEL", subtitle: "CIRCUIT BREAKER", status: "SURVEILLANCE", text: "It back in neutral hue.", url: "https://pub-111e813bd5634cd8a9ecdd3d5c2a0916.r2.dev/audio/Ethel_it_back_in_neutral_hue.wav" },
+            { character: "ETHEL", subtitle: "CIRCUIT BREAKER", status: "SURVEILLANCE", text: "Half a block to lose.", url: "https://pub-111e813bd5634cd8a9ecdd3d5c2a0916.r2.dev/audio/Ethel_Half_A_block_to_loose.wav" },
+            { character: "ETHEL", subtitle: "CIRCUIT BREAKER", status: "SURVEILLANCE", text: "Gran was a chemist.", url: "https://pub-111e813bd5634cd8a9ecdd3d5c2a0916.r2.dev/audio/Ethel_Gran_was_a_chemist.wav" },
+            { character: "ETHEL", subtitle: "CIRCUIT BREAKER", status: "SURVEILLANCE", text: "Face like a window, talk like a screen.", url: "https://pub-111e813bd5634cd8a9ecdd3d5c2a0916.r2.dev/audio/Ethel_Face_like_a_window_talk_like_a_screen.wav" },
+            //{ character: "ETHEL", subtitle: "CIRCUIT BREAKER", status: "SURVEILLANCE", text: "AFP number, as if she'd drawn the fuse.", url: "https://pub-111e813bd5634cd8a9ecdd3d5c2a0916.r2.dev/audio/Ethel_AFP_number_as_if_shed_drawn_the_fuse.wav" },
+            { character: "ETHEL", subtitle: "CIRCUIT BREAKER", status: "SURVEILLANCE", text: "They Rewrite You.", url: "https://pub-111e813bd5634cd8a9ecdd3d5c2a0916.r2.dev/audio/Ethel_The_rewrite_you.wav" },
+            { character: "ETHEL", subtitle: "CIRCUIT BREAKER", status: "SURVEILLANCE", text: "I'll stitch the cost.", url: "https://pub-111e813bd5634cd8a9ecdd3d5c2a0916.r2.dev/audio/ETHEL_Stitch_The_Cost.wav" },
+            { character: "ETHEL", subtitle: "CIRCUIT BREAKER", status: "SURVEILLANCE", text: "Silence = Debt Alive", url: "https://pub-111e813bd5634cd8a9ecdd3d5c2a0916.r2.dev/audio/ETHEL_Silence_Keeps_the_debt_alive.wav" },
+            { character: "ETHEL", subtitle: "CIRCUIT BREAKER", status: "SURVEILLANCE", text: "Silence isn't free!", url: "https://pub-111e813bd5634cd8a9ecdd3d5c2a0916.r2.dev/audio/ETHEL_silence_isnt_free.wav" },
+            { character: "ETHEL", subtitle: "CIRCUIT BREAKER", status: "SURVEILLANCE", text: "Silence is the warning", url: "https://pub-111e813bd5634cd8a9ecdd3d5c2a0916.r2.dev/audio/ETHEL_Silence_is_the_warning.wav" },
+            { character: "ETHEL", subtitle: "CIRCUIT BREAKER", status: "SURVEILLANCE", text: "Frame before it sets.", url: "https://pub-111e813bd5634cd8a9ecdd3d5c2a0916.r2.dev/audio/Ethel_Read_the_frame.wav" },
+            { character: "ETHEL", subtitle: "CIRCUIT BREAKER", status: "SURVEILLANCE", text: "Not belief its balance", url: "https://pub-111e813bd5634cd8a9ecdd3d5c2a0916.r2.dev/audio/Ethel_Not%20Belief_Its_balance.wav" },
+            { character: "ETHEL", subtitle: "CIRCUIT BREAKER", status: "SURVEILLANCE", text: "Hero! Killer!", url: "https://pub-111e813bd5634cd8a9ecdd3d5c2a0916.r2.dev/audio/ETHEL_Hero_Killer.wav" },
+            { character: "ETHEL", subtitle: "CIRCUIT BREAKER", status: "SURVEILLANCE", text: "Don't light a candle.", url: "https://pub-111e813bd5634cd8a9ecdd3d5c2a0916.r2.dev/audio/ETHEL_DONT-LIGHT_A_CANDLE.wav" },
+            { character: "ETHEL", subtitle: "CIRCUIT BREAKER", status: "SURVEILLANCE", text: "See mind blind now.", url: "https://pub-111e813bd5634cd8a9ecdd3d5c2a0916.r2.dev/audio/ETHEL_See_my_min_blind_now.wav" },
+            { character: "ETHEL", subtitle: "CIRCUIT BREAKER", status: "SURVEILLANCE", text: "Truth In Open Air", url: "https://pub-111e813bd5634cd8a9ecdd3d5c2a0916.r2.dev/audio/Ethel_Truth%20In_Open_Air.wav" },
+
+            // ISLA tracks (18 total) - STATUS: PUBLIC FIGURE
+            { character: "ISLA", subtitle: "CATALYST", status: "PUBLIC FIGURE", text: "I climbed the pit screaming.", url: "https://pub-111e813bd5634cd8a9ecdd3d5c2a0916.r2.dev/audio/Isla_I_climbed_the_pit_screaming.wav" },
+            { character: "ISLA", subtitle: "CATALYST", status: "PUBLIC FIGURE", text: "This is proof.", url: "https://pub-111e813bd5634cd8a9ecdd3d5c2a0916.r2.dev/audio/isla_this_is_proof.wav" },
+            { character: "ISLA", subtitle: "CATALYST", status: "PUBLIC FIGURE", text: "No price too steep.", url: "https://pub-111e813bd5634cd8a9ecdd3d5c2a0916.r2.dev/audio/Isla_no_proce_too_steep.wav" },
+            { character: "ISLA", subtitle: "CATALYST", status: "PUBLIC FIGURE", text: "I'm split inside.", url: "https://pub-111e813bd5634cd8a9ecdd3d5c2a0916.r2.dev/audio/isla_Im_split_inside.wav" },
+            { character: "ISLA", subtitle: "CATALYST", status: "PUBLIC FIGURE", text: "You think you're the gate.", url: "https://pub-111e813bd5634cd8a9ecdd3d5c2a0916.r2.dev/audio/Isla_You_thing_your_the_gate.wav" },
+            { character: "ISLA", subtitle: "CATALYST", status: "PUBLIC FIGURE", text: "Radio host.", url: "https://pub-111e813bd5634cd8a9ecdd3d5c2a0916.r2.dev/audio/isla_radio_host.wav" },
+            { character: "ISLA", subtitle: "CATALYST", status: "PUBLIC FIGURE", text: "Eyes wide I scream.", url: "https://pub-111e813bd5634cd8a9ecdd3d5c2a0916.r2.dev/audio/Isla_Eyes_wide_I_scream.wav" },
+            { character: "ISLA", subtitle: "CATALYST", status: "PUBLIC FIGURE", text: "I sing the cut, I feed it air, give it back.", url: "https://pub-111e813bd5634cd8a9ecdd3d5c2a0916.r2.dev/audio/isla_I_sing_the_cut_I_feed_it_air_give_it_back.wav" },
+            { character: "ISLA", subtitle: "CATALYST", status: "PUBLIC FIGURE", text: "Court Locked Dirt.", url: "https://pub-111e813bd5634cd8a9ecdd3d5c2a0916.r2.dev/audio/Isla_Court_locked_dirt.wav" },
+            { character: "ISLA", subtitle: "CATALYST", status: "PUBLIC FIGURE", text: "Cant Keep Me Quiet", url: "https://pub-111e813bd5634cd8a9ecdd3d5c2a0916.r2.dev/audio/Isla_cant_keep_me_quiet.wav" },
+            { character: "ISLA", subtitle: "CATALYST", status: "PUBLIC FIGURE", text: "Survival is a win", url: "https://pub-111e813bd5634cd8a9ecdd3d5c2a0916.r2.dev/audio/ISLA_Survival_Is_A_Win.wav" },
+            { character: "ISLA", subtitle: "CATALYST", status: "PUBLIC FIGURE", text: "Me? Not his mess!", url: "https://pub-111e813bd5634cd8a9ecdd3d5c2a0916.r2.dev/audio/Isla_Me_Step_trash.wav" },
+            { character: "ISLA", subtitle: "CATALYST", status: "PUBLIC FIGURE", text: "Married Banker. Wrong night!!", url: "https://pub-111e813bd5634cd8a9ecdd3d5c2a0916.r2.dev/audio/ISLA_Married_Bankers.wav" },
+            { character: "ISLA", subtitle: "CATALYST", status: "PUBLIC FIGURE", text: "Leave the hinge singing.", url: "https://pub-111e813bd5634cd8a9ecdd3d5c2a0916.r2.dev/audio/Isla_Leave_the_hinge_sining.wav" },
+            { character: "ISLA", subtitle: "CATALYST", status: "PUBLIC FIGURE", text: "I'm the new crazy!", url: "https://pub-111e813bd5634cd8a9ecdd3d5c2a0916.r2.dev/audio/Isla_Im_the_new_crazy.wav" },
+            { character: "ISLA", subtitle: "CATALYST", status: "PUBLIC FIGURE", text: "Clicks like it knows", url: "https://pub-111e813bd5634cd8a9ecdd3d5c2a0916.r2.dev/audio/Isla_Crosswalk_klicks.wav" },
+            { character: "ISLA", subtitle: "CATALYST", status: "PUBLIC FIGURE", text: "Inside? passwords!", url: "https://pub-111e813bd5634cd8a9ecdd3d5c2a0916.r2.dev/audio/Isla_Cookies_cracked_inside_passwords.wav" },
+            { character: "ISLA", subtitle: "CATALYST", status: "PUBLIC FIGURE", text: "A mind I knew so well", url: "https://pub-111e813bd5634cd8a9ecdd3d5c2a0916.r2.dev/audio/Isla_A_Mind_I_knew_so_Well.wav" },
+
+            // DOMINIC tracks (3 total) - STATUS: ESCAPED
+            { character: "DOMINIC", subtitle: "CALM MENACE", status: "ESCAPED", text: "Why hold burdens?", url: "https://pub-111e813bd5634cd8a9ecdd3d5c2a0916.r2.dev/audio/DOMINIC_Burdens_I_Can_Carry.wav" },
+            { character: "DOMINIC", subtitle: "CALM MENACE", status: "ESCAPED", text: "They look at reaction.", url: "https://pub-111e813bd5634cd8a9ecdd3d5c2a0916.r2.dev/audio/DOMINIC_flag_tour_tone.wav" },
+            { character: "DOMINIC", subtitle: "CALM MENACE", status: "ESCAPED", text: "1 omission + 2 suggestions.", url: "https://pub-111e813bd5634cd8a9ecdd3d5c2a0916.r2.dev/audio/DOMINIC_one_omission_two_suggestions.wav" },
+
+            // WITNESS track (1 total) - STATUS: UNKNOWN
+            { character: "WITNESS", subtitle: "WITNESS", status: "UNKNOWN", text: "Casual. Gone.", url: "https://pub-111e813bd5634cd8a9ecdd3d5c2a0916.r2.dev/audio/Dominic_Casual_Gone.wav" },
+
+            // KINLEY track (1 total) - STATUS: COMPROMISED
+            { character: "KINLEY", subtitle: "POWER BROKER", status: "COMPROMISED", text: "Guilt Money", url: "https://pub-111e813bd5634cd8a9ecdd3d5c2a0916.r2.dev/audio/KINLEY_Guilt_Money.wav" },
+
+            // STICKY track (1 total) - STATUS: ACTIVE
+            { character: "STICKY", subtitle: "TRUTH SEEKER", status: "ACTIVE", text: "Systems broke. Fix it", url: "https://pub-111e813bd5634cd8a9ecdd3d5c2a0916.r2.dev/audio/STICKY_Systems_broke_fix_it.wav" }
+        ];
+
+        // NALANI tracks (4 total) - Play randomly when clicking NALANI image
+        const nalaniTracks = [
+            { text: "Storm unseen", url: "https://pub-111e813bd5634cd8a9ecdd3d5c2a0916.r2.dev/audio/NALANI_Storm_unseen.wav" },
+            { text: "I questioned proud", url: "https://pub-111e813bd5634cd8a9ecdd3d5c2a0916.r2.dev/audio/NALANI_I_questioned_proud.wav" },
+            { text: "Out past the reef", url: "https://pub-111e813bd5634cd8a9ecdd3d5c2a0916.r2.dev/audio/NALANI_Out_past_the_reef.wav" },
+            { text: "Maps were drawn", url: "https://pub-111e813bd5634cd8a9ecdd3d5c2a0916.r2.dev/audio/NALANI_Maps_were_drawn.wav" }
+        ];
+
+        // Character subtitle mapping for SILENCE (no audio)
+        const characterSubtitles = {
+            "SILENCE": "IS THE TRAUMA",
+            "ETHEL": "CIRCUIT BREAKER",
+            "ISLA": "CATALYST",
+            "DOMINIC": "CALM MENACE",
+            "DOM'S HENCHMAN": "WITNESS"
+        };
+
+        // Track last selected to prevent consecutive duplicates
+        let lastSelectedCharacter = null;
+        let lastSelectedMessage = null;
+        let lastSelectedTrack = null;
+
+        // Audio Controller with fade effects
+        class AudioController {
+            constructor(audioElement = null) {
+                this.audio = audioElement || document.getElementById('characterAudio');
+                this.isPlaying = false;
+                this.currentFade = null;
+
+                // ── Simulated Beat Oscillator ──
+                // We CANNOT use Web Audio API's createMediaElementSource()
+                // because the R2 bucket does not serve CORS headers.
+                // Setting crossOrigin="anonymous" would block audio entirely.
+                // Instead, we simulate bass energy with layered sine waves
+                // that produce convincing organic pulses for the fluid engine.
+                this._beatPhase = 0;
+                this._beatBPM = 120;          // Simulated tempo
+                this._lastBeatTime = 0;
+            }
+
+            // Simulated audio energy for the fluid engine (0-255 range)
+            getAudioData() {
+                if (!this.isPlaying) return 0;
+
+                const now = performance.now() / 1000; // seconds
+                const bps = this._beatBPM / 60.0;
+
+                // Layer 1: Primary beat pulse (bass kick)
+                const beat = Math.pow(Math.sin(now * bps * Math.PI) * 0.5 + 0.5, 3.0);
+
+                // Layer 2: Sub-harmonic swell (slower breathing rhythm)
+                const swell = Math.sin(now * 0.3) * 0.5 + 0.5;
+
+                // Layer 3: Random micro-variation (organic jitter)
+                const jitter = Math.random() * 0.15;
+
+                // Combine: weighted sum, scaled to 0-255
+                const energy = (beat * 0.55 + swell * 0.30 + jitter) * 255;
+
+                return Math.min(255, Math.max(0, energy));
+            }
+
+            async playTrack(url, fadeInDuration = 2000) {
+                // Stop any ongoing fade
+                if (this.currentFade) {
+                    clearInterval(this.currentFade);
+                    this.currentFade = null;
+                }
+
+                // Fade out current track if playing
+                if (this.isPlaying) {
+                    // await this.fadeOut(300); // disable fade out for snap
+                }
+
+                // Load and play new track
+                this.audio.src = url;
+                this.audio.volume = 1.0; // FORCE VOLUME MAX
+                // this.audio.volume = 0; // Commented out fade prep
+
+                try {
+                    await this.audio.play();
+                    this.isPlaying = true;
+
+                    // Fade in
+                    // await this.fadeIn(fadeInDuration); // Disable fade in for reliability check
+                } catch (error) {
+                    console.error('Audio playback failed:', error);
+                    this.isPlaying = false;
+                }
+            }
+
+            fadeIn(duration) {
+                return new Promise((resolve) => {
+                    const steps = 20;
+                    const stepDuration = duration / steps;
+                    const volumeIncrement = 1 / steps;
+                    let currentStep = 0;
+
+                    this.currentFade = setInterval(() => {
+                        currentStep++;
+                        this.audio.volume = Math.min(currentStep * volumeIncrement, 1);
+
+                        if (currentStep >= steps) {
+                            clearInterval(this.currentFade);
+                            this.currentFade = null;
+                            this.audio.volume = 1;
+                            resolve();
+                        }
+                    }, stepDuration);
+                });
+            }
+
+            fadeOut(duration) {
+                return new Promise((resolve) => {
+                    const steps = 20;
+                    const stepDuration = duration / steps;
+                    const startVolume = this.audio.volume;
+                    const volumeDecrement = startVolume / steps;
+                    let currentStep = 0;
+
+                    this.currentFade = setInterval(() => {
+                        currentStep++;
+                        this.audio.volume = Math.max(startVolume - (currentStep * volumeDecrement), 0);
+
+                        if (currentStep >= steps) {
+                            clearInterval(this.currentFade);
+                            this.currentFade = null;
+                            this.audio.pause();
+                            this.audio.volume = 0;
+                            this.isPlaying = false;
+                            resolve();
+                        }
+                    }, stepDuration);
+                });
+            }
+
+            stop() {
+                if (this.currentFade) {
+                    clearInterval(this.currentFade);
+                    this.currentFade = null;
+                }
+                this.audio.pause();
+                this.audio.currentTime = 0;
+                this.audio.volume = 0;
+                this.isPlaying = false;
+            }
+        }
+
+        // Initialize audio controller (var for global scope — needed by fluid engine script)
+        var audioController = new AudioController();
+
+        // NALANI audio system
+        let nalaniAudioController = null;
+        let lastNalaniTrack = null;
+
+        // Modify handlePanelTap to stop appropriate audio when switching panels
+        const originalHandlePanelTap = handlePanelTap;
+        handlePanelTap = function (active, other, hoverClass) {
+            // Stop character audio when switching to NALANI (right panel)
+            if (active === rightPanel && audioController.isPlaying) {
+                audioController.stop();
+            }
+
+            // Stop NALANI audio when switching back to SILENCE (left panel)
+            if (active === leftPanel && nalaniAudioController && nalaniAudioController.isPlaying) {
+                nalaniAudioController.stop();
+            }
+
+            // Call original function
+            originalHandlePanelTap(active, other, hoverClass);
+        };
+
+        // Auto-reset to SILENCE when track ends
+        const audio = document.getElementById('characterAudio');
+        audio.addEventListener('ended', () => {
+            // Reset to SILENCE
+            title.textContent = 'SILENCE';
+            subtitle.textContent = 'IS THE TRAUMA';
+
+            const messageText = document.getElementById('dynamicMessage');
+            if (messageText) {
+                messageText.textContent = '"Silence isn\'t absence."';
+            }
+
+            // Remove all vibe classes
+            leftPanel.classList.remove('vibe-isla', 'vibe-ethel', 'vibe-dominic', 'vibe-witness', 'vibe-kinley', 'vibe-sticky');
+
+            // RESET FLUID TO SILENCE
+            if (window.fluidSim) {
+                fluidSim.updateConfig('SILENCE');
+            }
+
+            // Mark character as inactive to allow ambient glitch
+            isCharacterActive = false;
+
+            // Reset tracking
+            lastSelectedTrack = null;
+            lastSelectedCharacter = null;
+            lastSelectedMessage = null;
+        });
+
+        // Ambient glitch effect - runs automatically every 5-8 seconds
+        let ambientGlitchTimeout = null;
+        let isGlitching = false;
+        let isCharacterActive = false; // Track if a character is currently displayed
+
+        function scheduleNextGlitch() {
+            // Random interval between 5-8 seconds
+            const nextGlitchDelay = 5000 + Math.random() * 3000;
+
+            ambientGlitchTimeout = setTimeout(() => {
+                // Only glitch if no character is active and not already glitching
+                if (!isGlitching && !isCharacterActive && title.textContent === 'SILENCE') {
+                    doAmbientGlitch();
+                }
+                scheduleNextGlitch();
+            }, nextGlitchDelay);
+        }
+
+        function doAmbientGlitch() {
+            const currentText = title.textContent;
+            const textLength = currentText.length;
+            let iteration = 0;
+            const maxIterations = 8 + Math.floor(Math.random() * 5); // 8-12 frames
+
+            const glitchInterval = setInterval(() => {
+                if (iteration < maxIterations) {
+                    // Random glitch patterns
+                    const glitchType = Math.floor(Math.random() * 3);
+
+                    if (glitchType === 0) {
+                        // Full shuffle
+                        let shuffled = '';
+                        for (let i = 0; i < textLength; i++) {
+                            shuffled += letters[Math.floor(Math.random() * letters.length)];
+                        }
+                        title.textContent = shuffled;
+                    } else if (glitchType === 1) {
+                        // Partial glitch - only some letters
+                        title.textContent = currentText
+                            .split('')
+                            .map(char => Math.random() > 0.5 ? char : letters[Math.floor(Math.random() * letters.length)])
+                            .join('');
+                    } else {
+                        // Position shift glitch
+                        const shift = Math.floor(Math.random() * 3) - 1;
+                        title.textContent = currentText
+                            .split('')
+                            .map((char, i) => {
+                                const newIndex = (i + shift + textLength) % textLength;
+                                return currentText[newIndex];
+                            })
+                            .join('');
+                    }
+                    iteration++;
+                } else {
+                    // Restore original text
+                    clearInterval(glitchInterval);
+                    title.textContent = currentText;
+                    isGlitching = false;
+                }
+            }, 60);
+
+            isGlitching = true;
+        }
+
+        // Start ambient glitch cycle
+        scheduleNextGlitch();
+
+        // Trigger glitch on hover (desktop) or tap (mobile)
+        function triggerGlitch() {
+            let iteration = 0;
+
+            // Select random track (excluding last selected)
+            const availableTracks = lastSelectedTrack
+                ? audioTracks.filter(track => track !== lastSelectedTrack)
+                : audioTracks;
+
+            const selectedTrack = availableTracks[Math.floor(Math.random() * availableTracks.length)];
+            const selectedName = selectedTrack.character;
+            const selectedSubtitle = selectedTrack.subtitle;
+            const selectedMessage = selectedTrack.text;
+            const selectedUrl = selectedTrack.url;
+            const selectedStatus = selectedTrack.status;
+
+            // Update tracking
+            lastSelectedTrack = selectedTrack;
+            lastSelectedCharacter = selectedName;
+            lastSelectedMessage = selectedMessage;
+
+            // Apply character-specific vibe
+            leftPanel.classList.remove('vibe-isla', 'vibe-ethel', 'vibe-dominic', 'vibe-witness', 'vibe-kinley', 'vibe-sticky');
+            if (selectedName === 'ISLA') {
+                leftPanel.classList.add('vibe-isla');
+            } else if (selectedName === 'ETHEL') {
+                leftPanel.classList.add('vibe-ethel');
+            } else if (selectedName === 'DOMINIC') {
+                leftPanel.classList.add('vibe-dominic');
+            } else if (selectedName === 'WITNESS') {
+                leftPanel.classList.add('vibe-witness');
+            } else if (selectedName === 'KINLEY') {
+                leftPanel.classList.add('vibe-kinley');
+            } else if (selectedName === 'STICKY') {
+                leftPanel.classList.add('vibe-sticky');
+            }
+
+            // [FLUID] HOOK: Update fluid physics
+            if (window.fluidSim) {
+                fluidSim.updateConfig(selectedName);
+            }
+
+            // Mark character as active to prevent ambient glitch
+            isCharacterActive = true;
+
+            clearInterval(title.interval);
+
+            title.interval = setInterval(() => {
+                const shuffledText = selectedName
+                    .split("")
+                    .map((letter, index) => {
+                        if (index < iteration) return selectedName[index];
+                        return letters[Math.floor(Math.random() * letters.length)];
+                    })
+                    .join("");
+
+                // Cap at exact character name length to prevent blowout
+                title.innerText = shuffledText.substring(0, selectedName.length);
+
+                if (iteration >= selectedName.length) {
+                    clearInterval(title.interval);
+
+                    // Update the MESSAGE with track text (Status removed)
+                    const messageText = document.getElementById('dynamicMessage');
+                    if (messageText) {
+                        messageText.textContent = `"${selectedMessage}"`;
+                    }
+
+                    // Update subtitle with character-specific text
+                    subtitle.textContent = selectedSubtitle;
+
+                    // Play audio track with fade in
+                    console.log('Playing track:', selectedName, selectedMessage, selectedUrl);
+                    audioController.playTrack(selectedUrl, 500);
+                }
+                iteration += 1 / 2;
+            }, 30);
+        }
+
+        // RESTRICT INTERACTION: Only trigger glitch when clicking the typography/content
+        const contentLayer = leftPanel.querySelector('.content-layer');
+        contentLayer.style.cursor = 'pointer';
+        contentLayer.style.pointerEvents = 'auto'; // ENABLE CLICKS (Fixes CSS pointer-events: none)
+        contentLayer.addEventListener('click', (e) => {
+            e.stopPropagation(); // Don't bubble to generic panel listeners
+            triggerGlitch();
+            // Ensure panel expands on mobile
+            handlePanelTap(leftPanel, rightPanel, 'hover-left');
+        });
+
+        // Also allow the active label to trigger
+        const sliverLabel = leftPanel.querySelector('.mobile-sliver-label');
+        if (sliverLabel) {
+            sliverLabel.style.cursor = 'pointer';
+            sliverLabel.addEventListener('click', (e) => {
+                e.stopPropagation();
+                triggerGlitch();
                 handlePanelTap(leftPanel, rightPanel, 'hover-left');
             });
-
-            rightPanel.addEventListener('click', async (e) => {
-                if (e.target.closest('a')) return;
-
-                // Trigger NALANI bounce animation
-                const nalaniContainer = document.querySelector('.nalani-container');
-                if (nalaniContainer) {
-                    nalaniContainer.classList.remove('bounce');
-                    // Force reflow to restart animation
-                    void nalaniContainer.offsetWidth;
-                    nalaniContainer.classList.add('bounce');
-                }
-
-                // Initialize NALANI audio controller if needed
-                if (!nalaniAudioController) {
-                    console.log('Creating NALANI audio controller...');
-                    const nalaniAudio = document.createElement('audio');
-                    nalaniAudio.id = 'nalaniAudio';
-                    nalaniAudio.preload = 'none';
-                    document.body.appendChild(nalaniAudio);
-                    nalaniAudioController = new AudioController(nalaniAudio);
-                }
-
-                // Select random NALANI track (different from last one if possible)
-                let selectedTrack;
-                if (nalaniTracks.length > 1) {
-                    do {
-                        selectedTrack = nalaniTracks[Math.floor(Math.random() * nalaniTracks.length)];
-                    } while (selectedTrack === lastNalaniTrack && nalaniTracks.length > 1);
-                } else {
-                    selectedTrack = nalaniTracks[0];
-                }
-
-                lastNalaniTrack = selectedTrack;
-
-                console.log('Playing NALANI:', selectedTrack.text, selectedTrack.url);
-
-                // Play NALANI track
-                try {
-                    await nalaniAudioController.playTrack(selectedTrack.url, 1500);
-                    console.log('NALANI track started successfully');
-                } catch (error) {
-                    console.error('NALANI playback error:', error);
-                }
-
-                // Also handle panel switching
-                handlePanelTap(rightPanel, leftPanel, 'hover-right');
-            });
-
-            // Desktop Hover Events
-            leftPanel.addEventListener('mouseenter', () => body.classList.add('hover-left'));
-            leftPanel.addEventListener('mouseleave', () => body.classList.remove('hover-left'));
-            rightPanel.addEventListener('mouseenter', () => body.classList.add('hover-right'));
-            rightPanel.addEventListener('mouseleave', () => body.classList.remove('hover-right'));
-
-            // --- MOBILE SWIPE DETECTION ---
-            let touchStartY = 0;
-            let touchEndY = 0;
-            const swipeThreshold = 50; // minimum distance for a swipe
-
-            document.addEventListener('touchstart', (e) => {
-                touchStartY = e.changedTouches[0].screenY;
-            }, { passive: true });
-
-            document.addEventListener('touchend', (e) => {
-                if (window.innerWidth > 768) return; // Only on mobile
-
-                touchEndY = e.changedTouches[0].screenY;
-                const swipeDistance = touchStartY - touchEndY;
-
-                // Swipe up (to see MATAALA/bottom panel)
-                if (swipeDistance > swipeThreshold) {
-                    handlePanelTap(rightPanel, leftPanel, 'hover-right');
-                }
-                // Swipe down (to see SILENCE/top panel)
-                else if (swipeDistance < -swipeThreshold) {
-                    handlePanelTap(leftPanel, rightPanel, 'hover-left');
-                }
-            }, { passive: true });
-
-
-            // --- 2. VISUALS: CURSOR (Desktop) ---
-            const cursor = document.getElementById('cursor');
-            document.addEventListener('mousemove', (e) => {
-                if (window.innerWidth <= 768) return;
-                cursor.style.left = e.clientX + 'px';
-                cursor.style.top = e.clientY + 'px';
-
-                // Parallax
-                const moveX = (e.clientX - window.innerWidth / 2) * 0.02;
-                const moveY = (e.clientY - window.innerHeight / 2) * 0.02;
-                const bgWar = document.getElementById('bgWar');
-                if (bgWar) bgWar.style.transform = `scale(1.1) translate(${-moveX}px, ${-moveY}px)`;
-            });
-
-
-            // --- 4. VISUALS: GLITCH TEXT WITH CHARACTER EASTER EGG ---
-            const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-            const title = document.getElementById('glitchTitle');
-            const subtitle = document.getElementById('subtitleText'); // "IS THE TRAUMA" subtitle
-            const subjectLabel = document.querySelector('.text-gray-500');
-            const messageWrapper = document.querySelectorAll('.redacted-wrapper')[1];
-
-            // Audio tracks with character associations - 25 song snippets
-            const audioTracks = [
-                // ETHEL tracks (25 total) - STATUS: SURVEILLANCE
-                { character: "ETHEL", subtitle: "CIRCUIT BREAKER", status: "SURVEILLANCE", text: "If I second guess he writes the end.", url: "https://pub-111e813bd5634cd8a9ecdd3d5c2a0916.r2.dev/audio/Ethel_If_I_second_guess_he_writes_the_end.wav" },
-                //{ character: "ETHEL", subtitle: "CIRCUIT BREAKER", status: "SURVEILLANCE", text: "I rotate fate.", url: "https://pub-111e813bd5634cd8a9ecdd3d5c2a0916.r2.dev/audio/Ethel_I_rotate_fate.wav" },
-                { character: "ETHEL", subtitle: "CIRCUIT BREAKER", status: "SURVEILLANCE", text: "You made a cage for you.", url: "https://pub-111e813bd5634cd8a9ecdd3d5c2a0916.r2.dev/audio/Ethel_you_made_a_cage_for_you.wav" },
-                { character: "ETHEL", subtitle: "CIRCUIT BREAKER", status: "SURVEILLANCE", text: "The pub, that's the vantage.", url: "https://pub-111e813bd5634cd8a9ecdd3d5c2a0916.r2.dev/audio/Ethel_The_pub_thats_the_vantage.wav" },
-                { character: "ETHEL", subtitle: "CIRCUIT BREAKER", status: "SURVEILLANCE", text: "Testing their perspectives.", url: "https://pub-111e813bd5634cd8a9ecdd3d5c2a0916.r2.dev/audio/Ethel_Testing_their_perspectives.wav" },
-                { character: "ETHEL", subtitle: "CIRCUIT BREAKER", status: "SURVEILLANCE", text: "So I watched the systems, not the world they sell.", url: "https://pub-111e813bd5634cd8a9ecdd3d5c2a0916.r2.dev/audio/Ethel_So_I_watched_the_systems_not_the_world_the_sell.wav" },
-                { character: "ETHEL", subtitle: "CIRCUIT BREAKER", status: "SURVEILLANCE", text: "Note on the bike, ride it.", url: "https://pub-111e813bd5634cd8a9ecdd3d5c2a0916.r2.dev/audio/Ethel_Note_on_the_bike_ride_it.wav" },
-                { character: "ETHEL", subtitle: "CIRCUIT BREAKER", status: "SURVEILLANCE", text: "Normal buys the t-shirt.", url: "https://pub-111e813bd5634cd8a9ecdd3d5c2a0916.r2.dev/audio/Ethel_Normal_buys_the_t_shirt.wav" },
-                { character: "ETHEL", subtitle: "CIRCUIT BREAKER", status: "SURVEILLANCE", text: "My father not met, assessed.", url: "https://pub-111e813bd5634cd8a9ecdd3d5c2a0916.r2.dev/audio/Ethel_My_father_not_met_assessed.wav" },
-                // { character: "ETHEL", subtitle: "CIRCUIT BREAKER", status: "SURVEILLANCE", text: "It back in neutral hue.", url: "https://pub-111e813bd5634cd8a9ecdd3d5c2a0916.r2.dev/audio/Ethel_it_back_in_neutral_hue.wav" },
-                { character: "ETHEL", subtitle: "CIRCUIT BREAKER", status: "SURVEILLANCE", text: "Half a block to lose.", url: "https://pub-111e813bd5634cd8a9ecdd3d5c2a0916.r2.dev/audio/Ethel_Half_A_block_to_loose.wav" },
-                { character: "ETHEL", subtitle: "CIRCUIT BREAKER", status: "SURVEILLANCE", text: "Gran was a chemist.", url: "https://pub-111e813bd5634cd8a9ecdd3d5c2a0916.r2.dev/audio/Ethel_Gran_was_a_chemist.wav" },
-                { character: "ETHEL", subtitle: "CIRCUIT BREAKER", status: "SURVEILLANCE", text: "Face like a window, talk like a screen.", url: "https://pub-111e813bd5634cd8a9ecdd3d5c2a0916.r2.dev/audio/Ethel_Face_like_a_window_talk_like_a_screen.wav" },
-                //{ character: "ETHEL", subtitle: "CIRCUIT BREAKER", status: "SURVEILLANCE", text: "AFP number, as if she'd drawn the fuse.", url: "https://pub-111e813bd5634cd8a9ecdd3d5c2a0916.r2.dev/audio/Ethel_AFP_number_as_if_shed_drawn_the_fuse.wav" },
-                { character: "ETHEL", subtitle: "CIRCUIT BREAKER", status: "SURVEILLANCE", text: "They Rewrite You.", url: "https://pub-111e813bd5634cd8a9ecdd3d5c2a0916.r2.dev/audio/Ethel_The_rewrite_you.wav" },
-                { character: "ETHEL", subtitle: "CIRCUIT BREAKER", status: "SURVEILLANCE", text: "I'll stitch the cost.", url: "https://pub-111e813bd5634cd8a9ecdd3d5c2a0916.r2.dev/audio/ETHEL_Stitch_The_Cost.wav" },
-                { character: "ETHEL", subtitle: "CIRCUIT BREAKER", status: "SURVEILLANCE", text: "Silence = Debt Alive", url: "https://pub-111e813bd5634cd8a9ecdd3d5c2a0916.r2.dev/audio/ETHEL_Silence_Keeps_the_debt_alive.wav" },
-                { character: "ETHEL", subtitle: "CIRCUIT BREAKER", status: "SURVEILLANCE", text: "Silence isn't free!", url: "https://pub-111e813bd5634cd8a9ecdd3d5c2a0916.r2.dev/audio/ETHEL_silence_isnt_free.wav" },
-                { character: "ETHEL", subtitle: "CIRCUIT BREAKER", status: "SURVEILLANCE", text: "Silence is the warning", url: "https://pub-111e813bd5634cd8a9ecdd3d5c2a0916.r2.dev/audio/ETHEL_Silence_is_the_warning.wav" },
-                { character: "ETHEL", subtitle: "CIRCUIT BREAKER", status: "SURVEILLANCE", text: "Frame before it sets.", url: "https://pub-111e813bd5634cd8a9ecdd3d5c2a0916.r2.dev/audio/Ethel_Read_the_frame.wav" },
-                { character: "ETHEL", subtitle: "CIRCUIT BREAKER", status: "SURVEILLANCE", text: "Not belief its balance", url: "https://pub-111e813bd5634cd8a9ecdd3d5c2a0916.r2.dev/audio/Ethel_Not%20Belief_Its_balance.wav" },
-                { character: "ETHEL", subtitle: "CIRCUIT BREAKER", status: "SURVEILLANCE", text: "Hero! Killer!", url: "https://pub-111e813bd5634cd8a9ecdd3d5c2a0916.r2.dev/audio/ETHEL_Hero_Killer.wav" },
-                { character: "ETHEL", subtitle: "CIRCUIT BREAKER", status: "SURVEILLANCE", text: "Don't light a candle.", url: "https://pub-111e813bd5634cd8a9ecdd3d5c2a0916.r2.dev/audio/ETHEL_DONT-LIGHT_A_CANDLE.wav" },
-                { character: "ETHEL", subtitle: "CIRCUIT BREAKER", status: "SURVEILLANCE", text: "See mind blind now.", url: "https://pub-111e813bd5634cd8a9ecdd3d5c2a0916.r2.dev/audio/ETHEL_See_my_min_blind_now.wav" },
-                { character: "ETHEL", subtitle: "CIRCUIT BREAKER", status: "SURVEILLANCE", text: "Truth In Open Air", url: "https://pub-111e813bd5634cd8a9ecdd3d5c2a0916.r2.dev/audio/Ethel_Truth%20In_Open_Air.wav" },
-
-                // ISLA tracks (18 total) - STATUS: PUBLIC FIGURE
-                { character: "ISLA", subtitle: "CATALYST", status: "PUBLIC FIGURE", text: "I climbed the pit screaming.", url: "https://pub-111e813bd5634cd8a9ecdd3d5c2a0916.r2.dev/audio/Isla_I_climbed_the_pit_screaming.wav" },
-                { character: "ISLA", subtitle: "CATALYST", status: "PUBLIC FIGURE", text: "This is proof.", url: "https://pub-111e813bd5634cd8a9ecdd3d5c2a0916.r2.dev/audio/isla_this_is_proof.wav" },
-                { character: "ISLA", subtitle: "CATALYST", status: "PUBLIC FIGURE", text: "No price too steep.", url: "https://pub-111e813bd5634cd8a9ecdd3d5c2a0916.r2.dev/audio/Isla_no_proce_too_steep.wav" },
-                { character: "ISLA", subtitle: "CATALYST", status: "PUBLIC FIGURE", text: "I'm split inside.", url: "https://pub-111e813bd5634cd8a9ecdd3d5c2a0916.r2.dev/audio/isla_Im_split_inside.wav" },
-                { character: "ISLA", subtitle: "CATALYST", status: "PUBLIC FIGURE", text: "You think you're the gate.", url: "https://pub-111e813bd5634cd8a9ecdd3d5c2a0916.r2.dev/audio/Isla_You_thing_your_the_gate.wav" },
-                { character: "ISLA", subtitle: "CATALYST", status: "PUBLIC FIGURE", text: "Radio host.", url: "https://pub-111e813bd5634cd8a9ecdd3d5c2a0916.r2.dev/audio/isla_radio_host.wav" },
-                { character: "ISLA", subtitle: "CATALYST", status: "PUBLIC FIGURE", text: "Eyes wide I scream.", url: "https://pub-111e813bd5634cd8a9ecdd3d5c2a0916.r2.dev/audio/Isla_Eyes_wide_I_scream.wav" },
-                { character: "ISLA", subtitle: "CATALYST", status: "PUBLIC FIGURE", text: "I sing the cut, I feed it air, give it back.", url: "https://pub-111e813bd5634cd8a9ecdd3d5c2a0916.r2.dev/audio/isla_I_sing_the_cut_I_feed_it_air_give_it_back.wav" },
-                { character: "ISLA", subtitle: "CATALYST", status: "PUBLIC FIGURE", text: "Court Locked Dirt.", url: "https://pub-111e813bd5634cd8a9ecdd3d5c2a0916.r2.dev/audio/Isla_Court_locked_dirt.wav" },
-                { character: "ISLA", subtitle: "CATALYST", status: "PUBLIC FIGURE", text: "Cant Keep Me Quiet", url: "https://pub-111e813bd5634cd8a9ecdd3d5c2a0916.r2.dev/audio/Isla_cant_keep_me_quiet.wav" },
-                { character: "ISLA", subtitle: "CATALYST", status: "PUBLIC FIGURE", text: "Survival is a win", url: "https://pub-111e813bd5634cd8a9ecdd3d5c2a0916.r2.dev/audio/ISLA_Survival_Is_A_Win.wav" },
-                { character: "ISLA", subtitle: "CATALYST", status: "PUBLIC FIGURE", text: "Me? Not his mess!", url: "https://pub-111e813bd5634cd8a9ecdd3d5c2a0916.r2.dev/audio/Isla_Me_Step_trash.wav" },
-                { character: "ISLA", subtitle: "CATALYST", status: "PUBLIC FIGURE", text: "Married Banker. Wrong night!!", url: "https://pub-111e813bd5634cd8a9ecdd3d5c2a0916.r2.dev/audio/ISLA_Married_Bankers.wav" },
-                { character: "ISLA", subtitle: "CATALYST", status: "PUBLIC FIGURE", text: "Leave the hinge singing.", url: "https://pub-111e813bd5634cd8a9ecdd3d5c2a0916.r2.dev/audio/Isla_Leave_the_hinge_sining.wav" },
-                { character: "ISLA", subtitle: "CATALYST", status: "PUBLIC FIGURE", text: "I'm the new crazy!", url: "https://pub-111e813bd5634cd8a9ecdd3d5c2a0916.r2.dev/audio/Isla_Im_the_new_crazy.wav" },
-                { character: "ISLA", subtitle: "CATALYST", status: "PUBLIC FIGURE", text: "Clicks like it knows", url: "https://pub-111e813bd5634cd8a9ecdd3d5c2a0916.r2.dev/audio/Isla_Crosswalk_klicks.wav" },
-                { character: "ISLA", subtitle: "CATALYST", status: "PUBLIC FIGURE", text: "Inside? passwords!", url: "https://pub-111e813bd5634cd8a9ecdd3d5c2a0916.r2.dev/audio/Isla_Cookies_cracked_inside_passwords.wav" },
-                { character: "ISLA", subtitle: "CATALYST", status: "PUBLIC FIGURE", text: "A mind I knew so well", url: "https://pub-111e813bd5634cd8a9ecdd3d5c2a0916.r2.dev/audio/Isla_A_Mind_I_knew_so_Well.wav" },
-
-                // DOMINIC tracks (3 total) - STATUS: ESCAPED
-                { character: "DOMINIC", subtitle: "CALM MENACE", status: "ESCAPED", text: "Why hold burdens?", url: "https://pub-111e813bd5634cd8a9ecdd3d5c2a0916.r2.dev/audio/DOMINIC_Burdens_I_Can_Carry.wav" },
-                { character: "DOMINIC", subtitle: "CALM MENACE", status: "ESCAPED", text: "They look at reaction.", url: "https://pub-111e813bd5634cd8a9ecdd3d5c2a0916.r2.dev/audio/DOMINIC_flag_tour_tone.wav" },
-                { character: "DOMINIC", subtitle: "CALM MENACE", status: "ESCAPED", text: "1 omission + 2 suggestions.", url: "https://pub-111e813bd5634cd8a9ecdd3d5c2a0916.r2.dev/audio/DOMINIC_one_omission_two_suggestions.wav" },
-
-                // WITNESS track (1 total) - STATUS: UNKNOWN
-                { character: "WITNESS", subtitle: "WITNESS", status: "UNKNOWN", text: "Casual. Gone.", url: "https://pub-111e813bd5634cd8a9ecdd3d5c2a0916.r2.dev/audio/Dominic_Casual_Gone.wav" },
-
-                // KINLEY track (1 total) - STATUS: COMPROMISED
-                { character: "KINLEY", subtitle: "POWER BROKER", status: "COMPROMISED", text: "Guilt Money", url: "https://pub-111e813bd5634cd8a9ecdd3d5c2a0916.r2.dev/audio/KINLEY_Guilt_Money.wav" },
-
-                // STICKY track (1 total) - STATUS: ACTIVE
-                { character: "STICKY", subtitle: "TRUTH SEEKER", status: "ACTIVE", text: "Systems broke. Fix it", url: "https://pub-111e813bd5634cd8a9ecdd3d5c2a0916.r2.dev/audio/STICKY_Systems_broke_fix_it.wav" }
-            ];
-
-            // NALANI tracks (4 total) - Play randomly when clicking NALANI image
-            const nalaniTracks = [
-                { text: "Storm unseen", url: "https://pub-111e813bd5634cd8a9ecdd3d5c2a0916.r2.dev/audio/NALANI_Storm_unseen.wav" },
-                { text: "I questioned proud", url: "https://pub-111e813bd5634cd8a9ecdd3d5c2a0916.r2.de/audio/NALANI_I_questioned_proud.wav" },
-                { text: "Out past the reef", url: "https://pub-111e813bd5634cd8a9ecdd3d5c2a0916.r2.dev/audio/NALANI_Out_past_the_reef.wav" },
-                { text: "Maps were drawn", url: "https://pub-111e813bd5634cd8a9ecdd3d5c2a0916.r2.dev/audio/NALANI_Maps_were_drawn.wav" }
-            ];
-
-            // Character subtitle mapping for SILENCE (no audio)
-            const characterSubtitles = {
-                "SILENCE": "IS THE TRAUMA",
-                "ETHEL": "CIRCUIT BREAKER",
-                "ISLA": "CATALYST",
-                "DOMINIC": "CALM MENACE",
-                "DOM'S HENCHMAN": "WITNESS"
-            };
-
-            // Track last selected to prevent consecutive duplicates
-            let lastSelectedCharacter = null;
-            let lastSelectedMessage = null;
-            let lastSelectedTrack = null;
-
-            // Audio Controller with fade effects
-            class AudioController {
-                constructor(audioElement = null) {
-                    this.audio = audioElement || document.getElementById('characterAudio');
-                    this.isPlaying = false;
-                    this.currentFade = null;
-
-                    // ── Simulated Beat Oscillator ──
-                    // We CANNOT use Web Audio API's createMediaElementSource()
-                    // because the R2 bucket does not serve CORS headers.
-                    // Setting crossOrigin="anonymous" would block audio entirely.
-                    // Instead, we simulate bass energy with layered sine waves
-                    // that produce convincing organic pulses for the fluid engine.
-                    this._beatPhase = 0;
-                    this._beatBPM = 120;          // Simulated tempo
-                    this._lastBeatTime = 0;
-                }
-
-                // Simulated audio energy for the fluid engine (0-255 range)
-                getAudioData() {
-                    if (!this.isPlaying) return 0;
-
-                    const now = performance.now() / 1000; // seconds
-                    const bps = this._beatBPM / 60.0;
-
-                    // Layer 1: Primary beat pulse (bass kick)
-                    const beat = Math.pow(Math.sin(now * bps * Math.PI) * 0.5 + 0.5, 3.0);
-
-                    // Layer 2: Sub-harmonic swell (slower breathing rhythm)
-                    const swell = Math.sin(now * 0.3) * 0.5 + 0.5;
-
-                    // Layer 3: Random micro-variation (organic jitter)
-                    const jitter = Math.random() * 0.15;
-
-                    // Combine: weighted sum, scaled to 0-255
-                    const energy = (beat * 0.55 + swell * 0.30 + jitter) * 255;
-
-                    return Math.min(255, Math.max(0, energy));
-                }
-
-                async playTrack(url, fadeInDuration = 2000) {
-                    // Stop any ongoing fade
-                    if (this.currentFade) {
-                        clearInterval(this.currentFade);
-                        this.currentFade = null;
-                    }
-
-                    // Fade out current track if playing
-                    if (this.isPlaying) {
-                        await this.fadeOut(300);
-                    }
-
-                    // Load and play new track
-                    this.audio.src = url;
-                    this.audio.volume = 0;
-
-                    try {
-                        await this.audio.play();
-                        this.isPlaying = true;
-
-                        // Fade in
-                        await this.fadeIn(fadeInDuration);
-                    } catch (error) {
-                        console.error('Audio playback failed:', error);
-                        this.isPlaying = false;
-                    }
-                }
-
-                fadeIn(duration) {
-                    return new Promise((resolve) => {
-                        const steps = 20;
-                        const stepDuration = duration / steps;
-                        const volumeIncrement = 1 / steps;
-                        let currentStep = 0;
-
-                        this.currentFade = setInterval(() => {
-                            currentStep++;
-                            this.audio.volume = Math.min(currentStep * volumeIncrement, 1);
-
-                            if (currentStep >= steps) {
-                                clearInterval(this.currentFade);
-                                this.currentFade = null;
-                                this.audio.volume = 1;
-                                resolve();
-                            }
-                        }, stepDuration);
-                    });
-                }
-
-                fadeOut(duration) {
-                    return new Promise((resolve) => {
-                        const steps = 20;
-                        const stepDuration = duration / steps;
-                        const startVolume = this.audio.volume;
-                        const volumeDecrement = startVolume / steps;
-                        let currentStep = 0;
-
-                        this.currentFade = setInterval(() => {
-                            currentStep++;
-                            this.audio.volume = Math.max(startVolume - (currentStep * volumeDecrement), 0);
-
-                            if (currentStep >= steps) {
-                                clearInterval(this.currentFade);
-                                this.currentFade = null;
-                                this.audio.pause();
-                                this.audio.volume = 0;
-                                this.isPlaying = false;
-                                resolve();
-                            }
-                        }, stepDuration);
-                    });
-                }
-
-                stop() {
-                    if (this.currentFade) {
-                        clearInterval(this.currentFade);
-                        this.currentFade = null;
-                    }
-                    this.audio.pause();
-                    this.audio.currentTime = 0;
-                    this.audio.volume = 0;
-                    this.isPlaying = false;
-                }
-            }
-
-            // Initialize audio controller (var for global scope — needed by fluid engine script)
-            var audioController = new AudioController();
-
-            // NALANI audio system
-            let nalaniAudioController = null;
-            let lastNalaniTrack = null;
-
-            // Modify handlePanelTap to stop appropriate audio when switching panels
-            const originalHandlePanelTap = handlePanelTap;
-            handlePanelTap = function (active, other, hoverClass) {
-                // Stop character audio when switching to NALANI (right panel)
-                if (active === rightPanel && audioController.isPlaying) {
-                    audioController.stop();
-                }
-
-                // Stop NALANI audio when switching back to SILENCE (left panel)
-                if (active === leftPanel && nalaniAudioController && nalaniAudioController.isPlaying) {
-                    nalaniAudioController.stop();
-                }
-
-                // Call original function
-                originalHandlePanelTap(active, other, hoverClass);
-            };
-
-            // Auto-reset to SILENCE when track ends
-            const audio = document.getElementById('characterAudio');
-            audio.addEventListener('ended', () => {
-                // Reset to SILENCE
-                title.textContent = 'SILENCE';
-                subtitle.textContent = 'IS THE TRAUMA';
-
-                const subjectWrapper = document.querySelectorAll('.redacted-wrapper')[0];
-                const subjectText = subjectWrapper.querySelector('span:not(.redacted-bar)') || subjectWrapper.childNodes[0];
-                if (subjectText) {
-                    subjectText.textContent = 'SILENCE';
-                }
-
-                const messageText = messageWrapper.querySelector('span:not(.redacted-bar)') || messageWrapper.childNodes[0];
-                if (messageText) {
-                    messageText.textContent = '"Silence isn\'t absence."';
-                }
-
-                // Remove all vibe classes
-                leftPanel.classList.remove('vibe-isla', 'vibe-ethel', 'vibe-dominic', 'vibe-witness', 'vibe-kinley', 'vibe-sticky');
-
-                // RESET FLUID TO SILENCE
-                if (window.fluidSim) {
-                    fluidSim.updateConfig('SILENCE');
-                }
-
-                // Mark character as inactive to allow ambient glitch
-                isCharacterActive = false;
-
-                // Reset tracking
-                lastSelectedTrack = null;
-                lastSelectedCharacter = null;
-                lastSelectedMessage = null;
-            });
-
-            // Ambient glitch effect - runs automatically every 5-8 seconds
-            let ambientGlitchTimeout = null;
-            let isGlitching = false;
-            let isCharacterActive = false; // Track if a character is currently displayed
-
-            function scheduleNextGlitch() {
-                // Random interval between 5-8 seconds
-                const nextGlitchDelay = 5000 + Math.random() * 3000;
-
-                ambientGlitchTimeout = setTimeout(() => {
-                    // Only glitch if no character is active and not already glitching
-                    if (!isGlitching && !isCharacterActive && title.textContent === 'SILENCE') {
-                        doAmbientGlitch();
-                    }
-                    scheduleNextGlitch();
-                }, nextGlitchDelay);
-            }
-
-            function doAmbientGlitch() {
-                const currentText = title.textContent;
-                const textLength = currentText.length;
-                let iteration = 0;
-                const maxIterations = 8 + Math.floor(Math.random() * 5); // 8-12 frames
-
-                const glitchInterval = setInterval(() => {
-                    if (iteration < maxIterations) {
-                        // Random glitch patterns
-                        const glitchType = Math.floor(Math.random() * 3);
-
-                        if (glitchType === 0) {
-                            // Full shuffle
-                            let shuffled = '';
-                            for (let i = 0; i < textLength; i++) {
-                                shuffled += letters[Math.floor(Math.random() * letters.length)];
-                            }
-                            title.textContent = shuffled;
-                        } else if (glitchType === 1) {
-                            // Partial glitch - only some letters
-                            title.textContent = currentText
-                                .split('')
-                                .map(char => Math.random() > 0.5 ? char : letters[Math.floor(Math.random() * letters.length)])
-                                .join('');
-                        } else {
-                            // Position shift glitch
-                            const shift = Math.floor(Math.random() * 3) - 1;
-                            title.textContent = currentText
-                                .split('')
-                                .map((char, i) => {
-                                    const newIndex = (i + shift + textLength) % textLength;
-                                    return currentText[newIndex];
-                                })
-                                .join('');
-                        }
-                        iteration++;
-                    } else {
-                        // Restore original text
-                        clearInterval(glitchInterval);
-                        title.textContent = currentText;
-                        isGlitching = false;
-                    }
-                }, 60);
-
-                isGlitching = true;
-            }
-
-            // Start ambient glitch cycle
-            scheduleNextGlitch();
-
-            // Trigger glitch on hover (desktop) or tap (mobile)
-            function triggerGlitch() {
-                let iteration = 0;
-
-                // Select random track (excluding last selected)
-                const availableTracks = lastSelectedTrack
-                    ? audioTracks.filter(track => track !== lastSelectedTrack)
-                    : audioTracks;
-
-                const selectedTrack = availableTracks[Math.floor(Math.random() * availableTracks.length)];
-                const selectedName = selectedTrack.character;
-                const selectedSubtitle = selectedTrack.subtitle;
-                const selectedMessage = selectedTrack.text;
-                const selectedUrl = selectedTrack.url;
-                const selectedStatus = selectedTrack.status;
-
-                // Update tracking
-                lastSelectedTrack = selectedTrack;
-                lastSelectedCharacter = selectedName;
-                lastSelectedMessage = selectedMessage;
-
-                // Apply character-specific vibe
-                leftPanel.classList.remove('vibe-isla', 'vibe-ethel', 'vibe-dominic', 'vibe-witness', 'vibe-kinley', 'vibe-sticky');
-                if (selectedName === 'ISLA') {
-                    leftPanel.classList.add('vibe-isla');
-                } else if (selectedName === 'ETHEL') {
-                    leftPanel.classList.add('vibe-ethel');
-                } else if (selectedName === 'DOMINIC') {
-                    leftPanel.classList.add('vibe-dominic');
-                } else if (selectedName === 'WITNESS') {
-                    leftPanel.classList.add('vibe-witness');
-                } else if (selectedName === 'KINLEY') {
-                    leftPanel.classList.add('vibe-kinley');
-                } else if (selectedName === 'STICKY') {
-                    leftPanel.classList.add('vibe-sticky');
-                }
-
-                // UPDATE FLUID VIBE
-                if (window.fluidSim) {
-                    fluidSim.updateConfig(selectedName);
-                }
-
-                // Mark character as active to prevent ambient glitch
-                isCharacterActive = true;
-
-                clearInterval(title.interval);
-
-                title.interval = setInterval(() => {
-                    const shuffledText = selectedName
-                        .split("")
-                        .map((letter, index) => {
-                            if (index < iteration) return selectedName[index];
-                            return letters[Math.floor(Math.random() * letters.length)];
-                        })
-                        .join("");
-
-                    // Cap at exact character name length to prevent blowout
-                    title.innerText = shuffledText.substring(0, selectedName.length);
-
-                    if (iteration >= selectedName.length) {
-                        clearInterval(title.interval);
-
-                        // Update the STATUS field with character status (not name)
-                        const subjectWrapper = document.querySelectorAll('.redacted-wrapper')[0];
-                        const subjectText = subjectWrapper.querySelector('span:not(.redacted-bar)') || subjectWrapper.childNodes[0];
-                        if (subjectText) {
-                            subjectText.textContent = selectedStatus;
-                        }
-
-                        // Update the MESSAGE with track text
-                        const messageText = messageWrapper.querySelector('span:not(.redacted-bar)') || messageWrapper.childNodes[0];
-                        if (messageText) {
-                            messageText.textContent = `"${selectedMessage}"`;
-                        }
-
-                        // Update subtitle with character-specific text
-                        subtitle.textContent = selectedSubtitle;
-
-                        // Play audio track with fade in
-                        console.log('Playing track:', selectedName, selectedMessage, selectedUrl);
-                        audioController.playTrack(selectedUrl, 500);
-                    }
-                    iteration += 1 / 2;
-                }, 30);
-            }
-
-            // Only trigger on click, not on hover
-            leftPanel.addEventListener('click', triggerGlitch);
-
-            // Debug: Check if audio element exists
-            console.log('Audio element:', document.getElementById('characterAudio'));
-            console.log('Audio controller initialized:', audioController);
-
-        </script>
-
-        <script src="js/fluid-simulator.js"></script>
-        <script>
-            // Initialize Fluid Engine — audioController is global from the main script block
-            window.fluidSim = new FluidSimulator(
-                document.getElementById('fluidCanvas'),
-                audioController
-            );
-            console.log('[Fluid] Engine initialized.');
-        </script>
+        }
+
+        // Remove the global panel listener if it existed (replaced above)
+        // leftPanel.addEventListener('click', triggerGlitch); <-- REMOVED
+
+        // Debug: Check if audio element exists
+        console.log('Audio element:', document.getElementById('characterAudio'));
+        console.log('Audio controller initialized:', audioController);
+
+    </script>
+
+    <script src="js/fluid-simulator.js"></script>
+    <script>
+        // Initialize Fluid Engine — audioController is global from the main script block
+        window.fluidSim = new FluidSimulator(
+            document.getElementById('fluidCanvas'),
+            audioController
+        );
+        console.log('[Fluid] Engine initialized.');
+
+        // ISOLATION: Prevent fluid interaction from triggering panel switches/music stops
+        // This allows the user to "play" with the fluid (click/drag) without affecting the site state.
+        const canvas = document.getElementById('fluidCanvas');
+        canvas.addEventListener('click', (e) => e.stopPropagation());
+
+        // Also stop touchstart propagation? No, we need scrolling to work if needed.
+        // But we do want to stop 'tap' from becoming a click on the panel.
+        // The click event is enough.
+    </script>
 </body>
 
 </html>

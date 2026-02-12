@@ -50,6 +50,7 @@ const VIBES = {
     WITNESS: { color: [0.35, 0.35, 0.35], curl: 10, densDiss: 0.90, velDiss: 0.95, pIter: 20, bloom: 0.3, gravity: 0.0 },
     KINLEY: { color: [0.55, 0.50, 0.30], curl: 12, densDiss: 0.94, velDiss: 0.96, pIter: 25, bloom: 0.4, gravity: 0.0 },
     STICKY: { color: [0.36, 0.68, 0.89], curl: 25, densDiss: 0.96, velDiss: 0.98, pIter: 20, bloom: 0.7, gravity: 0.0 },
+    NALANI: { color: [1.0, 0.3, 0.0], curl: 45, densDiss: 0.96, velDiss: 0.98, pIter: 30, bloom: 1.0, gravity: 0.0 },
 };
 
 // ─────────────────────────────────────────────────────────────
@@ -716,24 +717,24 @@ class FluidSimulator {
 
     // ───── Input listeners ─────
     _initListeners() {
-        const canvas = this.canvas;
+        // Listen on WINDOW to capture events even through overlays (panels)
 
-        canvas.addEventListener('mousedown', (e) => {
+        window.addEventListener('mousedown', (e) => {
             const p = this.pointers[0];
             p.down = true;
             p.color = this._generateColor();
-            this._updatePointerDownData(p, e.offsetX, e.offsetY);
+            this._updatePointerDownData(p, e.clientX, e.clientY);
         });
 
-        canvas.addEventListener('mousemove', (e) => {
+        window.addEventListener('mousemove', (e) => {
             const p = this.pointers[0];
+            // Treat mousemove like a drag if buttons are down, or passive hover
             if (!p.down && !e.buttons) {
-                // Passive hovering — still inject gentle force for "addictive" feel
-                this._updatePointerMoveData(p, e.offsetX, e.offsetY);
+                this._updatePointerMoveData(p, e.clientX, e.clientY);
                 p.moved = p.deltaX !== 0 || p.deltaY !== 0;
                 return;
             }
-            this._updatePointerMoveData(p, e.offsetX, e.offsetY);
+            this._updatePointerMoveData(p, e.clientX, e.clientY);
             p.moved = true;
         });
 
@@ -741,8 +742,8 @@ class FluidSimulator {
             this.pointers[0].down = false;
         });
 
-        canvas.addEventListener('touchstart', (e) => {
-            e.preventDefault();
+        window.addEventListener('touchstart', (e) => {
+            // Do NOT preventDefault, so clicks/scroll still work
             const touches = e.targetTouches;
             while (this.pointers.length < touches.length + 1) {
                 this.pointers.push(new Pointer());
@@ -752,24 +753,23 @@ class FluidSimulator {
                 p.id = touches[i].identifier;
                 p.down = true;
                 p.color = this._generateColor();
-                const rect = canvas.getBoundingClientRect();
-                this._updatePointerDownData(p, touches[i].clientX - rect.left, touches[i].clientY - rect.top);
+                // Use client coordinates directly
+                this._updatePointerDownData(p, touches[i].clientX, touches[i].clientY);
             }
-        }, { passive: false });
+        }, { passive: true }); // Passive to allow scrolling/clicks
 
-        canvas.addEventListener('touchmove', (e) => {
-            e.preventDefault();
+        window.addEventListener('touchmove', (e) => {
+            // Do NOT preventDefault
             const touches = e.targetTouches;
             for (let i = 0; i < touches.length; i++) {
                 const p = this.pointers.find(pp => pp.id === touches[i].identifier);
                 if (!p) continue;
-                const rect = canvas.getBoundingClientRect();
-                this._updatePointerMoveData(p, touches[i].clientX - rect.left, touches[i].clientY - rect.top);
+                this._updatePointerMoveData(p, touches[i].clientX, touches[i].clientY);
                 p.moved = true;
             }
-        }, { passive: false });
+        }, { passive: true });
 
-        canvas.addEventListener('touchend', (e) => {
+        window.addEventListener('touchend', (e) => {
             const touches = e.changedTouches;
             for (let i = 0; i < touches.length; i++) {
                 const p = this.pointers.find(pp => pp.id === touches[i].identifier);
@@ -781,10 +781,17 @@ class FluidSimulator {
     }
 
     _updatePointerDownData(pointer, posX, posY) {
-        pointer.prevTexcoordX = posX / this.canvas.width;
-        pointer.prevTexcoordY = 1.0 - posY / this.canvas.height;
+        // posX/Y are now clientX/Y (viewport coordinates). 
+        // Since canvas is fixed inset-0, canvas.width/height matches viewport.
+        pointer.prevTexcoordX = posX / window.innerWidth;
+        pointer.prevTexcoordY = 1.0 - posY / window.innerHeight;
         pointer.texcoordX = pointer.prevTexcoordX;
         pointer.texcoordY = pointer.prevTexcoordY;
+
+        // Safety check for NaN
+        if (isNaN(pointer.texcoordX)) pointer.texcoordX = 0;
+        if (isNaN(pointer.texcoordY)) pointer.texcoordY = 0;
+
         pointer.deltaX = 0;
         pointer.deltaY = 0;
     }
@@ -792,8 +799,8 @@ class FluidSimulator {
     _updatePointerMoveData(pointer, posX, posY) {
         pointer.prevTexcoordX = pointer.texcoordX;
         pointer.prevTexcoordY = pointer.texcoordY;
-        pointer.texcoordX = posX / this.canvas.width;
-        pointer.texcoordY = 1.0 - posY / this.canvas.height;
+        pointer.texcoordX = posX / window.innerWidth;
+        pointer.texcoordY = 1.0 - posY / window.innerHeight;
         pointer.deltaX = this._correctDeltaX(pointer.texcoordX - pointer.prevTexcoordX);
         pointer.deltaY = this._correctDeltaY(pointer.texcoordY - pointer.prevTexcoordY);
     }
@@ -884,19 +891,20 @@ class FluidSimulator {
         if (!this.audioController) return;
         const energy = this.audioController.getAudioData() / 255.0; // 0 → 1
 
-        if (energy > 0.15) {
-            // Random audio-reactive splat
-            if (energy > 0.5 && Math.random() < 0.15) {
+        if (energy > 0.1) { // Lower threshold for responsiveness
+            // Violent movement: Frequent, strong splats
+            if (energy > 0.3 && Math.random() < 0.4) {
                 const x = Math.random();
                 const y = Math.random();
-                const dx = (Math.random() - 0.5) * 1000 * energy;
-                const dy = (Math.random() - 0.5) * 1000 * energy;
+                // Massive spread based on energy
+                const dx = (Math.random() - 0.5) * 6000 * energy;
+                const dy = (Math.random() - 0.5) * 6000 * energy;
                 this.splatStack.push({
                     x, y, dx, dy,
                     color: {
-                        r: this.currentColor[0] * (0.5 + energy),
-                        g: this.currentColor[1] * (0.5 + energy),
-                        b: this.currentColor[2] * (0.5 + energy),
+                        r: this.currentColor[0] * (1.0 + energy), // Brighter
+                        g: this.currentColor[1] * (1.0 + energy),
+                        b: this.currentColor[2] * (1.0 + energy),
                     },
                 });
             }
