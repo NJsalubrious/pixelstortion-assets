@@ -1,26 +1,56 @@
 /**
- * PixelStortion — High-Performance WebGL 2.0 Fluid Simulation Engine
- * "Aesthetics over Accuracy"
- *
- * Architecture:
- *   Eulerian Grid → Ping-Pong FBOs → Fragment Shader Physics
- *   Resolution-decoupled: physics solved at SIM_RES, rendered at screen res.
- *
- * Physics pipeline per frame:
- *   1. Curl  →  2. Vorticity Confinement  →  3. Divergence
- *   4. Pressure (Jacobi ×N)  →  5. Gradient Subtract
- *   6. Advect Velocity  →  7. Advect Dye  →  8. Display + Bloom
+PixelStortion — High Performance WebGL 2.0 Fluid Simulation Engine
+"I only want Aesthetics ---  Not Accuracy!!!!"
+
+Architecture:
+Eulerian Grid > Ping-Pong FBOs > Fragment Shader Physics
+ Resolution-decoupled: physics solved at SIM_RES, rendered at screen res.
+ 
+Physics pipeline per frame:
+ 1. Curl >  2. Vorticity Confinement >  3. Divergence
+ 4. Pressure (Jacobi ×N) >  5. Gradient Subtract
+  6. Advect Velocity >  7. Advect Dye >  8. Display + Bloom
+Stuff looked up -- 
+Fluid effects in a browser - pixelstortion.com - click characters names and move cursor. 
+
+ Papers and reference used:  
+
+Eulerian Grid (Navier-Stokes Physics) 
+∂t∂u​=−(u⋅∇)u−ρ1​∇p+F
+
+Link: GPU Gems, Chapter 38: Fast Fluid Dynamics
+Advection (Semi-Lagrangian Scheme)
+q(x,t+Δt)=q(x−u(x,t)Δt,t)
+
+Link: Stable Fluids (Jos Stam, 1999)
+Pressure Projection (Jacobi Iteration)
+xi,j(k+1)​=41​(xi−1,j(k)​+xi+1,j(k)​+xi,j−1(k)​+xi,j+1(k)​−αbi,j​)
+
+Link: Jamie Wong: WebGL Fluid Simulation
+Vorticity Confinement (Turbulence)
+fvc​=ϵ(N×ω)whereN=∣∇∣ω∣∣∇∣ω∣​
+
+Link: Visual Guide to Vorticity (Karl Sims)
+HDR Bloom (Dual Kawase Blur)
+Cout​=i=0∑N​Upsample(Downsample(Cin​,2i))
+
+Link: SIGGRAPH 2015: Dual Filtering for Bloom
+Simulated Audio Oscillator (CORS Fallback)
+E(t)=(sin(t⋅BPM)3⋅0.55)+(sin(t⋅0.3)⋅0.30)+Noise
+
+Link: Web Audio API Best Practices
+
  */
 
 'use strict';
 
 // ─────────────────────────────────────────────────────────────
-// 1. CONFIGURATION
+// 1. CONFIG
 // ─────────────────────────────────────────────────────────────
 
 const CONFIG = {
-    SIM_RESOLUTION: 256,   // Physics grid size (px). 128 mobile, 256 desktop.
-    DYE_RESOLUTION: 1024,  // Dye (color) texture resolution. Higher = sharper smoke.
+    SIM_RESOLUTION: 256,   // Physics grid size (pixes). note 128 mobile and 256 desktop.
+    DYE_RESOLUTION: 1024,  // Dye (col ) texture resolution. Higher = sharper smoke.
     DENSITY_DISSIPATION: 0.97,
     VELOCITY_DISSIPATION: 0.98,
     PRESSURE: 0.8,
@@ -34,12 +64,12 @@ const CONFIG = {
     BLOOM_INTENSITY: 0.8,
     BLOOM_THRESHOLD: 0.6,
     BLOOM_SOFT_KNEE: 0.7,
-    COLOR: [0.0, 1.0, 0.25],   // Current target RGB
-    GRAVITY: 0.0,                 // Downward force (DOMINIC uses this)
+    COLOR: [0.0, 1.0, 0.25],   // Current ain RGB
+    GRAVITY: 0.0,                 // Downw  force (DOMINIC uses this cause he be down)
 };
 
 // ─────────────────────────────────────────────────────────────
-// Vibe presets — mapped from character names to physics configs
+// feelings as presets — mapped from character names 
 // ─────────────────────────────────────────────────────────────
 
 const VIBES = {
@@ -54,7 +84,7 @@ const VIBES = {
 };
 
 // ─────────────────────────────────────────────────────────────
-// 2. GLSL SHADER SOURCE
+// 2. GLSL SHAD SOURCE
 // ─────────────────────────────────────────────────────────────
 
 const baseVertexShader = `
@@ -277,7 +307,7 @@ const gradientSubtractShader = `
     }
 `;
 
-// Gravity shader — adds a downward force to velocity (for DOMINIC)
+// Grave ravity shader — adds a downward force to velocity for the hellish  psycho that is DOMINIC 
 const gravityShader = `
     precision highp float;
     precision highp sampler2D;
@@ -292,7 +322,7 @@ const gravityShader = `
     }
 `;
 
-// Bloom pre-filter
+// Bloom pre filter
 const bloomPrefilterShader = `
     precision mediump float;
     precision mediump sampler2D;
@@ -310,7 +340,7 @@ const bloomPrefilterShader = `
     }
 `;
 
-// Bloom final composite
+// Bloom final comp 
 const bloomFinalShader = `
     precision mediump float;
     precision mediump sampler2D;
@@ -332,7 +362,7 @@ const bloomFinalShader = `
     }
 `;
 
-// Simple display (no bloom)
+// Simp  display (no bloom in site)
 const displayShader = `
     precision highp float;
     precision highp sampler2D;
@@ -400,7 +430,7 @@ function getWebGLContext(canvas) {
         formatR = formatRGBA;
     }
 
-    // Mobile check — reduce resolution on low-end devices
+    // Mobile check — reduce resolution on crap devices
     if (/Mobi|Android/i.test(navigator.userAgent)) {
         CONFIG.SIM_RESOLUTION = 128;
         CONFIG.DYE_RESOLUTION = 512;
@@ -423,7 +453,7 @@ function getWebGLContext(canvas) {
 
 function getSupportedFormat(gl, internalFormat, format, type) {
     if (!supportRenderTextureFormat(gl, internalFormat, format, type)) {
-        // Fallback: try RGBA with unsigned byte
+        // Fallback: try RGBA with unsigned byt 
         console.warn('Float texture format not supported, falling back to RGBA8.');
         return { internalFormat: gl.RGBA, format: gl.RGBA, type: gl.UNSIGNED_BYTE };
     }
@@ -451,7 +481,7 @@ function supportRenderTextureFormat(gl, internalFormat, format, type) {
 }
 
 // ─────────────────────────────────────────────────────────────
-// 4. SHADER PROGRAM COMPILATION
+// 4. SHADER PROGRAM COMP 
 // ─────────────────────────────────────────────────────────────
 
 class GLProgram {
@@ -495,7 +525,7 @@ function compileShader(gl, type, source) {
 }
 
 // ─────────────────────────────────────────────────────────────
-// 5. FBO (Framebuffer Object) MANAGEMENT
+// 5. FBO (Fram  buff  Object) MANAGEMENT
 // ─────────────────────────────────────────────────────────────
 
 function createFBO(gl, w, h, internalFormat, format, type, filtering) {
@@ -555,7 +585,7 @@ function createDoubleFBO(gl, w, h, internalFormat, format, type, filtering) {
 
 function resizeFBO(gl, target, w, h, internalFormat, format, type, filtering) {
     const newFBO = createFBO(gl, w, h, internalFormat, format, type, filtering);
-    // Could copy old data → new, but for fluids it's fine to lose state on resize.
+    // Could copy old data > new, but for fluids it's fine to lose state on resize.
     return newFBO;
 }
 
@@ -565,7 +595,7 @@ function resizeDoubleFBO(gl, target, w, h, internalFormat, format, type, filteri
 }
 
 // ─────────────────────────────────────────────────────────────
-// 6. POINTER / INTERACTION TRACKING
+// 6. POINTER  ---- INTERACTION TRACKING
 // ─────────────────────────────────────────────────────────────
 
 class Pointer {
@@ -584,7 +614,7 @@ class Pointer {
 }
 
 // ─────────────────────────────────────────────────────────────
-// 7. MAIN FLUID SIMULATOR CLASS
+// 7. MAIN FLUID SIM  CLASS
 // ─────────────────────────────────────────────────────────────
 
 class FluidSimulator {
@@ -609,13 +639,13 @@ class FluidSimulator {
         this._initFramebuffers();
         this._initListeners();
 
-        // Schedule ambient splats to keep the fluid alive even without interaction
+        // Schedule ambient splat splat to keep the fluid alive even without visitor interaction
         this._ambientSplatTimer = 0;
 
         this.update();
     }
 
-    // ───── Compile all shader programs ─────
+    // ───── Compile  shader pros ─────
     _initPrograms() {
         const gl = this.gl;
 
@@ -637,7 +667,7 @@ class FluidSimulator {
         this.bloomPrefilterProgram = new GLProgram(gl, vs, compileShader(gl, gl.FRAGMENT_SHADER, bloomPrefilterShader));
         this.bloomFinalProgram = new GLProgram(gl, vs, compileShader(gl, gl.FRAGMENT_SHADER, bloomFinalShader));
 
-        // Full-screen quad (triangle strip blit)
+        // Full screen quad (triangle strip blit)
         const buffer = gl.createBuffer();
         gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
         gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, -1, 1, 1, 1, 1, -1]), gl.STATIC_DRAW);
@@ -662,7 +692,7 @@ class FluidSimulator {
         gl.drawElements(gl.TRIANGLES, 6, gl.UNSIGNED_SHORT, 0);
     }
 
-    // ───── Create all FBOs ─────
+    // ───── Create FBOs ─────
     _initFramebuffers() {
         const gl = this.gl;
         const ext = this.ext;
@@ -728,7 +758,7 @@ class FluidSimulator {
 
         window.addEventListener('mousemove', (e) => {
             const p = this.pointers[0];
-            // Treat mousemove like a drag if buttons are down, or passive hover
+            //  mouse move must be like   like a drag if buttons are down, or passive hover
             if (!p.down && !e.buttons) {
                 this._updatePointerMoveData(p, e.clientX, e.clientY);
                 p.moved = p.deltaX !== 0 || p.deltaY !== 0;
@@ -743,7 +773,7 @@ class FluidSimulator {
         });
 
         window.addEventListener('touchstart', (e) => {
-            // Do NOT preventDefault, so clicks/scroll still work
+            // Do NOT prevent Default, so clicks/scroll still work
             const touches = e.targetTouches;
             while (this.pointers.length < touches.length + 1) {
                 this.pointers.push(new Pointer());
@@ -753,13 +783,13 @@ class FluidSimulator {
                 p.id = touches[i].identifier;
                 p.down = true;
                 p.color = this._generateColor();
-                // Use client coordinates directly
+                // Use  coordinates directly
                 this._updatePointerDownData(p, touches[i].clientX, touches[i].clientY);
             }
-        }, { passive: true }); // Passive to allow scrolling/clicks
+        }, { passive: true }); // Passive to allow scrolling // clicks
 
         window.addEventListener('touchmove', (e) => {
-            // Do NOT preventDefault
+            // Do NOT prevent Default
             const touches = e.targetTouches;
             for (let i = 0; i < touches.length; i++) {
                 const p = this.pointers.find(pp => pp.id === touches[i].identifier);
