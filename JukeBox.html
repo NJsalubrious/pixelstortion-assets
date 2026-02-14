@@ -187,8 +187,9 @@
     <!-- START SCREEN -->
     <div id="start-overlay">
         <h1 class="text-4xl md:text-6xl font-bold text-white mb-8 tracking-tighter">PIXELSTORTION</h1>
-        <button class="start-btn" onclick="initJukebox()">INITIALIZE SYSTEM</button>
-        <p class="mt-4 text-gray-500 font-mono-custom text-xs">AUDIO REACTIVE FLUID ENGINE</p>
+        <button id="init-btn" class="start-btn" onclick="startSystem()">INITIALIZE SYSTEM</button>
+        <p id="loading-text" class="mt-4 text-gray-500 font-mono-custom text-xs animate-pulse">ESTABLISHING UPLINK...
+        </p>
     </div>
 
     <!-- UI OVERLAY -->
@@ -299,7 +300,7 @@
             constructor(canvas) {
                 this.canvas = canvas;
                 this.gl = canvas.getContext('webgl2', { alpha: true, depth: false, antialias: false });
-                if (!this.gl) return; // Fallback logic omitted for brevity
+                if (!this.gl) return;
 
                 this.ext = this.gl.getExtension('EXT_color_buffer_float');
                 this.gl.getExtension('OES_texture_float_linear');
@@ -315,7 +316,6 @@
             init() {
                 const gl = this.gl;
                 this.compilePrograms();
-                this.initFBOs();
 
                 // Fullscreen quad
                 const buffer = gl.createBuffer();
@@ -325,7 +325,10 @@
                 gl.enableVertexAttribArray(0);
 
                 window.addEventListener('resize', () => this.resize());
+
+                // CRITICAL FIX: Resize BEFORE initFBOs to ensure valid dimensions
                 this.resize();
+                // FBOs initialized inside resize() to ensure they match screen size
 
                 // Mouse/Touch Interaction
                 this.pointers = [];
@@ -371,7 +374,8 @@
                 return uniforms;
             }
 
-            createFBO(w, h, type = this.gl.RGBA16F) {
+            // CRITICAL FIX: WebGL2 requires specific Format/InternalFormat combinations
+            createFBO(w, h, internalFormat = this.gl.RGBA16F) {
                 const gl = this.gl;
                 const texture = gl.createTexture();
                 gl.bindTexture(gl.TEXTURE_2D, texture);
@@ -379,7 +383,13 @@
                 gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
                 gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
                 gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-                gl.texImage2D(gl.TEXTURE_2D, 0, type, w, h, 0, gl.RGBA, gl.FLOAT, null);
+
+                // FIX: Map internalFormat to correct format
+                let format = gl.RGBA;
+                if (internalFormat === gl.R16F) format = gl.RED;
+                else if (internalFormat === gl.RG16F) format = gl.RG;
+
+                gl.texImage2D(gl.TEXTURE_2D, 0, internalFormat, w, h, 0, format, gl.FLOAT, null);
 
                 const fbo = gl.createFramebuffer();
                 gl.bindFramebuffer(gl.FRAMEBUFFER, fbo);
@@ -398,6 +408,9 @@
             }
 
             initFBOs() {
+                // Ensure dimensions are valid (>0)
+                if (this.canvas.width === 0 || this.canvas.height === 0) return;
+
                 const simRes = this.getResolution(CONFIG.SIM_RESOLUTION);
                 const dyeRes = this.getResolution(CONFIG.DYE_RESOLUTION);
                 this.fbo.velocity = this.createDoubleFBO(simRes.width, simRes.height, this.gl.RG16F);
@@ -426,7 +439,7 @@
             resize() {
                 this.canvas.width = window.innerWidth;
                 this.canvas.height = window.innerHeight;
-                this.initFBOs();
+                this.initFBOs(); // Re-init FBOs when size changes
             }
 
             updatePointer(x, y) {
@@ -439,7 +452,6 @@
             }
 
             generateColor() {
-                // Return RGB object. Custom colors for PixelStortion (Green, Red, Blue)
                 const palette = [
                     [0.0, 1.0, 0.25], // Neon Green
                     [1.0, 0.2, 0.1], // Fire Red
@@ -470,9 +482,7 @@
                 this.fbo.dye.swap();
             }
 
-            // --- EXTERNAL TRIGGER FOR JUKEBOX ---
             triggerExplosion() {
-                // Multiple splats
                 const cx = this.canvas.width / 2;
                 const cy = this.canvas.height / 2;
                 for (let i = 0; i < 3; i++) {
@@ -481,7 +491,6 @@
                     const x = cx + Math.cos(angle) * dist;
                     const y = cy + Math.sin(angle) * dist;
                     const color = this.generateColor();
-                    // Force moving OUTWARD from center
                     const dx = Math.cos(angle) * 2000;
                     const dy = Math.sin(angle) * 2000;
                     this.splat(x, y, dx, dy, color);
@@ -499,6 +508,9 @@
                 this.lastTime = Date.now();
                 const gl = this.gl;
 
+                // Safety Check: Don't render if FBOs aren't ready
+                if (!this.fbo.velocity) return requestAnimationFrame(() => this.loop());
+
                 // Mouse Splats
                 this.pointers.forEach(p => {
                     if (p.down || (Math.abs(p.dx) > 0.1 || Math.abs(p.dy) > 0.1)) {
@@ -513,7 +525,7 @@
                     inputs.forEach((tex, i) => gl.uniform1i(prog.uniforms[tex.name], tex.fbo.attach(i)));
                     if (prog.uniforms.texelSize) gl.uniform2f(prog.uniforms.texelSize, 1.0 / fbo.width, 1.0 / fbo.height);
                     if (prog.uniforms.dt) gl.uniform1f(prog.uniforms.dt, dt);
-                    if (prog.uniforms.dissipation) gl.uniform1f(prog.uniforms.dissipation, CONFIG.DENSITY_DISSIPATION); // Simplified for loop
+                    if (prog.uniforms.dissipation) gl.uniform1f(prog.uniforms.dissipation, CONFIG.DENSITY_DISSIPATION);
                     this.blit(fbo.fbo);
                 };
 
@@ -784,7 +796,7 @@
         let fluid;
         const jukebox = new Jukebox();
 
-        function initJukebox() {
+        function startSystem() {
             // Remove Overlay
             const overlay = document.getElementById('start-overlay');
             overlay.style.opacity = '0';
@@ -799,12 +811,19 @@
             // Start Progress Loop
             setInterval(() => jukebox.updateProgress(), 1000);
 
-            // Load YouTube API
-            if (window.YT) {
-                onYouTubeIframeAPIReady();
+            // Play the first track immediately
+            // This is critical: The click on "INITIALIZE" is the user gesture 
+            // that allows us to play audio.
+            if (jukebox.player) {
+                jukebox.loadRandomTrack();
+            } else {
+                console.warn("Player not ready yet, retrying...");
+                // Fallback if user clicked too fast
+                setTimeout(() => jukebox.loadRandomTrack(), 1000);
             }
         }
 
+        // Load YouTube API Immediately on Page Load
         function onYouTubeIframeAPIReady() {
             jukebox.player = new YT.Player('player', {
                 height: '100%',
@@ -822,8 +841,14 @@
         }
 
         function onPlayerReady(event) {
-            console.log("Player Ready");
-            jukebox.loadRandomTrack();
+            console.log("Player Ready - Waiting for User Command");
+            // Change text to show ready
+            const loadingText = document.getElementById('loading-text');
+            if (loadingText) {
+                loadingText.innerText = "SYSTEM READY // AWAITING INPUT";
+                loadingText.classList.remove('animate-pulse');
+                loadingText.style.color = "#00ff41";
+            }
         }
 
         function toggleFullscreen() {
