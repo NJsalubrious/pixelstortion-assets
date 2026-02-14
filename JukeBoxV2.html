@@ -300,7 +300,14 @@
             vorticity: `precision highp float; precision highp sampler2D; varying vec2 vUv; varying vec2 vL; varying vec2 vR; varying vec2 vT; varying vec2 vB; uniform sampler2D uVelocity; uniform sampler2D uCurl; uniform float curl; uniform float dt; void main () { float L = texture2D(uCurl, vL).x; float R = texture2D(uCurl, vR).x; float T = texture2D(uCurl, vT).x; float B = texture2D(uCurl, vB).x; float C = texture2D(uCurl, vUv).x; vec2 force = 0.5 * vec2(abs(T) - abs(B), abs(R) - abs(L)); force /= length(force) + 0.0001; force *= curl * C; force.y *= -1.0; vec2 velocity = texture2D(uVelocity, vUv).xy; velocity += force * dt; gl_FragColor = vec4(velocity, 0.0, 1.0); }`,
             pressure: `precision mediump float; precision mediump sampler2D; varying vec2 vUv; varying vec2 vL; varying vec2 vR; varying vec2 vT; varying vec2 vB; uniform sampler2D uPressure; uniform sampler2D uDivergence; void main () { float L = texture2D(uPressure, vL).x; float R = texture2D(uPressure, vR).x; float T = texture2D(uPressure, vT).x; float B = texture2D(uPressure, vB).x; float divergence = texture2D(uDivergence, vUv).x; float pressure = (L + R + B + T - divergence) * 0.25; gl_FragColor = vec4(pressure, 0.0, 0.0, 1.0); }`,
             gradientSubtract: `precision mediump float; precision mediump sampler2D; varying vec2 vUv; varying vec2 vL; varying vec2 vR; varying vec2 vT; varying vec2 vB; uniform sampler2D uPressure; uniform sampler2D uVelocity; void main () { float L = texture2D(uPressure, vL).x; float R = texture2D(uPressure, vR).x; float T = texture2D(uPressure, vT).x; float B = texture2D(uPressure, vB).x; vec2 velocity = texture2D(uVelocity, vUv).xy; velocity.xy -= vec2(R - L, T - B); gl_FragColor = vec4(velocity, 0.0, 1.0); }`,
-            display: `precision highp float; precision highp sampler2D; varying vec2 vUv; uniform sampler2D uTexture; void main () { vec3 c = texture2D(uTexture, vUv).rgb; c = c / (c + vec3(1.0)); c = pow(c, vec3(1.0 / 2.2)); gl_FragColor = vec4(c, 1.0); }`
+            // DEBUG: Solid RED display shader to prove pipeline works. If you see RED, WebGL works.
+            display: `precision highp float; precision highp sampler2D; varying vec2 vUv; uniform sampler2D uTexture; void main () { 
+                vec3 c = texture2D(uTexture, vUv).rgb; 
+                c = c / (c + vec3(1.0)); 
+                c = pow(c, vec3(1.0 / 2.2)); 
+                gl_FragColor = vec4(c, 1.0); 
+                // UNCOMMENT TO DEBUG: gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0); 
+            }`
         };
 
         class FluidEngine {
@@ -313,6 +320,12 @@
                 }
 
                 this.ext = this.gl.getExtension('EXT_color_buffer_float');
+                if (!this.ext) {
+                    console.error("EXT_color_buffer_float NOT SUPPORTED!");
+                    this.canvas.style.backgroundColor = "red"; // FAIL INDICATOR
+                    document.body.appendChild(document.createTextNode("WEBGL ERROR: FLOAT TEXTURES NOT SUPPORTED"));
+                    return;
+                }
                 this.gl.getExtension('OES_texture_float_linear');
 
                 this.programs = {};
@@ -525,7 +538,11 @@
                 if (target) {
                     this.gl.viewport(0, 0, width, height);
                 } else {
-                    this.gl.viewport(0, 0, this.canvas.width, this.canvas.height);
+                    // Rendering to screen — use canvas dimensions
+                    // Fallback to window dimensions if canvas is somehow 0
+                    const w = this.canvas.width || window.innerWidth;
+                    const h = this.canvas.height || window.innerHeight;
+                    this.gl.viewport(0, 0, w, h);
                 }
                 this.gl.drawArrays(this.gl.TRIANGLE_STRIP, 0, 4);
             }
@@ -534,6 +551,9 @@
                 const dt = Math.min((Date.now() - this.lastTime) / 1000, 0.016);
                 this.lastTime = Date.now();
                 const gl = this.gl;
+
+                // throttle log
+                if (Math.random() < 0.01) console.log("Fluid loop running...", dt);
 
                 // Safety Check: Don't render if FBOs aren't ready
                 if (!this.fbo.velocity) return requestAnimationFrame(() => this.loop());
@@ -594,6 +614,10 @@
                 this.fbo.dye.swap();
 
                 // Display
+                // DEBUG: Force Green Flash if no fluids to prove connectivity (Comment out after fix)
+                // gl.clearColor(0.0, 1.0, 0.0, 1.0);
+                // gl.clear(gl.COLOR_BUFFER_BIT);
+
                 gl.useProgram(this.programs.display.program);
                 gl.uniform1i(this.programs.display.uniforms.uTexture, this.fbo.dye.read.attach(0));
                 this.blit(null);
