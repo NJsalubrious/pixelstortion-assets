@@ -248,8 +248,8 @@
     <div id="start-curtain">
         <h1 class="text-5xl md:text-8xl font-bold tracking-tighter mb-2 text-white glitch-title">PIXELSTORTION</h1>
         <h2 class="mono-tech text-gray-500 text-sm mb-8 tracking-[0.5em]">AUDIO REACTIVE JUKEBOX V2</h2>
-        <p class="mono-tech text-[10px] text-gray-600 mb-12 max-w-sm text-center leading-5">MICROPHONE ACCESS ENABLES
-            REAL-TIME AUDIO REACTIVITY.<br>TURN UP YOUR SPEAKERS.</p>
+        <p class="mono-tech text-[10px] text-gray-600 mb-12 max-w-sm text-center leading-5">CLICK "SHARE THIS TAB" WHEN
+            PROMPTED<br>TO ENABLE REAL-TIME AUDIO REACTIVITY.</p>
 
         <div id="loader" class="flex flex-col items-center">
             <div class="w-16 h-16 border-4 border-t-green-500 border-gray-900 rounded-full animate-spin mb-4"></div>
@@ -278,7 +278,7 @@
             <div class="hidden md:block text-right">
                 <div class="mono-tech text-xs text-green-500/50 tracking-widest">AUDIO REACTIVE</div>
                 <div class="mono-tech text-[10px] text-gray-600 mt-1">FLUID DYNAMICS: ACTIVE</div>
-                <div id="mic-status" class="mono-tech text-[10px] text-gray-600">MIC: WAITING</div>
+                <div id="mic-status" class="mono-tech text-[10px] text-gray-600">AUDIO: WAITING</div>
             </div>
         </div>
 
@@ -751,7 +751,8 @@
         ];
 
         /* --- AUDIO REACTOR ---
-           Captures microphone input to analyze real audio from speakers.
+           Captures the browser tab's audio output via getDisplayMedia.
+           Works with headphones — no mic needed.
            Splits frequency data into bass/mid/treble bands to drive fluid.
         */
         class AudioReactor {
@@ -763,32 +764,49 @@
                 this.dataArray = null;
                 this.stream = null;
                 this.frameId = null;
-                this.micAvailable = false;
+                this.available = false;
             }
 
             async init() {
                 try {
-                    this.stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
+                    // Request tab audio capture — user sees "Share this tab" dialog
+                    this.stream = await navigator.mediaDevices.getDisplayMedia({
+                        audio: true,
+                        video: { width: 1, height: 1 } // minimal video (required by API)
+                    });
+
+                    // Stop the video track immediately — we only need audio
+                    this.stream.getVideoTracks().forEach(t => t.stop());
+
+                    const audioTrack = this.stream.getAudioTracks()[0];
+                    if (!audioTrack) {
+                        console.warn('[AudioReactor] No audio track in shared tab');
+                        this.updateStatus('AUDIO: NO AUDIO TRACK — SIMULATED', 'orange');
+                        return false;
+                    }
+
                     this.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                    const source = this.audioCtx.createMediaStreamSource(this.stream);
+                    const source = this.audioCtx.createMediaStreamSource(
+                        new MediaStream([audioTrack])
+                    );
                     this.analyser = this.audioCtx.createAnalyser();
                     this.analyser.fftSize = 512;
                     this.analyser.smoothingTimeConstant = 0.8;
                     source.connect(this.analyser);
                     this.dataArray = new Uint8Array(this.analyser.frequencyBinCount);
-                    this.micAvailable = true;
-                    this.updateMicStatus('MIC: ACTIVE', '#00ff41');
-                    console.log('[AudioReactor] Mic capture active');
+                    this.available = true;
+                    this.updateStatus('AUDIO: LIVE ⚡', '#00ff41');
+                    console.log('[AudioReactor] Tab audio capture active');
                     return true;
                 } catch (err) {
-                    console.warn('[AudioReactor] Mic denied:', err.message);
-                    this.micAvailable = false;
-                    this.updateMicStatus('MIC: DENIED — SIMULATED MODE', 'orange');
+                    console.warn('[AudioReactor] Tab share denied:', err.message);
+                    this.available = false;
+                    this.updateStatus('AUDIO: SIMULATED MODE', 'orange');
                     return false;
                 }
             }
 
-            updateMicStatus(text, color) {
+            updateStatus(text, color) {
                 const el = document.getElementById('mic-status');
                 if (el) { el.innerText = text; el.style.color = color; }
             }
@@ -1048,7 +1066,7 @@
                 // Start Fluid Engine
                 this.fluid = new FluidEngine(document.getElementById('fluid-canvas'));
 
-                // Try AudioReactor (mic capture), fall back to ChaosOscillator
+                // Try AudioReactor (tab audio capture), fall back to ChaosOscillator
                 const reactor = new AudioReactor(this.fluid);
                 const micOk = await reactor.init();
 
