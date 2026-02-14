@@ -76,8 +76,8 @@ const VIBES = {
     SILENCE: { color: [0.0, 1.0, 0.25], curl: 20, densDiss: 0.96, velDiss: 0.98, pIter: 20, bloom: 0.5, gravity: 0.0 },
     ISLA: { color: [0.42, 0.48, 1.0], curl: 55, densDiss: 0.995, velDiss: 0.995, pIter: 10, bloom: 1.2, gravity: 0.0 },
     ETHEL: { color: [1.0, 0.66, 0.2], curl: 30, densDiss: 0.97, velDiss: 0.99, pIter: 40, bloom: 0.8, gravity: 0.0 },
-    DOMINIC: { color: [1.0, 0.15, 0.1], curl: 5, densDiss: 0.995, velDiss: 0.995, pIter: 30, bloom: 0.6, gravity: 980.0 },
-    WITNESS: { color: [0.35, 0.35, 0.35], curl: 10, densDiss: 0.90, velDiss: 0.95, pIter: 20, bloom: 0.3, gravity: 0.0 },
+    DOMINIC: { color: [0.35, 0.02, 0.02], curl: 2, densDiss: 0.998, velDiss: 0.99, pIter: 40, bloom: 0.15, gravity: 980.0 },
+    WITNESS: { color: [0.25, 0.04, 0.06], curl: 3, densDiss: 0.998, velDiss: 0.97, pIter: 35, bloom: 0.1, gravity: 490.0 },
     KINLEY: { color: [0.55, 0.50, 0.30], curl: 12, densDiss: 0.94, velDiss: 0.96, pIter: 25, bloom: 0.4, gravity: 0.0 },
     STICKY: { color: [0.36, 0.68, 0.89], curl: 25, densDiss: 0.96, velDiss: 0.98, pIter: 20, bloom: 0.7, gravity: 0.0 },
     NALANI: { color: [1.0, 0.3, 0.0], curl: 45, densDiss: 0.96, velDiss: 0.98, pIter: 30, bloom: 1.0, gravity: 0.0 },
@@ -919,25 +919,131 @@ class FluidSimulator {
 
     _processAudio(dt) {
         if (!this.audioController) return;
-        const energy = this.audioController.getAudioData() / 255.0; // 0 → 1
 
-        if (energy > 0.1) { // Lower threshold for responsiveness
-            // Violent movement: Frequent, strong splats
-            if (energy > 0.3 && Math.random() < 0.4) {
-                const x = Math.random();
-                const y = Math.random();
-                // Massive spread based on energy
-                const dx = (Math.random() - 0.5) * 6000 * energy;
-                const dy = (Math.random() - 0.5) * 6000 * energy;
+        // Try multi-band analysis first (bass/mid/treble)
+        const bands = this.audioController.getMultiBandData
+            ? this.audioController.getMultiBandData()
+            : null;
+
+        if (bands && (bands.bass > 0 || bands.mid > 0 || bands.treble > 0)) {
+            // ── Peak detection: track previous frame to find transients ──
+            if (!this._prevBands) this._prevBands = { bass: 0, mid: 0, treble: 0 };
+            const bassDelta = Math.max(0, bands.bass - this._prevBands.bass);
+            const midDelta = Math.max(0, bands.mid - this._prevBands.mid);
+            this._prevBands = { bass: bands.bass, mid: bands.mid, treble: bands.treble };
+
+            // ── BASS: Explosive only on sudden hits (drums, kicks) ──
+            // Exponential curve: quiet bass does almost nothing, heavy hits detonate
+            const bassIntensity = Math.pow(bands.bass, 3); // 0.3→0.027, 0.6→0.216, 0.9→0.729
+            const bassIsHit = bassDelta > 0.08; // Sudden jump = a drum hit
+
+            if (bassIsHit && bassIntensity > 0.02) {
+                // DETONATION — only on actual transient hits
+                const force = bassIntensity * 12000;
+                const x = 0.25 + Math.random() * 0.5;
+                const y = 0.25 + Math.random() * 0.5;
+                const angle = Math.random() * Math.PI * 2;
                 this.splatStack.push({
-                    x, y, dx, dy,
+                    x, y,
+                    dx: Math.cos(angle) * force,
+                    dy: Math.sin(angle) * force,
                     color: {
-                        r: this.currentColor[0] * (1.0 + energy), // Brighter
-                        g: this.currentColor[1] * (1.0 + energy),
-                        b: this.currentColor[2] * (1.0 + energy),
+                        r: this.currentColor[0] * (1.5 + bassIntensity * 3),
+                        g: this.currentColor[1] * (0.3 + bassIntensity),
+                        b: this.currentColor[2] * (0.8 + bassIntensity * 2),
+                    },
+                });
+            } else if (bands.bass > 0.25 && Math.random() < bassIntensity * 0.3) {
+                // Sustained bass: slow, heavy push (not explosion)
+                const x = 0.3 + Math.random() * 0.4;
+                const y = 0.3 + Math.random() * 0.4;
+                const force = bassIntensity * 3000;
+                const angle = Math.random() * Math.PI * 2;
+                this.splatStack.push({
+                    x, y,
+                    dx: Math.cos(angle) * force,
+                    dy: Math.sin(angle) * force,
+                    color: {
+                        r: this.currentColor[0] * (0.8 + bassIntensity),
+                        g: this.currentColor[1] * 0.5,
+                        b: this.currentColor[2] * (0.6 + bassIntensity * 0.5),
                     },
                 });
             }
+
+            // ── MIDS: Gentle to moderate flow (vocals, melody) ──
+            const midIntensity = Math.pow(bands.mid, 2.5); // softer curve than bass
+            if (bands.mid > 0.15 && Math.random() < midIntensity * 0.4) {
+                const x = Math.random();
+                const y = Math.random();
+                const force = midIntensity * 2500;
+                const dx = (Math.random() - 0.5) * force;
+                const dy = (Math.random() - 0.5) * force;
+                this.splatStack.push({
+                    x, y, dx, dy,
+                    color: {
+                        r: this.currentColor[0] * (0.7 + midIntensity * 0.8),
+                        g: this.currentColor[1] * (0.7 + midIntensity * 0.8),
+                        b: this.currentColor[2] * (0.7 + midIntensity * 0.5),
+                    },
+                });
+            }
+
+            // ── TREBLE: Tiny delicate wisps (hi-hats, breath, air) ──
+            if (bands.treble > 0.12 && Math.random() < 0.08) {
+                const x = Math.random();
+                const y = Math.random();
+                const dx = (Math.random() - 0.5) * 600;
+                const dy = (Math.random() - 0.5) * 600;
+                this.splatStack.push({
+                    x, y, dx, dy,
+                    color: {
+                        r: this.currentColor[0] * 0.4,
+                        g: this.currentColor[1] * (0.5 + bands.treble * 0.5),
+                        b: this.currentColor[2] * (0.6 + bands.treble),
+                    },
+                });
+            }
+
+            // ── QUIET PASSAGE: Gentle breathing wisp ──
+            const totalEnergy = bands.bass + bands.mid + bands.treble;
+            if (totalEnergy > 0.05 && totalEnergy < 0.4 && Math.random() < 0.06) {
+                // Very soft, slow-moving barely-visible wisps
+                const x = 0.3 + Math.random() * 0.4;
+                const y = 0.3 + Math.random() * 0.4;
+                const angle = Math.random() * Math.PI * 2;
+                const force = totalEnergy * 400;
+                this.splatStack.push({
+                    x, y,
+                    dx: Math.cos(angle) * force,
+                    dy: Math.sin(angle) * force,
+                    color: {
+                        r: this.currentColor[0] * 0.3,
+                        g: this.currentColor[1] * 0.3,
+                        b: this.currentColor[2] * 0.3,
+                    },
+                });
+            }
+
+            return; // Used multi-band, skip single-energy
+        }
+
+        // Fallback: single energy mode (with exponential scaling)
+        const energy = this.audioController.getAudioData() / 255.0;
+        const scaledEnergy = Math.pow(energy, 3); // exponential: quiet stays quiet
+        if (energy > 0.3 && Math.random() < scaledEnergy * 0.5) {
+            const x = Math.random();
+            const y = Math.random();
+            const dx = (Math.random() - 0.5) * 6000 * scaledEnergy;
+            const dy = (Math.random() - 0.5) * 6000 * scaledEnergy;
+            this.splatStack.push({
+                x, y, dx, dy,
+                color: {
+                    r: this.currentColor[0] * (0.8 + scaledEnergy),
+                    g: this.currentColor[1] * (0.8 + scaledEnergy),
+                    b: this.currentColor[2] * (0.8 + scaledEnergy),
+                },
+            });
         }
     }
 

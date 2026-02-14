@@ -352,7 +352,7 @@
             background: #ffaa33;
         }
 
-        /* VIBE: DOMINIC (Calm Menace) - Red Spider */
+        /* VIBE: DOMINIC (Calm Menace) - Deep Red / Control */
         .left-panel.vibe-dominic {
             background: transparent;
             transition: background 1.5s ease;
@@ -367,52 +367,51 @@
 
         .left-panel.vibe-dominic #glitchTitle {
             color: #ccc;
-            text-shadow: 0 0 5px rgba(255, 51, 51, 0.3);
+            text-shadow: 0 0 5px rgba(139, 0, 0, 0.3);
             letter-spacing: 1px;
             transition: color 0.8s, text-shadow 0.8s;
         }
 
-        /* DOMINIC Color Scheme - Red Spider/Redback */
+        /* DOMINIC Color Scheme - Deep Red */
         .left-panel.vibe-dominic #subtitleText {
-            color: #ff3333 !important;
+            color: #8b0000 !important;
         }
 
         .left-panel.vibe-dominic .text-gray-500 {
-            color: #ff6666 !important;
+            color: #a01010 !important;
         }
 
         .left-panel.vibe-dominic .redacted-wrapper {
-            color: #ff6666;
+            color: #a01010;
             background: transparent;
             border: none;
-            /* Remove border */
         }
 
         .left-panel.vibe-dominic .border-green-900 {
-            border-color: #ff3333 !important;
+            border-color: #8b0000 !important;
         }
 
         .left-panel.vibe-dominic .text-green-500 {
-            color: #ff6666 !important;
+            color: #a01010 !important;
         }
 
         .left-panel.vibe-dominic .btn-tech {
-            border-color: #ff3333;
-            color: #ff6666;
+            border-color: #8b0000;
+            color: #a01010;
             background: rgba(20, 0, 0, 0.8);
-            box-shadow: 0 0 15px rgba(255, 51, 51, 0.4);
+            box-shadow: 0 0 15px rgba(139, 0, 0, 0.3);
         }
 
         .left-panel.vibe-dominic #glitchTitle {
-            color: #ff6666 !important;
-            text-shadow: 0 0 5px rgba(255, 51, 51, 0.3);
+            color: #c41010 !important;
+            text-shadow: 0 0 5px rgba(139, 0, 0, 0.3);
         }
 
         .left-panel.vibe-dominic .redacted-bar {
-            background: #ff3333;
+            background: #8b0000;
         }
 
-        /* VIBE: WITNESS (Unknown/Neutral) - Red Spider */
+        /* VIBE: WITNESS (Execution Retelling) - Deep Red / Heavy */
         .left-panel.vibe-witness {
             background: transparent;
             transition: background 1s ease;
@@ -424,48 +423,48 @@
             filter: brightness(0.6);
         }
 
-        /* WITNESS Color Scheme - Red Spider/Redback */
+        /* WITNESS Color Scheme - Deep Bruise Red */
         .left-panel.vibe-witness #subtitleText {
-            color: #ff3333 !important;
+            color: #8b0000 !important;
         }
 
         .left-panel.vibe-witness .text-gray-500 {
-            color: #ff6666 !important;
+            color: #a01010 !important;
         }
 
         .left-panel.vibe-witness .redacted-wrapper {
-            color: #ff6666;
+            color: #a01010;
             background: #000;
-            border: 1px solid #ff3333;
+            border: 1px solid #8b0000;
         }
 
         .left-panel.vibe-witness .border-green-900 {
-            border-color: #ff3333 !important;
+            border-color: #8b0000 !important;
         }
 
         .left-panel.vibe-witness .text-green-500 {
-            color: #ff6666 !important;
+            color: #a01010 !important;
         }
 
         .left-panel.vibe-witness .btn-tech {
-            border-color: #ff3333;
-            color: #ff6666;
+            border-color: #8b0000;
+            color: #a01010;
             background: rgba(20, 0, 0, 0.8);
-            box-shadow: 0 0 15px rgba(255, 51, 51, 0.4);
+            box-shadow: 0 0 15px rgba(139, 0, 0, 0.3);
         }
 
         .left-panel.vibe-witness #glitchTitle {
-            color: #ff6666 !important;
+            color: #c41010 !important;
         }
 
         .left-panel.vibe-witness .redacted-wrapper {
-            color: #ff6666;
+            color: #a01010;
             background: transparent;
-            border: 1px solid #ff3333;
+            border: 1px solid #8b0000;
         }
 
         .left-panel.vibe-witness .redacted-bar {
-            background: #ff3333;
+            background: #8b0000;
         }
 
         /* 5. KINLEY - Dark Gold (Corrupt Politician) */
@@ -999,7 +998,7 @@
     </div>
 
     <!-- Hidden audio element for character song snippets -->
-    <audio id="characterAudio" preload="none"></audio>
+    <audio id="characterAudio" preload="none" crossorigin="anonymous"></audio>
 
 
     <!-- AUDIO ADVISORY -->
@@ -1054,8 +1053,25 @@
             handlePanelTap(leftPanel, rightPanel, 'hover-left');
         });
 
+        // Track drag to prevent Nalani song change on drag
+        let _rpMouseDown = null;
+        rightPanel.addEventListener('mousedown', (e) => {
+            _rpMouseDown = { x: e.clientX, y: e.clientY };
+        });
+
         rightPanel.addEventListener('click', async (e) => {
             if (e.target.closest('a')) return;
+
+            // Ignore if this was a drag (moved more than 10px)
+            if (_rpMouseDown) {
+                const dx = Math.abs(e.clientX - _rpMouseDown.x);
+                const dy = Math.abs(e.clientY - _rpMouseDown.y);
+                if (dx > 10 || dy > 10) {
+                    _rpMouseDown = null;
+                    return;
+                }
+            }
+            _rpMouseDown = null;
 
             // IMMEDIATE UI FEEDBACK: Switch panels first
             handlePanelTap(rightPanel, leftPanel, 'hover-right');
@@ -1080,6 +1096,7 @@
                 const nalaniAudio = document.createElement('audio');
                 nalaniAudio.id = 'nalaniAudio';
                 nalaniAudio.preload = 'none';
+                nalaniAudio.crossOrigin = 'anonymous';
                 document.body.appendChild(nalaniAudio);
                 nalaniAudioController = new AudioController(nalaniAudio);
             }
@@ -1106,6 +1123,8 @@
             // Play NALANI track
             try {
                 await nalaniAudioController.playTrack(selectedTrack.url, 1500);
+                // Point fluid simulator at Nalani's audio for reactivity
+                if (window.fluidSim) window.fluidSim.audioController = nalaniAudioController;
                 console.log('NALANI track started successfully');
             } catch (error) {
                 console.error('NALANI playback error:', error);
@@ -1155,73 +1174,73 @@
         // Audio tracks with character associations - 25 song snippets
         const audioTracks = [
             // ETHEL tracks (25 total) - STATUS: SURVEILLANCE
-            { character: "ETHEL", subtitle: "CIRCUIT BREAKER", status: "SURVEILLANCE", text: "If I second guess he writes the end.", url: "https://pub-111e813bd5634cd8a9ecdd3d5c2a0916.r2.dev/audio/Ethel_If_I_second_guess_he_writes_the_end.wav" },
-            //{ character: "ETHEL", subtitle: "CIRCUIT BREAKER", status: "SURVEILLANCE", text: "I rotate fate.", url: "https://pub-111e813bd5634cd8a9ecdd3d5c2a0916.r2.dev/audio/Ethel_I_rotate_fate.wav" },
-            { character: "ETHEL", subtitle: "CIRCUIT BREAKER", status: "SURVEILLANCE", text: "You made a cage for you.", url: "https://pub-111e813bd5634cd8a9ecdd3d5c2a0916.r2.dev/audio/Ethel_you_made_a_cage_for_you.wav" },
-            { character: "ETHEL", subtitle: "CIRCUIT BREAKER", status: "SURVEILLANCE", text: "The pub, that's the vantage.", url: "https://pub-111e813bd5634cd8a9ecdd3d5c2a0916.r2.dev/audio/Ethel_The_pub_thats_the_vantage.wav" },
-            { character: "ETHEL", subtitle: "CIRCUIT BREAKER", status: "SURVEILLANCE", text: "Testing their perspectives.", url: "https://pub-111e813bd5634cd8a9ecdd3d5c2a0916.r2.dev/audio/Ethel_Testing_their_perspectives.wav" },
-            { character: "ETHEL", subtitle: "CIRCUIT BREAKER", status: "SURVEILLANCE", text: "So I watched the systems, not the world they sell.", url: "https://pub-111e813bd5634cd8a9ecdd3d5c2a0916.r2.dev/audio/Ethel_So_I_watched_the_systems_not_the_world_the_sell.wav" },
-            { character: "ETHEL", subtitle: "CIRCUIT BREAKER", status: "SURVEILLANCE", text: "Note on the bike, ride it.", url: "https://pub-111e813bd5634cd8a9ecdd3d5c2a0916.r2.dev/audio/Ethel_Note_on_the_bike_ride_it.wav" },
-            { character: "ETHEL", subtitle: "CIRCUIT BREAKER", status: "SURVEILLANCE", text: "Normal buys the t-shirt.", url: "https://pub-111e813bd5634cd8a9ecdd3d5c2a0916.r2.dev/audio/Ethel_Normal_buys_the_t_shirt.wav" },
-            { character: "ETHEL", subtitle: "CIRCUIT BREAKER", status: "SURVEILLANCE", text: "My father not met, assessed.", url: "https://pub-111e813bd5634cd8a9ecdd3d5c2a0916.r2.dev/audio/Ethel_My_father_not_met_assessed.wav" },
-            // { character: "ETHEL", subtitle: "CIRCUIT BREAKER", status: "SURVEILLANCE", text: "It back in neutral hue.", url: "https://pub-111e813bd5634cd8a9ecdd3d5c2a0916.r2.dev/audio/Ethel_it_back_in_neutral_hue.wav" },
-            { character: "ETHEL", subtitle: "CIRCUIT BREAKER", status: "SURVEILLANCE", text: "Half a block to lose.", url: "https://pub-111e813bd5634cd8a9ecdd3d5c2a0916.r2.dev/audio/Ethel_Half_A_block_to_loose.wav" },
-            { character: "ETHEL", subtitle: "CIRCUIT BREAKER", status: "SURVEILLANCE", text: "Gran was a chemist.", url: "https://pub-111e813bd5634cd8a9ecdd3d5c2a0916.r2.dev/audio/Ethel_Gran_was_a_chemist.wav" },
-            { character: "ETHEL", subtitle: "CIRCUIT BREAKER", status: "SURVEILLANCE", text: "Face like a window, talk like a screen.", url: "https://pub-111e813bd5634cd8a9ecdd3d5c2a0916.r2.dev/audio/Ethel_Face_like_a_window_talk_like_a_screen.wav" },
-            //{ character: "ETHEL", subtitle: "CIRCUIT BREAKER", status: "SURVEILLANCE", text: "AFP number, as if she'd drawn the fuse.", url: "https://pub-111e813bd5634cd8a9ecdd3d5c2a0916.r2.dev/audio/Ethel_AFP_number_as_if_shed_drawn_the_fuse.wav" },
-            { character: "ETHEL", subtitle: "CIRCUIT BREAKER", status: "SURVEILLANCE", text: "They Rewrite You.", url: "https://pub-111e813bd5634cd8a9ecdd3d5c2a0916.r2.dev/audio/Ethel_The_rewrite_you.wav" },
-            { character: "ETHEL", subtitle: "CIRCUIT BREAKER", status: "SURVEILLANCE", text: "I'll stitch the cost.", url: "https://pub-111e813bd5634cd8a9ecdd3d5c2a0916.r2.dev/audio/ETHEL_Stitch_The_Cost.wav" },
-            { character: "ETHEL", subtitle: "CIRCUIT BREAKER", status: "SURVEILLANCE", text: "Silence = Debt Alive", url: "https://pub-111e813bd5634cd8a9ecdd3d5c2a0916.r2.dev/audio/ETHEL_Silence_Keeps_the_debt_alive.wav" },
-            { character: "ETHEL", subtitle: "CIRCUIT BREAKER", status: "SURVEILLANCE", text: "Silence isn't free!", url: "https://pub-111e813bd5634cd8a9ecdd3d5c2a0916.r2.dev/audio/ETHEL_silence_isnt_free.wav" },
-            { character: "ETHEL", subtitle: "CIRCUIT BREAKER", status: "SURVEILLANCE", text: "Silence is the warning", url: "https://pub-111e813bd5634cd8a9ecdd3d5c2a0916.r2.dev/audio/ETHEL_Silence_is_the_warning.wav" },
-            { character: "ETHEL", subtitle: "CIRCUIT BREAKER", status: "SURVEILLANCE", text: "Frame before it sets.", url: "https://pub-111e813bd5634cd8a9ecdd3d5c2a0916.r2.dev/audio/Ethel_Read_the_frame.wav" },
-            { character: "ETHEL", subtitle: "CIRCUIT BREAKER", status: "SURVEILLANCE", text: "Not belief its balance", url: "https://pub-111e813bd5634cd8a9ecdd3d5c2a0916.r2.dev/audio/Ethel_Not%20Belief_Its_balance.wav" },
-            { character: "ETHEL", subtitle: "CIRCUIT BREAKER", status: "SURVEILLANCE", text: "Hero! Killer!", url: "https://pub-111e813bd5634cd8a9ecdd3d5c2a0916.r2.dev/audio/ETHEL_Hero_Killer.wav" },
-            { character: "ETHEL", subtitle: "CIRCUIT BREAKER", status: "SURVEILLANCE", text: "Don't light a candle.", url: "https://pub-111e813bd5634cd8a9ecdd3d5c2a0916.r2.dev/audio/ETHEL_DONT-LIGHT_A_CANDLE.wav" },
-            { character: "ETHEL", subtitle: "CIRCUIT BREAKER", status: "SURVEILLANCE", text: "See mind blind now.", url: "https://pub-111e813bd5634cd8a9ecdd3d5c2a0916.r2.dev/audio/ETHEL_See_my_min_blind_now.wav" },
-            { character: "ETHEL", subtitle: "CIRCUIT BREAKER", status: "SURVEILLANCE", text: "Truth In Open Air", url: "https://pub-111e813bd5634cd8a9ecdd3d5c2a0916.r2.dev/audio/Ethel_Truth%20In_Open_Air.wav" },
+            { character: "ETHEL", subtitle: "CIRCUIT BREAKER", status: "SURVEILLANCE", text: "If I second guess he writes the end.", url: "https://raw.githubusercontent.com/NJsalubrious/pixelstortion-assets/a532b7b4fc94bc142bbeabcba1c96b635f3390e7/library/music_snippets/Ethel_If_I_second_guess_he_writes_the_end.wav" },
+            //{ character: "ETHEL", subtitle: "CIRCUIT BREAKER", status: "SURVEILLANCE", text: "I rotate fate.", url: "https://raw.githubusercontent.com/NJsalubrious/pixelstortion-assets/a532b7b4fc94bc142bbeabcba1c96b635f3390e7/library/music_snippets/Ethel_I_rotate_fate.wav" },
+            { character: "ETHEL", subtitle: "CIRCUIT BREAKER", status: "SURVEILLANCE", text: "You made a cage for you.", url: "https://raw.githubusercontent.com/NJsalubrious/pixelstortion-assets/a532b7b4fc94bc142bbeabcba1c96b635f3390e7/library/music_snippets/Ethel_you_made_a_cage_for_you.wav" },
+            { character: "ETHEL", subtitle: "CIRCUIT BREAKER", status: "SURVEILLANCE", text: "The pub, that's the vantage.", url: "https://raw.githubusercontent.com/NJsalubrious/pixelstortion-assets/a532b7b4fc94bc142bbeabcba1c96b635f3390e7/library/music_snippets/Ethel_The_pub_thats_the_vantage.wav" },
+            { character: "ETHEL", subtitle: "CIRCUIT BREAKER", status: "SURVEILLANCE", text: "Testing their perspectives.", url: "https://raw.githubusercontent.com/NJsalubrious/pixelstortion-assets/a532b7b4fc94bc142bbeabcba1c96b635f3390e7/library/music_snippets/Ethel_Testing_their_perspectives.wav" },
+            { character: "ETHEL", subtitle: "CIRCUIT BREAKER", status: "SURVEILLANCE", text: "So I watched the systems, not the world they sell.", url: "https://raw.githubusercontent.com/NJsalubrious/pixelstortion-assets/a532b7b4fc94bc142bbeabcba1c96b635f3390e7/library/music_snippets/Ethel_So_I_watched_the_systems_not_the_world_the_sell.wav" },
+            { character: "ETHEL", subtitle: "CIRCUIT BREAKER", status: "SURVEILLANCE", text: "Note on the bike, ride it.", url: "https://raw.githubusercontent.com/NJsalubrious/pixelstortion-assets/a532b7b4fc94bc142bbeabcba1c96b635f3390e7/library/music_snippets/Ethel_Note_on_the_bike_ride_it.wav" },
+            { character: "ETHEL", subtitle: "CIRCUIT BREAKER", status: "SURVEILLANCE", text: "Normal buys the t-shirt.", url: "https://raw.githubusercontent.com/NJsalubrious/pixelstortion-assets/a532b7b4fc94bc142bbeabcba1c96b635f3390e7/library/music_snippets/Ethel_Normal_buys_the_t_shirt.wav" },
+            { character: "ETHEL", subtitle: "CIRCUIT BREAKER", status: "SURVEILLANCE", text: "My father not met, assessed.", url: "https://raw.githubusercontent.com/NJsalubrious/pixelstortion-assets/a532b7b4fc94bc142bbeabcba1c96b635f3390e7/library/music_snippets/Ethel_My_father_not_met_assessed.wav" },
+            // { character: "ETHEL", subtitle: "CIRCUIT BREAKER", status: "SURVEILLANCE", text: "It back in neutral hue.", url: "https://raw.githubusercontent.com/NJsalubrious/pixelstortion-assets/a532b7b4fc94bc142bbeabcba1c96b635f3390e7/library/music_snippets/Ethel_it_back_in_neutral_hue.wav" },
+            { character: "ETHEL", subtitle: "CIRCUIT BREAKER", status: "SURVEILLANCE", text: "Half a block to lose.", url: "https://raw.githubusercontent.com/NJsalubrious/pixelstortion-assets/a532b7b4fc94bc142bbeabcba1c96b635f3390e7/library/music_snippets/Ethel_Half_A_block_to_loose.wav" },
+            { character: "ETHEL", subtitle: "CIRCUIT BREAKER", status: "SURVEILLANCE", text: "Gran was a chemist.", url: "https://raw.githubusercontent.com/NJsalubrious/pixelstortion-assets/a532b7b4fc94bc142bbeabcba1c96b635f3390e7/library/music_snippets/Ethel_Gran_was_a_chemist.wav" },
+            { character: "ETHEL", subtitle: "CIRCUIT BREAKER", status: "SURVEILLANCE", text: "Face like a window, talk like a screen.", url: "https://raw.githubusercontent.com/NJsalubrious/pixelstortion-assets/a532b7b4fc94bc142bbeabcba1c96b635f3390e7/library/music_snippets/Ethel_Face_like_a_window_talk_like_a_screen.wav" },
+            //{ character: "ETHEL", subtitle: "CIRCUIT BREAKER", status: "SURVEILLANCE", text: "AFP number, as if she'd drawn the fuse.", url: "https://raw.githubusercontent.com/NJsalubrious/pixelstortion-assets/a532b7b4fc94bc142bbeabcba1c96b635f3390e7/library/music_snippets/Ethel_AFP_number_as_if_shed_drawn_the_fuse.wav" },
+            { character: "ETHEL", subtitle: "CIRCUIT BREAKER", status: "SURVEILLANCE", text: "They Rewrite You.", url: "https://raw.githubusercontent.com/NJsalubrious/pixelstortion-assets/a532b7b4fc94bc142bbeabcba1c96b635f3390e7/library/music_snippets/Ethel_The_rewrite_you.wav" },
+            { character: "ETHEL", subtitle: "CIRCUIT BREAKER", status: "SURVEILLANCE", text: "I'll stitch the cost.", url: "https://raw.githubusercontent.com/NJsalubrious/pixelstortion-assets/a532b7b4fc94bc142bbeabcba1c96b635f3390e7/library/music_snippets/ETHEL_Stitch_The_Cost.wav" },
+            { character: "ETHEL", subtitle: "CIRCUIT BREAKER", status: "SURVEILLANCE", text: "Silence = Debt Alive", url: "https://raw.githubusercontent.com/NJsalubrious/pixelstortion-assets/a532b7b4fc94bc142bbeabcba1c96b635f3390e7/library/music_snippets/ETHEL_Silence_Keeps_the_debt_alive.wav" },
+            { character: "ETHEL", subtitle: "CIRCUIT BREAKER", status: "SURVEILLANCE", text: "Silence isn't free!", url: "https://raw.githubusercontent.com/NJsalubrious/pixelstortion-assets/a532b7b4fc94bc142bbeabcba1c96b635f3390e7/library/music_snippets/ETHEL_silence_isnt_free.wav" },
+            { character: "ETHEL", subtitle: "CIRCUIT BREAKER", status: "SURVEILLANCE", text: "Silence is the warning", url: "https://raw.githubusercontent.com/NJsalubrious/pixelstortion-assets/a532b7b4fc94bc142bbeabcba1c96b635f3390e7/library/music_snippets/ETHEL_Silence_is_the_warning.wav" },
+            { character: "ETHEL", subtitle: "CIRCUIT BREAKER", status: "SURVEILLANCE", text: "Frame before it sets.", url: "https://raw.githubusercontent.com/NJsalubrious/pixelstortion-assets/a532b7b4fc94bc142bbeabcba1c96b635f3390e7/library/music_snippets/Ethel_Read_the_frame.wav" },
+            { character: "ETHEL", subtitle: "CIRCUIT BREAKER", status: "SURVEILLANCE", text: "Not belief its balance", url: "https://raw.githubusercontent.com/NJsalubrious/pixelstortion-assets/a532b7b4fc94bc142bbeabcba1c96b635f3390e7/library/music_snippets/Ethel_Not%20Belief_Its_balance.wav" },
+            { character: "ETHEL", subtitle: "CIRCUIT BREAKER", status: "SURVEILLANCE", text: "Hero! Killer!", url: "https://raw.githubusercontent.com/NJsalubrious/pixelstortion-assets/a532b7b4fc94bc142bbeabcba1c96b635f3390e7/library/music_snippets/ETHEL_Hero_Killer.wav" },
+            { character: "ETHEL", subtitle: "CIRCUIT BREAKER", status: "SURVEILLANCE", text: "Don't light a candle.", url: "https://raw.githubusercontent.com/NJsalubrious/pixelstortion-assets/a532b7b4fc94bc142bbeabcba1c96b635f3390e7/library/music_snippets/ETHEL_DONT-LIGHT_A_CANDLE.wav" },
+            { character: "ETHEL", subtitle: "CIRCUIT BREAKER", status: "SURVEILLANCE", text: "See mind blind now.", url: "https://raw.githubusercontent.com/NJsalubrious/pixelstortion-assets/a532b7b4fc94bc142bbeabcba1c96b635f3390e7/library/music_snippets/ETHEL_See_my_min_blind_now.wav" },
+            { character: "ETHEL", subtitle: "CIRCUIT BREAKER", status: "SURVEILLANCE", text: "Truth In Open Air", url: "https://raw.githubusercontent.com/NJsalubrious/pixelstortion-assets/a532b7b4fc94bc142bbeabcba1c96b635f3390e7/library/music_snippets/Ethel_Truth%20In_Open_Air.wav" },
 
             // ISLA tracks (18 total) - STATUS: PUBLIC FIGURE
-            { character: "ISLA", subtitle: "CATALYST", status: "PUBLIC FIGURE", text: "I climbed the pit screaming.", url: "https://pub-111e813bd5634cd8a9ecdd3d5c2a0916.r2.dev/audio/Isla_I_climbed_the_pit_screaming.wav" },
-            { character: "ISLA", subtitle: "CATALYST", status: "PUBLIC FIGURE", text: "This is proof.", url: "https://pub-111e813bd5634cd8a9ecdd3d5c2a0916.r2.dev/audio/isla_this_is_proof.wav" },
-            { character: "ISLA", subtitle: "CATALYST", status: "PUBLIC FIGURE", text: "No price too steep.", url: "https://pub-111e813bd5634cd8a9ecdd3d5c2a0916.r2.dev/audio/Isla_no_proce_too_steep.wav" },
-            { character: "ISLA", subtitle: "CATALYST", status: "PUBLIC FIGURE", text: "I'm split inside.", url: "https://pub-111e813bd5634cd8a9ecdd3d5c2a0916.r2.dev/audio/isla_Im_split_inside.wav" },
-            { character: "ISLA", subtitle: "CATALYST", status: "PUBLIC FIGURE", text: "You think you're the gate.", url: "https://pub-111e813bd5634cd8a9ecdd3d5c2a0916.r2.dev/audio/Isla_You_thing_your_the_gate.wav" },
-            { character: "ISLA", subtitle: "CATALYST", status: "PUBLIC FIGURE", text: "Radio host.", url: "https://pub-111e813bd5634cd8a9ecdd3d5c2a0916.r2.dev/audio/isla_radio_host.wav" },
-            { character: "ISLA", subtitle: "CATALYST", status: "PUBLIC FIGURE", text: "Eyes wide I scream.", url: "https://pub-111e813bd5634cd8a9ecdd3d5c2a0916.r2.dev/audio/Isla_Eyes_wide_I_scream.wav" },
-            { character: "ISLA", subtitle: "CATALYST", status: "PUBLIC FIGURE", text: "I sing the cut, I feed it air, give it back.", url: "https://pub-111e813bd5634cd8a9ecdd3d5c2a0916.r2.dev/audio/isla_I_sing_the_cut_I_feed_it_air_give_it_back.wav" },
-            { character: "ISLA", subtitle: "CATALYST", status: "PUBLIC FIGURE", text: "Court Locked Dirt.", url: "https://pub-111e813bd5634cd8a9ecdd3d5c2a0916.r2.dev/audio/Isla_Court_locked_dirt.wav" },
-            { character: "ISLA", subtitle: "CATALYST", status: "PUBLIC FIGURE", text: "Cant Keep Me Quiet", url: "https://pub-111e813bd5634cd8a9ecdd3d5c2a0916.r2.dev/audio/Isla_cant_keep_me_quiet.wav" },
-            { character: "ISLA", subtitle: "CATALYST", status: "PUBLIC FIGURE", text: "Survival is a win", url: "https://pub-111e813bd5634cd8a9ecdd3d5c2a0916.r2.dev/audio/ISLA_Survival_Is_A_Win.wav" },
-            { character: "ISLA", subtitle: "CATALYST", status: "PUBLIC FIGURE", text: "Me? Not his mess!", url: "https://pub-111e813bd5634cd8a9ecdd3d5c2a0916.r2.dev/audio/Isla_Me_Step_trash.wav" },
-            { character: "ISLA", subtitle: "CATALYST", status: "PUBLIC FIGURE", text: "Married Banker. Wrong night!!", url: "https://pub-111e813bd5634cd8a9ecdd3d5c2a0916.r2.dev/audio/ISLA_Married_Bankers.wav" },
-            { character: "ISLA", subtitle: "CATALYST", status: "PUBLIC FIGURE", text: "Leave the hinge singing.", url: "https://pub-111e813bd5634cd8a9ecdd3d5c2a0916.r2.dev/audio/Isla_Leave_the_hinge_sining.wav" },
-            { character: "ISLA", subtitle: "CATALYST", status: "PUBLIC FIGURE", text: "I'm the new crazy!", url: "https://pub-111e813bd5634cd8a9ecdd3d5c2a0916.r2.dev/audio/Isla_Im_the_new_crazy.wav" },
-            { character: "ISLA", subtitle: "CATALYST", status: "PUBLIC FIGURE", text: "Clicks like it knows", url: "https://pub-111e813bd5634cd8a9ecdd3d5c2a0916.r2.dev/audio/Isla_Crosswalk_klicks.wav" },
-            { character: "ISLA", subtitle: "CATALYST", status: "PUBLIC FIGURE", text: "Inside? passwords!", url: "https://pub-111e813bd5634cd8a9ecdd3d5c2a0916.r2.dev/audio/Isla_Cookies_cracked_inside_passwords.wav" },
-            { character: "ISLA", subtitle: "CATALYST", status: "PUBLIC FIGURE", text: "A mind I knew so well", url: "https://pub-111e813bd5634cd8a9ecdd3d5c2a0916.r2.dev/audio/Isla_A_Mind_I_knew_so_Well.wav" },
+            { character: "ISLA", subtitle: "CATALYST", status: "PUBLIC FIGURE", text: "I climbed the pit screaming.", url: "https://raw.githubusercontent.com/NJsalubrious/pixelstortion-assets/a532b7b4fc94bc142bbeabcba1c96b635f3390e7/library/music_snippets/Isla_I_climbed_the_pit_screaming.wav" },
+            { character: "ISLA", subtitle: "CATALYST", status: "PUBLIC FIGURE", text: "This is proof.", url: "https://raw.githubusercontent.com/NJsalubrious/pixelstortion-assets/a532b7b4fc94bc142bbeabcba1c96b635f3390e7/library/music_snippets/isla_this_is_proof.wav" },
+            { character: "ISLA", subtitle: "CATALYST", status: "PUBLIC FIGURE", text: "No price too steep.", url: "https://raw.githubusercontent.com/NJsalubrious/pixelstortion-assets/a532b7b4fc94bc142bbeabcba1c96b635f3390e7/library/music_snippets/Isla_no_proce_too_steep.wav" },
+            { character: "ISLA", subtitle: "CATALYST", status: "PUBLIC FIGURE", text: "I'm split inside.", url: "https://raw.githubusercontent.com/NJsalubrious/pixelstortion-assets/a532b7b4fc94bc142bbeabcba1c96b635f3390e7/library/music_snippets/isla_Im_split_inside.wav" },
+            { character: "ISLA", subtitle: "CATALYST", status: "PUBLIC FIGURE", text: "You think you're the gate.", url: "https://raw.githubusercontent.com/NJsalubrious/pixelstortion-assets/a532b7b4fc94bc142bbeabcba1c96b635f3390e7/library/music_snippets/Isla_You_thing_your_the_gate.wav" },
+            { character: "ISLA", subtitle: "CATALYST", status: "PUBLIC FIGURE", text: "Radio host.", url: "https://raw.githubusercontent.com/NJsalubrious/pixelstortion-assets/a532b7b4fc94bc142bbeabcba1c96b635f3390e7/library/music_snippets/isla_radio_host.wav" },
+            { character: "ISLA", subtitle: "CATALYST", status: "PUBLIC FIGURE", text: "Eyes wide I scream.", url: "https://raw.githubusercontent.com/NJsalubrious/pixelstortion-assets/a532b7b4fc94bc142bbeabcba1c96b635f3390e7/library/music_snippets/Isla_Eyes_wide_I_scream.wav" },
+            { character: "ISLA", subtitle: "CATALYST", status: "PUBLIC FIGURE", text: "I sing the cut, I feed it air, give it back.", url: "https://raw.githubusercontent.com/NJsalubrious/pixelstortion-assets/a532b7b4fc94bc142bbeabcba1c96b635f3390e7/library/music_snippets/isla_I_sing_the_cut_I_feed_it_air_give_it_back.wav" },
+            { character: "ISLA", subtitle: "CATALYST", status: "PUBLIC FIGURE", text: "Court Locked Dirt.", url: "https://raw.githubusercontent.com/NJsalubrious/pixelstortion-assets/a532b7b4fc94bc142bbeabcba1c96b635f3390e7/library/music_snippets/Isla_Court_locked_dirt.wav" },
+            { character: "ISLA", subtitle: "CATALYST", status: "PUBLIC FIGURE", text: "Cant Keep Me Quiet", url: "https://raw.githubusercontent.com/NJsalubrious/pixelstortion-assets/a532b7b4fc94bc142bbeabcba1c96b635f3390e7/library/music_snippets/Isla_cant_keep_me_quiet.wav" },
+            { character: "ISLA", subtitle: "CATALYST", status: "PUBLIC FIGURE", text: "Survival is a win", url: "https://raw.githubusercontent.com/NJsalubrious/pixelstortion-assets/a532b7b4fc94bc142bbeabcba1c96b635f3390e7/library/music_snippets/ISLA_Survival_Is_A_Win.wav" },
+            { character: "ISLA", subtitle: "CATALYST", status: "PUBLIC FIGURE", text: "Me? Not his mess!", url: "https://raw.githubusercontent.com/NJsalubrious/pixelstortion-assets/a532b7b4fc94bc142bbeabcba1c96b635f3390e7/library/music_snippets/Isla_Me_Step_trash.wav" },
+            { character: "ISLA", subtitle: "CATALYST", status: "PUBLIC FIGURE", text: "Married Banker. Wrong night!!", url: "https://raw.githubusercontent.com/NJsalubrious/pixelstortion-assets/a532b7b4fc94bc142bbeabcba1c96b635f3390e7/library/music_snippets/ISLA_Married_Bankers.wav" },
+            { character: "ISLA", subtitle: "CATALYST", status: "PUBLIC FIGURE", text: "Leave the hinge singing.", url: "https://raw.githubusercontent.com/NJsalubrious/pixelstortion-assets/a532b7b4fc94bc142bbeabcba1c96b635f3390e7/library/music_snippets/Isla_Leave_the_hinge_sining.wav" },
+            { character: "ISLA", subtitle: "CATALYST", status: "PUBLIC FIGURE", text: "I'm the new crazy!", url: "https://raw.githubusercontent.com/NJsalubrious/pixelstortion-assets/a532b7b4fc94bc142bbeabcba1c96b635f3390e7/library/music_snippets/Isla_Im_the_new_crazy.wav" },
+            { character: "ISLA", subtitle: "CATALYST", status: "PUBLIC FIGURE", text: "Clicks like it knows", url: "https://raw.githubusercontent.com/NJsalubrious/pixelstortion-assets/a532b7b4fc94bc142bbeabcba1c96b635f3390e7/library/music_snippets/Isla_Crosswalk_klicks.wav" },
+            { character: "ISLA", subtitle: "CATALYST", status: "PUBLIC FIGURE", text: "Inside? passwords!", url: "https://raw.githubusercontent.com/NJsalubrious/pixelstortion-assets/a532b7b4fc94bc142bbeabcba1c96b635f3390e7/library/music_snippets/Isla_Cookies_cracked_inside_passwords.wav" },
+            { character: "ISLA", subtitle: "CATALYST", status: "PUBLIC FIGURE", text: "A mind I knew so well", url: "https://raw.githubusercontent.com/NJsalubrious/pixelstortion-assets/a532b7b4fc94bc142bbeabcba1c96b635f3390e7/library/music_snippets/Isla_A_Mind_I_knew_so_Well.wav" },
 
             // DOMINIC tracks (3 total) - STATUS: ESCAPED
-            { character: "DOMINIC", subtitle: "CALM MENACE", status: "ESCAPED", text: "Why hold burdens?", url: "https://pub-111e813bd5634cd8a9ecdd3d5c2a0916.r2.dev/audio/DOMINIC_Burdens_I_Can_Carry.wav" },
-            { character: "DOMINIC", subtitle: "CALM MENACE", status: "ESCAPED", text: "They look at reaction.", url: "https://pub-111e813bd5634cd8a9ecdd3d5c2a0916.r2.dev/audio/DOMINIC_flag_tour_tone.wav" },
-            { character: "DOMINIC", subtitle: "CALM MENACE", status: "ESCAPED", text: "1 omission + 2 suggestions.", url: "https://pub-111e813bd5634cd8a9ecdd3d5c2a0916.r2.dev/audio/DOMINIC_one_omission_two_suggestions.wav" },
+            { character: "DOMINIC", subtitle: "CALM MENACE", status: "ESCAPED", text: "Why hold burdens?", url: "https://raw.githubusercontent.com/NJsalubrious/pixelstortion-assets/a532b7b4fc94bc142bbeabcba1c96b635f3390e7/library/music_snippets/DOMINIC_Burdens_I_Can_Carry.wav" },
+            { character: "DOMINIC", subtitle: "CALM MENACE", status: "ESCAPED", text: "They look at reaction.", url: "https://raw.githubusercontent.com/NJsalubrious/pixelstortion-assets/a532b7b4fc94bc142bbeabcba1c96b635f3390e7/library/music_snippets/DOMINIC_flag_tour_tone.wav" },
+            { character: "DOMINIC", subtitle: "CALM MENACE", status: "ESCAPED", text: "1 omission + 2 suggestions.", url: "https://raw.githubusercontent.com/NJsalubrious/pixelstortion-assets/a532b7b4fc94bc142bbeabcba1c96b635f3390e7/library/music_snippets/DOMINIC_one_omission_two_suggestions.wav" },
 
             // WITNESS track (1 total) - STATUS: UNKNOWN
-            { character: "WITNESS", subtitle: "WITNESS", status: "UNKNOWN", text: "Casual. Gone.", url: "https://pub-111e813bd5634cd8a9ecdd3d5c2a0916.r2.dev/audio/Dominic_Casual_Gone.wav" },
+            { character: "WITNESS", subtitle: "WITNESS", status: "UNKNOWN", text: "Casual. Gone.", url: "https://raw.githubusercontent.com/NJsalubrious/pixelstortion-assets/a532b7b4fc94bc142bbeabcba1c96b635f3390e7/library/music_snippets/Dominic_Casual_Gone.wav" },
 
             // KINLEY track (1 total) - STATUS: COMPROMISED
-            { character: "KINLEY", subtitle: "POWER BROKER", status: "COMPROMISED", text: "Guilt Money", url: "https://pub-111e813bd5634cd8a9ecdd3d5c2a0916.r2.dev/audio/KINLEY_Guilt_Money.wav" },
+            { character: "KINLEY", subtitle: "POWER BROKER", status: "COMPROMISED", text: "Guilt Money", url: "https://raw.githubusercontent.com/NJsalubrious/pixelstortion-assets/a532b7b4fc94bc142bbeabcba1c96b635f3390e7/library/music_snippets/KINLEY_Guilt_Money.wav" },
 
             // STICKY track (1 total) - STATUS: ACTIVE
-            { character: "STICKY", subtitle: "TRUTH SEEKER", status: "ACTIVE", text: "Systems broke. Fix it", url: "https://pub-111e813bd5634cd8a9ecdd3d5c2a0916.r2.dev/audio/STICKY_Systems_broke_fix_it.wav" }
+            { character: "STICKY", subtitle: "TRUTH SEEKER", status: "ACTIVE", text: "Systems broke. Fix it", url: "https://raw.githubusercontent.com/NJsalubrious/pixelstortion-assets/a532b7b4fc94bc142bbeabcba1c96b635f3390e7/library/music_snippets/STICKY_Systems_broke_fix_it.wav" }
         ];
 
         // NALANI tracks (4 total) - Play randomly when clicking NALANI image
         const nalaniTracks = [
-            { text: "Storm unseen", url: "https://pub-111e813bd5634cd8a9ecdd3d5c2a0916.r2.dev/audio/NALANI_Storm_unseen.wav" },
-            { text: "I questioned proud", url: "https://pub-111e813bd5634cd8a9ecdd3d5c2a0916.r2.dev/audio/NALANI_I_questioned_proud.wav" },
-            { text: "Out past the reef", url: "https://pub-111e813bd5634cd8a9ecdd3d5c2a0916.r2.dev/audio/NALANI_Out_past_the_reef.wav" },
-            { text: "Maps were drawn", url: "https://pub-111e813bd5634cd8a9ecdd3d5c2a0916.r2.dev/audio/NALANI_Maps_were_drawn.wav" }
+            { text: "Storm unseen", url: "https://raw.githubusercontent.com/NJsalubrious/pixelstortion-assets/a532b7b4fc94bc142bbeabcba1c96b635f3390e7/library/music_snippets/NALANI_Storm_unseen.wav" },
+            { text: "I questioned proud", url: "https://raw.githubusercontent.com/NJsalubrious/pixelstortion-assets/a532b7b4fc94bc142bbeabcba1c96b635f3390e7/library/music_snippets/NALANI_I_questioned_proud.wav" },
+            { text: "Out past the reef", url: "https://raw.githubusercontent.com/NJsalubrious/pixelstortion-assets/a532b7b4fc94bc142bbeabcba1c96b635f3390e7/library/music_snippets/NALANI_Out_past_the_reef.wav" },
+            { text: "Maps were drawn", url: "https://raw.githubusercontent.com/NJsalubrious/pixelstortion-assets/a532b7b4fc94bc142bbeabcba1c96b635f3390e7/library/music_snippets/NALANI_Maps_were_drawn.wav" }
         ];
 
         // Character subtitle mapping for SILENCE (no audio)
@@ -1245,62 +1264,111 @@
                 this.isPlaying = false;
                 this.currentFade = null;
 
-                // ── Simulated Beat Oscillator ──
-                // We CANNOT use Web Audio API's createMediaElementSource()
-                // because the R2 bucket does not serve CORS headers.
-                // Setting crossOrigin="anonymous" would block audio entirely.
-                // Instead, we simulate bass energy with layered sine waves
-                // that produce convincing organic pulses for the fluid engine.
-                this._beatPhase = 0;
-                this._beatBPM = 120;          // Simulated tempo
-                this._lastBeatTime = 0;
+                // ── Real Web Audio API Frequency Analysis ──
+                // GitHub raw serves CORS headers (Access-Control-Allow-Origin: *)
+                // so crossOrigin="anonymous" + createMediaElementSource() works.
+                this._audioCtx = null;
+                this._analyser = null;
+                this._source = null;
+                this._freqData = null;
+                this._useRealAnalysis = false;
+
+                // Fallback simulated oscillator (only if analyser fails)
+                this._beatBPM = 120;
             }
 
-            // Simulated audio energy for the fluid engine (0-255 range)
+            // Initialize Web Audio API on first play (needs user gesture)
+            _initAnalyser() {
+                if (this._audioCtx) return; // already initialized
+                try {
+                    this._audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                    this._analyser = this._audioCtx.createAnalyser();
+                    this._analyser.fftSize = 256;
+                    this._analyser.smoothingTimeConstant = 0.8;
+                    this._source = this._audioCtx.createMediaElementSource(this.audio);
+                    this._source.connect(this._analyser);
+                    this._analyser.connect(this._audioCtx.destination);
+                    this._freqData = new Uint8Array(this._analyser.frequencyBinCount);
+                    this._useRealAnalysis = true;
+                    console.log('[AudioController] ✅ Real frequency analysis active');
+                } catch (err) {
+                    console.warn('[AudioController] ⚠ Analyser init failed, using simulated fallback:', err.message);
+                    this._useRealAnalysis = false;
+                }
+            }
+
+            // Returns average frequency energy 0-255 (real or simulated)
             getAudioData() {
                 if (!this.isPlaying) return 0;
 
-                const now = performance.now() / 1000; // seconds
+                if (this._useRealAnalysis && this._analyser && this._freqData) {
+                    // Resume context if suspended (autoplay policy)
+                    if (this._audioCtx.state === 'suspended') {
+                        this._audioCtx.resume();
+                    }
+                    this._analyser.getByteFrequencyData(this._freqData);
+                    // Average across all bins
+                    let sum = 0;
+                    for (let i = 0; i < this._freqData.length; i++) {
+                        sum += this._freqData[i];
+                    }
+                    return sum / this._freqData.length;
+                }
+
+                // Fallback: simulated oscillator
+                const now = performance.now() / 1000;
                 const bps = this._beatBPM / 60.0;
-
-                // Layer 1: Primary beat pulse (bass kick)
                 const beat = Math.pow(Math.sin(now * bps * Math.PI) * 0.5 + 0.5, 3.0);
-
-                // Layer 2: Sub-harmonic swell (slower breathing rhythm)
                 const swell = Math.sin(now * 0.3) * 0.5 + 0.5;
-
-                // Layer 3: Random micro-variation (organic jitter)
                 const jitter = Math.random() * 0.15;
+                return Math.min(255, Math.max(0, (beat * 0.55 + swell * 0.30 + jitter) * 255));
+            }
 
-                // Combine: weighted sum, scaled to 0-255
-                const energy = (beat * 0.55 + swell * 0.30 + jitter) * 255;
+            // Multi-band breakdown for richer fluid-sim response
+            getMultiBandData() {
+                if (!this.isPlaying || !this._useRealAnalysis || !this._analyser) {
+                    return { bass: 0, mid: 0, treble: 0 };
+                }
+                if (this._audioCtx.state === 'suspended') {
+                    this._audioCtx.resume();
+                }
+                this._analyser.getByteFrequencyData(this._freqData);
+                const bins = this._freqData.length; // 128 bins (fftSize 256)
+                const bassEnd = Math.floor(bins * 0.15);    // ~0-750 Hz
+                const midEnd = Math.floor(bins * 0.5);      // ~750-2500 Hz
 
-                return Math.min(255, Math.max(0, energy));
+                let bass = 0, mid = 0, treble = 0;
+                for (let i = 0; i < bins; i++) {
+                    if (i < bassEnd) bass += this._freqData[i];
+                    else if (i < midEnd) mid += this._freqData[i];
+                    else treble += this._freqData[i];
+                }
+                bass /= bassEnd || 1;
+                mid /= (midEnd - bassEnd) || 1;
+                treble /= (bins - midEnd) || 1;
+                return { bass: bass / 255, mid: mid / 255, treble: treble / 255 };
             }
 
             async playTrack(url, fadeInDuration = 2000) {
-                // Stop any ongoing fade
                 if (this.currentFade) {
                     clearInterval(this.currentFade);
                     this.currentFade = null;
                 }
 
-                // Fade out current track if playing
-                if (this.isPlaying) {
-                    // await this.fadeOut(300); // disable fade out for snap
+                // Initialize analyser on first play (needs user gesture)
+                this._initAnalyser();
+
+                // Resume AudioContext if suspended
+                if (this._audioCtx && this._audioCtx.state === 'suspended') {
+                    await this._audioCtx.resume();
                 }
 
-                // Load and play new track
                 this.audio.src = url;
-                this.audio.volume = 1.0; // FORCE VOLUME MAX
-                // this.audio.volume = 0; // Commented out fade prep
+                this.audio.volume = 1.0;
 
                 try {
                     await this.audio.play();
                     this.isPlaying = true;
-
-                    // Fade in
-                    // await this.fadeIn(fadeInDuration); // Disable fade in for reliability check
                 } catch (error) {
                     console.error('Audio playback failed:', error);
                     this.isPlaying = false;
@@ -1559,6 +1627,8 @@
                     // Play audio track with fade in
                     console.log('Playing track:', selectedName, selectedMessage, selectedUrl);
                     audioController.playTrack(selectedUrl, 500);
+                    // Point fluid simulator at main audio controller
+                    if (window.fluidSim) window.fluidSim.audioController = audioController;
                 }
                 iteration += 1 / 2;
             }, 30);
