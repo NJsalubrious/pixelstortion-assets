@@ -1,0 +1,1119 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>PIXELSTORTION // KINETIC JUKEBOX V2</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://www.youtube.com/iframe_api"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=Space+Grotesk:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,1,0"
+        rel="stylesheet" />
+
+    <style>
+        :root {
+            --neon-green: #00ff41;
+            --fire-orange: #ff4500;
+            --void: #050505;
+        }
+
+        body,
+        html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--void);
+            overflow: hidden;
+            font-family: 'Space Grotesk', sans-serif;
+            color: white;
+            user-select: none;
+        }
+
+        /* --- LAYERS --- */
+        #fluid-canvas {
+            position: fixed;
+            inset: 0;
+            z-index: 1;
+            width: 100%;
+            height: 100%;
+        }
+
+        .scanlines {
+            position: fixed;
+            inset: 0;
+            background: linear-gradient(to bottom, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0) 50%, rgba(0, 0, 0, 0.3) 50%, rgba(0, 0, 0, 0.3));
+            background-size: 100% 4px;
+            z-index: 10;
+            pointer-events: none;
+        }
+
+        .vignette {
+            position: fixed;
+            inset: 0;
+            background: radial-gradient(circle, transparent 40%, #000 130%);
+            z-index: 11;
+            pointer-events: none;
+        }
+
+        #ui-layer {
+            position: fixed;
+            inset: 0;
+            z-index: 20;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 2rem;
+            pointer-events: none;
+            /* Let clicks pass to fluid */
+        }
+
+        .interactive {
+            pointer-events: auto;
+        }
+
+        /* --- TYPOGRAPHY --- */
+        .glitch-title {
+            font-family: 'Space Grotesk', sans-serif;
+            text-transform: uppercase;
+            mix-blend-mode: difference;
+            position: relative;
+            text-shadow: 2px 2px 0px rgba(0, 0, 0, 0.5);
+        }
+
+        .mono-tech {
+            font-family: 'Courier Prime', monospace;
+            letter-spacing: 0.1em;
+        }
+
+        /* --- CONTROLS --- */
+        .control-panel {
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
+            transition: all 0.3s ease;
+        }
+
+        .control-btn {
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .control-btn:hover {
+            border-color: var(--neon-green);
+            color: var(--neon-green);
+            transform: scale(1.1);
+            background: rgba(0, 255, 65, 0.1);
+            box-shadow: 0 0 15px rgba(0, 255, 65, 0.3);
+        }
+
+        .control-btn:active {
+            transform: scale(0.9);
+        }
+
+        .play-btn {
+            width: 70px;
+            height: 70px;
+            border-width: 2px;
+            border-color: white;
+        }
+
+        .play-btn span {
+            font-size: 36px;
+        }
+
+        /* --- PROGRESS BAR --- */
+        .progress-track {
+            width: 100%;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.1);
+            margin-top: 15px;
+            position: relative;
+            cursor: pointer;
+            overflow: hidden;
+            border-radius: 2px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--neon-green);
+            width: 0%;
+            box-shadow: 0 0 10px var(--neon-green);
+            transition: width 0.1s linear;
+        }
+
+        .progress-track:hover .progress-fill {
+            background: white;
+        }
+
+        /* --- START OVERLAY --- */
+        #start-curtain {
+            position: fixed;
+            inset: 0;
+            background: #000;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            transition: opacity 0.8s ease;
+        }
+
+        .btn-init {
+            border: 2px solid var(--neon-green);
+            color: var(--neon-green);
+            background: transparent;
+            padding: 15px 40px;
+            font-family: 'Courier Prime', monospace;
+            font-weight: bold;
+            font-size: 1.2rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 20px rgba(0, 255, 65, 0.2);
+            opacity: 0;
+            /* Hidden until loaded */
+            transform: translateY(20px);
+        }
+
+        .btn-init.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .btn-init:hover {
+            background: var(--neon-green);
+            color: #000;
+            box-shadow: 0 0 40px rgba(0, 255, 65, 0.6);
+        }
+
+        /* --- HIDDEN YOUTUBE --- */
+        #video-container {
+            position: fixed;
+            width: 1px;
+            height: 1px;
+            opacity: 0;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        /* Beat Pulse Animation */
+        @keyframes beat-pulse {
+            0% {
+                transform: scale(1);
+                filter: brightness(1);
+            }
+
+            5% {
+                transform: scale(1.02);
+                filter: brightness(1.2);
+            }
+
+            100% {
+                transform: scale(1);
+                filter: brightness(1);
+            }
+        }
+
+        .pulsing {
+            animation: beat-pulse 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- VISUALS -->
+    <canvas id="fluid-canvas"></canvas>
+    <div class="scanlines"></div>
+    <div class="vignette"></div>
+
+    <!-- START SCREEN -->
+    <div id="start-curtain">
+        <h1 class="text-5xl md:text-8xl font-bold tracking-tighter mb-2 text-white glitch-title">PIXELSTORTION</h1>
+        <h2 class="mono-tech text-gray-500 text-sm mb-8 tracking-[0.5em]">AUDIO REACTIVE JUKEBOX V2</h2>
+        <p class="mono-tech text-[10px] text-gray-600 mb-12 max-w-sm text-center leading-5">MICROPHONE ACCESS ENABLES
+            REAL-TIME AUDIO REACTIVITY.<br>TURN UP YOUR SPEAKERS.</p>
+
+        <div id="loader" class="flex flex-col items-center">
+            <div class="w-16 h-16 border-4 border-t-green-500 border-gray-900 rounded-full animate-spin mb-4"></div>
+            <span class="mono-tech text-green-500 text-xs animate-pulse">ESTABLISHING UPLINK...</span>
+        </div>
+
+        <button id="btn-start" class="btn-init" onclick="System.engage()">ENGAGE SYSTEM</button>
+    </div>
+
+    <!-- UI LAYER -->
+    <div id="ui-layer">
+        <!-- TOP INFO -->
+        <div class="flex justify-between items-start w-full">
+            <div class="interactive group cursor-default">
+                <div class="flex items-center gap-2 mb-1">
+                    <span id="status-dot" class="w-2 h-2 rounded-full bg-red-500"></span>
+                    <span id="status-text" class="mono-tech text-[10px] text-gray-400">OFFLINE</span>
+                </div>
+                <h1 id="track-title"
+                    class="text-4xl md:text-7xl font-bold leading-none tracking-tighter transition-all duration-100">
+                    SILENCE</h1>
+                <h2 id="track-artist" class="text-xl md:text-2xl font-light text-gray-400 tracking-widest mt-1">WAITING
+                    FOR INPUT</h2>
+            </div>
+
+            <div class="hidden md:block text-right">
+                <div class="mono-tech text-xs text-green-500/50 tracking-widest">AUDIO REACTIVE</div>
+                <div class="mono-tech text-[10px] text-gray-600 mt-1">FLUID DYNAMICS: ACTIVE</div>
+                <div id="mic-status" class="mono-tech text-[10px] text-gray-600">MIC: WAITING</div>
+            </div>
+        </div>
+
+        <!-- CENTER AREA (Invisible click zone for fluid interaction) -->
+
+        <!-- BOTTOM CONTROLS -->
+        <div class="w-full flex justify-center interactive">
+            <div class="control-panel w-full max-w-lg">
+                <div class="flex items-center justify-between gap-4">
+
+                    <button class="control-btn" onclick="Jukebox.prev()">
+                        <span class="material-symbols-outlined">skip_previous</span>
+                    </button>
+
+                    <button class="control-btn play-btn" onclick="Jukebox.toggle()">
+                        <span id="icon-play" class="material-symbols-outlined">play_arrow</span>
+                    </button>
+
+                    <button class="control-btn" onclick="Jukebox.next()">
+                        <span class="material-symbols-outlined">skip_next</span>
+                    </button>
+
+                    <button class="control-btn" onclick="toggleFullScreen()">
+                        <span class="material-symbols-outlined">fullscreen</span>
+                    </button>
+                </div>
+
+                <!-- TIME & PROGRESS -->
+                <div class="mt-4">
+                    <div class="flex justify-between mono-tech text-[10px] text-gray-400 mb-1">
+                        <span id="time-curr">0:00</span>
+                        <span id="time-total">0:00</span>
+                    </div>
+                    <div class="progress-track" onclick="Jukebox.seek(event)">
+                        <div id="progress-bar" class="progress-fill"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hidden Player -->
+    <div id="video-container">
+        <div id="player"></div>
+    </div>
+
+    <!-- 
+      === FLUID SIMULATION ENGINE ===
+      Ported directly from index.html (fluid-simulator.js)
+      Tuned for "Explosive" Jukebox usage
+    -->
+    <script>
+        const CONFIG = {
+            SIM_RESOLUTION: 256,
+            DYE_RESOLUTION: 1024,
+            DENSITY_DISSIPATION: 0.965,
+            VELOCITY_DISSIPATION: 0.98,
+            PRESSURE: 0.8,
+            PRESSURE_ITERATIONS: 20,
+            CURL: 55,             /* INCREASED: More swirls */
+            SPLAT_RADIUS: 0.45,   /* INCREASED: Bigger impacts */
+            SPLAT_FORCE: 9000,    /* INCREASED: Explosive force */
+            BLOOM: true,
+            BLOOM_ITERATIONS: 8,
+            BLOOM_RESOLUTION: 256,
+            BLOOM_INTENSITY: 0.9, /* INCREASED: Neon glow */
+            BLOOM_THRESHOLD: 0.5,
+            BLOOM_SOFT_KNEE: 0.7,
+            COLOR: [0.0, 1.0, 0.25],
+            GRAVITY: 0.0
+        };
+
+        // --- SHADER SOURCES (Standard WebGL 2.0 Boilerplate) ---
+        const SHADERS = {
+            vertex: `precision highp float; attribute vec2 aPosition; varying vec2 vUv; varying vec2 vL; varying vec2 vR; varying vec2 vT; varying vec2 vB; uniform vec2 texelSize; void main () { vUv = aPosition * 0.5 + 0.5; vL = vUv - vec2(texelSize.x, 0.0); vR = vUv + vec2(texelSize.x, 0.0); vT = vUv + vec2(0.0, texelSize.y); vB = vUv - vec2(0.0, texelSize.y); gl_Position = vec4(aPosition, 0.0, 1.0); }`,
+            blurVertex: `precision highp float; attribute vec2 aPosition; varying vec2 vUv; varying vec2 vL; varying vec2 vR; uniform vec2 texelSize; void main () { vUv = aPosition * 0.5 + 0.5; float offset = 1.33333333; vL = vUv - texelSize * offset; vR = vUv + texelSize * offset; gl_Position = vec4(aPosition, 0.0, 1.0); }`,
+            blur: `precision mediump float; precision mediump sampler2D; varying vec2 vUv; varying vec2 vL; varying vec2 vR; uniform sampler2D uTexture; void main () { vec4 sum = texture2D(uTexture, vUv) * 0.29411764; sum += texture2D(uTexture, vL) * 0.35294117; sum += texture2D(uTexture, vR) * 0.35294117; gl_FragColor = sum; }`,
+            copy: `precision mediump float; precision mediump sampler2D; varying vec2 vUv; uniform sampler2D uTexture; void main () { gl_FragColor = texture2D(uTexture, vUv); }`,
+            clear: `precision mediump float; precision mediump sampler2D; varying vec2 vUv; uniform sampler2D uTexture; uniform float value; void main () { gl_FragColor = value * texture2D(uTexture, vUv); }`,
+            splat: `precision highp float; precision highp sampler2D; varying vec2 vUv; uniform sampler2D uTarget; uniform float aspectRatio; uniform vec3 color; uniform vec2 point; uniform float radius; void main () { vec2 p = vUv - point.xy; p.x *= aspectRatio; vec3 splat = exp(-dot(p, p) / radius) * color; vec3 base = texture2D(uTarget, vUv).xyz; gl_FragColor = vec4(base + splat, 1.0); }`,
+            advection: `precision highp float; precision highp sampler2D; varying vec2 vUv; uniform sampler2D uVelocity; uniform sampler2D uSource; uniform vec2 texelSize; uniform vec2 dyeTexelSize; uniform float dt; uniform float dissipation; void main () { vec2 coord = vUv - dt * texture2D(uVelocity, vUv).xy * texelSize; vec4 result = dissipation * texture2D(uSource, coord); float decay = dissipation; gl_FragColor = vec4(result.rgb * decay, result.a); }`,
+            divergence: `precision mediump float; precision mediump sampler2D; varying vec2 vUv; varying vec2 vL; varying vec2 vR; varying vec2 vT; varying vec2 vB; uniform sampler2D uVelocity; void main () { float L = texture2D(uVelocity, vL).x; float R = texture2D(uVelocity, vR).x; float T = texture2D(uVelocity, vT).y; float B = texture2D(uVelocity, vB).y; vec2 C = texture2D(uVelocity, vUv).xy; if (vL.x < 0.0) { L = -C.x; } if (vR.x > 1.0) { R = -C.x; } if (vT.y > 1.0) { T = -C.y; } if (vB.y < 0.0) { B = -C.y; } float div = 0.5 * (R - L + T - B); gl_FragColor = vec4(div, 0.0, 0.0, 1.0); }`,
+            curl: `precision mediump float; precision mediump sampler2D; varying vec2 vUv; varying vec2 vL; varying vec2 vR; varying vec2 vT; varying vec2 vB; uniform sampler2D uVelocity; void main () { float L = texture2D(uVelocity, vL).y; float R = texture2D(uVelocity, vR).y; float T = texture2D(uVelocity, vT).x; float B = texture2D(uVelocity, vB).x; float vorticity = R - L - T + B; gl_FragColor = vec4(0.5 * vorticity, 0.0, 0.0, 1.0); }`,
+            vorticity: `precision highp float; precision highp sampler2D; varying vec2 vUv; varying vec2 vL; varying vec2 vR; varying vec2 vT; varying vec2 vB; uniform sampler2D uVelocity; uniform sampler2D uCurl; uniform float curl; uniform float dt; void main () { float L = texture2D(uCurl, vL).x; float R = texture2D(uCurl, vR).x; float T = texture2D(uCurl, vT).x; float B = texture2D(uCurl, vB).x; float C = texture2D(uCurl, vUv).x; vec2 force = 0.5 * vec2(abs(T) - abs(B), abs(R) - abs(L)); force /= length(force) + 0.0001; force *= curl * C; force.y *= -1.0; vec2 velocity = texture2D(uVelocity, vUv).xy; velocity += force * dt; gl_FragColor = vec4(velocity, 0.0, 1.0); }`,
+            pressure: `precision mediump float; precision mediump sampler2D; varying vec2 vUv; varying vec2 vL; varying vec2 vR; varying vec2 vT; varying vec2 vB; uniform sampler2D uPressure; uniform sampler2D uDivergence; void main () { float L = texture2D(uPressure, vL).x; float R = texture2D(uPressure, vR).x; float T = texture2D(uPressure, vT).x; float B = texture2D(uPressure, vB).x; float divergence = texture2D(uDivergence, vUv).x; float pressure = (L + R + B + T - divergence) * 0.25; gl_FragColor = vec4(pressure, 0.0, 0.0, 1.0); }`,
+            gradientSubtract: `precision mediump float; precision mediump sampler2D; varying vec2 vUv; varying vec2 vL; varying vec2 vR; varying vec2 vT; varying vec2 vB; uniform sampler2D uPressure; uniform sampler2D uVelocity; void main () { float L = texture2D(uPressure, vL).x; float R = texture2D(uPressure, vR).x; float T = texture2D(uPressure, vT).x; float B = texture2D(uPressure, vB).x; vec2 velocity = texture2D(uVelocity, vUv).xy; velocity.xy -= vec2(R - L, T - B); gl_FragColor = vec4(velocity, 0.0, 1.0); }`,
+            bloomPrefilter: `precision mediump float; precision mediump sampler2D; varying vec2 vUv; uniform sampler2D uTexture; uniform vec3 curve; uniform float threshold; void main () { vec3 c = texture2D(uTexture, vUv).rgb; float br = max(c.r, max(c.g, c.b)); float rq = clamp(br - curve.x, 0.0, curve.y); rq = curve.z * rq * rq; c *= max(rq, br - threshold) / max(br, 0.0001); gl_FragColor = vec4(c, 0.0); }`,
+            bloomFinal: `precision mediump float; precision mediump sampler2D; varying vec2 vUv; uniform sampler2D uTexture; uniform sampler2D uBloom; uniform float bloomIntensity; void main () { vec3 c = texture2D(uTexture, vUv).rgb; vec3 bloom = texture2D(uBloom, vUv).rgb; c += bloom * bloomIntensity; c = c / (c + vec3(1.0)); c = pow(c, vec3(1.0 / 2.2)); gl_FragColor = vec4(c, 1.0); }`,
+            display: `precision highp float; precision highp sampler2D; varying vec2 vUv; uniform sampler2D uTexture; void main () { vec3 c = texture2D(uTexture, vUv).rgb; c = c / (c + vec3(1.0)); c = pow(c, vec3(1.0 / 2.2)); gl_FragColor = vec4(c, 1.0); }`
+        };
+
+        // --- WEBGL HELPERS ---
+        function createProgram(gl, vsSource, fsSource) {
+            const vs = gl.createShader(gl.VERTEX_SHADER);
+            gl.shaderSource(vs, vsSource);
+            gl.compileShader(vs);
+            const fs = gl.createShader(gl.FRAGMENT_SHADER);
+            gl.shaderSource(fs, fsSource);
+            gl.compileShader(fs);
+            const p = gl.createProgram();
+            gl.attachShader(p, vs);
+            gl.attachShader(p, fs);
+            gl.linkProgram(p);
+            return { program: p, uniforms: getUniforms(gl, p) };
+        }
+
+        function getUniforms(gl, program) {
+            let uniforms = {};
+            let count = gl.getProgramParameter(program, gl.ACTIVE_UNIFORMS);
+            for (let i = 0; i < count; i++) {
+                let name = gl.getActiveUniform(program, i).name;
+                uniforms[name] = gl.getUniformLocation(program, name);
+            }
+            return uniforms;
+        }
+
+        function createFBO(gl, w, h, type, param) {
+            gl.activeTexture(gl.TEXTURE0);
+            const texture = gl.createTexture();
+            gl.bindTexture(gl.TEXTURE_2D, texture);
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, param);
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, param);
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+            gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA16F, w, h, 0, gl.RGBA, gl.HALF_FLOAT, null);
+
+            const fbo = gl.createFramebuffer();
+            gl.bindFramebuffer(gl.FRAMEBUFFER, fbo);
+            gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, texture, 0);
+            gl.viewport(0, 0, w, h);
+            gl.clear(gl.COLOR_BUFFER_BIT);
+
+            return {
+                texture, fbo, width: w, height: h,
+                attach: (id) => { gl.activeTexture(gl.TEXTURE0 + id); gl.bindTexture(gl.TEXTURE_2D, texture); return id; }
+            };
+        }
+
+        function createDoubleFBO(gl, w, h, type, param) {
+            let fbo1 = createFBO(gl, w, h, type, param);
+            let fbo2 = createFBO(gl, w, h, type, param);
+            return {
+                read: fbo1, write: fbo2, width: w, height: h,
+                swap: () => { let temp = fbo1; fbo1 = fbo2; fbo2 = temp; }
+            };
+        }
+
+        // --- FLUID SIMULATION CLASS ---
+        class FluidEngine {
+            constructor(canvas) {
+                this.canvas = canvas;
+                this.gl = canvas.getContext('webgl2', { alpha: true, depth: false, antialias: false });
+
+                if (!this.gl) throw new Error("WebGL 2 not supported");
+                this.gl.getExtension('EXT_color_buffer_float');
+                this.gl.getExtension('OES_texture_float_linear');
+
+                this.programs = {};
+                this.fbo = {};
+                this.pointers = [];
+                this.splatStack = [];
+
+                this.initPrograms();
+                this.resize(); // Init FBOs
+
+                // Interaction
+                window.addEventListener('resize', () => this.resize());
+                this.canvas.addEventListener('mousedown', e => {
+                    this.pointers.push({ id: -1, x: e.clientX, y: e.clientY, dx: 0, dy: 0, down: true, color: this.generateColor() });
+                });
+                this.canvas.addEventListener('mousemove', e => {
+                    if (this.pointers.length > 0 && this.pointers[0].down) {
+                        const p = this.pointers[0];
+                        p.dx = (e.clientX - p.x) * 5;
+                        p.dy = (e.clientY - p.y) * 5;
+                        p.x = e.clientX; p.y = e.clientY;
+                    }
+                });
+                this.canvas.addEventListener('mouseup', () => { this.pointers = []; });
+
+                this.lastTime = Date.now();
+                this.update();
+            }
+
+            initPrograms() {
+                const gl = this.gl;
+                this.programs = {
+                    copy: createProgram(gl, SHADERS.vertex, SHADERS.copy),
+                    clear: createProgram(gl, SHADERS.vertex, SHADERS.clear),
+                    splat: createProgram(gl, SHADERS.vertex, SHADERS.splat),
+                    advection: createProgram(gl, SHADERS.vertex, SHADERS.advection),
+                    divergence: createProgram(gl, SHADERS.vertex, SHADERS.divergence),
+                    curl: createProgram(gl, SHADERS.vertex, SHADERS.curl),
+                    vorticity: createProgram(gl, SHADERS.vertex, SHADERS.vorticity),
+                    pressure: createProgram(gl, SHADERS.vertex, SHADERS.pressure),
+                    gradSubtract: createProgram(gl, SHADERS.vertex, SHADERS.gradientSubtract),
+                    bloomPrefilter: createProgram(gl, SHADERS.vertex, SHADERS.bloomPrefilter),
+                    bloomFinal: createProgram(gl, SHADERS.vertex, SHADERS.bloomFinal),
+                    blur: createProgram(gl, SHADERS.blurVertex, SHADERS.blur),
+                    display: createProgram(gl, SHADERS.vertex, SHADERS.display)
+                };
+
+                // Quad
+                gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer());
+                gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, -1, 1, 1, 1, 1, -1]), gl.STATIC_DRAW);
+                gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 0, 0);
+                gl.enableVertexAttribArray(0);
+            }
+
+            resize() {
+                this.canvas.width = window.innerWidth;
+                this.canvas.height = window.innerHeight;
+                const gl = this.gl;
+
+                const simRes = this.getResolution(CONFIG.SIM_RESOLUTION);
+                const dyeRes = this.getResolution(CONFIG.DYE_RESOLUTION);
+
+                const texType = gl.HALF_FLOAT;
+                const filtering = gl.LINEAR;
+
+                this.fbo.velocity = createDoubleFBO(gl, simRes.width, simRes.height, texType, filtering);
+                this.fbo.dye = createDoubleFBO(gl, dyeRes.width, dyeRes.height, texType, filtering);
+                this.fbo.divergence = createFBO(gl, simRes.width, simRes.height, texType, gl.NEAREST);
+                this.fbo.curl = createFBO(gl, simRes.width, simRes.height, texType, gl.NEAREST);
+                this.fbo.pressure = createDoubleFBO(gl, simRes.width, simRes.height, texType, gl.NEAREST);
+
+                this.fbo.bloom = [];
+                let bw = this.getResolution(CONFIG.BLOOM_RESOLUTION);
+                for (let i = 0; i < CONFIG.BLOOM_ITERATIONS; i++) {
+                    let w = bw.width >> i; let h = bw.height >> i;
+                    if (w < 2 || h < 2) break;
+                    this.fbo.bloom.push(createFBO(gl, w, h, texType, filtering));
+                }
+            }
+
+            getResolution(res) {
+                let ar = this.canvas.width / this.canvas.height;
+                if (ar < 1) ar = 1 / ar;
+                const min = res;
+                const max = res * ar;
+                return this.canvas.width > this.canvas.height ? { width: max, height: min } : { width: min, height: max };
+            }
+
+            blit(target) {
+                const gl = this.gl;
+                gl.bindFramebuffer(gl.FRAMEBUFFER, target ? target.fbo : null);
+                gl.viewport(0, 0, target ? target.width : this.canvas.width, target ? target.height : this.canvas.height);
+                gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+            }
+
+            splat(x, y, dx, dy, color) {
+                const gl = this.gl;
+                const p = this.programs.splat;
+                gl.useProgram(p.program);
+                gl.uniform1i(p.uniforms.uTarget, this.fbo.velocity.read.attach(0));
+                gl.uniform1f(p.uniforms.aspectRatio, this.canvas.width / this.canvas.height);
+                gl.uniform2f(p.uniforms.point, x / this.canvas.width, 1.0 - y / this.canvas.height);
+                gl.uniform3f(p.uniforms.color, dx, -dy, 0.0);
+                gl.uniform1f(p.uniforms.radius, CONFIG.SPLAT_RADIUS / 100.0);
+                this.blit(this.fbo.velocity.write);
+                this.fbo.velocity.swap();
+
+                gl.uniform1i(p.uniforms.uTarget, this.fbo.dye.read.attach(0));
+                gl.uniform3f(p.uniforms.color, color.r, color.g, color.b);
+                this.blit(this.fbo.dye.write);
+                this.fbo.dye.swap();
+            }
+
+            // --- THE EXPLOSION MECHANIC ---
+            triggerExplosion(intensity = 1.0) {
+                const cx = this.canvas.width / 2;
+                const cy = this.canvas.height / 2;
+                const count = Math.floor(8 + Math.random() * 8); // 8-16 tendrils
+
+                for (let i = 0; i < count; i++) {
+                    const angle = (Math.PI * 2 / count) * i + (Math.random() * 0.5);
+                    const dist = Math.random() * 100; // Radius spread
+                    const x = cx + Math.cos(angle) * dist;
+                    const y = cy + Math.sin(angle) * dist;
+
+                    const dx = Math.cos(angle) * CONFIG.SPLAT_FORCE * intensity * (0.8 + Math.random());
+                    const dy = Math.sin(angle) * CONFIG.SPLAT_FORCE * intensity * (0.8 + Math.random());
+
+                    this.splat(x, y, dx, dy, this.generateColor());
+                }
+            }
+
+            generateColor() {
+                // Vibrant "Pixelstortion" Palette
+                const r = Math.random();
+                if (r > 0.6) return { r: 0, g: 1, b: 0.2 }; // Neon Green
+                if (r > 0.3) return { r: 1, g: 0.2, b: 0.1 }; // Fire Orange
+                return { r: 0.1, g: 0.5, b: 1 }; // Electric Blue
+            }
+
+            update() {
+                const dt = Math.min((Date.now() - this.lastTime) / 1000, 0.016);
+                this.lastTime = Date.now();
+                const gl = this.gl;
+
+                // Input Interaction
+                this.pointers.forEach(p => {
+                    if (p.down) this.splat(p.x, p.y, p.dx, p.dy, p.color);
+                });
+
+                // Process Splat Stack (from Audio)
+                this.splatStack.forEach(s => this.splat(s.x, s.y, s.dx, s.dy, s.color));
+                this.splatStack = [];
+
+                // --- PHYSICS PIPELINE ---
+                const vel = this.fbo.velocity;
+                const dye = this.fbo.dye;
+
+                // Curl -> Vorticity
+                gl.useProgram(this.programs.curl.program);
+                gl.uniform2f(this.programs.curl.uniforms.texelSize, 1.0 / vel.width, 1.0 / vel.height);
+                gl.uniform1i(this.programs.curl.uniforms.uVelocity, vel.read.attach(0));
+                this.blit(this.fbo.curl);
+
+                gl.useProgram(this.programs.vorticity.program);
+                gl.uniform2f(this.programs.vorticity.uniforms.texelSize, 1.0 / vel.width, 1.0 / vel.height);
+                gl.uniform1i(this.programs.vorticity.uniforms.uVelocity, vel.read.attach(0));
+                gl.uniform1i(this.programs.vorticity.uniforms.uCurl, this.fbo.curl.attach(1));
+                gl.uniform1f(this.programs.vorticity.uniforms.curl, CONFIG.CURL);
+                gl.uniform1f(this.programs.vorticity.uniforms.dt, dt);
+                this.blit(vel.write); vel.swap();
+
+                // Divergence
+                gl.useProgram(this.programs.divergence.program);
+                gl.uniform2f(this.programs.divergence.uniforms.texelSize, 1.0 / vel.width, 1.0 / vel.height);
+                gl.uniform1i(this.programs.divergence.uniforms.uVelocity, vel.read.attach(0));
+                this.blit(this.fbo.divergence);
+
+                // Pressure
+                gl.useProgram(this.programs.clear.program);
+                gl.uniform1i(this.programs.clear.uniforms.uTexture, this.fbo.pressure.read.attach(0));
+                gl.uniform1f(this.programs.clear.uniforms.value, CONFIG.PRESSURE);
+                this.blit(this.fbo.pressure.write); this.fbo.pressure.swap();
+
+                gl.useProgram(this.programs.pressure.program);
+                gl.uniform2f(this.programs.pressure.uniforms.texelSize, 1.0 / vel.width, 1.0 / vel.height);
+                gl.uniform1i(this.programs.pressure.uniforms.uDivergence, this.fbo.divergence.attach(0));
+                for (let i = 0; i < CONFIG.PRESSURE_ITERATIONS; i++) {
+                    gl.uniform1i(this.programs.pressure.uniforms.uPressure, this.fbo.pressure.read.attach(1));
+                    this.blit(this.fbo.pressure.write); this.fbo.pressure.swap();
+                }
+
+                // Gradient Subtract
+                gl.useProgram(this.programs.gradSubtract.program);
+                gl.uniform2f(this.programs.gradSubtract.uniforms.texelSize, 1.0 / vel.width, 1.0 / vel.height);
+                gl.uniform1i(this.programs.gradSubtract.uniforms.uPressure, this.fbo.pressure.read.attach(0));
+                gl.uniform1i(this.programs.gradSubtract.uniforms.uVelocity, vel.read.attach(1));
+                this.blit(vel.write); vel.swap();
+
+                // Advection
+                gl.useProgram(this.programs.advection.program);
+                gl.uniform2f(this.programs.advection.uniforms.texelSize, 1.0 / vel.width, 1.0 / vel.height);
+                gl.uniform1f(this.programs.advection.uniforms.dt, dt);
+                gl.uniform2f(this.programs.advection.uniforms.dyeTexelSize, 1.0 / vel.width, 1.0 / vel.height);
+
+                gl.uniform1i(this.programs.advection.uniforms.uVelocity, vel.read.attach(0));
+                gl.uniform1i(this.programs.advection.uniforms.uSource, vel.read.attach(0));
+                gl.uniform1f(this.programs.advection.uniforms.dissipation, CONFIG.VELOCITY_DISSIPATION);
+                this.blit(vel.write); vel.swap();
+
+                gl.uniform2f(this.programs.advection.uniforms.dyeTexelSize, 1.0 / dye.width, 1.0 / dye.height);
+                gl.uniform1i(this.programs.advection.uniforms.uVelocity, vel.read.attach(0));
+                gl.uniform1i(this.programs.advection.uniforms.uSource, dye.read.attach(1));
+                gl.uniform1f(this.programs.advection.uniforms.dissipation, CONFIG.DENSITY_DISSIPATION);
+                this.blit(dye.write); dye.swap();
+
+                // --- RENDER ---
+                if (CONFIG.BLOOM) {
+                    // Bloom Prefilter
+                    gl.useProgram(this.programs.bloomPrefilter.program);
+                    gl.uniform1i(this.programs.bloomPrefilter.uniforms.uTexture, dye.read.attach(0));
+                    gl.uniform3f(this.programs.bloomPrefilter.uniforms.curve, CONFIG.BLOOM_THRESHOLD - 0.5, 1.0, 0.5); // Simplified curve
+                    gl.uniform1f(this.programs.bloomPrefilter.uniforms.threshold, CONFIG.BLOOM_THRESHOLD);
+                    this.blit(this.fbo.bloom[0]);
+
+                    // Downsample
+                    gl.useProgram(this.programs.blur.program);
+                    for (let i = 1; i < this.fbo.bloom.length; i++) {
+                        let prev = this.fbo.bloom[i - 1];
+                        gl.uniform2f(this.programs.blur.uniforms.texelSize, 1.0 / prev.width, 1.0 / prev.height);
+                        gl.uniform1i(this.programs.blur.uniforms.uTexture, prev.attach(0));
+                        this.blit(this.fbo.bloom[i]);
+                    }
+
+                    // Upsample
+                    gl.blendFunc(gl.ONE, gl.ONE);
+                    gl.enable(gl.BLEND);
+                    for (let i = this.fbo.bloom.length - 2; i >= 0; i--) {
+                        let next = this.fbo.bloom[i + 1];
+                        gl.uniform2f(this.programs.blur.uniforms.texelSize, 1.0 / next.width, 1.0 / next.height);
+                        gl.uniform1i(this.programs.blur.uniforms.uTexture, next.attach(0));
+                        this.blit(this.fbo.bloom[i]);
+                    }
+                    gl.disable(gl.BLEND);
+
+                    // Final Mix
+                    gl.useProgram(this.programs.bloomFinal.program);
+                    gl.uniform1i(this.programs.bloomFinal.uniforms.uTexture, dye.read.attach(0));
+                    gl.uniform1i(this.programs.bloomFinal.uniforms.uBloom, this.fbo.bloom[0].attach(1));
+                    gl.uniform1f(this.programs.bloomFinal.uniforms.bloomIntensity, CONFIG.BLOOM_INTENSITY);
+                    this.blit(null);
+
+                } else {
+                    gl.useProgram(this.programs.display.program);
+                    gl.uniform1i(this.programs.display.uniforms.uTexture, dye.read.attach(0));
+                    this.blit(null);
+                }
+
+                requestAnimationFrame(() => this.update());
+            }
+        }
+    </script>
+
+    <!-- 
+        === LOGIC: JUKEBOX + CHAOS ENGINE === 
+        Handles Audio state and simulates explosive beats
+    -->
+    <script>
+        const TRACKS = [
+            { id: 1, title: "My Story", artist: "Ethel", videoId: "dLUClmr_Pf4" },
+            { id: 2, title: "The Drop Pt.1", artist: "Ethel", videoId: "zHWwhom80go" },
+            { id: 3, title: "The Drop Pt.2", artist: "Ethel", videoId: "K0ILO8MwX4Y" },
+            { id: 4, title: "Structural Psychopathy", artist: "Dominic", videoId: "8rvIVBLZg2o" },
+            { id: 5, title: "Polished Vomit", artist: "Isla", videoId: "2hSYNLs7w3w" },
+            { id: 6, title: "Ride", artist: "Ethel", videoId: "0sgcZRtPO6s" },
+            { id: 7, title: "Grief", artist: "Ethel", videoId: "PMy76HBgpL8" },
+            { id: 8, title: "Gotta Move", artist: "Ethel", videoId: "06qE_-OeIT0" },
+            { id: 9, title: "Won't Break Where Others End", artist: "Ethel", videoId: "fJNMlT7UeW0" },
+            { id: 10, title: "Peek-A-Boo", artist: "Isla", videoId: "K9lQ0IYiMoM" },
+            { id: 11, title: "I Built A Box", artist: "Ethel", videoId: "0F_prk5dGC4" },
+            { id: 12, title: "Same Breath", artist: "Dominic", videoId: "Ugy7KVuhwpE" },
+            { id: 13, title: "Burning Dominic's Bridge", artist: "Isla", videoId: "lwd7KOScg0k" },
+            { id: 14, title: "For You", artist: "Ethel", videoId: "f8o7zb3F-Xk" },
+            { id: 15, title: "Broken Edge", artist: "Isla", videoId: "_gvv_W5_x10" },
+            { id: 16, title: "Hero / Killer", artist: "Ethel", videoId: "YkQOXPzYkkU" },
+            { id: 17, title: "Hero Complex", artist: "Dominic", videoId: "7gc3DigBW1Y" },
+            { id: 18, title: "Nothing True", artist: "Ethel", videoId: "Bff42Vyv8HM" },
+            { id: 19, title: "You Will Thank Me Later", artist: "Dominic", videoId: "n6OgobffCzo" },
+            { id: 20, title: "This Isn't Therapy", artist: "Isla", videoId: "0tzOaukuBns" },
+            { id: 21, title: "Intro to Shiny Headed Radio Man", artist: "Isla", videoId: "dK8mqLNRZ2Q" },
+            { id: 22, title: "Shiny Headed Radio Man", artist: "Isla", videoId: "UFZeKCcSMoE" },
+            { id: 23, title: "Stanmore Farewell", artist: "Isla", videoId: "-3m2_zUNBlo" },
+            { id: 24, title: "Harm's Ghost", artist: "Ethel", videoId: "zh6HEd4lztU" },
+            { id: 25, title: "No Sparrow Caught Mid Flight", artist: "Ethel", videoId: "t6vLU0uqIfc" },
+            { id: 26, title: "Prison Escape", artist: "Dominic", videoId: "6eZwBGXGSO4" },
+            { id: 27, title: "Guilt Money", artist: "Kinley", videoId: "uovMKnwE34M" },
+            { id: 28, title: "Ants on the Vine", artist: "Ethel", videoId: "e2wt2VSi9xA" },
+            { id: 29, title: "Clipboard Man", artist: "Ethel", videoId: "ZAhqNWTHTGU" },
+            { id: 30, title: "Rattled", artist: "Ethel", videoId: "qQ1l6JAjE8M" },
+            { id: 31, title: "Red Stick", artist: "Ethel", videoId: "iTOKsLS3jhM" },
+            { id: 32, title: "Can You Make A Mistake On Purpose?", artist: "Ethel", videoId: "s9Z8dgRk-Q8" },
+            { id: 33, title: "Intro to Normal?!", artist: "Ethel", videoId: "V0hvxqMWcnE" },
+            { id: 34, title: "Normal?!", artist: "Ethel", videoId: "OxHZnnRhtbk" },
+            { id: 35, title: "Normal?! (Special Version)", artist: "Ethel", videoId: "ht9PIloHD0Q" },
+            { id: 36, title: "Memory Under Water", artist: "Isla", videoId: "nk4Re7OjTTM" },
+            { id: 37, title: "The Porcelain Lie", artist: "Isla", videoId: "fNVKsxe_EcM" },
+            { id: 38, title: "Raise The Fourth", artist: "Isla", videoId: "ey20cJsY82M" },
+            { id: 39, title: "What You Don't See", artist: "Isla", videoId: "Y4VC6mh37NI" },
+            { id: 40, title: "What You Don't See (Symphony)", artist: "Isla", videoId: "hm2kp7LOhsg" },
+            { id: 41, title: "Raise The Fourth (With Symphony)", artist: "Isla", videoId: "ZBLMDbwcy4g" },
+            { id: 42, title: "Give It Back", artist: "Isla", videoId: "Aw2ZAkxp6b0" },
+            { id: 43, title: "Don't Wake Him Yet", artist: "Isla", videoId: "NwqHLFYR1mA" },
+            { id: 44, title: "Melody of Normality", artist: "Isla", videoId: "a4TpIhna55k" },
+            { id: 45, title: "What This Was Always For", artist: "Isla", videoId: "X9EUb1_QC9c" }
+        ];
+
+        /* --- AUDIO REACTOR ---
+           Captures microphone input to analyze real audio from speakers.
+           Splits frequency data into bass/mid/treble bands to drive fluid.
+        */
+        class AudioReactor {
+            constructor(fluidEngine) {
+                this.fluid = fluidEngine;
+                this.active = false;
+                this.audioCtx = null;
+                this.analyser = null;
+                this.dataArray = null;
+                this.stream = null;
+                this.frameId = null;
+                this.micAvailable = false;
+            }
+
+            async init() {
+                try {
+                    this.stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
+                    this.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                    const source = this.audioCtx.createMediaStreamSource(this.stream);
+                    this.analyser = this.audioCtx.createAnalyser();
+                    this.analyser.fftSize = 512;
+                    this.analyser.smoothingTimeConstant = 0.8;
+                    source.connect(this.analyser);
+                    this.dataArray = new Uint8Array(this.analyser.frequencyBinCount);
+                    this.micAvailable = true;
+                    this.updateMicStatus('MIC: ACTIVE', '#00ff41');
+                    console.log('[AudioReactor] Mic capture active');
+                    return true;
+                } catch (err) {
+                    console.warn('[AudioReactor] Mic denied:', err.message);
+                    this.micAvailable = false;
+                    this.updateMicStatus('MIC: DENIED — SIMULATED MODE', 'orange');
+                    return false;
+                }
+            }
+
+            updateMicStatus(text, color) {
+                const el = document.getElementById('mic-status');
+                if (el) { el.innerText = text; el.style.color = color; }
+            }
+
+            getEnergy() {
+                if (!this.analyser || !this.dataArray) return { bass: 0, mid: 0, treble: 0, overall: 0 };
+                this.analyser.getByteFrequencyData(this.dataArray);
+                const bins = this.dataArray.length; // 256
+                // Bass: bins 1-10 (~86Hz-860Hz at 44100/512)
+                // Mids: bins 10-80
+                // Treble: bins 80-200
+                let bass = 0, mid = 0, treble = 0;
+                for (let i = 1; i < 10; i++) bass += this.dataArray[i];
+                for (let i = 10; i < 80; i++) mid += this.dataArray[i];
+                for (let i = 80; i < 200; i++) treble += this.dataArray[i];
+                bass = bass / (9 * 255);
+                mid = mid / (70 * 255);
+                treble = treble / (120 * 255);
+                const overall = (bass * 0.5 + mid * 0.35 + treble * 0.15);
+                return { bass, mid, treble, overall };
+            }
+
+            start() {
+                this.active = true;
+                this.loop();
+            }
+
+            stop() {
+                this.active = false;
+                if (this.frameId) cancelAnimationFrame(this.frameId);
+            }
+
+            loop() {
+                if (!this.active) return;
+                const e = this.getEnergy();
+
+                // Bass → big explosions
+                if (e.bass > 0.35 && Math.random() < e.bass) {
+                    this.fluid.triggerExplosion(e.bass * 2.0);
+                    this.pulseUI();
+                } else if (e.bass > 0.15 && Math.random() < 0.3) {
+                    this.fluid.triggerExplosion(e.bass * 0.8);
+                }
+
+                // Mids → directional splats
+                if (e.mid > 0.12 && Math.random() < e.mid * 0.6) {
+                    const cx = window.innerWidth * (0.2 + Math.random() * 0.6);
+                    const cy = window.innerHeight * (0.2 + Math.random() * 0.6);
+                    const angle = Math.random() * Math.PI * 2;
+                    const force = e.mid * CONFIG.SPLAT_FORCE * 0.6;
+                    this.fluid.splat(cx, cy, Math.cos(angle) * force, Math.sin(angle) * force, this.fluid.generateColor());
+                }
+
+                // Treble → small sparkles
+                if (e.treble > 0.1 && Math.random() < e.treble) {
+                    const x = Math.random() * window.innerWidth;
+                    const y = Math.random() * window.innerHeight;
+                    const c = { r: 0.8 + Math.random() * 0.2, g: 0.9 + Math.random() * 0.1, b: 1.0 };
+                    this.fluid.splat(x, y, (Math.random() - 0.5) * 2000, (Math.random() - 0.5) * 2000, c);
+                }
+
+                this.frameId = requestAnimationFrame(() => this.loop());
+            }
+
+            pulseUI() {
+                const title = document.getElementById('track-title');
+                title.style.transform = "scale(1.05)";
+                title.style.textShadow = "0 0 20px var(--neon-green)";
+                setTimeout(() => {
+                    title.style.transform = "scale(1)";
+                    title.style.textShadow = "2px 2px 0px rgba(0,0,0,0.5)";
+                }, 100);
+            }
+
+            destroy() {
+                this.stop();
+                if (this.stream) this.stream.getTracks().forEach(t => t.stop());
+                if (this.audioCtx) this.audioCtx.close();
+            }
+        }
+
+        /* --- CHAOS OSCILLATOR (Fallback) ---
+           Used when microphone is denied. Simulates beat energy.
+        */
+        class ChaosOscillator {
+            constructor(fluidEngine) {
+                this.fluid = fluidEngine;
+                this.active = false;
+                this.bpm = 120;
+                this.startTime = 0;
+                this.frameId = null;
+            }
+
+            engage(bpm = 120) {
+                this.bpm = bpm;
+                this.active = true;
+                this.startTime = Date.now();
+                this.loop();
+            }
+
+            stop() {
+                this.active = false;
+                cancelAnimationFrame(this.frameId);
+            }
+
+            loop() {
+                if (!this.active) return;
+                const now = (Date.now() - this.startTime) / 1000;
+                const beatDuration = 60 / this.bpm;
+
+                const kick = Math.pow(Math.abs(Math.sin(now * Math.PI / beatDuration)), 10.0);
+                const wobble = Math.sin(now * 3.0);
+
+                if (kick > 0.95 && Math.random() > 0.7) {
+                    this.fluid.triggerExplosion(1.0);
+                    this.pulseUI();
+                } else if (kick > 0.8 && Math.random() > 0.5) {
+                    this.fluid.triggerExplosion(0.4);
+                }
+
+                if (Math.random() > 0.95) {
+                    const cx = window.innerWidth / 2 + wobble * 200;
+                    const cy = window.innerHeight / 2 + Math.cos(now) * 200;
+                    this.fluid.splat(cx, cy, wobble * 500, Math.cos(now) * 500, this.fluid.generateColor());
+                }
+
+                this.frameId = requestAnimationFrame(() => this.loop());
+            }
+
+            pulseUI() {
+                const title = document.getElementById('track-title');
+                title.style.transform = "scale(1.05)";
+                title.style.textShadow = "0 0 20px var(--neon-green)";
+                setTimeout(() => {
+                    title.style.transform = "scale(1)";
+                    title.style.textShadow = "2px 2px 0px rgba(0,0,0,0.5)";
+                }, 100);
+            }
+        }
+
+        /* --- JUKEBOX CONTROLLER --- */
+        const Jukebox = {
+            player: null,
+            currentIdx: -1,
+            state: 'STOPPED',
+            reactor: null,     // AudioReactor (mic-based)
+            oscillator: null,  // ChaosOscillator (fallback)
+            useMic: false,
+
+            init(fluid, useMic) {
+                this.useMic = useMic;
+                if (useMic) {
+                    this.reactor = new AudioReactor(fluid);
+                } else {
+                    this.oscillator = new ChaosOscillator(fluid);
+                }
+            },
+
+            startVisuals() {
+                if (this.useMic && this.reactor) {
+                    this.reactor.start();
+                } else if (this.oscillator) {
+                    const randomBPM = 100 + Math.floor(Math.random() * 40);
+                    this.oscillator.engage(randomBPM);
+                }
+            },
+
+            stopVisuals() {
+                if (this.reactor) this.reactor.stop();
+                if (this.oscillator) this.oscillator.stop();
+            },
+
+            loadTrack(idx) {
+                this.currentIdx = idx;
+                const track = TRACKS[idx];
+
+                // Update UI
+                document.getElementById('track-title').innerText = track.title;
+                document.getElementById('track-artist').innerText = track.artist;
+                document.getElementById('time-curr').innerText = "0:00";
+
+                if (this.player) {
+                    this.player.loadVideoById(track.videoId);
+                    this.startVisuals();
+                    this.setStatus("PLAYING", "green");
+                }
+            },
+
+            toggle() {
+                if (!this.player) return;
+                const state = this.player.getPlayerState();
+                if (state === 1) { // Playing
+                    this.player.pauseVideo();
+                    this.stopVisuals();
+                    this.setStatus("PAUSED", "orange");
+                    document.getElementById('icon-play').innerText = "play_arrow";
+                } else {
+                    this.player.playVideo();
+                    this.startVisuals();
+                    this.setStatus("PLAYING", "green");
+                    document.getElementById('icon-play').innerText = "pause";
+                }
+            },
+
+            next() {
+                let nextIdx;
+                do { nextIdx = Math.floor(Math.random() * TRACKS.length); }
+                while (nextIdx === this.currentIdx);
+                this.loadTrack(nextIdx);
+            },
+
+            prev() { this.next(); }, // Random Access Memory logic
+
+            seek(e) {
+                if (!this.player) return;
+                const rect = e.currentTarget.getBoundingClientRect();
+                const pct = (e.clientX - rect.left) / rect.width;
+                const dur = this.player.getDuration();
+                this.player.seekTo(dur * pct, true);
+            },
+
+            updateProgress() {
+                if (this.player && this.player.getPlayerState() === 1) {
+                    const curr = this.player.getCurrentTime();
+                    const dur = this.player.getDuration();
+                    const pct = (curr / dur) * 100;
+                    document.getElementById('progress-bar').style.width = `${pct}%`;
+                    document.getElementById('time-curr').innerText = this.fmtTime(curr);
+                    document.getElementById('time-total').innerText = this.fmtTime(dur);
+                }
+            },
+
+            fmtTime(s) {
+                const m = Math.floor(s / 60);
+                const sec = Math.floor(s % 60);
+                return `${m}:${sec < 10 ? '0' : ''}${sec}`;
+            },
+
+            setStatus(text, color) {
+                const dot = document.getElementById('status-dot');
+                const txt = document.getElementById('status-text');
+                txt.innerText = text;
+                dot.className = `w-2 h-2 rounded-full bg-${color}-500 shadow-[0_0_10px_var(--${color === 'green' ? 'neon-green' : 'fire-orange'})]`;
+            }
+        };
+
+        /* --- SYSTEM INIT --- */
+        const System = {
+            fluid: null,
+
+            async engage() {
+                // Remove Start Screen
+                const curtain = document.getElementById('start-curtain');
+                curtain.style.opacity = '0';
+                setTimeout(() => curtain.remove(), 800);
+
+                // Start Fluid Engine
+                this.fluid = new FluidEngine(document.getElementById('fluid-canvas'));
+
+                // Try AudioReactor (mic capture), fall back to ChaosOscillator
+                const reactor = new AudioReactor(this.fluid);
+                const micOk = await reactor.init();
+
+                if (micOk) {
+                    Jukebox.init(this.fluid, true);
+                    Jukebox.reactor = reactor;
+                } else {
+                    Jukebox.init(this.fluid, false);
+                }
+
+                // Initial Explosion
+                setTimeout(() => this.fluid.triggerExplosion(1.5), 100);
+
+                // Start Music
+                Jukebox.next(); // Loads random track
+
+                // Progress Loop
+                setInterval(() => Jukebox.updateProgress(), 500);
+            },
+
+            onYoutubeReady() {
+                Jukebox.player = new YT.Player('player', {
+                    height: '100%',
+                    width: '100%',
+                    playerVars: { 'playsinline': 1, 'controls': 0 },
+                    events: {
+                        'onReady': () => {
+                            document.getElementById('loader').style.display = 'none';
+                            document.getElementById('btn-start').classList.add('visible');
+                        },
+                        'onStateChange': (e) => {
+                            if (e.data === YT.PlayerState.ENDED) Jukebox.next();
+                            if (e.data === YT.PlayerState.PLAYING) {
+                                document.getElementById('icon-play').innerText = "pause";
+                                Jukebox.setStatus("PLAYING", "green");
+                                Jukebox.startVisuals();
+                            }
+                            if (e.data === YT.PlayerState.PAUSED) {
+                                document.getElementById('icon-play').innerText = "play_arrow";
+                                Jukebox.setStatus("PAUSED", "orange");
+                                Jukebox.stopVisuals();
+                            }
+                        },
+                        'onError': (e) => {
+                            console.warn('YouTube Error:', e.data);
+                            Jukebox.setStatus("ERROR", "red");
+                            // Auto-skip to next track on error
+                            setTimeout(() => Jukebox.next(), 2000);
+                        }
+                    }
+                });
+            }
+        };
+
+        // YouTube API Callback
+        function onYouTubeIframeAPIReady() {
+            System.onYoutubeReady();
+        }
+
+        function toggleFullScreen() {
+            if (!document.fullscreenElement) document.documentElement.requestFullscreen();
+            else if (document.exitFullscreen) document.exitFullscreen();
+        }
+
+    </script>
+</body>
+
+</html>
