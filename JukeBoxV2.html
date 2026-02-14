@@ -489,13 +489,14 @@
                 gl.uniform2f(p.uniforms.point, x / this.canvas.width, 1.0 - y / this.canvas.height);
                 gl.uniform3f(p.uniforms.color, dx, -dy, 1.0);
                 gl.uniform1f(p.uniforms.radius, CONFIG.SPLAT_RADIUS / 100.0);
-                this.blit(this.fbo.velocity.write.fbo);
+                gl.uniform1f(p.uniforms.radius, CONFIG.SPLAT_RADIUS / 100.0);
+                this.blit(this.fbo.velocity.write.fbo, this.fbo.velocity.write.width, this.fbo.velocity.write.height);
                 this.fbo.velocity.swap();
 
                 // Dye
                 gl.uniform1i(p.uniforms.uTarget, this.fbo.dye.read.attach(0));
                 gl.uniform3f(p.uniforms.color, color.r, color.g, color.b);
-                this.blit(this.fbo.dye.write.fbo);
+                this.blit(this.fbo.dye.write.fbo, this.fbo.dye.write.width, this.fbo.dye.write.height);
                 this.fbo.dye.swap();
             }
 
@@ -514,14 +515,11 @@
                 }
             }
 
-            blit(target) {
+            blit(target, width, height) {
                 this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, target);
                 if (target) {
-                    // Rendering to an FBO — use its dimensions
-                    const info = this._currentBlitTarget || this.fbo.velocity.read;
-                    this.gl.viewport(0, 0, info.width, info.height);
+                    this.gl.viewport(0, 0, width, height);
                 } else {
-                    // Rendering to screen — use canvas dimensions
                     this.gl.viewport(0, 0, this.canvas.width, this.canvas.height);
                 }
                 this.gl.drawArrays(this.gl.TRIANGLE_STRIP, 0, 4);
@@ -549,8 +547,9 @@
                     inputs.forEach((tex, i) => gl.uniform1i(prog.uniforms[tex.name], tex.fbo.attach(i)));
                     if (prog.uniforms.texelSize) gl.uniform2f(prog.uniforms.texelSize, 1.0 / fbo.width, 1.0 / fbo.height);
                     if (prog.uniforms.dt) gl.uniform1f(prog.uniforms.dt, dt);
+                    if (prog.uniforms.dt) gl.uniform1f(prog.uniforms.dt, dt);
                     if (prog.uniforms.dissipation) gl.uniform1f(prog.uniforms.dissipation, CONFIG.DENSITY_DISSIPATION);
-                    this.blit(fbo.fbo);
+                    this.blit(fbo.fbo, fbo.width, fbo.height);
                 };
 
                 // Curl
@@ -569,8 +568,9 @@
                 gl.useProgram(this.programs.pressure.program);
                 for (let i = 0; i < CONFIG.PRESSURE_ITERATIONS; i++) {
                     gl.uniform1i(this.programs.pressure.uniforms.uDivergence, this.fbo.divergence.attach(1));
+                    gl.uniform1i(this.programs.pressure.uniforms.uDivergence, this.fbo.divergence.attach(1));
                     gl.uniform1i(this.programs.pressure.uniforms.uPressure, this.fbo.pressure.read.attach(0));
-                    this.blit(this.fbo.pressure.write.fbo);
+                    this.blit(this.fbo.pressure.write.fbo, this.fbo.pressure.write.width, this.fbo.pressure.write.height);
                     this.fbo.pressure.swap();
                 }
 
@@ -814,6 +814,21 @@
                 const secs = Math.floor(s % 60);
                 return `${m}:${secs < 10 ? '0' : ''}${secs}`;
             }
+
+            onError(event) {
+                console.warn("YouTube Player Error:", event.data);
+                const status = document.getElementById('status-indicator');
+                if (status) {
+                    status.innerText = "SIGNAL LOST";
+                    status.style.color = "red";
+                }
+
+                // Fallback: Start visual engine in "Simulation Mode"
+                if (this.beatEngine && !this.beatEngine.active) {
+                    console.log("Activating Visual Fallback Mode");
+                    this.beatEngine.start();
+                }
+            }
         }
 
         // --- INITIALIZATION ---
@@ -859,7 +874,8 @@
                 },
                 events: {
                     'onReady': onPlayerReady,
-                    'onStateChange': (e) => jukebox.onStateChange(e)
+                    'onStateChange': (e) => jukebox.onStateChange(e),
+                    'onError': (e) => jukebox.onError(e)
                 }
             });
         }
