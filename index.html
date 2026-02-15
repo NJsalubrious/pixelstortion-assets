@@ -927,6 +927,107 @@
                 font-size: 4.8rem !important;
             }
         }
+
+        /* --- BEAR WITNESS BUTTON --- */
+        #btnBearWitness {
+            font-family: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, monospace;
+            font-size: 0.875rem;
+            letter-spacing: 0.4em;
+            color: rgba(255, 255, 255, 0.4);
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            padding: 0.75rem 1.5rem;
+            cursor: pointer;
+            transition: all 0.5s ease;
+            box-shadow: 0 0 12px rgba(255, 255, 255, 0.06), inset 0 0 8px rgba(255, 255, 255, 0.03);
+        }
+
+        #btnBearWitness:hover {
+            color: rgba(255, 255, 255, 0.85);
+            border-color: rgba(255, 255, 255, 0.3);
+            box-shadow: 0 0 25px rgba(255, 255, 255, 0.15), inset 0 0 12px rgba(255, 255, 255, 0.05);
+        }
+
+        /* --- BEAR WITNESS OVERRIDES --- */
+        body.witness-mode .right-panel,
+        body.witness-mode .bg-war {
+            opacity: 0 !important;
+            pointer-events: none;
+            transition: opacity 0.8s ease;
+        }
+
+        body.witness-mode .fissure {
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+
+        body.witness-mode .left-panel {
+            flex: 100% !important;
+            /* Take over the whole screen */
+            background: transparent !important;
+            /* FIX: Let the fluid canvas show through */
+        }
+
+        /* Hide standard UI elements to strip it down to the raw essentials */
+        body.witness-mode .mobile-sliver-label,
+        body.witness-mode #dynamicMessage,
+        body.witness-mode .btn-tech,
+        body.witness-mode #btnBearWitness {
+            opacity: 0 !important;
+            pointer-events: none;
+            transition: opacity 0.5s ease;
+        }
+
+        /* Hide MESSAGE: label in witness mode */
+        body.witness-mode .text-center.font-mono {
+            opacity: 0 !important;
+            pointer-events: none;
+            transition: opacity 0.5s ease;
+        }
+
+        /* Hide audio advisory in witness mode */
+        body.witness-mode .fixed.bottom-12,
+        body.witness-mode .fixed.bottom-8 {
+            opacity: 0 !important;
+            pointer-events: none;
+            transition: opacity 0.5s ease;
+        }
+
+        /* Black text with strong white glow — cuts through the bright spotlight */
+        body.witness-mode #glitchTitle {
+            color: #000000 !important;
+            -webkit-text-stroke: 0 !important;
+            paint-order: stroke fill;
+            text-shadow:
+                0 0 40px rgba(255, 255, 255, 1.0),
+                0 0 80px rgba(255, 255, 255, 0.7),
+                0 0 120px rgba(255, 255, 255, 0.4),
+                0 0 8px rgba(255, 255, 255, 0.9) !important;
+            font-size: 8rem !important;
+            letter-spacing: 0.1em;
+            cursor: pointer;
+        }
+
+        body.witness-mode #subtitleText {
+            color: #000000 !important;
+            -webkit-text-stroke: 0 !important;
+            letter-spacing: 0.8em !important;
+            text-shadow:
+                0 0 20px rgba(255, 255, 255, 1.0),
+                0 0 40px rgba(255, 255, 255, 0.6),
+                0 0 6px rgba(255, 255, 255, 0.8);
+        }
+
+        /* Mobile witness-mode title sizing */
+        @media (max-width: 768px) {
+            body.witness-mode #glitchTitle {
+                font-size: 5rem !important;
+            }
+
+            body.witness-mode #subtitleText {
+                letter-spacing: 0.4em !important;
+            }
+        }
     </style>
 </head>
 
@@ -960,6 +1061,12 @@
                         onclick="event.stopPropagation(); window.top.location.href = PIXEL_MANIFEST.SILENCE; return false;">
                         ENTER
                     </a>
+                </div>
+
+                <div class="mt-8">
+                    <button id="btnBearWitness">
+                        [ BEAR WITNESS ]
+                    </button>
                 </div>
             </div>
         </div> <!-- Close Left Panel -->
@@ -1048,9 +1155,27 @@
 
         // Attach Events
         leftPanel.addEventListener('click', (e) => {
+            // FIX: Global Escape Hatch for Witness Mode
+            if (isWitnessModeActive) {
+                console.log('[Witness] Manually aborted by user.');
+                audioController.stop();
+                document.getElementById('characterAudio').dispatchEvent(new Event('ended'));
+                return;
+            }
+
             // Ignore if clicking the button
-            if (e.target.closest('a')) return;
+            if (e.target.closest('a') || e.target.closest('button')) return;
             handlePanelTap(leftPanel, rightPanel, 'hover-left');
+        });
+
+        // Title click also exits witness mode (click character name to return)
+        document.getElementById('glitchTitle').addEventListener('click', (e) => {
+            if (isWitnessModeActive) {
+                e.stopPropagation();
+                console.log('[Witness] Exited via title click.');
+                audioController.stop();
+                document.getElementById('characterAudio').dispatchEvent(new Event('ended'));
+            }
         });
 
         // Track drag to prevent Nalani song change on drag
@@ -1372,6 +1497,8 @@
                 } catch (error) {
                     console.error('Audio playback failed:', error);
                     this.isPlaying = false;
+                    // FIX: If audio fails, force the 'ended' event to abort the blackout
+                    this.audio.dispatchEvent(new Event('ended'));
                 }
             }
 
@@ -1458,31 +1585,150 @@
 
         // Auto-reset to SILENCE when track ends
         const audio = document.getElementById('characterAudio');
+
+        // --- BEAR WITNESS PROTOCOL ---
+        const witnessAudioTracks = [
+            { character: "ETHEL", url: "https://raw.githubusercontent.com/NJsalubrious/pixelstortion-assets/73df0989d0c780f56c2c7e0212a5cff3b02abe13/library/Silence_CharactersInTeirOwnWords/Ethel_If_I_Had.mp3" },
+            { character: "ETHEL", url: "https://raw.githubusercontent.com/NJsalubrious/pixelstortion-assets/73df0989d0c780f56c2c7e0212a5cff3b02abe13/library/Silence_CharactersInTeirOwnWords/Ethel_theOneThingEverytraumaSurvivourNeeds_a_witness.mp3" },
+            { character: "ISLA", url: "https://raw.githubusercontent.com/NJsalubrious/pixelstortion-assets/73df0989d0c780f56c2c7e0212a5cff3b02abe13/library/Silence_CharactersInTeirOwnWords/Isla_witnessesBringYouBackIntoTheHumanRace.mp3" },
+            { character: "ISLA", url: "https://raw.githubusercontent.com/NJsalubrious/pixelstortion-assets/73df0989d0c780f56c2c7e0212a5cff3b02abe13/library/Silence_CharactersInTeirOwnWords/isla_IAmStillAloneInTheDark.wav" },
+            { character: "ISLA", url: "https://raw.githubusercontent.com/NJsalubrious/pixelstortion-assets/73df0989d0c780f56c2c7e0212a5cff3b02abe13/library/Silence_CharactersInTeirOwnWords/Isla_IwasNeverSuposedToCarryAlone.mp3" },
+            { character: "ISLA", url: "https://raw.githubusercontent.com/NJsalubrious/pixelstortion-assets/73df0989d0c780f56c2c7e0212a5cff3b02abe13/library/Silence_CharactersInTeirOwnWords/isla_iWrapTheBrutalReality.mp3" }
+        ];
+
+        let isWitnessModeActive = false;
+        let witnessSpotlightAnimationId = null;
+
+        // No-repeat shuffle deck: plays all tracks before repeating any
+        let witnessTrackDeck = [];
+        let lastWitnessTrackUrl = null;
+        function getNextWitnessTrack() {
+            if (witnessTrackDeck.length === 0) {
+                // Refill and shuffle (Fisher-Yates)
+                witnessTrackDeck = witnessAudioTracks.slice();
+                for (let i = witnessTrackDeck.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [witnessTrackDeck[i], witnessTrackDeck[j]] = [witnessTrackDeck[j], witnessTrackDeck[i]];
+                }
+                // If first track of new deck matches last played, move it to front (played last)
+                if (lastWitnessTrackUrl && witnessTrackDeck.length > 1 &&
+                    witnessTrackDeck[witnessTrackDeck.length - 1].url === lastWitnessTrackUrl) {
+                    const dupe = witnessTrackDeck.pop();
+                    witnessTrackDeck.unshift(dupe);
+                }
+                console.log('[Witness] Deck reshuffled. Remaining:', witnessTrackDeck.length);
+            }
+            const track = witnessTrackDeck.pop();
+            lastWitnessTrackUrl = track.url;
+            const filename = track.url.split('/').pop();
+            console.log(`[Witness] Deck pick: ${track.character} — ${filename} (${witnessTrackDeck.length} left in deck)`);
+            return track;
+        }
+
+        // --- CUSTOM SPOTLIGHT LOOP ---
+        function renderWitnessSpotlight() {
+            if (!isWitnessModeActive) return;
+
+            // Get raw volume average (bypassing the music thresholds)
+            const energy = audioController.getAudioData() / 255.0;
+
+            if (energy > 0.05 && window.fluidSim) {
+                // Gentle force so the light stays locked in the center
+                const force = energy * 150;
+                const angle = Math.random() * Math.PI * 2;
+
+                window.fluidSim.splatStack.push({
+                    x: 0.5, // Locked to dead center X
+                    y: 0.5, // Locked to dead center Y
+                    dx: Math.cos(angle) * force,
+                    dy: Math.sin(angle) * force,
+                    color: {
+                        r: energy * 3.5, // Overblown HDR White
+                        g: energy * 3.5,
+                        b: energy * 3.5
+                    }
+                });
+            }
+
+            witnessSpotlightAnimationId = requestAnimationFrame(renderWitnessSpotlight);
+        }
+
+        // --- TRIGGER BUTTON ---
+        document.getElementById('btnBearWitness').addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (isWitnessModeActive) return;
+
+            isWitnessModeActive = true;
+            isCharacterActive = true; // Pauses ambient background glitches
+
+            // Pick next track from shuffle deck (no repeats until all played)
+            const track = getNextWitnessTrack();
+
+            // UI Blackout
+            document.body.classList.add('witness-mode');
+            document.getElementById('glitchTitle').textContent = track.character;
+            document.getElementById('subtitleText').textContent = 'WITNESS';
+
+            // Remove any existing vibe classes
+            leftPanel.classList.remove('vibe-isla', 'vibe-ethel', 'vibe-dominic', 'vibe-witness', 'vibe-kinley', 'vibe-sticky');
+
+            // --- THE SPOTLIGHT PHYSICS OVERRIDE ---
+            if (window.fluidSim) {
+                // Disconnect the default music explosions
+                window.fluidSim.audioController = null;
+
+                // Morph the fluid into a fast-fading light beam
+                window.FLUID_CONFIG.SPLAT_RADIUS = 0.8; // Massive radius (default is 0.25)
+                window.FLUID_CONFIG.DENSITY_DISSIPATION = 0.85; // Fades very fast to mimic a pulsing light
+                window.FLUID_CONFIG.VELOCITY_DISSIPATION = 0.90;
+                window.FLUID_CONFIG.BLOOM_INTENSITY = 2.0; // Blinding glow
+            }
+
+            // Start Audio & Custom Spotlight Loop
+            audioController.playTrack(track.url, 1000);
+            renderWitnessSpotlight();
+
+            console.log(`[Witness] BEAR WITNESS activated: ${track.character}`, track.url);
+        });
+
+        // --- CLEANUP ---
         audio.addEventListener('ended', () => {
             // Reset to SILENCE
             title.textContent = 'SILENCE';
             subtitle.textContent = 'IS THE TRAUMA';
-
-            const messageText = document.getElementById('dynamicMessage');
-            if (messageText) {
-                messageText.textContent = '"Silence isn\'t absence."';
+            if (document.getElementById('dynamicMessage')) {
+                document.getElementById('dynamicMessage').textContent = '"Silence isn\'t absence."';
             }
-
-            // Remove all vibe classes
             leftPanel.classList.remove('vibe-isla', 'vibe-ethel', 'vibe-dominic', 'vibe-witness', 'vibe-kinley', 'vibe-sticky');
-
-            // RESET FLUID TO SILENCE
-            if (window.fluidSim) {
-                fluidSim.updateConfig('SILENCE');
-            }
-
-            // Mark character as inactive to allow ambient glitch
             isCharacterActive = false;
-
-            // Reset tracking
             lastSelectedTrack = null;
             lastSelectedCharacter = null;
             lastSelectedMessage = null;
+
+            // --- WITNESS MODE RESET ---
+            if (isWitnessModeActive) {
+                isWitnessModeActive = false;
+                document.body.classList.remove('witness-mode');
+
+                // Kill the spotlight loop
+                if (witnessSpotlightAnimationId) {
+                    cancelAnimationFrame(witnessSpotlightAnimationId);
+                    witnessSpotlightAnimationId = null;
+                }
+
+                // Restore default physics and reconnect regular audio engine
+                if (window.fluidSim) {
+                    window.fluidSim.updateConfig('SILENCE');
+                    window.FLUID_CONFIG.SPLAT_RADIUS = 0.25; // Reset radius back to normal
+                    window.fluidSim.audioController = audioController; // Reconnect normal processor
+                }
+                console.log('[Witness] Mode ended. UI restored.');
+            }
+
+            // RESET FLUID TO SILENCE (for non-witness normal tracks)
+            if (window.fluidSim && !isWitnessModeActive) {
+                fluidSim.updateConfig('SILENCE');
+            }
         });
 
         // Ambient glitch effect - runs automatically every 5-8 seconds
@@ -1640,6 +1886,10 @@
         contentLayer.style.pointerEvents = 'auto'; // ENABLE CLICKS (Fixes CSS pointer-events: none)
         contentLayer.addEventListener('click', (e) => {
             e.stopPropagation(); // Don't bubble to generic panel listeners
+
+            // FIX: Prevent normal glitching while in Witness Mode
+            if (isWitnessModeActive) return;
+
             triggerGlitch();
             // Ensure panel expands on mobile
             handlePanelTap(leftPanel, rightPanel, 'hover-left');
@@ -1665,7 +1915,7 @@
 
     </script>
 
-    <script src="js/fluid-simulator.js"></script>
+    <script src="js/fluid-simulator_witness.js"></script>
     <script>
         // Initialize Fluid Engine — audioController is global from the main script block
         window.fluidSim = new FluidSimulator(
