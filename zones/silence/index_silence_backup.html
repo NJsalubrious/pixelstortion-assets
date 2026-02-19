@@ -1244,72 +1244,6 @@
                 height: 120px !important;
             }
         }
-
-        /* ========== JB (JUKEBOX) TRIGGER BUTTON ========== */
-        #jb-trigger {
-            position: fixed;
-            bottom: 24px;
-            right: 24px;
-            z-index: 9500;
-            width: 52px;
-            height: 52px;
-            border-radius: 50%;
-            background: rgba(0, 10, 0, 0.7);
-            backdrop-filter: blur(8px);
-            border: 1.5px solid rgba(0, 255, 65, 0.35);
-            color: #00ff41;
-            font-family: 'Courier Prime', monospace;
-            font-size: 14px;
-            font-weight: bold;
-            letter-spacing: 1px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            opacity: 0.65;
-            transition: all 0.3s ease;
-            box-shadow: 0 0 8px rgba(0, 255, 65, 0.12);
-            animation: jb-pulse 3s ease-in-out infinite;
-        }
-
-        @keyframes jb-pulse {
-
-            0%,
-            100% {
-                box-shadow: 0 0 8px rgba(0, 255, 65, 0.12);
-            }
-
-            50% {
-                box-shadow: 0 0 16px rgba(0, 255, 65, 0.3);
-            }
-        }
-
-        #jb-trigger:hover {
-            opacity: 1;
-            border-color: rgba(0, 255, 65, 0.8);
-            color: #00ff41;
-            box-shadow: 0 0 20px rgba(0, 255, 65, 0.4);
-            transform: scale(1.1);
-            animation: none;
-        }
-
-        #jb-trigger.jb-active {
-            opacity: 0.85;
-            border-color: rgba(0, 255, 65, 0.6);
-            color: #00ff41;
-            animation: none;
-        }
-
-        /* Mobile: adjust trigger position */
-        @media (max-width: 767px) {
-            #jb-trigger {
-                bottom: 80px;
-                right: 12px;
-                width: 40px;
-                height: 40px;
-                font-size: 12px;
-            }
-        }
     </style>
 </head>
 
@@ -2778,61 +2712,6 @@
             // Open the panel
             panel.classList.add('open');
             mediaPanelOpen = true;
-        }
-    </script>
-
-    <!-- JB (Jukebox) Trigger -->
-    <button id="jb-trigger" title="Jukebox" onclick="toggleJBPopup()">JB</button>
-
-    <script>
-        // --- JUKEBOX POPUP WINDOW LOGIC ---
-        let jbWindow = null;
-        let jbPollInterval = null;
-
-        function toggleJBPopup() {
-            if (jbWindow && !jbWindow.closed) {
-                // Window is open — close it
-                jbWindow.close();
-            } else {
-                openJBPopup();
-            }
-        }
-
-        function openJBPopup() {
-            const trigger = document.getElementById('jb-trigger');
-
-            // Pause main site music (same pattern as openGameModal)
-            if (ytPlayer && typeof ytPlayer.pauseVideo === 'function') {
-                ytPlayer.pauseVideo();
-            }
-
-            // Open jukebox in a popup window
-            const w = 480, h = 640;
-            const left = window.screenX + window.innerWidth - w - 40;
-            const top = window.screenY + 80;
-            jbWindow = window.open(
-                '../jukebox/Jukebox.html',
-                'PixelStortion_Jukebox',
-                `width=${w},height=${h},left=${left},top=${top},resizable=yes,scrollbars=no,toolbar=no,menubar=no,location=no,status=no`
-            );
-
-            trigger.classList.add('jb-active');
-
-            // Poll to detect when the user closes the jukebox window
-            clearInterval(jbPollInterval);
-            jbPollInterval = setInterval(() => {
-                if (!jbWindow || jbWindow.closed) {
-                    clearInterval(jbPollInterval);
-                    jbPollInterval = null;
-                    jbWindow = null;
-                    trigger.classList.remove('jb-active');
-
-                    // Resume main site music (same pattern as closeGameModal)
-                    if (ytPlayer && typeof ytPlayer.playVideo === 'function') {
-                        ytPlayer.playVideo();
-                    }
-                }
-            }, 500);
         }
     </script>
 
