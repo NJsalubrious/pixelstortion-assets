@@ -90,7 +90,7 @@
             background-size: 100% 4px;
             z-index: 10;
             pointer-events: none;
-            opacity: 0.7;
+            opacity: 0.35;
         }
 
         /* Layer 5: Vignette — heavy, frames the narrative images into the void */
@@ -277,8 +277,8 @@
             height: 100%;
             pointer-events: none;
             mix-blend-mode: screen;
-            opacity: 0.92;
-            filter: contrast(1.35) saturate(1.6);
+            opacity: 0.75;
+            filter: contrast(1.15) saturate(1.25);
         }
 
         #glyph-canvas {
@@ -289,8 +289,8 @@
             height: 100%;
             pointer-events: none;
             mix-blend-mode: screen;
-            filter: contrast(1.25) saturate(1.35);
-            opacity: 0.55;
+            filter: contrast(1.1) saturate(1.15);
+            opacity: 0.40;
         }
     </style>
 
@@ -1300,12 +1300,12 @@
       void main(){
         vec2 uv = vUV;
 
-        // subtle screen tear
-        float tear = step(0.985, rand(vec2(uTime*0.1, uv.y))) * (0.06 + 0.22*uI);
+        // subtle screen tear (reduced for Chrome/Edge compatibility)
+        float tear = step(0.993, rand(vec2(uTime*0.1, uv.y))) * (0.02 + 0.08*uI);
         uv.x += tear * (rand(vec2(uv.y, uTime)) - 0.5);
 
-        // chromatic drift on intensity
-        float c = 0.008 + 0.024*uI;
+        // chromatic drift on intensity (reduced)
+        float c = 0.003 + 0.010*uI;
         vec4 col;
         col.r = texture2D(uTex, uv + vec2( c, 0.0)).r;
         col.g = texture2D(uTex, uv).g;
@@ -1315,7 +1315,7 @@
         // bloom-ish: cheap bright-pass + blur taps
         float luma = dot(col.rgb, vec3(0.299,0.587,0.114));
         vec3 bloom = vec3(0.0);
-        float k = smoothstep(0.45, 0.85, luma) * (0.15 + 0.65*uI);
+        float k = smoothstep(0.50, 0.90, luma) * (0.10 + 0.35*uI);
         vec2 px = 1.0 / uRes;
         bloom += texture2D(uTex, uv + px*vec2( 1.0, 0.0)).rgb;
         bloom += texture2D(uTex, uv + px*vec2(-1.0, 0.0)).rgb;
@@ -1323,8 +1323,8 @@
         bloom += texture2D(uTex, uv + px*vec2( 0.0,-1.0)).rgb;
         bloom *= 0.25;
 
-        // noise grain
-        float n = (rand(uv*uRes + uTime) - 0.5) * (0.10 + 0.28*uI);
+        // noise grain (reduced)
+        float n = (rand(uv*uRes + uTime) - 0.5) * (0.04 + 0.10*uI);
 
         vec3 outc = col.rgb + bloom*(k*1.8) + n;
         // neon grade
@@ -1438,7 +1438,7 @@
 
 
         // EXTREME toggle: press X
-        let EXTREME = true;
+        let EXTREME = false;
         window.addEventListener('keydown', (e) => {
             if ((e.key || '').toLowerCase() === 'x') {
                 EXTREME = !EXTREME;
