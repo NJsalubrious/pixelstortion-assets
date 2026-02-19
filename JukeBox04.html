@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+<<<<<<< HEAD
 
 <head>
     <meta charset="UTF-8">
@@ -1051,3 +1052,1388 @@
 </body>
 
 </html>
+=======
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>PIXELSTORTION // JUKEBOX (WEBAUDIO)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,1,0" rel="stylesheet" />
+
+  <style>
+    :root{
+      --neon-green:#00ff41;
+      --fire-orange:#ff4500;
+      --void:#050505;
+      --whisper:#c7ffdd;
+    }
+
+    body,html{
+      margin:0;padding:0;width:100%;height:100%;
+      background-color:var(--void);
+      overflow:hidden;
+      font-family:'Space Grotesk',sans-serif;
+      cursor:crosshair;
+    }
+
+    /* --- VISUAL LAYERS --- */
+    #bg-gallery{position:fixed;inset:0;z-index:1;overflow:hidden;background:#000;}
+    .gallery-img{
+      position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
+      opacity:0;filter:brightness(0.5) grayscale(0.2);
+      transform:scale(1.05);
+      transition:opacity 2s ease, transform 15s ease-out;
+    }
+    .gallery-img.active{opacity:1.0;transform:scale(1.0);}
+
+    /* Fluid sim (kept) — but we render it through PostFX */
+    #fluid-canvas{
+      position:fixed;top:0;left:0;width:100%;height:100%;
+      z-index:2;
+      opacity:0.001; /* keep WebGL alive, hide raw output */
+      pointer-events:none;
+    }
+
+    /* PostFX canvas: final render (GPU) */
+    #postfx-canvas{
+      position:fixed;top:0;left:0;width:100%;height:100%;
+      z-index:3;
+      mix-blend-mode:screen;
+      opacity:0.75;
+      pointer-events:none;
+    }
+
+    .scanlines{
+      position:fixed;inset:0;
+      background:linear-gradient(to bottom,
+        rgba(255,255,255,0) 50%,
+        rgba(0,0,0,0.2) 50%,
+        rgba(0,0,0,0.6) 100%);
+      background-size:100% 4px;
+      z-index:10;pointer-events:none;opacity:0.7;
+    }
+
+    .vignette{
+      position:fixed;inset:0;
+      background:radial-gradient(ellipse at center, transparent 30%, rgba(5,5,5,0.6) 60%, #050505 85%);
+      z-index:5;pointer-events:none;
+    }
+
+    /* --- UI LAYERS --- */
+    #ui-layer{
+      position:fixed;inset:0;z-index:20;
+      pointer-events:none;
+      display:flex;flex-direction:column;justify-content:space-between;
+      padding:2rem;
+    }
+    .interactive{pointer-events:auto;}
+    .font-mono-custom{font-family:'Courier Prime',monospace;}
+
+    .control-btn{
+      background:rgba(0,0,0,0.4);
+      backdrop-filter:blur(10px);
+      border:1px solid rgba(255,255,255,0.2);
+      color:white;
+      width:60px;height:60px;border-radius:50%;
+      display:flex;align-items:center;justify-content:center;
+      transition:all .2s ease;cursor:pointer;
+    }
+    .control-btn:hover{border-color:var(--neon-green);color:var(--neon-green);transform:scale(1.1);background:rgba(0,20,0,0.6);}
+    .control-btn:active{transform:scale(0.95);}
+
+    .progress-container{
+      width:100%;height:6px;background:rgba(255,255,255,0.1);
+      margin-top:1rem;position:relative;cursor:pointer;overflow:hidden;border-radius:3px;
+    }
+    .progress-bar{
+      height:100%;background:var(--neon-green);width:0%;
+      box-shadow:0 0 12px var(--neon-green), 0 0 40px rgba(0,255,65,0.3);
+      transition:width 0.08s linear;
+    }
+
+    /* --- START OVERLAY --- */
+    #start-overlay{
+      position:fixed;inset:0;background:#000;z-index:100;
+      display:flex;align-items:center;justify-content:center;flex-direction:column;
+    }
+    .start-btn{
+      border:1px solid var(--neon-green);color:var(--neon-green);
+      padding:20px 60px;font-family:'Courier Prime',monospace;
+      font-size:1.2rem;letter-spacing:4px;cursor:pointer;
+      transition:all .3s;text-transform:uppercase;display:none;
+    }
+    .start-btn:hover{background:var(--neon-green);color:black;box-shadow:0 0 30px rgba(0,255,65,0.5);}
+
+    /* --- MICRO-CORRUPTION --- */
+    @keyframes micro-glitch{
+      0%{transform:translate(0,0)}
+      20%{transform:translate(-1px,1px)}
+      40%{transform:translate(1px,-1px)}
+      60%{transform:translate(-1px,-1px)}
+      80%{transform:translate(1px,1px)}
+      100%{transform:translate(0,0)}
+    }
+    .glitch-pulse{animation:micro-glitch .15s linear 1;}
+
+    /* --- WHISPER OVERLAY --- */
+    #whisper-layer{
+      position:fixed;inset:0;z-index:30;pointer-events:none;
+      display:flex;align-items:flex-end;justify-content:center;
+      padding:2.2rem;
+    }
+    .whisper{
+      max-width:min(900px, 90vw);
+      font-family:'Courier Prime',monospace;
+      font-size:12px;
+      letter-spacing:0.16em;
+      text-transform:uppercase;
+      color:rgba(199,255,221,0.0);
+      transform:translateY(12px);
+      filter:drop-shadow(0 0 10px rgba(0,255,65,0.25));
+      transition:opacity .35s ease, transform .35s ease, color .35s ease;
+      opacity:0;
+      user-select:none;
+      mix-blend-mode:difference;
+    }
+    .whisper.on{
+      opacity:1;
+      transform:translateY(0px);
+      color:rgba(199,255,221,0.95);
+    }
+    .whisper.small{font-size:10px; letter-spacing:0.22em; opacity:0.85;}
+    .whisper.red{color:rgba(255,90,90,0.95);}
+
+    /* --- INSTRUMENT HUD (subtle) --- */
+    #instrument-hud{
+      position:fixed;right:18px;bottom:18px;z-index:25;
+      pointer-events:none;
+      font-family:'Courier Prime',monospace;
+      font-size:10px;
+      letter-spacing:0.22em;
+      color:rgba(255,255,255,0.35);
+      text-transform:uppercase;
+      user-select:none;
+    }
+    #instrument-hud b{color:rgba(0,255,65,0.6); font-weight:700;}
+    .archive-mode{filter:invert(1) hue-rotate(180deg); transition:filter .6s ease;}
+  </style>
+</head>
+
+<body>
+  <!-- Background gallery -->
+  <div id="bg-gallery">
+    <img id="gallery-img-a" class="gallery-img active" />
+    <img id="gallery-img-b" class="gallery-img" />
+  </div>
+
+  <!-- Visuals -->
+  <canvas id="fluid-canvas"></canvas>
+  <canvas id="postfx-canvas"></canvas>
+  <div class="scanlines"></div>
+  <div class="vignette"></div>
+
+  <!-- Whisper layer -->
+  <div id="whisper-layer">
+    <div id="whisper" class="whisper">...</div>
+  </div>
+
+  <!-- Instrument HUD -->
+  <div id="instrument-hud">
+    <div>MODE: <b id="mode-label">STANDARD</b></div>
+    <div>PROFILE: <span id="profile-label">UNKNOWN</span></div>
+    <div>STATE: <span id="state-label">OBSERVING</span></div>
+  </div>
+
+  <!-- Start screen -->
+  <div id="start-overlay">
+    <h1 class="text-4xl md:text-6xl font-bold text-white mb-8 tracking-tighter">PIXELSTORTION</h1>
+    <button id="init-btn" class="start-btn" onclick="startSystem()">INITIALIZE SYSTEM</button>
+    <p id="loading-text" class="mt-4 text-gray-500 font-mono-custom text-xs animate-pulse">ESTABLISHING UPLINK...</p>
+  </div>
+
+  <!-- UI overlay -->
+  <div id="ui-layer">
+    <div class="flex justify-between items-start">
+      <div>
+        <div class="text-[10px] text-green-500 font-mono-custom tracking-[0.2em] mb-1">CURRENT TRACK</div>
+        <h1 id="track-title" class="text-4xl md:text-7xl font-bold text-white leading-none tracking-tighter mix-blend-difference mb-2">SILENCE</h1>
+        <h2 id="track-artist" class="text-xl md:text-2xl text-gray-400 font-light">WAITING FOR INPUT...</h2>
+        <h3 id="track-date" class="text-sm text-green-700 font-mono-custom tracking-widest mt-1"></h3>
+      </div>
+
+      <div class="text-right hidden md:block">
+        <div class="text-[10px] text-gray-500 font-mono-custom tracking-[0.2em]">SYSTEM STATUS</div>
+        <div id="status-indicator" class="text-green-500 font-bold">STANDBY</div>
+      </div>
+    </div>
+
+    <div class="w-full max-w-4xl mx-auto interactive">
+      <div class="flex items-center justify-center gap-6 mb-4">
+        <button class="control-btn" onclick="jukebox.prev()"><span class="material-symbols-outlined">skip_previous</span></button>
+
+        <button class="control-btn" style="width:80px;height:80px;border-color:white;" onclick="jukebox.togglePlay()">
+          <span id="play-icon" class="material-symbols-outlined" style="font-size:40px;">play_arrow</span>
+        </button>
+
+        <button class="control-btn" onclick="jukebox.next()"><span class="material-symbols-outlined">skip_next</span></button>
+
+        <button class="control-btn" onclick="toggleFullscreen()"><span class="material-symbols-outlined">fullscreen</span></button>
+      </div>
+
+      <div class="flex justify-between text-xs font-mono-custom text-gray-500 px-1">
+        <span id="curr-time">0:00</span>
+        <span id="total-time">0:00</span>
+      </div>
+      <div class="progress-container" onclick="jukebox.seek(event)">
+        <div id="progress-bar" class="progress-bar"></div>
+      </div>
+
+      <div class="text-center mt-4">
+        <p id="catalogue-label" class="text-[10px] text-gray-600 font-mono-custom uppercase tracking-widest">
+          Catalogue: 50 Tracks // Mode: Random Access
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Audio: real waveform + analysis -->
+  <audio id="audio" crossorigin="anonymous" preload="auto" style="position:fixed;left:-9999px;top:-9999px;"></audio>
+
+  <!-- Fluid engine (existing) -->
+  <script src="js/fluid-simulator.js"></script>
+
+  <script>
+    /**
+     * =============================
+     * 0) TRACK ARCHIVE (AUDIO)
+     * =============================
+     * Replace YouTube IDs with local audio files.
+     * Convention used here: audioSrc defaults to `library/audio/<galleryTrack>.mp3`.
+     *
+     * Example file paths:
+     *   library/audio/track_02.mp3
+     *   library/audio/track_54.mp3
+     *
+     * If you store them elsewhere, just edit audioSrc per track.
+     */
+    const SONG_ARCHIVE = [
+      { id: 2,  title:"The Drop 1", artist:"Ethel",   storyDate:"NOV 14, 2016 (AGE 15)", galleryTrack:"track_02" },
+      { id: 4,  title:"The Drop 2", artist:"Ethel",   storyDate:"NOV 14, 2016 (AGE 15)", galleryTrack:"track_04" },
+      { id: 6,  title:"Polished Vomit", artist:"Isla", storyDate:"FEB 14, 2019 (THE WEDDING)", galleryTrack:"track_06" },
+      { id: 8,  title:"Structural Psychopathy", artist:"Dominic", storyDate:"MAR 2019 (PROFILE)", galleryTrack:"track_08" },
+      { id: 10, title:"Ride", artist:"Ethel", storyDate:"JAN 20, 2024 (AGE 17)", galleryTrack:"track_10" },
+      { id: 12, title:"Grief", artist:"Ethel", storyDate:"FEB 28, 2024 (THE CRASH)", galleryTrack:"track_12" },
+      { id: 14, title:"Gotta Move", artist:"Ethel", storyDate:"MAR 02, 2024 (LEAVING HOME)", galleryTrack:"track_14" },
+      { id: 16, title:"Won't Break Where Others End", artist:"Ethel", storyDate:"MAR 05, 2024 (MOSMAN)", galleryTrack:"track_16" },
+      { id: 18, title:"Big House", artist:"Ethel", storyDate:"MAR 05, 2024 (MOSMAN)", galleryTrack:"track_18" },
+      { id: 20, title:"Peek-A-Boo", artist:"Isla", storyDate:"MAR 10, 2024 (MOSMAN)", galleryTrack:"track_20" },
+      { id: 22, title:"Northern Road", artist:"Dominic", storyDate:"MAR 15, 2024", galleryTrack:"track_22" },
+      { id: 24, title:"Isla Hates Married Bankers", artist:"Isla", storyDate:"MAY 2024", galleryTrack:"track_24" },
+      { id: 26, title:"I Built A Box", artist:"Ethel", storyDate:"JUN 2024 (THE SAFE HOUSE)", galleryTrack:"track_26" },
+      { id: 28, title:"Isla's Burning Dominic's Bridge", artist:"Isla", storyDate:"AUG 2024 (THE LEAK)", galleryTrack:"track_28" },
+      { id: 30, title:"For You!!!", artist:"Ethel", storyDate:"SEP 2024", galleryTrack:"track_30" },
+      { id: 32, title:"Isla's Broken Edge", artist:"Isla", storyDate:"OCT 2024", galleryTrack:"track_32" },
+      { id: 34, title:"Hero Complex", artist:"Dominic", storyDate:"FEB 2020 (THE TRIAL START)", galleryTrack:"track_34" },
+      { id: 36, title:"Nothing True", artist:"Ethel", storyDate:"APR 2020 (THE TESTIMONY)", galleryTrack:"track_36" },
+      { id: 38, title:"You Will Thank Me Later", artist:"Dominic", storyDate:"JUN 2020 (PRISON)", galleryTrack:"track_38" },
+      { id: 39, title:"No Sparrow Caught Mid Flight", artist:"Ethel", storyDate:"DEC 2024 (POST-TRIAL)", galleryTrack:"track_39" },
+      { id: 41, title:"Dominic's Escape", artist:"Dominic", storyDate:"JAN 2024 (THE ESCAPE)", galleryTrack:"track_41" },
+      { id: 42, title:"Ethel's Story - Overview", artist:"Ethel", storyDate:"(ARCHIVE REVIEW)", galleryTrack:"track_42" },
+      { id: 43, title:"Ethel's Conclusion", artist:"Ethel", storyDate:"(ARCHIVE REVIEW)", galleryTrack:"track_43" },
+      { id: 44, title:"Ethel:Spoken: Projection", artist:"Ethel", storyDate:"UNKNOWN", galleryTrack:"track_44" },
+      { id: 45, title:"Platform 18", artist:"Ethel", storyDate:"UNKNOWN", galleryTrack:"track_45" },
+      { id: 46, title:"Kinley (Guilt Money)", artist:"Kinley", storyDate:"UNKNOWN", galleryTrack:"track_46" },
+      { id: 47, title:"Ants On The Vine", artist:"Ethel", storyDate:"UNKNOWN", galleryTrack:"track_47" },
+      { id: 48, title:"Rattled", artist:"Ethel", storyDate:"UNKNOWN", galleryTrack:"track_48" },
+      { id: 49, title:"Clipboard Man", artist:"Ethel", storyDate:"UNKNOWN", galleryTrack:"track_49" },
+      { id: 50, title:"Make A Mistake On Purpose", artist:"Ethel", storyDate:"UNKNOWN", galleryTrack:"track_50" },
+      { id: 51, title:"Red Stick", artist:"Ethel", storyDate:"UNKNOWN", galleryTrack:"track_51" },
+      { id: 52, title:"Harms Ghost", artist:"Ethel", storyDate:"UNKNOWN", galleryTrack:"track_52" },
+      { id: 54, title:"Normal?!", artist:"Ethel", storyDate:"UNKNOWN", galleryTrack:"track_54" },
+      { id: 55, title:"This isn't therapy", artist:"Isla", storyDate:"UNKNOWN", galleryTrack:"track_55" },
+      { id: 56, title:"A Drop From the Forth", artist:"Isla", storyDate:"UNKNOWN", galleryTrack:"track_56" },
+      { id: 57, title:"The Porcelain Lie", artist:"Isla", storyDate:"UNKNOWN", galleryTrack:"track_57" },
+      { id: 58, title:"Memory under Water", artist:"Isla", storyDate:"UNKNOWN", galleryTrack:"track_58" },
+      { id: 59, title:"Raise The Fourth", artist:"Isla", storyDate:"UNKNOWN", galleryTrack:"track_59" },
+      { id: 60, title:"Raise The Fourth Version 2", artist:"Isla", storyDate:"UNKNOWN", galleryTrack:"track_60" },
+      { id: 61, title:"Intro to Shiny Headed Radio Man", artist:"Isla", storyDate:"UNKNOWN", galleryTrack:"track_61" },
+      { id: 62, title:"Shiny Headed Radio Man", artist:"Isla", storyDate:"UNKNOWN", galleryTrack:"track_62" },
+      { id: 63, title:"Stanmore Farewell", artist:"Isla", storyDate:"UNKNOWN", galleryTrack:"track_63" },
+      { id: 64, title:"Don't Wake Him Yet", artist:"Isla", storyDate:"UNKNOWN", galleryTrack:"track_64" },
+      { id: 65, title:"What You Don't See", artist:"Isla", storyDate:"UNKNOWN", galleryTrack:"track_65" },
+      { id: 66, title:"Melody of Normality (Live)", artist:"Isla", storyDate:"UNKNOWN", galleryTrack:"track_66" },
+      { id: 67, title:"Drop From the Fourth (Symphony)", artist:"Isla", storyDate:"UNKNOWN", galleryTrack:"track_67" },
+      { id: 68, title:"What you dont see (Symphony)", artist:"Isla", storyDate:"UNKNOWN", galleryTrack:"track_68" },
+      { id: 69, title:"Give it back", artist:"Isla", storyDate:"UNKNOWN", galleryTrack:"track_69" },
+      { id: 70, title:"What This Was Always For", artist:"Isla", storyDate:"UNKNOWN", galleryTrack:"track_70" },
+      { id: 71, title:"FIELD NOTES FROM THE LANGTANG TRAIL, 1966", artist:"UNKNOWN", storyDate:"1966", galleryTrack:"track_71" }
+    ];
+
+    // Inject default audioSrc using galleryTrack convention
+    for (const t of SONG_ARCHIVE) {
+      if (!t.audioSrc) t.audioSrc = `library/audio/${t.galleryTrack}.mp3`;
+    }
+
+    /**
+     * =============================
+     * 1) GALLERY (unchanged)
+     * =============================
+     */
+    class GalleryEngine {
+      constructor(){
+        this.galleryMap=null;
+        this.currentImages=[];
+        this.currentIndex=0;
+        this.activeSlot='a';
+        this.intervalId=null;
+        this.imgA=document.getElementById('gallery-img-a');
+        this.imgB=document.getElementById('gallery-img-b');
+        this.container=document.getElementById('bg-gallery');
+        this.onImageReady=null;
+      }
+
+      async loadMap(){
+        try{
+          const resp=await fetch('library/char_ethel_media/gallery_map.json');
+          const rawMap=await resp.json();
+          const REMOTE_BASE=/https:\/\/NJsalubrious\.github\.io\/pixelstortion-assets\/assets_for_ethel_songs\/images\//gi;
+          const LOCAL_BASE='library/char_ethel_media/images/';
+          this.galleryMap={};
+          for (const [track,urls] of Object.entries(rawMap)){
+            this.galleryMap[track]=urls.map(u=>u.replace(REMOTE_BASE,LOCAL_BASE));
+          }
+          console.log('[Gallery] Map loaded:', Object.keys(this.galleryMap).length, 'tracks');
+        }catch(e){
+          console.warn('[Gallery] Failed to load gallery_map.json:', e);
+        }
+      }
+
+      loadTrack(galleryTrack){
+        this.stopCycling();
+        this.currentIndex=0;
+
+        if(!galleryTrack || !this.galleryMap || !this.galleryMap[galleryTrack]){
+          this.currentImages=[];
+          this.container.style.opacity='0';
+          this.imgA.classList.remove('active');
+          this.imgB.classList.remove('active');
+          return;
+        }
+
+        this.currentImages=this.galleryMap[galleryTrack];
+        this.container.style.opacity='1';
+        if(this.currentImages.length>0) this.showImage(this.currentImages[0]);
+      }
+
+      showImage(url){
+        const target=this.activeSlot==='a'?this.imgA:this.imgB;
+        const other=this.activeSlot==='a'?this.imgB:this.imgA;
+
+        target.crossOrigin='Anonymous';
+        target.onload=()=>{
+          target.classList.add('active');
+          other.classList.remove('active');
+          this.activeSlot=this.activeSlot==='a'?'b':'a';
+          if(this.onImageReady) this.onImageReady(target);
+        };
+        target.onerror=()=>console.warn('[Gallery] Failed to load image:', url);
+        target.src=url;
+      }
+
+      startCycling(){
+        this.stopCycling();
+        if(this.currentImages.length<=1) return;
+        this.intervalId=setInterval(()=>{
+          this.currentIndex=(this.currentIndex+1)%this.currentImages.length;
+          this.showImage(this.currentImages[this.currentIndex]);
+        },6000);
+      }
+
+      stopCycling(){
+        if(this.intervalId){ clearInterval(this.intervalId); this.intervalId=null; }
+      }
+    }
+
+    /**
+     * =============================
+     * 2) COLOR EXTRACTOR (unchanged)
+     * =============================
+     */
+    class ColorExtractor {
+      constructor(){
+        this.canvas=document.createElement('canvas');
+        this.ctx=this.canvas.getContext('2d',{willReadFrequently:true});
+        this.width=128; this.height=128;
+        this.canvas.width=this.width; this.canvas.height=this.height;
+        this.hotspots=[];
+      }
+
+      extractFromImage(img){
+        try{
+          this.ctx.drawImage(img,0,0,this.width,this.height);
+          const data=this.ctx.getImageData(0,0,this.width,this.height).data;
+          this.hotspots=[];
+          for(let i=0;i<data.length;i+=4){
+            let r=data[i]/255, g=data[i+1]/255, b=data[i+2]/255;
+            const luminance=(r*0.299 + g*0.587 + b*0.114);
+            if(luminance>0.15){
+              let x=((i/4)%this.width)/this.width;
+              let y=Math.floor((i/4)/this.width)/this.height;
+              const max=Math.max(r,g,b);
+              if(max>0 && max<0.8){
+                const boost=0.8/max; r*=boost; g*=boost; b*=boost;
+              }
+              this.hotspots.push({x, y:1.0-y, r,g,b});
+            }
+          }
+        }catch(e){
+          console.warn('[Color] Extraction failed:', e.message);
+          this.hotspots=[];
+        }
+      }
+
+      getRandomHotspot(){
+        if(this.hotspots.length===0) return {x:0.2+Math.random()*0.6, y:0.2+Math.random()*0.6, r:0, g:0.6, b:0.3};
+        return this.hotspots[Math.floor(Math.random()*this.hotspots.length)];
+      }
+    }
+
+    /**
+     * =============================
+     * 3) WEB AUDIO ENGINE (real waveform)
+     * =============================
+     */
+    class AudioEngine {
+      constructor(){
+        this.audioEl=document.getElementById('audio');
+        this.ctx=null;
+        this.srcNode=null;
+        this.analyser=null;
+        this.gain=null;
+
+        // Instrument controls
+        this.filter=null;
+        this.delay=null;
+        this.delayFeedback=null;
+
+        // Data buffers
+        this.fftSize=2048;
+        this.freq=new Uint8Array(this.fftSize/2);
+        this.time=new Uint8Array(this.fftSize);
+
+        this.ready=false;
+      }
+
+      async init(){
+        if(this.ready) return;
+        const Ctx = window.AudioContext || window.webkitAudioContext;
+        this.ctx = new Ctx();
+
+        // MUST resume on user gesture
+        await this.ctx.resume();
+
+        // Graph:
+        // MediaElementSource -> (filter) -> (delay) -> gain -> analyser -> destination
+        this.srcNode = this.ctx.createMediaElementSource(this.audioEl);
+
+        this.filter = this.ctx.createBiquadFilter();
+        this.filter.type = 'lowpass';
+        this.filter.frequency.value = 22050;
+        this.filter.Q.value = 0.7;
+
+        this.delay = this.ctx.createDelay(1.0);
+        this.delay.delayTime.value = 0.0;
+
+        this.delayFeedback = this.ctx.createGain();
+        this.delayFeedback.gain.value = 0.0;
+
+        // feedback loop
+        this.delay.connect(this.delayFeedback);
+        this.delayFeedback.connect(this.delay);
+
+        this.gain = this.ctx.createGain();
+        this.gain.gain.value = 1.0;
+
+        this.analyser = this.ctx.createAnalyser();
+        this.analyser.fftSize = this.fftSize;
+        this.analyser.smoothingTimeConstant = 0.75;
+
+        this.srcNode.connect(this.filter);
+        this.filter.connect(this.delay);
+        this.delay.connect(this.gain);
+        this.gain.connect(this.analyser);
+        this.analyser.connect(this.ctx.destination);
+
+        this.ready=true;
+      }
+
+      async load(src){
+        // NOTE: autoplay policies require a gesture before play().
+        this.audioEl.src = src;
+        this.audioEl.load();
+        return new Promise((resolve,reject)=>{
+          const onCanPlay=()=>{ cleanup(); resolve(true); };
+          const onErr=(e)=>{ cleanup(); reject(e); };
+          const cleanup=()=>{
+            this.audioEl.removeEventListener('canplay',onCanPlay);
+            this.audioEl.removeEventListener('error',onErr);
+          };
+          this.audioEl.addEventListener('canplay',onCanPlay);
+          this.audioEl.addEventListener('error',onErr);
+        });
+      }
+
+      play(){ return this.audioEl.play(); }
+      pause(){ this.audioEl.pause(); }
+      toggle(){ this.audioEl.paused ? this.play() : this.pause(); }
+      seekTo(t){ this.audioEl.currentTime = Math.max(0, Math.min(this.audioEl.duration || 0, t)); }
+
+      get currentTime(){ return this.audioEl.currentTime || 0; }
+      get duration(){ return this.audioEl.duration || 0; }
+      get paused(){ return this.audioEl.paused; }
+
+      sample(){
+        if(!this.analyser) return null;
+        this.analyser.getByteFrequencyData(this.freq);
+        this.analyser.getByteTimeDomainData(this.time);
+        return {freq:this.freq, time:this.time};
+      }
+
+      // Playable instrument mapping (0..1 inputs)
+      setInstrument({tension=0.0, control=0.0, compliance=0.0}){
+        // tension: opens/closes lowpass
+        const cutoff = 400 + (1.0 - tension) * 18000; // high tension => darker
+        this.filter.frequency.setTargetAtTime(cutoff, this.ctx.currentTime, 0.03);
+
+        // control: adds delay
+        const dt = control * 0.18;
+        this.delay.delayTime.setTargetAtTime(dt, this.ctx.currentTime, 0.03);
+        this.delayFeedback.gain.setTargetAtTime(control * 0.28, this.ctx.currentTime, 0.06);
+
+        // compliance: overall gain duck / lift
+        const g = 0.65 + compliance * 0.55;
+        this.gain.gain.setTargetAtTime(g, this.ctx.currentTime, 0.06);
+      }
+    }
+
+    /**
+     * =============================
+     * 4) BEAT DETECTOR (real)
+     * =============================
+     * Lightweight energy-based onset detection.
+     * Works well enough for "visual triggers" without needing ML.
+     */
+    class BeatDetector {
+      constructor(audioEngine){
+        this.audio = audioEngine;
+        this.energyHistory=[];
+        this.historySize=43; // ~1 sec at ~40fps
+        this.cooldownMs=140;
+        this.lastBeatAt=0;
+
+        // tweak per artist
+        this.sensitivity=1.45;
+        this.band = {lo:0, hi:18}; // low bins ~bass
+      }
+
+      setProfile(artist){
+        // Higher sensitivity => fewer beats detected
+        if(artist==="Isla"){ this.sensitivity=1.35; this.band={lo:0,hi:24}; }
+        else if(artist==="Ethel"){ this.sensitivity=1.52; this.band={lo:2,hi:16}; }
+        else if(artist==="Dominic"){ this.sensitivity=1.58; this.band={lo:0,hi:14}; }
+        else { this.sensitivity=1.48; this.band={lo:0,hi:18}; }
+      }
+
+      update(nowMs){
+        const sample=this.audio.sample();
+        if(!sample) return {beat:false, energy:0};
+
+        const f=sample.freq;
+        let e=0;
+        const lo=this.band.lo, hi=Math.min(this.band.hi, f.length-1);
+        for(let i=lo;i<=hi;i++){
+          const v=f[i]/255;
+          e += v*v;
+        }
+        e /= Math.max(1,(hi-lo+1));
+
+        this.energyHistory.push(e);
+        if(this.energyHistory.length>this.historySize) this.energyHistory.shift();
+
+        const avg = this.energyHistory.reduce((a,b)=>a+b,0)/this.energyHistory.length;
+        const variance = this.energyHistory.reduce((a,b)=>a+(b-avg)*(b-avg),0)/this.energyHistory.length;
+        const std = Math.sqrt(variance) || 0.0001;
+
+        const threshold = avg + std * (this.sensitivity);
+
+        let beat=false;
+        if(nowMs - this.lastBeatAt > this.cooldownMs && e > threshold && this.energyHistory.length>10){
+          beat=true;
+          this.lastBeatAt=nowMs;
+        }
+        return {beat, energy:e};
+      }
+    }
+
+    /**
+     * =============================
+     * 5) GPU POSTFX (bloom + glitch)
+     * =============================
+     * We take the WebGL fluid canvas as a texture and render it through a shader.
+     * This keeps everything GPU-side and gives you intensity knobs.
+     */
+    class PostFX {
+      constructor(sourceCanvas, targetCanvas){
+        this.srcCanvas=sourceCanvas;
+        this.canvas=targetCanvas;
+        this.gl = this.canvas.getContext('webgl', { alpha:true, premultipliedAlpha:false, antialias:false });
+        if(!this.gl) throw new Error("WebGL not available for PostFX");
+
+        this.intensity = 0.8;    // overall post strength
+        this.bloom = 0.9;        // bloom amount
+        this.glitch = 0.12;      // glitch amount
+        this.rgbShift = 0.006;   // chroma shift
+        this.scan = 0.25;        // scanline amount
+
+        this._initGL();
+        this._resize();
+        window.addEventListener('resize', ()=>this._resize());
+      }
+
+      _resize(){
+        const dpr = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
+        this.canvas.width = Math.floor(window.innerWidth*dpr);
+        this.canvas.height = Math.floor(window.innerHeight*dpr);
+        this.gl.viewport(0,0,this.canvas.width,this.canvas.height);
+      }
+
+      _initGL(){
+        const gl=this.gl;
+
+        const vs = `
+          attribute vec2 a_pos;
+          varying vec2 v_uv;
+          void main(){
+            v_uv = (a_pos * 0.5) + 0.5;
+            gl_Position = vec4(a_pos, 0.0, 1.0);
+          }
+        `;
+
+        const fs = `
+          precision mediump float;
+          varying vec2 v_uv;
+          uniform sampler2D u_tex;
+          uniform vec2 u_res;
+          uniform float u_time;
+          uniform float u_intensity;
+          uniform float u_bloom;
+          uniform float u_glitch;
+          uniform float u_rgbShift;
+          uniform float u_scan;
+
+          float hash(vec2 p){
+            p = fract(p*vec2(123.34, 456.21));
+            p += dot(p, p+45.32);
+            return fract(p.x*p.y);
+          }
+
+          vec3 sampleRGBShift(vec2 uv, float amt){
+            vec2 off = vec2(amt, 0.0);
+            float r = texture2D(u_tex, uv + off).r;
+            float g = texture2D(u_tex, uv).g;
+            float b = texture2D(u_tex, uv - off).b;
+            return vec3(r,g,b);
+          }
+
+          vec3 bloom9(vec2 uv){
+            // cheap blur + threshold
+            vec2 px = 1.0 / u_res;
+            vec3 c = texture2D(u_tex, uv).rgb;
+            float l = dot(c, vec3(0.2126,0.7152,0.0722));
+            float t = smoothstep(0.35, 0.95, l);
+            vec3 acc = vec3(0.0);
+            acc += texture2D(u_tex, uv + px*vec2(-2.0, 0.0)).rgb;
+            acc += texture2D(u_tex, uv + px*vec2( 2.0, 0.0)).rgb;
+            acc += texture2D(u_tex, uv + px*vec2( 0.0,-2.0)).rgb;
+            acc += texture2D(u_tex, uv + px*vec2( 0.0, 2.0)).rgb;
+            acc += texture2D(u_tex, uv + px*vec2(-1.0,-1.0)).rgb;
+            acc += texture2D(u_tex, uv + px*vec2( 1.0,-1.0)).rgb;
+            acc += texture2D(u_tex, uv + px*vec2(-1.0, 1.0)).rgb;
+            acc += texture2D(u_tex, uv + px*vec2( 1.0, 1.0)).rgb;
+            acc *= 0.111;
+            return acc * t;
+          }
+
+          void main(){
+            vec2 uv = v_uv;
+
+            // Glitch: horizontal slices that shift
+            float g = u_glitch * u_intensity;
+            float slice = step(0.985, hash(vec2(floor(uv.y*80.0), floor(u_time*10.0))));
+            float shift = (hash(vec2(uv.y, u_time)) - 0.5) * 0.08 * g * slice;
+            uv.x += shift;
+
+            // Random dropout / tearing
+            float tear = step(0.997, hash(vec2(floor(u_time*30.0), floor(uv.y*200.0))));
+            uv.x += (hash(vec2(uv.y*12.0, u_time*4.0))-0.5) * 0.12 * g * tear;
+
+            // RGB shift
+            vec3 base = sampleRGBShift(uv, u_rgbShift * u_intensity);
+
+            // Bloom
+            vec3 b = bloom9(uv) * u_bloom * u_intensity;
+
+            // Scanlines + subtle noise
+            float scan = sin((uv.y * u_res.y) * 3.14159) * 0.5 + 0.5;
+            float scanAmt = mix(1.0, 0.78 + 0.22*scan, u_scan * u_intensity);
+
+            float n = (hash(uv + u_time) - 0.5) * 0.06 * u_intensity;
+            vec3 col = (base + b) * scanAmt + n;
+
+            gl_FragColor = vec4(col, 1.0);
+          }
+        `;
+
+        const compile=(type,src)=>{
+          const s=gl.createShader(type);
+          gl.shaderSource(s,src);
+          gl.compileShader(s);
+          if(!gl.getShaderParameter(s, gl.COMPILE_STATUS)){
+            throw new Error(gl.getShaderInfoLog(s) || 'shader compile failed');
+          }
+          return s;
+        };
+
+        const prog=gl.createProgram();
+        gl.attachShader(prog, compile(gl.VERTEX_SHADER, vs));
+        gl.attachShader(prog, compile(gl.FRAGMENT_SHADER, fs));
+        gl.linkProgram(prog);
+        if(!gl.getProgramParameter(prog, gl.LINK_STATUS)){
+          throw new Error(gl.getProgramInfoLog(prog) || 'program link failed');
+        }
+        gl.useProgram(prog);
+        this.prog=prog;
+
+        // Fullscreen quad
+        const buf=gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1, 1,-1, -1,1, 1,1]), gl.STATIC_DRAW);
+
+        const a_pos=gl.getAttribLocation(prog,'a_pos');
+        gl.enableVertexAttribArray(a_pos);
+        gl.vertexAttribPointer(a_pos,2,gl.FLOAT,false,0,0);
+
+        // Texture
+        this.tex=gl.createTexture();
+        gl.bindTexture(gl.TEXTURE_2D, this.tex);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+
+        // Uniforms
+        this.u_tex=gl.getUniformLocation(prog,'u_tex');
+        this.u_res=gl.getUniformLocation(prog,'u_res');
+        this.u_time=gl.getUniformLocation(prog,'u_time');
+        this.u_intensity=gl.getUniformLocation(prog,'u_intensity');
+        this.u_bloom=gl.getUniformLocation(prog,'u_bloom');
+        this.u_glitch=gl.getUniformLocation(prog,'u_glitch');
+        this.u_rgbShift=gl.getUniformLocation(prog,'u_rgbShift');
+        this.u_scan=gl.getUniformLocation(prog,'u_scan');
+
+        gl.uniform1i(this.u_tex, 0);
+      }
+
+      render(t){
+        const gl=this.gl;
+
+        // Update source texture from canvas
+        gl.activeTexture(gl.TEXTURE0);
+        gl.bindTexture(gl.TEXTURE_2D, this.tex);
+        // texImage2D from canvas each frame (GPU path in modern browsers)
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, this.srcCanvas);
+
+        gl.useProgram(this.prog);
+        gl.uniform2f(this.u_res, this.canvas.width, this.canvas.height);
+        gl.uniform1f(this.u_time, t);
+        gl.uniform1f(this.u_intensity, this.intensity);
+        gl.uniform1f(this.u_bloom, this.bloom);
+        gl.uniform1f(this.u_glitch, this.glitch);
+        gl.uniform1f(this.u_rgbShift, this.rgbShift);
+        gl.uniform1f(this.u_scan, this.scan);
+
+        gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+      }
+    }
+
+    /**
+     * =============================
+     * 6) WHISPER + BRANCH ENGINE
+     * =============================
+     * "Split the listener" by reflecting their behaviour back at them.
+     * No explicit questions — behaviour becomes the input signal.
+     */
+    class WhisperEngine {
+      constructor(){
+        this.el=document.getElementById('whisper');
+        this.queue=[];
+        this.active=false;
+        this.cooldown=0;
+        this.mode='STANDARD';
+      }
+
+      say(text, opts={}){
+        const entry={ text, opts, at:performance.now() };
+        this.queue.push(entry);
+      }
+
+      tick(now){
+        if(this.cooldown>now) return;
+        if(this.active) return;
+        const next=this.queue.shift();
+        if(!next) return;
+
+        const {text, opts} = next;
+        this.el.textContent=text;
+
+        this.el.className='whisper';
+        if(opts.small) this.el.classList.add('small');
+        if(opts.red) this.el.classList.add('red');
+
+        this.el.classList.add('on');
+        this.active=true;
+
+        const hold = opts.holdMs ?? 1200;
+        const fade = opts.fadeMs ?? 380;
+
+        setTimeout(()=>{
+          this.el.classList.remove('on');
+          setTimeout(()=>{
+            this.active=false;
+            this.cooldown = performance.now() + (opts.gapMs ?? 650);
+          }, fade);
+        }, hold);
+      }
+    }
+
+    class BranchEngine {
+      constructor(){
+        this.state='OBSERVING'; // OBSERVING | AVOIDING | CONTROLLING | SUBMITTING | RESISTING
+        this.score={
+          skip:0,
+          seek:0,
+          idle:0,
+          play:0,
+          pause:0,
+          hoverControls:0
+        };
+        this.lastActionAt=performance.now();
+      }
+
+      action(type){
+        this.score[type]=(this.score[type]||0)+1;
+        this.lastActionAt=performance.now();
+        this._recompute();
+      }
+
+      tick(now){
+        const idleMs = now - this.lastActionAt;
+        if(idleMs>7000) {
+          this.score.idle += 0.015; // slow creep
+          this._recompute();
+        }
+      }
+
+      _recompute(){
+        // Choose a dominant behavioural interpretation
+        const s=this.score;
+        const avoiding = s.skip*1.2 + s.pause*0.6;
+        const controlling = s.seek*1.35 + s.hoverControls*0.45;
+        const submitting = s.play*0.35 + s.idle*1.4;
+        const resisting = (s.skip*0.8 + s.seek*0.9) - s.idle*1.1;
+
+        const max = Math.max(avoiding, controlling, submitting, resisting);
+        let next='OBSERVING';
+        if(max<1.5) next='OBSERVING';
+        else if(max===avoiding) next='AVOIDING';
+        else if(max===controlling) next='CONTROLLING';
+        else if(max===submitting) next='SUBMITTING';
+        else next='RESISTING';
+
+        this.state=next;
+        const sl=document.getElementById('state-label');
+        if(sl) sl.textContent=this.state;
+      }
+    }
+
+    /**
+     * =============================
+     * 7) JUKEBOX CONTROLLER (WebAudio)
+     * =============================
+     */
+    class Jukebox {
+      constructor(){
+        this.currentTrackIndex=-1;
+        this.isPlaying=false;
+
+        this.audio=new AudioEngine();
+        this.beat=null;
+
+        this.profile='UNKNOWN';
+        this.fx=null;
+
+        this.whisper=new WhisperEngine();
+        this.branch=new BranchEngine();
+
+        this.instrument={
+          tension:0.0,
+          control:0.0,
+          compliance:0.5
+        };
+
+        this._mouse={x:0.5,y:0.5};
+        this._armed=false; // becomes true after user interaction
+      }
+
+      async init(fluidEngine){
+        await this.audio.init();
+        this.beat = new BeatDetector(this.audio);
+
+        // PostFX attaches to fluid canvas
+        const fluidCanvas=document.getElementById('fluid-canvas');
+        const postCanvas=document.getElementById('postfx-canvas');
+        this.fx = new PostFX(fluidCanvas, postCanvas);
+
+        // Prime whispers
+        this.whisper.say("YOU CAN PAUSE. IT WON'T STOP.", {small:true});
+        this.whisper.say("THE SYSTEM WILL KEEP LISTENING.", {small:true});
+        this.whisper.say("PLAY IS NOT CONSENT.", {small:true});
+
+        // Instrument mapping (mouse-driven)
+        window.addEventListener('mousemove', (e)=>{
+          const x = e.clientX / window.innerWidth;
+          const y = e.clientY / window.innerHeight;
+          this._mouse={x,y};
+        }, {passive:true});
+
+        // Behavioural signals
+        const controls = document.querySelector('.interactive');
+        if(controls){
+          controls.addEventListener('mouseenter', ()=>this.branch.action('hoverControls'));
+          controls.addEventListener('mousemove', ()=>this.branch.action('hoverControls'));
+        }
+
+        // Audio events
+        this.audio.audioEl.addEventListener('ended', ()=>{
+          this.isPlaying=false;
+          this.whisper.say("NEXT RECORD.", {small:true});
+          this.next();
+        });
+      }
+
+      loadRandomTrack(){
+        let newIndex;
+        do{
+          newIndex = Math.floor(Math.random()*SONG_ARCHIVE.length);
+        }while(newIndex===this.currentTrackIndex && SONG_ARCHIVE.length>1);
+        this.loadTrack(newIndex);
+      }
+
+      async loadTrack(index){
+        this.currentTrackIndex=index;
+        const track=SONG_ARCHIVE[index];
+
+        // UI update
+        document.getElementById('track-title').innerText=track.title;
+        document.getElementById('track-artist').innerText=track.artist;
+        document.getElementById('track-date').innerText=track.storyDate || '';
+        document.getElementById('status-indicator').innerText='BUFFERING';
+        document.getElementById('profile-label').textContent = track.artist.toUpperCase();
+
+        this.applyArtistProfile(track.artist);
+        this.applyTemporalWeight(track.storyDate);
+
+        // Gallery update
+        if(galleryEngine) galleryEngine.loadTrack(track.galleryTrack);
+
+        // Load audio
+        try{
+          await this.audio.load(track.audioSrc);
+          document.getElementById('status-indicator').innerText='READY';
+        }catch(e){
+          document.getElementById('status-indicator').innerText='AUDIO MISSING';
+          document.getElementById('status-indicator').style.color='red';
+          this.whisper.say("MISSING EVIDENCE FILE.", {red:true, holdMs:1500});
+          console.warn('[Audio] load failed:', e);
+          return;
+        }
+
+        // Arm the detector for this artist
+        this.beat.setProfile(track.artist);
+
+        // Micro-corruption ping
+        const titleEl=document.getElementById('track-title');
+        titleEl.classList.add('glitch-pulse');
+        setTimeout(()=>titleEl.classList.remove('glitch-pulse'), 200);
+
+        // Autoplay only if already armed by user
+        if(this._armed){
+          try{ await this.audio.play(); }catch(_){}
+        }
+      }
+
+      async togglePlay(){
+        this._armed = true; // user gesture
+        if(!this.audio.ready) await this.audio.init();
+
+        if(this.audio.paused){
+          try{
+            await this.audio.play();
+            this.isPlaying=true;
+            document.getElementById('status-indicator').innerText='PLAYING';
+            document.getElementById('status-indicator').style.color='#00ff41';
+            document.getElementById('play-icon').innerText='pause';
+            this.branch.action('play');
+            if(galleryEngine) galleryEngine.startCycling();
+          }catch(e){
+            document.getElementById('status-indicator').innerText='BLOCKED';
+            this.whisper.say("BROWSER DENIED AUTOPLAY.", {red:true, small:true});
+          }
+        }else{
+          this.audio.pause();
+          this.isPlaying=false;
+          document.getElementById('status-indicator').innerText='PAUSED';
+          document.getElementById('status-indicator').style.color='orange';
+          document.getElementById('play-icon').innerText='play_arrow';
+          this.branch.action('pause');
+          if(galleryEngine) galleryEngine.stopCycling();
+        }
+      }
+
+      next(){ this.branch.action('skip'); this.loadRandomTrack(); }
+      prev(){ this.branch.action('skip'); this.loadRandomTrack(); }
+
+      seek(event){
+        this._armed = true;
+        const container=document.querySelector('.progress-container');
+        const rect=container.getBoundingClientRect();
+        const clickX=event.clientX-rect.left;
+        const pct=Math.max(0,Math.min(1,clickX/rect.width));
+        const total=this.audio.duration;
+        this.audio.seekTo(total*pct);
+        this.branch.action('seek');
+      }
+
+      updateProgress(){
+        const curr=this.audio.currentTime;
+        const total=this.audio.duration;
+
+        if(total>0){
+          const pct=(curr/total)*100;
+          const bar=document.getElementById('progress-bar');
+          bar.style.width=`${pct}%`;
+          document.getElementById('curr-time').innerText=this.formatTime(curr);
+          document.getElementById('total-time').innerText=this.formatTime(total);
+
+          // signal jitter
+          if(Math.random()<0.02){
+            bar.style.filter='brightness(1.8)';
+            setTimeout(()=>bar.style.filter='none', 100);
+          }
+        }
+      }
+
+      formatTime(s){
+        const m=Math.floor(s/60);
+        const secs=Math.floor(s%60);
+        return `${m}:${secs<10?'0':''}${secs}`;
+      }
+
+      applyArtistProfile(artist){
+        this.profile = artist;
+        const ml=document.getElementById('mode-label');
+        if(ml) ml.textContent = 'STANDARD';
+
+        // Fluid personality (if FLUID_CONFIG exists)
+        if(window.FLUID_CONFIG){
+          if(artist==='Ethel'){
+            FLUID_CONFIG.CURL=1; FLUID_CONFIG.SPLAT_RADIUS=0.55;
+            FLUID_CONFIG.DENSITY_DISSIPATION=0.994; FLUID_CONFIG.VELOCITY_DISSIPATION=0.99;
+          }else if(artist==='Isla'){
+            FLUID_CONFIG.CURL=6; FLUID_CONFIG.SPLAT_RADIUS=1.15;
+            FLUID_CONFIG.DENSITY_DISSIPATION=0.985; FLUID_CONFIG.VELOCITY_DISSIPATION=0.97;
+          }else if(artist==='Dominic'){
+            FLUID_CONFIG.CURL=0.5; FLUID_CONFIG.SPLAT_RADIUS=0.42;
+            FLUID_CONFIG.DENSITY_DISSIPATION=0.998; FLUID_CONFIG.VELOCITY_DISSIPATION=0.995;
+          }else{
+            FLUID_CONFIG.CURL=2; FLUID_CONFIG.SPLAT_RADIUS=0.9;
+            FLUID_CONFIG.DENSITY_DISSIPATION=0.992; FLUID_CONFIG.VELOCITY_DISSIPATION=0.985;
+          }
+        }
+
+        // PostFX defaults per profile
+        if(this.fx){
+          if(artist==='Ethel'){
+            this.fx.intensity=0.75; this.fx.bloom=0.65; this.fx.glitch=0.06; this.fx.rgbShift=0.004; this.fx.scan=0.22;
+          }else if(artist==='Isla'){
+            this.fx.intensity=0.95; this.fx.bloom=1.05; this.fx.glitch=0.18; this.fx.rgbShift=0.010; this.fx.scan=0.30;
+          }else if(artist==='Dominic'){
+            this.fx.intensity=0.82; this.fx.bloom=0.85; this.fx.glitch=0.13; this.fx.rgbShift=0.008; this.fx.scan=0.26;
+          }else{
+            this.fx.intensity=0.78; this.fx.bloom=0.8; this.fx.glitch=0.10; this.fx.rgbShift=0.006; this.fx.scan=0.24;
+          }
+        }
+
+        // Whisper tone
+        if(artist==='Dominic'){
+          this.whisper.say("I CAN HEAR YOU CHOOSE.", {small:true});
+        }else if(artist==='Isla'){
+          this.whisper.say("DON'T FLINCH.", {small:true});
+        }else if(artist==='Ethel'){
+          this.whisper.say("MEASURE THE SIGNAL. NOT YOUR FEELING.", {small:true});
+        }
+      }
+
+      applyTemporalWeight(storyDate){
+        const status=document.getElementById('status-indicator');
+        if(!storyDate || !status) return;
+        const d=storyDate.toUpperCase();
+
+        if(d.includes('PRISON')) status.style.color='#8800ff';
+        else if(d.includes('CRASH')) status.style.color='#ff2200';
+        else if(d.includes('LEAK')) status.style.color='#00aaff';
+        else if(d.includes('TRIAL')) status.style.color='#ffaa00';
+        else if(d.includes('ESCAPE')) status.style.color='#ff00ff';
+        else if(d.includes('WEDDING')) status.style.color='#ff6699';
+        else if(d.includes('ARCHIVE')) status.style.color='#666666';
+      }
+
+      // Called every animation frame
+      tick(nowMs, nowSec){
+        this.branch.tick(nowMs);
+        this.whisper.tick(nowMs);
+
+        // Instrument: map mouse -> tension/control; branch state -> compliance
+        const tension = 1.0 - this._mouse.y;     // up = tension
+        const control  = this._mouse.x;          // right = control
+        let compliance = 0.55;
+
+        if(this.branch.state==='SUBMITTING') compliance = 0.85;
+        if(this.branch.state==='CONTROLLING') compliance = 0.35;
+        if(this.branch.state==='AVOIDING') compliance = 0.25;
+        if(this.branch.state==='RESISTING') compliance = 0.45;
+
+        this.audio.setInstrument({tension, control, compliance});
+
+        // Beat -> fluid splats + whisper triggers + postFX punches
+        const bd=this.beat.update(nowMs);
+        const energy=bd.energy;
+
+        // Continuous mist tied to energy
+        if(colorExtractor && fluid){
+          const spot = colorExtractor.getRandomHotspot();
+          const amp = Math.min(1.0, Math.max(0.05, energy * 2.8));
+          fluid.splatStack.push({
+            x: spot.x,
+            y: spot.y,
+            dx: (Math.random()-0.5) * 260 * amp,
+            dy: (Math.random()*380 - 60) * amp,
+            color: { r: spot.r*0.45, g: spot.g*0.45, b: spot.b*0.45 }
+          });
+        }
+
+        if(bd.beat){
+          // A beat is a "reality update"
+          if(colorExtractor && fluid){
+            for(let i=0;i<6;i++){
+              const s=colorExtractor.getRandomHotspot();
+              const amp = Math.min(1.0, Math.max(0.08, energy*3.4));
+              fluid.splatStack.push({
+                x:s.x,
+                y:s.y,
+                dx:(Math.random()-0.5)*1800*amp,
+                dy:(Math.random()-0.3)*2200*amp,
+                color:{ r: s.r*0.8, g: s.g*0.8, b: s.b*0.8 }
+              });
+            }
+          }
+
+          // PostFX punch
+          if(this.fx){
+            const baseG = this.fx.glitch;
+            this.fx.glitch = Math.min(0.35, baseG + 0.08 + energy*0.12);
+            setTimeout(()=>{ if(this.fx) this.fx.glitch = baseG; }, 70);
+          }
+
+          // Behavioural whispers: "split the listener"
+          if(this.profile==='Dominic'){
+            if(this.branch.state==='CONTROLLING' && Math.random()<0.10) this.whisper.say("CONTROL IS A FORM OF FEAR.", {small:true});
+            if(this.branch.state==='SUBMITTING' && Math.random()<0.12) this.whisper.say("GOOD. LET IT PLAY.", {small:true});
+            if(this.branch.state==='AVOIDING' && Math.random()<0.14) this.whisper.say("RUNNING DOESN'T ERASE IT.", {small:true, red:true});
+          }else{
+            if(this.branch.state==='AVOIDING' && Math.random()<0.08) this.whisper.say("YOU'RE SKIPPING THE PART THAT MATTERS.", {small:true});
+            if(this.branch.state==='CONTROLLING' && Math.random()<0.08) this.whisper.say("LOOK HOW YOU NEED TO DRIVE.", {small:true});
+            if(this.branch.state==='SUBMITTING' && Math.random()<0.08) this.whisper.say("STAY WITH IT.", {small:true});
+          }
+
+          // Hidden narrative trigger: if they keep skipping, the system “changes clearance”
+          if(this.branch.score.skip > 7 && Math.random()<0.08){
+            activateArchiveMode();
+            this.whisper.say("CLEARANCE ESCALATED.", {small:true});
+          }
+        }
+
+        // Render PostFX last
+        if(this.fx){
+          this.fx.render(nowSec);
+        }
+      }
+    }
+
+    // --- GLOBALS ---
+    let fluid;
+    let galleryEngine;
+    let colorExtractor;
+    const jukebox = new Jukebox();
+
+    // Archive Mode (kept)
+    let archiveActive=false;
+    function activateArchiveMode(){
+      archiveActive=true;
+      document.body.classList.add('archive-mode');
+      document.getElementById('status-indicator').innerText='ARCHIVE MODE';
+      document.getElementById('status-indicator').style.color='#ff0000';
+      const label=document.getElementById('catalogue-label');
+      if(label) label.innerText='MODE: FULL ARCHIVE ACCESS // CLEARANCE: UNRESTRICTED';
+      const ml=document.getElementById('mode-label');
+      if(ml) ml.textContent='ARCHIVE';
+    }
+    function deactivateArchiveMode(){
+      archiveActive=false;
+      document.body.classList.remove('archive-mode');
+      document.getElementById('status-indicator').innerText=jukebox.isPlaying?'PLAYING':'STANDBY';
+      document.getElementById('status-indicator').style.color=jukebox.isPlaying?'#00ff41':'#00ff41';
+      const label=document.getElementById('catalogue-label');
+      if(label) label.innerText='Catalogue: 50 Tracks // Mode: Random Access';
+      const ml=document.getElementById('mode-label');
+      if(ml) ml.textContent='STANDARD';
+    }
+
+    // Hidden toggle: 5 rapid clicks on title
+    (function initArchiveToggle(){
+      let clickCount=0;
+      let clickTimer=null;
+      const el=document.getElementById('track-title');
+      el.addEventListener('click', ()=>{
+        clickCount++;
+        clearTimeout(clickTimer);
+        clickTimer=setTimeout(()=>clickCount=0, 1000);
+        if(clickCount>=5){
+          clickCount=0;
+          archiveActive ? deactivateArchiveMode() : activateArchiveMode();
+        }
+      });
+    })();
+
+    function toggleFullscreen(){
+      if(!document.fullscreenElement) document.documentElement.requestFullscreen();
+      else document.exitFullscreen && document.exitFullscreen();
+    }
+
+    /**
+     * =============================
+     * BOOT: init fluid + gallery + audio
+     * =============================
+     */
+    async function startSystem(){
+      const overlay=document.getElementById('start-overlay');
+      overlay.style.opacity='0';
+      setTimeout(()=>overlay.remove(), 500);
+
+      // Init fluid
+      const canvasEl=document.getElementById('fluid-canvas');
+      if(typeof FluidSimulator==='undefined'){
+        console.error('[JB] FluidSimulator missing. Check js/fluid-simulator.js');
+        return;
+      }
+      fluid = new FluidSimulator(canvasEl, null);
+
+      // Gallery + color
+      galleryEngine=new GalleryEngine();
+      colorExtractor=new ColorExtractor();
+      galleryEngine.onImageReady=(img)=>colorExtractor.extractFromImage(img);
+      galleryEngine.loadMap();
+
+      // Mist config
+      if(window.FLUID_CONFIG){
+        window.FLUID_CONFIG.DENSITY_DISSIPATION=0.992;
+        window.FLUID_CONFIG.VELOCITY_DISSIPATION=0.985;
+        window.FLUID_CONFIG.SPLAT_RADIUS=0.9;
+        window.FLUID_CONFIG.CURL=2;
+      }
+
+      // Init audio + postfx + systems (requires user gesture: this click)
+      await jukebox.init(fluid);
+
+      // Seed splats
+      for(let i=0;i<5;i++){
+        const a=Math.random()*Math.PI*2;
+        fluid.splatStack.push({
+          x:0.5+Math.cos(a)*0.1,
+          y:0.5+Math.sin(a)*0.1,
+          dx:Math.cos(a)*2200,
+          dy:Math.sin(a)*2200,
+          color:{r:0.0,g:1.0,b:0.25}
+        });
+      }
+
+      // Start loops
+      setInterval(()=>jukebox.updateProgress(), 250);
+
+      const frame=(t)=>{
+        const nowMs=performance.now();
+        jukebox.tick(nowMs, t*0.001);
+        requestAnimationFrame(frame);
+      };
+      requestAnimationFrame(frame);
+
+      // Start with a random track (loads file, won't autoplay until user hits play)
+      jukebox.loadRandomTrack();
+    }
+
+    /**
+     * =============================
+     * START SCREEN: cinematic boot
+     * =============================
+     */
+    (function bootSequence(){
+      const loadingText=document.getElementById('loading-text');
+      const initBtn=document.getElementById('init-btn');
+
+      const bootMessages=[
+        "CHECKING MEMORY BLOCKS...",
+        "VERIFYING ARCHIVE INTEGRITY...",
+        "AUTHENTICATING NARRATIVE HASH...",
+        "MOUNTING AUDIO DEVICE...",
+        "LINKING GPU POST-FX PIPE...",
+        "UPLINK ESTABLISHED."
+      ];
+
+      let i=0;
+      const bootInterval=setInterval(()=>{
+        loadingText.innerText=bootMessages[i] || "…";
+        i++;
+        if(i>=bootMessages.length){
+          clearInterval(bootInterval);
+          setTimeout(()=>{
+            loadingText.style.display='none';
+            initBtn.style.display='block';
+          }, 600);
+        }
+      }, 720);
+    })();
+  </script>
+</body>
+</html>
+>>>>>>> 426476bf8f786087783ebbc5d229e7f84e005cc3
