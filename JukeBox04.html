@@ -1,0 +1,1053 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>PIXELSTORTION // JUKEBOX</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://www.youtube.com/iframe_api"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=Space+Grotesk:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,1,0"
+        rel="stylesheet" />
+
+    <style>
+        :root {
+            --neon-green: #00ff41;
+            --fire-orange: #ff4500;
+            --void: #050505;
+        }
+
+        body,
+        html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--void);
+            overflow: hidden;
+            font-family: 'Space Grotesk', sans-serif;
+            cursor: crosshair;
+        }
+
+        /* --- VISUAL LAYERS --- */
+
+        /* Layer 0: Narrative Gallery */
+        #bg-gallery {
+            position: fixed;
+            inset: 0;
+            z-index: 1;
+            overflow: hidden;
+            background: #000;
+        }
+
+        .gallery-img {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0;
+            /* NO BLUR. Just dimmed and slightly desaturated for UI contrast */
+            filter: brightness(0.5) grayscale(0.2);
+            transform: scale(1.05);
+            transition: opacity 2s ease, transform 15s ease-out;
+        }
+
+        .gallery-img.active {
+            opacity: 1.0;
+            transform: scale(1.0);
+            /* Gentle drift */
+        }
+
+        /* Layer 1: Fluid Canvas */
+        #fluid-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 2;
+            /* Screen mode drops out black, showing the fluid over the images */
+            mix-blend-mode: screen;
+            /* Soften the fluid layer so it acts like a delicate fog */
+            opacity: 0.65;
+        }
+
+        .scanlines {
+            position: fixed;
+            inset: 0;
+            background: linear-gradient(to bottom,
+                    rgba(255, 255, 255, 0) 50%,
+                    rgba(0, 0, 0, 0.2) 50%,
+                    rgba(0, 0, 0, 0.6) 100%);
+            background-size: 100% 4px;
+            z-index: 10;
+            pointer-events: none;
+            opacity: 0.7;
+        }
+
+        /* Layer 5: Vignette — heavy, frames the narrative images into the void */
+        .vignette {
+            position: fixed;
+            inset: 0;
+            background: radial-gradient(ellipse at center, transparent 30%, rgba(5, 5, 5, 0.6) 60%, #050505 85%);
+            z-index: 5;
+            pointer-events: none;
+        }
+
+        /* --- UI LAYERS --- */
+        #ui-layer {
+            position: fixed;
+            inset: 0;
+            z-index: 20;
+            pointer-events: none;
+            /* Let clicks pass to fluid */
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 2rem;
+        }
+
+        .interactive {
+            pointer-events: auto;
+        }
+
+        /* --- TYPOGRAPHY --- */
+        .glitch-text {
+            font-family: 'Space Grotesk', sans-serif;
+            text-transform: uppercase;
+            position: relative;
+            color: white;
+            mix-blend-mode: difference;
+        }
+
+        .font-mono-custom {
+            font-family: 'Courier Prime', monospace;
+        }
+
+        /* --- CONTROLS --- */
+        .control-btn {
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+
+        .control-btn:hover {
+            border-color: var(--neon-green);
+            color: var(--neon-green);
+            transform: scale(1.1);
+            background: rgba(0, 20, 0, 0.6);
+        }
+
+        .control-btn:active {
+            transform: scale(0.95);
+        }
+
+        /* --- PROGRESS BAR --- */
+        .progress-container {
+            width: 100%;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            margin-top: 1rem;
+            position: relative;
+            cursor: pointer;
+            overflow: hidden;
+            border-radius: 3px;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: var(--neon-green);
+            width: 0%;
+            box-shadow: 0 0 12px var(--neon-green),
+                0 0 40px rgba(0, 255, 65, 0.3);
+            transition: width 0.1s linear;
+        }
+
+        /* --- HIDDEN YOUTUBE (Covered Visible Player Pattern) --- */
+        /* Player must remain on-screen to avoid browser throttling. */
+        /* Pushed behind the gallery layer (z-index -2). */
+        #video-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 1px;
+            height: 1px;
+            overflow: hidden;
+            z-index: -2;
+            pointer-events: none;
+        }
+
+        /* --- START OVERLAY --- */
+        #start-overlay {
+            position: fixed;
+            inset: 0;
+            background: #000;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+
+        .start-btn {
+            border: 1px solid var(--neon-green);
+            color: var(--neon-green);
+            padding: 20px 60px;
+            font-family: 'Courier Prime', monospace;
+            font-size: 1.2rem;
+            letter-spacing: 4px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            display: none;
+            /* Hidden until ready */
+        }
+
+        .start-btn:hover {
+            background: var(--neon-green);
+            color: black;
+            box-shadow: 0 0 30px rgba(0, 255, 65, 0.5);
+        }
+
+        /* --- TRACK DATE --- */
+        #track-date {
+            min-height: 1.2em;
+        }
+
+        /* --- PHASE 1: MICRO-CORRUPTION LAYER --- */
+        @keyframes micro-glitch {
+            0% {
+                transform: translate(0, 0);
+            }
+
+            20% {
+                transform: translate(-1px, 1px);
+            }
+
+            40% {
+                transform: translate(1px, -1px);
+            }
+
+            60% {
+                transform: translate(-1px, -1px);
+            }
+
+            80% {
+                transform: translate(1px, 1px);
+            }
+
+            100% {
+                transform: translate(0, 0);
+            }
+        }
+
+        .glitch-pulse {
+            animation: micro-glitch 0.15s linear 1;
+        }
+
+        /* --- PHASE 6: ARCHIVE MODE INVERSION --- */
+        .archive-mode {
+            filter: invert(1) hue-rotate(180deg);
+            transition: filter 0.6s ease;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- NARRATIVE GALLERY (Layer 0) -->
+    <div id="bg-gallery">
+        <img id="gallery-img-a" class="gallery-img active" />
+        <img id="gallery-img-b" class="gallery-img" />
+    </div>
+
+    <!-- VISUALS -->
+    <canvas id="fluid-canvas"></canvas>
+    <div class="scanlines"></div>
+    <div class="vignette"></div>
+
+    <!-- START SCREEN -->
+    <div id="start-overlay">
+        <h1 class="text-4xl md:text-6xl font-bold text-white mb-8 tracking-tighter">PIXELSTORTION</h1>
+        <button id="init-btn" class="start-btn" onclick="startSystem()">INITIALIZE SYSTEM</button>
+        <p id="loading-text" class="mt-4 text-gray-500 font-mono-custom text-xs animate-pulse">ESTABLISHING UPLINK...
+        </p>
+    </div>
+
+    <!-- UI OVERLAY -->
+    <div id="ui-layer">
+
+        <!-- TOP BAR -->
+        <div class="flex justify-between items-start">
+            <div>
+                <div class="text-[10px] text-green-500 font-mono-custom tracking-[0.2em] mb-1">CURRENT TRACK</div>
+                <h1 id="track-title"
+                    class="text-4xl md:text-7xl font-bold text-white leading-none tracking-tighter mix-blend-difference mb-2">
+                    SILENCE</h1>
+                <h2 id="track-artist" class="text-xl md:text-2xl text-gray-400 font-light">WAITING FOR INPUT...</h2>
+                <h3 id="track-date" class="text-sm text-green-700 font-mono-custom tracking-widest mt-1"></h3>
+            </div>
+
+            <div class="text-right hidden md:block">
+                <div class="text-[10px] text-gray-500 font-mono-custom tracking-[0.2em]">SYSTEM STATUS</div>
+                <div id="status-indicator" class="text-green-500 font-bold">STANDBY</div>
+            </div>
+        </div>
+
+        <!-- CENTER (Empty for visuals) -->
+
+        <!-- BOTTOM CONTROLS -->
+        <div class="w-full max-w-4xl mx-auto interactive">
+
+            <!-- Controls -->
+            <div class="flex items-center justify-center gap-6 mb-4">
+                <button class="control-btn" onclick="jukebox.prev()">
+                    <span class="material-symbols-outlined">skip_previous</span>
+                </button>
+
+                <button class="control-btn" style="width: 80px; height: 80px; border-color: white;"
+                    onclick="jukebox.togglePlay()">
+                    <span id="play-icon" class="material-symbols-outlined" style="font-size: 40px;">play_arrow</span>
+                </button>
+
+                <button class="control-btn" onclick="jukebox.next()">
+                    <span class="material-symbols-outlined">skip_next</span>
+                </button>
+
+                <button class="control-btn" onclick="toggleFullscreen()">
+                    <span class="material-symbols-outlined">fullscreen</span>
+                </button>
+            </div>
+
+            <!-- Progress -->
+            <div class="flex justify-between text-xs font-mono-custom text-gray-500 px-1">
+                <span id="curr-time">0:00</span>
+                <span id="total-time">0:00</span>
+            </div>
+            <div class="progress-container" onclick="jukebox.seek(event)">
+                <div id="progress-bar" class="progress-bar"></div>
+            </div>
+
+            <div class="text-center mt-4">
+                <p id="catalogue-label" class="text-[10px] text-gray-600 font-mono-custom uppercase tracking-widest">
+                    Catalogue: 50 Tracks // Mode: Random Access
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- HIDDEN PLAYER -->
+    <div id="video-container">
+        <div id="player"></div>
+    </div>
+
+    <!-- FLUID ENGINE SCRIPT (External Library) -->
+    <script src="js/fluid-simulator.js"></script>
+
+    <!-- JUKEBOX LOGIC -->
+    <script>
+        // --- DATA ARCHIVE ---
+        // galleryTrack maps to keys in gallery_map.json. storyDate from narrative metadata.
+        const SONG_ARCHIVE = [
+            { id: 2, title: "The Drop 1", artist: "Ethel", videoId: "zHWwhom80go", storyDate: "NOV 14, 2016 (AGE 15)", galleryTrack: "track_02" },
+            { id: 4, title: "The Drop 2", artist: "Ethel", videoId: "K0ILO8MwX4Y", storyDate: "NOV 14, 2016 (AGE 15)", galleryTrack: "track_04" },
+            { id: 6, title: "Polished Vomit", artist: "Isla", videoId: "MhEeDcdscrs", storyDate: "FEB 14, 2019 (THE WEDDING)", galleryTrack: "track_06" },
+            { id: 8, title: "Structural Psychopathy", artist: "Dominic", videoId: "8rvIVBLZg2o", storyDate: "MAR 2019 (PROFILE)", galleryTrack: "track_08" },
+            { id: 10, title: "Ride", artist: "Ethel", videoId: "0sgcZRtPO6s", storyDate: "JAN 20, 2024 (AGE 17)", galleryTrack: "track_10" },
+            { id: 12, title: "Grief", artist: "Ethel", videoId: "PMy76HBgpL8", storyDate: "FEB 28, 2024 (THE CRASH)", galleryTrack: "track_12" },
+            { id: 14, title: "Gotta Move", artist: "Ethel", videoId: "06qE_-OeIT0", storyDate: "MAR 02, 2024 (LEAVING HOME)", galleryTrack: "track_14" },
+            { id: 16, title: "Won't Break Where Others End", artist: "Ethel", videoId: "fJNMlT7UeW0", storyDate: "MAR 05, 2024 (MOSMAN)", galleryTrack: "track_16" },
+            { id: 18, title: "Big House", artist: "Ethel", videoId: "mj9MGf-VzJY", storyDate: "MAR 05, 2024 (MOSMAN)", galleryTrack: "track_18" },
+            { id: 20, title: "Peek-A-Boo", artist: "Isla", videoId: "qbFxG7sK0pE", storyDate: "MAR 10, 2024 (MOSMAN)", galleryTrack: "track_20" },
+            { id: 22, title: "Northern Road", artist: "Dominic", videoId: "P19KBEQdVjQ", storyDate: "MAR 15, 2024", galleryTrack: "track_22" },
+            { id: 24, title: "Isla Hates Married Bankers", artist: "Isla", videoId: "sXKAs0U8eO8", storyDate: "MAY 2024", galleryTrack: "track_24" },
+            { id: 26, title: "I Built A Box", artist: "Ethel", videoId: "0F_prk5dGC4", storyDate: "JUN 2024 (THE SAFE HOUSE)", galleryTrack: "track_26" },
+            { id: 28, title: "Isla's Burning Dominic's Bridge", artist: "Isla", videoId: "nVKkwb4EnRc", storyDate: "AUG 2024 (THE LEAK)", galleryTrack: "track_28" },
+            { id: 30, title: "For You!!!", artist: "Ethel", videoId: "f8o7zb3F-Xk", storyDate: "SEP 2024", galleryTrack: "track_30" },
+            { id: 32, title: "Isla's Broken Edge", artist: "Isla", videoId: "_gvv_W5_x10", storyDate: "OCT 2024", galleryTrack: "track_32" },
+            { id: 34, title: "Hero Complex", artist: "Dominic", videoId: "YkQOXPzYkkU", storyDate: "FEB 2020 (THE TRIAL START)", galleryTrack: "track_34" },
+            { id: 36, title: "Nothing True", artist: "Ethel", videoId: "Ghg7pC3ms3I", storyDate: "APR 2020 (THE TESTIMONY)", galleryTrack: "track_36" },
+            { id: 38, title: "You Will Thank Me Later", artist: "Dominic", videoId: "n6OgobffCzo", storyDate: "JUN 2020 (PRISON)", galleryTrack: "track_38" },
+            { id: 39, title: "No Sparrow Caught Mid Flight", artist: "Ethel", videoId: "t6vLU0uqIfc", storyDate: "DEC 2024 (POST-TRIAL)", galleryTrack: "track_39" },
+            { id: 41, title: "Dominic's Escape", artist: "Dominic", videoId: "6eZwBGXGSO4", storyDate: "JAN 2024 (THE ESCAPE)", galleryTrack: "track_41" },
+            { id: 42, title: "Ethel's Story - Overview", artist: "Ethel", videoId: "dLUClmr_Pf4", storyDate: "(ARCHIVE REVIEW)", galleryTrack: "track_42" },
+            { id: 43, title: "Ethel's Conclusion", artist: "Ethel", videoId: "D5afy4FucwA", storyDate: "(ARCHIVE REVIEW)", galleryTrack: "track_43" },
+            { id: 44, title: "Ethel:Spoken: Projection", artist: "Ethel", videoId: "AOktpmGD0Po", storyDate: "UNKNOWN", galleryTrack: "track_44" },
+            { id: 45, title: "Platform 18", artist: "Ethel", videoId: "VC6vQGPyF4c", storyDate: "UNKNOWN", galleryTrack: "track_45" },
+            { id: 46, title: "Kinley (Guilt Money)", artist: "Kinley", videoId: "Ac3cRsmjKpE", storyDate: "UNKNOWN", galleryTrack: "track_46" },
+            { id: 47, title: "Ants On The Vine", artist: "Ethel", videoId: "CaBcQ2aSjog", storyDate: "UNKNOWN", galleryTrack: "track_47" },
+            { id: 48, title: "Rattled", artist: "Ethel", videoId: "Fs7BXBOVnvY", storyDate: "UNKNOWN", galleryTrack: "track_48" },
+            { id: 49, title: "Clipboard Man", artist: "Ethel", videoId: "ZAhqNWTHTGU", storyDate: "UNKNOWN", galleryTrack: "track_49" },
+            { id: 50, title: "Make A Mistake On Purpose", artist: "Ethel", videoId: "s9Z8dgRk-Q8", storyDate: "UNKNOWN", galleryTrack: "track_50" },
+            { id: 51, title: "Red Stick", artist: "Ethel", videoId: "iTOKsLS3jhM", storyDate: "UNKNOWN", galleryTrack: "track_51" },
+            { id: 52, title: "Harms Ghost", artist: "Ethel", videoId: "WZ3P96AJfEc", storyDate: "UNKNOWN", galleryTrack: "track_52" },
+            { id: 54, title: "Normal?!", artist: "Ethel", videoId: "8GCXnOQI60g", storyDate: "UNKNOWN", galleryTrack: "track_54" },
+            { id: 55, title: "This isn't therapy", artist: "Isla", videoId: "0tzOaukuBns", storyDate: "UNKNOWN", galleryTrack: "track_55" },
+            { id: 56, title: "A Drop From the Forth", artist: "Isla", videoId: "6bwKDegeBHU", storyDate: "UNKNOWN", galleryTrack: "track_56" },
+            { id: 57, title: "The Porcelain Lie", artist: "Isla", videoId: "GFkK21BdE9o", storyDate: "UNKNOWN", galleryTrack: "track_57" },
+            { id: 58, title: "Memory under Water", artist: "Isla", videoId: "nk4Re7OjTTM", storyDate: "UNKNOWN", galleryTrack: "track_58" },
+            { id: 59, title: "Raise The Fourth", artist: "Isla", videoId: "ey20cJsY82M", storyDate: "UNKNOWN", galleryTrack: "track_59" },
+            { id: 60, title: "Raise The Fourth Version 2", artist: "Isla", videoId: "fNVKsxe_EcM", storyDate: "UNKNOWN", galleryTrack: "track_60" },
+            { id: 61, title: "Intro to Shiny Headed Radio Man", artist: "Isla", videoId: "dK8mqLNRZ2Q", storyDate: "UNKNOWN", galleryTrack: "track_61" },
+            { id: 62, title: "Shiny Headed Radio Man", artist: "Isla", videoId: "UFZeKCcSMoE", storyDate: "UNKNOWN", galleryTrack: "track_62" },
+            { id: 63, title: "Stanmore Farewell", artist: "Isla", videoId: "-3m2_zUNBlo", storyDate: "UNKNOWN", galleryTrack: "track_63" },
+            { id: 64, title: "Don't Wake Him Yet", artist: "Isla", videoId: "NwqHLFYR1mA", storyDate: "UNKNOWN", galleryTrack: "track_64" },
+            { id: 65, title: "What You Don't See", artist: "Isla", videoId: "Y4VC6mh37NI", storyDate: "UNKNOWN", galleryTrack: "track_65" },
+            { id: 66, title: "Melody of Normality (Live)", artist: "Isla", videoId: "a4TpIhna55k", storyDate: "UNKNOWN", galleryTrack: "track_66" },
+            { id: 67, title: "Drop From the Fourth (Symphony)", artist: "Isla", videoId: "7UOZCk5vvbA", storyDate: "UNKNOWN", galleryTrack: "track_67" },
+            { id: 68, title: "What you dont see (Symphony)", artist: "Isla", videoId: "hm2kp7LOhsg", storyDate: "UNKNOWN", galleryTrack: "track_68" },
+            { id: 69, title: "Give it back", artist: "Isla", videoId: "Aw2ZAkxp6b0", storyDate: "UNKNOWN", galleryTrack: "track_69" },
+            { id: 70, title: "What This Was Always For", artist: "Isla", videoId: "X9EUb1_QC9c", storyDate: "UNKNOWN", galleryTrack: "track_70" },
+            { id: 71, title: "FIELD NOTES FROM THE LANGTANG TRAIL, 1966", artist: "UNKNOWN", videoId: "8nuKkf_oe1s", storyDate: "1966", galleryTrack: "track_71" }
+        ];
+
+        // --- GALLERY ENGINE (Image Slideshow) ---
+        // Loads narrative images from gallery_map.json and crossfades them behind the fluid
+        class GalleryEngine {
+            constructor() {
+                this.galleryMap = null;
+                this.currentImages = [];
+                this.currentIndex = 0;
+                this.activeSlot = 'a';
+                this.intervalId = null;
+                this.imgA = document.getElementById('gallery-img-a');
+                this.imgB = document.getElementById('gallery-img-b');
+                this.container = document.getElementById('bg-gallery');
+                this.onImageReady = null; // Callback for ColorExtractor
+            }
+
+            async loadMap() {
+                try {
+                    const resp = await fetch('library/char_ethel_media/gallery_map.json');
+                    const rawMap = await resp.json();
+
+                    // Transform remote GitHub Pages URLs to local relative paths.
+                    // GitHub Pages 301-redirects case-mismatched URLs, stripping CORS headers.
+                    // Local paths eliminate CORS entirely since images are co-located.
+                    const REMOTE_BASE = /https:\/\/NJsalubrious\.github\.io\/pixelstortion-assets\/assets_for_ethel_songs\/images\//gi;
+                    const LOCAL_BASE = 'library/char_ethel_media/images/';
+
+                    this.galleryMap = {};
+                    for (const [track, urls] of Object.entries(rawMap)) {
+                        this.galleryMap[track] = urls.map(url => url.replace(REMOTE_BASE, LOCAL_BASE));
+                    }
+
+                    console.log('[Gallery] Map loaded:', Object.keys(this.galleryMap).length, 'tracks (local paths)');
+                } catch (e) {
+                    console.warn('[Gallery] Failed to load gallery_map.json:', e);
+                }
+            }
+
+            loadTrack(galleryTrack) {
+                // Aggressively clear any running interval before anything else
+                this.stopCycling();
+                this.currentIndex = 0;
+
+                if (!galleryTrack || !this.galleryMap || !this.galleryMap[galleryTrack]) {
+                    // No gallery for this track — hide the container entirely
+                    this.currentImages = [];
+                    this.container.style.opacity = '0';
+                    // Remove active class from both slots so previous images don't linger
+                    this.imgA.classList.remove('active');
+                    this.imgB.classList.remove('active');
+                    return;
+                }
+
+                this.currentImages = this.galleryMap[galleryTrack];
+                this.container.style.opacity = '1';
+
+                // Show the first image immediately
+                if (this.currentImages.length > 0) {
+                    this.showImage(this.currentImages[0]);
+                }
+            }
+
+            showImage(url) {
+                const target = this.activeSlot === 'a' ? this.imgA : this.imgB;
+                const other = this.activeSlot === 'a' ? this.imgB : this.imgA;
+
+                // CRITICAL: Set crossOrigin BEFORE src to avoid tainted canvas
+                target.crossOrigin = 'Anonymous';
+                target.onload = () => {
+                    target.classList.add('active');
+                    other.classList.remove('active');
+                    this.activeSlot = this.activeSlot === 'a' ? 'b' : 'a';
+
+                    // Notify the color extractor that a new image is ready
+                    if (this.onImageReady) this.onImageReady(target);
+                };
+                target.onerror = () => {
+                    console.warn('[Gallery] Failed to load image:', url);
+                };
+                target.src = url;
+            }
+
+            startCycling() {
+                this.stopCycling();
+                if (this.currentImages.length <= 1) return;
+
+                this.intervalId = setInterval(() => {
+                    this.currentIndex = (this.currentIndex + 1) % this.currentImages.length;
+                    this.showImage(this.currentImages[this.currentIndex]);
+                }, 6000);
+            }
+
+            stopCycling() {
+                if (this.intervalId) {
+                    clearInterval(this.intervalId);
+                    this.intervalId = null;
+                }
+            }
+        }
+
+        // --- COLOR EXTRACTOR (Shape & Color Hotspot Scanner) ---
+        // Scans image for bright/colorful regions and uses those as fluid spawn points
+        class ColorExtractor {
+            constructor() {
+                this.canvas = document.createElement('canvas');
+                this.ctx = this.canvas.getContext('2d', { willReadFrequently: true });
+                this.width = 128;
+                this.height = 128;
+                this.canvas.width = this.width;
+                this.canvas.height = this.height;
+                this.hotspots = []; // Stores coordinates of bright/colorful pixels
+            }
+
+            extractFromImage(img) {
+                try {
+                    this.ctx.drawImage(img, 0, 0, this.width, this.height);
+                    const data = this.ctx.getImageData(0, 0, this.width, this.height).data;
+                    this.hotspots = [];
+
+                    // Scan the image for non-dark areas to extract shape
+                    for (let i = 0; i < data.length; i += 4) {
+                        let r = data[i] / 255;
+                        let g = data[i + 1] / 255;
+                        let b = data[i + 2] / 255;
+                        let luminance = (r * 0.299 + g * 0.587 + b * 0.114);
+
+                        // If it's bright or colorful enough, log it as a fluid spawn point
+                        if (luminance > 0.15) {
+                            let x = ((i / 4) % this.width) / this.width;
+                            let y = Math.floor((i / 4) / this.width) / this.height;
+
+                            // Boost saturation slightly for the mist effect
+                            const max = Math.max(r, g, b);
+                            if (max > 0 && max < 0.8) {
+                                const boost = 0.8 / max;
+                                r *= boost; g *= boost; b *= boost;
+                            }
+
+                            this.hotspots.push({ x: x, y: 1.0 - y, r, g, b }); // Y inverted for WebGL
+                        }
+                    }
+                    console.log(`[Color] Mapped ${this.hotspots.length} emission points.`);
+                } catch (e) {
+                    console.warn('[Color] Extraction failed:', e.message);
+                    this.hotspots = [];
+                }
+            }
+
+            getRandomHotspot() {
+                if (this.hotspots.length === 0) {
+                    return { x: 0.2 + Math.random() * 0.6, y: 0.2 + Math.random() * 0.6, r: 0, g: 0.6, b: 0.3 };
+                }
+                return this.hotspots[Math.floor(Math.random() * this.hotspots.length)];
+            }
+        }
+
+        // --- BEAT ENGINE (Visual Logic) ---
+        // Generates explosive visuals based on emulated BPM since we can't get real audio data from YouTube IFrame
+        class BeatEngine {
+            constructor(fluidEngine) {
+                this.fluid = fluidEngine;
+                this.active = false;
+                this.interval = null;
+                this.bpm = 120;
+                this.lastBeat = 0;
+            }
+
+            start() {
+                this.active = true;
+                this.loop();
+            }
+
+            stop() {
+                this.active = false;
+                if (this.interval) clearTimeout(this.interval);
+            }
+
+            loop() {
+                if (!this.active) return;
+
+                // Randomize BPM slightly to feel organic for different songs
+                const variance = Math.random() * 200;
+                const msPerBeat = (60000 / this.bpm) - variance;
+
+                this.interval = setTimeout(() => {
+                    this.triggerBeat();
+                    this.loop();
+                }, msPerBeat);
+            }
+
+            triggerBeat() {
+                if (!colorExtractor) return;
+
+                // Spawn a few gentle wisps from the bright areas of the image
+                // This makes the image look like it is steaming or smoking
+                for (let i = 0; i < 3; i++) {
+                    const spot = colorExtractor.getRandomHotspot();
+                    this.fluid.splatStack.push({
+                        x: spot.x,
+                        y: spot.y,
+                        // Very gentle, slightly upward drifting velocity
+                        dx: (Math.random() - 0.5) * 400,
+                        dy: Math.random() * 600 - 100,
+                        color: { r: spot.r * 0.5, g: spot.g * 0.5, b: spot.b * 0.5 }
+                    });
+                }
+            }
+        }
+
+        // --- JUKEBOX CONTROLLER ---
+        class Jukebox {
+            constructor() {
+                this.player = null;
+                this.currentTrackIndex = -1;
+                this.playedHistory = [];
+                this.isPlaying = false;
+                this.beatEngine = null;
+            }
+
+            init(fluidEngine) {
+                this.beatEngine = new BeatEngine(fluidEngine);
+            }
+
+            loadRandomTrack() {
+                let newIndex;
+                do {
+                    newIndex = Math.floor(Math.random() * SONG_ARCHIVE.length);
+                } while (newIndex === this.currentTrackIndex && SONG_ARCHIVE.length > 1);
+
+                this.loadTrack(newIndex);
+            }
+
+            loadTrack(index) {
+                this.currentTrackIndex = index;
+                const track = SONG_ARCHIVE[index];
+
+                // UI Update
+                document.getElementById('track-title').innerText = track.title;
+                document.getElementById('track-artist').innerText = track.artist;
+                document.getElementById('track-date').innerText = track.storyDate || '';
+                document.getElementById('status-indicator').innerText = "BUFFERING";
+
+                // PHASE 2: Apply narrative fluid identity based on artist archetype
+                this.applyArtistProfile(track.artist);
+
+                // PHASE 3: Apply temporal weight — system tone shifts with timeline events
+                this.applyTemporalWeight(track.storyDate);
+
+                // Gallery Update — load images for this track
+                if (galleryEngine) {
+                    galleryEngine.loadTrack(track.galleryTrack);
+                }
+
+                // Load Video
+                if (this.player && this.player.loadVideoById) {
+                    this.player.loadVideoById(track.videoId);
+                }
+            }
+
+            togglePlay() {
+                if (!this.player) return;
+                const state = this.player.getPlayerState();
+                if (state === 1) { // Playing
+                    this.player.pauseVideo();
+                } else {
+                    this.player.playVideo();
+                }
+            }
+
+            next() {
+                this.loadRandomTrack();
+            }
+
+            prev() {
+                // For a random jukebox, prev just loads another random track (chaos mode)
+                this.loadRandomTrack();
+            }
+
+            seek(event) {
+                if (!this.player) return;
+                const container = document.querySelector('.progress-container');
+                const rect = container.getBoundingClientRect();
+                const clickX = event.clientX - rect.left;
+                const percent = Math.max(0, Math.min(1, clickX / rect.width));
+                const duration = this.player.getDuration();
+                this.player.seekTo(duration * percent, true);
+            }
+
+            onStateChange(event) {
+                const status = document.getElementById('status-indicator');
+                const playIcon = document.getElementById('play-icon');
+
+                if (event.data === YT.PlayerState.PLAYING) {
+                    this.isPlaying = true;
+                    status.innerText = "PLAYING";
+                    status.style.color = "#00ff41"; // Neon Green
+                    playIcon.innerText = "pause";
+                    this.beatEngine.start(); // Start Visuals
+                    if (galleryEngine) galleryEngine.startCycling(); // Start Slideshow
+
+                    // PHASE 1: Micro-corruption — memory forced into RAM
+                    const titleEl = document.getElementById('track-title');
+                    titleEl.classList.add('glitch-pulse');
+                    setTimeout(() => titleEl.classList.remove('glitch-pulse'), 200);
+                }
+                else if (event.data === YT.PlayerState.PAUSED) {
+                    this.isPlaying = false;
+                    status.innerText = "PAUSED";
+                    status.style.color = "orange";
+                    playIcon.innerText = "play_arrow";
+                    this.beatEngine.stop(); // Stop Visuals
+                    if (galleryEngine) galleryEngine.stopCycling(); // Pause Slideshow
+                }
+                else if (event.data === YT.PlayerState.ENDED) {
+                    this.isPlaying = false;
+                    status.innerText = "LOADING NEXT...";
+                    this.beatEngine.stop();
+                    if (galleryEngine) galleryEngine.stopCycling();
+                    this.next(); // Auto-advance
+                }
+            }
+
+            updateProgress() {
+                if (!this.player || !this.isPlaying) return;
+
+                const curr = this.player.getCurrentTime();
+                const total = this.player.getDuration();
+
+                if (total > 0) {
+                    const pct = (curr / total) * 100;
+                    const bar = document.getElementById('progress-bar');
+                    bar.style.width = `${pct}%`;
+                    document.getElementById('curr-time').innerText = this.formatTime(curr);
+                    document.getElementById('total-time').innerText = this.formatTime(total);
+
+                    // PHASE 4: Signal jitter — unstable transmission
+                    if (Math.random() < 0.02) {
+                        bar.style.filter = 'brightness(1.8)';
+                        setTimeout(() => { bar.style.filter = 'none'; }, 100);
+                    }
+                }
+            }
+
+            formatTime(s) {
+                const m = Math.floor(s / 60);
+                const secs = Math.floor(s % 60);
+                return `${m}:${secs < 10 ? '0' : ''}${secs}`;
+            }
+
+            onError(event) {
+                console.warn("YouTube Player Error:", event.data);
+                const status = document.getElementById('status-indicator');
+                if (status) {
+                    status.innerText = "SIGNAL LOST";
+                    status.style.color = "red";
+                }
+
+                // Fallback: Start visual engine in "Simulation Mode"
+                if (this.beatEngine && !this.beatEngine.active) {
+                    console.log("Activating Visual Fallback Mode");
+                    this.beatEngine.start();
+                }
+            }
+
+            // --- PHASE 2: NARRATIVE FLUID IDENTITY ---
+            // Each character's fluid behaves differently — psychology rendered as physics
+            applyArtistProfile(artist) {
+                if (!window.FLUID_CONFIG) return;
+
+                if (artist === 'Ethel') {
+                    // Controlled pressure. Tight. Contained. Barely holding it together.
+                    FLUID_CONFIG.CURL = 1;
+                    FLUID_CONFIG.SPLAT_RADIUS = 0.6;
+                    FLUID_CONFIG.DENSITY_DISSIPATION = 0.994;
+                    FLUID_CONFIG.VELOCITY_DISSIPATION = 0.99;
+                }
+                else if (artist === 'Isla') {
+                    // Emotional rupture. Violent beauty. Uncontrollable.
+                    FLUID_CONFIG.CURL = 6;
+                    FLUID_CONFIG.SPLAT_RADIUS = 1.2;
+                    FLUID_CONFIG.DENSITY_DISSIPATION = 0.985;
+                    FLUID_CONFIG.VELOCITY_DISSIPATION = 0.97;
+                }
+                else if (artist === 'Dominic') {
+                    // Thin, creeping infiltration. Cold. Insidious.
+                    FLUID_CONFIG.CURL = 0.5;
+                    FLUID_CONFIG.SPLAT_RADIUS = 0.4;
+                    FLUID_CONFIG.DENSITY_DISSIPATION = 0.998;
+                    FLUID_CONFIG.VELOCITY_DISSIPATION = 0.995;
+                }
+                else if (artist === 'Kinley') {
+                    // Guilt money. Heavy, stained, lingering.
+                    FLUID_CONFIG.CURL = 3;
+                    FLUID_CONFIG.SPLAT_RADIUS = 0.7;
+                    FLUID_CONFIG.DENSITY_DISSIPATION = 0.993;
+                    FLUID_CONFIG.VELOCITY_DISSIPATION = 0.98;
+                }
+                else {
+                    // Unknown / default — calm surveillance ambient
+                    FLUID_CONFIG.CURL = 2;
+                    FLUID_CONFIG.SPLAT_RADIUS = 0.9;
+                    FLUID_CONFIG.DENSITY_DISSIPATION = 0.992;
+                    FLUID_CONFIG.VELOCITY_DISSIPATION = 0.985;
+                }
+            }
+
+            // --- PHASE 3: TEMPORAL WEIGHT SYSTEM ---
+            // The system changes tone based on where in the timeline this evidence sits
+            applyTemporalWeight(storyDate) {
+                const status = document.getElementById('status-indicator');
+                if (!storyDate || !status) return;
+
+                const date = storyDate.toUpperCase();
+
+                if (date.includes('PRISON')) { status.style.color = '#8800ff'; } // Purple — caged
+                else if (date.includes('CRASH')) { status.style.color = '#ff2200'; } // Red — impact
+                else if (date.includes('LEAK')) { status.style.color = '#00aaff'; } // Blue — exposure
+                else if (date.includes('TRIAL')) { status.style.color = '#ffaa00'; } // Amber — judgement
+                else if (date.includes('ESCAPE')) { status.style.color = '#ff00ff'; } // Magenta — rupture
+                else if (date.includes('WEDDING')) { status.style.color = '#ff6699'; } // Pink — false start
+                else if (date.includes('MOSMAN')) { status.style.color = '#44ffaa'; } // Teal — the safe zone
+                else if (date.includes('ARCHIVE')) { status.style.color = '#666666'; } // Grey — review
+                // Otherwise leave the playing/buffering color
+            }
+        }
+
+        // --- INITIALIZATION ---
+        let fluid;
+        let galleryEngine;
+        let colorExtractor;
+        const jukebox = new Jukebox();
+
+        function startSystem() {
+            console.log('[JB] startSystem() called');
+
+            // Remove Overlay
+            const overlay = document.getElementById('start-overlay');
+            overlay.style.opacity = '0';
+            setTimeout(() => overlay.remove(), 500);
+
+            // ── DIAGNOSTIC: Check canvas element ──
+            const canvasEl = document.getElementById('fluid-canvas');
+            console.log('[JB] Canvas element:', canvasEl);
+            console.log('[JB] Canvas clientWidth:', canvasEl?.clientWidth, 'clientHeight:', canvasEl?.clientHeight);
+
+            if (!canvasEl) {
+                console.error('[JB] FATAL: Canvas element #fluid-canvas not found!');
+                return;
+            }
+
+            // ── DIAGNOSTIC: Check if FluidSimulator class exists ──
+            console.log('[JB] FluidSimulator class:', typeof FluidSimulator);
+            if (typeof FluidSimulator === 'undefined') {
+                console.error('[JB] FATAL: FluidSimulator class not loaded! Check js/fluid-simulator.js');
+                // FALLBACK: Draw green screen to prove canvas is visible
+                const ctx = canvasEl.getContext('2d');
+                if (ctx) {
+                    canvasEl.width = window.innerWidth;
+                    canvasEl.height = window.innerHeight;
+                    ctx.fillStyle = '#00ff41';
+                    ctx.fillRect(0, 0, canvasEl.width, canvasEl.height);
+                    ctx.fillStyle = '#000';
+                    ctx.font = '48px monospace';
+                    ctx.fillText('FLUID ENGINE FAILED TO LOAD', 50, 100);
+                }
+                return;
+            }
+
+            // ── Init Fluid (External Library) ──
+            try {
+                fluid = new FluidSimulator(canvasEl, null);
+                console.log('[JB] FluidSimulator created:', fluid);
+                console.log('[JB] fluid.gl:', fluid?.gl);
+                console.log('[JB] fluid.ext:', fluid?.ext);
+                console.log('[JB] fluid.splatStack:', fluid?.splatStack);
+                console.log('[JB] fluid.canvas.width:', fluid?.canvas?.width, 'height:', fluid?.canvas?.height);
+            } catch (e) {
+                console.error('[JB] FluidSimulator constructor THREW:', e);
+                return;
+            }
+
+            if (!fluid || !fluid.gl) {
+                console.error('[JB] FATAL: FluidSimulator created but gl context is null!');
+                return;
+            }
+
+            // ── Init Gallery & Color Extraction Engine ──
+            galleryEngine = new GalleryEngine();
+            colorExtractor = new ColorExtractor();
+            galleryEngine.onImageReady = (img) => colorExtractor.extractFromImage(img);
+            galleryEngine.loadMap(); // Async — loads gallery_map.json in background
+
+            // --- ELEGANT MIST CONFIGURATION ---
+            if (window.FLUID_CONFIG) {
+                window.FLUID_CONFIG.DENSITY_DISSIPATION = 0.992; // Lingers much longer
+                window.FLUID_CONFIG.VELOCITY_DISSIPATION = 0.985; // Slows down gracefully
+                window.FLUID_CONFIG.SPLAT_RADIUS = 0.9;          // Very wide, soft clouds
+                window.FLUID_CONFIG.CURL = 2;                    // VERY low curl to stop the messy swirling
+            }
+
+            // Init Jukebox Logic
+            jukebox.init(fluid);
+
+            // FORCE START VISUALS NOW
+            console.log("[JB] Pushing initial splats...");
+            for (let i = 0; i < 5; i++) {
+                const angle = Math.random() * Math.PI * 2;
+                fluid.splatStack.push({
+                    x: 0.5 + Math.cos(angle) * 0.1,
+                    y: 0.5 + Math.sin(angle) * 0.1,
+                    dx: Math.cos(angle) * 4000,
+                    dy: Math.sin(angle) * 4000,
+                    color: { r: 0.0, g: 1.0, b: 0.25 }
+                });
+            }
+            console.log("[JB] splatStack after push:", fluid.splatStack.length, "items");
+            jukebox.beatEngine.start();
+            console.log("[JB] BeatEngine started");
+
+            // Start Progress Loop
+            setInterval(() => jukebox.updateProgress(), 1000);
+
+            // Play the first track immediately
+            if (jukebox.player) {
+                jukebox.loadRandomTrack();
+            } else {
+                console.warn("[JB] Player not ready yet, retrying...");
+                setTimeout(() => jukebox.loadRandomTrack(), 1000);
+            }
+            console.log("[JB] startSystem() complete");
+        }
+
+        // Load YouTube API Immediately on Page Load
+        function onYouTubeIframeAPIReady() {
+            jukebox.player = new YT.Player('player', {
+                height: '100%',
+                width: '100%',
+                playerVars: {
+                    'playsinline': 1,
+                    'controls': 0,
+                    'disablekb': 1
+                },
+                events: {
+                    'onReady': onPlayerReady,
+                    'onStateChange': (e) => jukebox.onStateChange(e),
+                    'onError': (e) => jukebox.onError(e)
+                }
+            });
+        }
+
+        function onPlayerReady(event) {
+            console.log("Player Ready - Waiting for User Command");
+
+            // PHASE 5: Cinematic boot sequence — feels like accessing a restricted archive
+            const loadingText = document.getElementById('loading-text');
+            const initBtn = document.getElementById('init-btn');
+
+            if (loadingText && initBtn) {
+                const bootMessages = [
+                    "CHECKING MEMORY BLOCKS...",
+                    "VERIFYING ARCHIVE INTEGRITY...",
+                    "AUTHENTICATING NARRATIVE HASH...",
+                    "SCANNING TIMELINE NODES...",
+                    "UPLINK ESTABLISHED."
+                ];
+
+                let i = 0;
+                const bootInterval = setInterval(() => {
+                    loadingText.innerText = bootMessages[i];
+                    i++;
+                    if (i >= bootMessages.length) {
+                        clearInterval(bootInterval);
+                        setTimeout(() => {
+                            loadingText.style.display = 'none';
+                            initBtn.style.display = 'block';
+                        }, 600);
+                    }
+                }, 800);
+            }
+        }
+
+        function toggleFullscreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen();
+            } else {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                }
+            }
+        }
+
+        // --- PHASE 6: HIDDEN ARCHIVE MODE ---
+        // 5 rapid clicks on track title reveals the system's true nature
+        (function initArchiveMode() {
+            let clickCount = 0;
+            let clickTimer;
+            let archiveActive = false;
+
+            document.getElementById('track-title').addEventListener('click', () => {
+                clickCount++;
+                clearTimeout(clickTimer);
+                clickTimer = setTimeout(() => clickCount = 0, 1000);
+
+                if (clickCount >= 5) {
+                    clickCount = 0;
+                    archiveActive = !archiveActive;
+
+                    if (archiveActive) {
+                        activateArchiveMode();
+                    } else {
+                        deactivateArchiveMode();
+                    }
+                }
+            });
+        })();
+
+        function activateArchiveMode() {
+            document.body.classList.add('archive-mode');
+            document.getElementById('status-indicator').innerText = 'ARCHIVE MODE';
+            document.getElementById('status-indicator').style.color = '#ff0000';
+            const label = document.getElementById('catalogue-label');
+            if (label) label.innerText = 'MODE: FULL ARCHIVE ACCESS // CLEARANCE: UNRESTRICTED';
+            console.log('[ARCHIVE] Mode activated — all records exposed');
+        }
+
+        function deactivateArchiveMode() {
+            document.body.classList.remove('archive-mode');
+            document.getElementById('status-indicator').innerText = 'PLAYING';
+            document.getElementById('status-indicator').style.color = '#00ff41';
+            const label = document.getElementById('catalogue-label');
+            if (label) label.innerText = 'Catalogue: 50 Tracks // Mode: Random Access';
+            console.log('[ARCHIVE] Mode deactivated — returning to standard access');
+        }
+
+    </script>
+</body>
+
+</html>
