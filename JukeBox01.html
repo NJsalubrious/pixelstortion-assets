@@ -34,7 +34,7 @@
 
         /* --- VISUAL LAYERS --- */
 
-        /* Layer 0: Narrative Gallery (behind everything) */
+        /* Layer 0: Narrative Gallery */
         #bg-gallery {
             position: fixed;
             inset: 0;
@@ -50,20 +50,19 @@
             height: 100%;
             object-fit: cover;
             opacity: 0;
-            /* The Mist Effect: Blurred, slightly desaturated, and darkened */
-            filter: blur(8px) brightness(0.4) grayscale(0.3);
-            transform: scale(1.1);
-            transition: opacity 2s ease, transform 15s linear;
+            /* NO BLUR. Just dimmed and slightly desaturated for UI contrast */
+            filter: brightness(0.5) grayscale(0.2);
+            transform: scale(1.05);
+            transition: opacity 2s ease, transform 15s ease-out;
         }
 
         .gallery-img.active {
             opacity: 1.0;
-            /* Brightness controlled via filter */
             transform: scale(1.0);
-            /* Slow Ken Burns drift outward */
+            /* Gentle drift */
         }
 
-        /* Layer 1: Fluid Canvas (screen blend drops out black) */
+        /* Layer 1: Fluid Canvas */
         #fluid-canvas {
             position: fixed;
             top: 0;
@@ -71,8 +70,10 @@
             width: 100%;
             height: 100%;
             z-index: 2;
+            /* Screen mode drops out black, showing the fluid over the images */
             mix-blend-mode: screen;
-            opacity: 0.9;
+            /* Soften the fluid layer so it acts like a delicate fog */
+            opacity: 0.65;
         }
 
         .scanlines {
@@ -323,51 +324,77 @@
         // --- DATA ARCHIVE ---
         // galleryTrack maps to keys in gallery_map.json. storyDate from narrative metadata.
         const SONG_ARCHIVE = [
-            { id: 1, title: "My Story", artist: "Ethel", videoId: "dLUClmr_Pf4", storyDate: "2024 (ARCHIVE REVIEW)", galleryTrack: "track_42" },
-            { id: 2, title: "The Drop Pt.1", artist: "Ethel", videoId: "zHWwhom80go", storyDate: "NOV 14, 2016 (AGE 15)", galleryTrack: "track_02" },
-            { id: 3, title: "The Drop Pt.2", artist: "Ethel", videoId: "K0ILO8MwX4Y", storyDate: "NOV 14, 2016 (AGE 15)", galleryTrack: "track_04" },
-            { id: 4, title: "Structural Psychopathy", artist: "Dominic", videoId: "8rvIVBLZg2o", storyDate: "MAR 2019 (PROFILE)", galleryTrack: "track_08" },
-            { id: 5, title: "Polished Vomit", artist: "Isla", videoId: "2hSYNLs7w3w", storyDate: null, galleryTrack: null },
-            { id: 6, title: "Ride", artist: "Ethel", videoId: "0sgcZRtPO6s", storyDate: "JAN 20, 2019 (AGE 17)", galleryTrack: "track_10" },
-            { id: 7, title: "Grief", artist: "Ethel", videoId: "PMy76HBgpL8", storyDate: "FEB 28, 2019 (THE CRASH)", galleryTrack: "track_12" },
-            { id: 8, title: "Gotta Move", artist: "Ethel", videoId: "06qE_-OeIT0", storyDate: "MAR 02, 2019 (LEAVING HOME)", galleryTrack: "track_14" },
-            { id: 9, title: "Won't Break Where Others End", artist: "Ethel", videoId: "fJNMlT7UeW0", storyDate: "MAR 05, 2019 (MOSMAN)", galleryTrack: "track_16" },
-            { id: 10, title: "Peek-A-Boo", artist: "Isla", videoId: "K9lQ0IYiMoM", storyDate: null, galleryTrack: null },
-            { id: 11, title: "I Built A Box", artist: "Ethel", videoId: "0F_prk5dGC4", storyDate: "JUN 2019 (THE SAFE HOUSE)", galleryTrack: "track_26" },
-            { id: 12, title: "Same Breath", artist: "Dominic", videoId: "Ugy7KVuhwpE", storyDate: null, galleryTrack: null },
-            { id: 13, title: "Burning Dominic's Bridge", artist: "Isla", videoId: "lwd7KOScg0k", storyDate: null, galleryTrack: null },
-            { id: 14, title: "For You", artist: "Ethel", videoId: "f8o7zb3F-Xk", storyDate: "SEP 2019", galleryTrack: "track_30" },
-            { id: 15, title: "Broken Edge", artist: "Isla", videoId: "_gvv_W5_x10", storyDate: "OCT 2019", galleryTrack: "track_32" },
-            { id: 16, title: "Hero / Killer", artist: "Ethel", videoId: "YkQOXPzYkkU", storyDate: "FEB 2020 (THE TRIAL START)", galleryTrack: "track_34" },
-            { id: 17, title: "Hero Complex", artist: "Dominic", videoId: "7gc3DigBW1Y", storyDate: null, galleryTrack: null },
-            { id: 18, title: "I Don't Know", artist: "Ethel", videoId: "eXlF_5zHj3o", storyDate: null, galleryTrack: null },
-            { id: 19, title: "I'm Not A Hero", artist: "Ethel", videoId: "9gA-F-2jR8", storyDate: null, galleryTrack: null },
-            { id: 20, title: "It's Not My Fault", artist: "Dominic", videoId: "V_J_9-8-1-E", storyDate: null, galleryTrack: null },
-            { id: 21, title: "Just A Job", artist: "Kinley", videoId: "x-8-7-6-5-4", storyDate: null, galleryTrack: null },
-            { id: 22, title: "Kill Or Be Killed", artist: "Dominic", videoId: "1-2-3-4-5-6", storyDate: null, galleryTrack: null },
-            { id: 23, title: "Left Behind", artist: "Isla", videoId: "a-b-c-d-e-f", storyDate: null, galleryTrack: null },
-            { id: 24, title: "Look At Me Now", artist: "Isla", videoId: "g-h-i-j-k-l", storyDate: null, galleryTrack: null },
-            { id: 25, title: "Lost In The Static", artist: "Sticky", videoId: "m-n-o-p-q-r", storyDate: null, galleryTrack: null },
-            { id: 26, title: "Prison Escape", artist: "Dominic", videoId: "6eZwBGXGSO4", storyDate: "JAN 2024 (THE ESCAPE)", galleryTrack: "track_41" },
-            { id: 27, title: "Guilt Money", artist: "Kinley", videoId: "uovMKnwE34M", storyDate: null, galleryTrack: null },
-            { id: 28, title: "Ants on the Vine", artist: "Ethel", videoId: "e2wt2VSi9xA", storyDate: null, galleryTrack: null },
-            { id: 29, title: "Clipboard Man", artist: "Ethel", videoId: "ZAhqNWTHTGU", storyDate: null, galleryTrack: "track_49" },
-            { id: 30, title: "Rattled", artist: "Ethel", videoId: "qQ1l6JAjE8M", storyDate: null, galleryTrack: null },
-            { id: 31, title: "Red Stick", artist: "Ethel", videoId: "iTOKsLS3jhM", storyDate: null, galleryTrack: "track_51" },
-            { id: 32, title: "Can You Make A Mistake On Purpose?", artist: "Ethel", videoId: "s9Z8dgRk-Q8", storyDate: null, galleryTrack: "track_50" },
-            { id: 33, title: "Intro to Normal?!", artist: "Ethel", videoId: "V0hvxqMWcnE", storyDate: null, galleryTrack: "track_53" },
-            { id: 34, title: "Normal?!", artist: "Ethel", videoId: "OxHZnnRhtbk", storyDate: null, galleryTrack: null },
-            { id: 35, title: "Normal?! (Special Version)", artist: "Ethel", videoId: "ht9PIloHD0Q", storyDate: null, galleryTrack: null },
-            { id: 36, title: "Memory Under Water", artist: "Isla", videoId: "nk4Re7OjTTM", storyDate: null, galleryTrack: "track_58" },
-            { id: 37, title: "The Porcelain Lie", artist: "Isla", videoId: "fNVKsxe_EcM", storyDate: null, galleryTrack: "track_60" },
-            { id: 38, title: "Raise The Fourth", artist: "Isla", videoId: "ey20cJsY82M", storyDate: null, galleryTrack: "track_59" },
-            { id: 39, title: "What You Don't See", artist: "Isla", videoId: "Y4VC6mh37NI", storyDate: null, galleryTrack: "track_65" },
-            { id: 40, title: "What You Don't See (Symphony)", artist: "Isla", videoId: "hm2kp7LOhsg", storyDate: null, galleryTrack: "track_68" },
-            { id: 41, title: "Raise The Fourth (With Symphony)", artist: "Isla", videoId: "ZBLMDbwcy4g", storyDate: null, galleryTrack: null },
-            { id: 42, title: "Give It Back", artist: "Isla", videoId: "Aw2ZAkxp6b0", storyDate: null, galleryTrack: "track_69" },
-            { id: 43, title: "Don't Wake Him Yet", artist: "Isla", videoId: "NwqHLFYR1mA", storyDate: null, galleryTrack: "track_64" },
-            { id: 44, title: "Melody of Normality", artist: "Isla", videoId: "a4TpIhna55k", storyDate: null, galleryTrack: "track_66" },
-            { id: 45, title: "What This Was Always For", artist: "Isla", videoId: "X9EUb1_QC9c", storyDate: null, galleryTrack: "track_70" }
+            { id: 1, title: "Ethel's Introduction", artist: "Ethel", videoId: "YKQk4G_XJ1w", storyDate: "(ARCHIVE REVIEW)", galleryTrack: "track_01" },
+            { id: 2, title: "The Drop 1", artist: "Ethel", videoId: "zHWwhom80go", storyDate: "NOV 14, 2016 (AGE 15)", galleryTrack: "track_02" },
+            { id: 3, title: "Ethel's Intro: The Drop", artist: "Ethel", videoId: "lV4572kA1RE", storyDate: "(ARCHIVE REVIEW)", galleryTrack: "track_03" },
+            { id: 4, title: "The Drop 2", artist: "Ethel", videoId: "K0ILO8MwX4Y", storyDate: "NOV 14, 2016 (AGE 15)", galleryTrack: "track_04" },
+            { id: 5, title: "Ethel's Intro: Polished Vomit", artist: "Ethel", videoId: "VKJaSC_-0sM", storyDate: "2019 (ARCHIVE REVIEW)", galleryTrack: "track_05" },
+            { id: 6, title: "Polished Vomit", artist: "Isla", videoId: "MhEeDcdscrs", storyDate: "FEB 14, 2019 (THE WEDDING)", galleryTrack: "track_06" },
+            { id: 7, title: "Ethel's Intro: Dominic's Intent", artist: "Ethel", videoId: "Jl8T2gWUVMY", storyDate: "2019 (ARCHIVE REVIEW)", galleryTrack: "track_07" },
+            { id: 8, title: "Structural Psychopathy", artist: "Dominic", videoId: "8rvIVBLZg2o", storyDate: "MAR 2019 (PROFILE)", galleryTrack: "track_08" },
+            { id: 9, title: "Ethel's Intro: Ride", artist: "Ethel", videoId: "Wvu0JIV1ePQ", storyDate: "(ARCHIVE REVIEW)", galleryTrack: "track_09" },
+            { id: 10, title: "Ride", artist: "Ethel", videoId: "0sgcZRtPO6s", storyDate: "JAN 20, 2024 (AGE 17)", galleryTrack: "track_10" },
+            { id: 11, title: "Ethel's Intro: Grief", artist: "Ethel", videoId: "95wQ9YZUbcA", storyDate: "(ARCHIVE REVIEW)", galleryTrack: "track_11" },
+            { id: 12, title: "Grief", artist: "Ethel", videoId: "PMy76HBgpL8", storyDate: "FEB 28, 2024 (THE CRASH)", galleryTrack: "track_12" },
+            { id: 13, title: "Ethel's Intro: Gotta Move", artist: "Ethel", videoId: "IuyKvsxwBgY", storyDate: "(ARCHIVE REVIEW)", galleryTrack: "track_13" },
+            { id: 14, title: "Gotta Move", artist: "Ethel", videoId: "06qE_-OeIT0", storyDate: "MAR 02, 2024 (LEAVING HOME)", galleryTrack: "track_14" },
+            { id: 15, title: "Ethel's Intro: Won't Break", artist: "Ethel", videoId: "oPOEgISVQYk", storyDate: "(ARCHIVE REVIEW)", galleryTrack: "track_15" },
+            { id: 16, title: "Won't Break Where Others End", artist: "Ethel", videoId: "fJNMlT7UeW0", storyDate: "MAR 05, 2024 (MOSMAN)", galleryTrack: "track_16" },
+            { id: 17, title: "Ethel's Intro: Big House", artist: "Ethel", videoId: "8UvIT2TgY_Y", storyDate: "(ARCHIVE REVIEW)", galleryTrack: "track_17" },
+            { id: 18, title: "Big House", artist: "Ethel", videoId: "mj9MGf-VzJY", storyDate: "MAR 05, 2024 (MOSMAN)", galleryTrack: "track_18" },
+            { id: 19, title: "Ethel's Intro: Peek-A-Boo", artist: "Ethel", videoId: "GaSUHEFlJVc", storyDate: "(ARCHIVE REVIEW)", galleryTrack: "track_19" },
+            { id: 20, title: "Peek-A-Boo", artist: "Isla", videoId: "qbFxG7sK0pE", storyDate: "MAR 10, 2024 (MOSMAN)", galleryTrack: "track_20" },
+            { id: 21, title: "Ethel's Intro: Northern Road", artist: "Ethel", videoId: "dIh_CL7h7zU", storyDate: "(ARCHIVE REVIEW)", galleryTrack: "track_21" },
+            { id: 22, title: "Northern Road", artist: "Dominic", videoId: "P19KBEQdVjQ", storyDate: "MAR 15, 2024", galleryTrack: "track_22" },
+            { id: 23, title: "Ethel's Intro: Isla Hates Bankers", artist: "Ethel", videoId: "VNln5R2iF9E", storyDate: "(ARCHIVE REVIEW)", galleryTrack: "track_23" },
+            { id: 24, title: "Isla Hates Married Bankers", artist: "Isla", videoId: "sXKAs0U8eO8", storyDate: "MAY 2024", galleryTrack: "track_24" },
+            { id: 25, title: "Ethel's Intro: I Built A Box", artist: "Ethel", videoId: "L-K0MrEKOAc", storyDate: "(ARCHIVE REVIEW)", galleryTrack: "track_25" },
+            { id: 26, title: "I Built A Box", artist: "Ethel", videoId: "0F_prk5dGC4", storyDate: "JUN 2024 (THE SAFE HOUSE)", galleryTrack: "track_26" },
+            { id: 27, title: "Ethel's Intro: Burning Bridges", artist: "Ethel", videoId: "VUrJP86DHrU", storyDate: "(ARCHIVE REVIEW)", galleryTrack: "track_27" },
+            { id: 28, title: "Isla's Burning Dominic's Bridge", artist: "Isla", videoId: "nVKkwb4EnRc", storyDate: "AUG 2024 (THE LEAK)", galleryTrack: "track_28" },
+            { id: 29, title: "Ethel's Intro: For You!!!", artist: "Ethel", videoId: "qtkHwKNnAo8", storyDate: "(ARCHIVE REVIEW)", galleryTrack: "track_29" },
+            { id: 30, title: "For You!!!", artist: "Ethel", videoId: "f8o7zb3F-Xk", storyDate: "SEP 2024", galleryTrack: "track_30" },
+            { id: 31, title: "Ethel's Intro: Broken Edge", artist: "Ethel", videoId: "ox_vABajRIw", storyDate: "(ARCHIVE REVIEW)", galleryTrack: "track_31" },
+            { id: 32, title: "Isla's Broken Edge", artist: "Isla", videoId: "_gvv_W5_x10", storyDate: "OCT 2024", galleryTrack: "track_32" },
+            { id: 33, title: "Ethel's Intro: Hero Complex", artist: "Ethel", videoId: "mAZKRxhPMCg", storyDate: "(ARCHIVE REVIEW)", galleryTrack: "track_33" },
+            { id: 34, title: "Hero Complex", artist: "Dominic", videoId: "YkQOXPzYkkU", storyDate: "FEB 2020 (THE TRIAL START)", galleryTrack: "track_34" },
+            { id: 35, title: "Ethel's Intro: Nothing True", artist: "Ethel", videoId: "tpnmyIxM1p8", storyDate: "(ARCHIVE REVIEW)", galleryTrack: "track_35" },
+            { id: 36, title: "Nothing True", artist: "Ethel", videoId: "Ghg7pC3ms3I", storyDate: "APR 2020 (THE TESTIMONY)", galleryTrack: "track_36" },
+            { id: 37, title: "Ethel's Intro: Thank Me Later", artist: "Ethel", videoId: "qi0HqQ2URdU", storyDate: "(ARCHIVE REVIEW)", galleryTrack: "track_37" },
+            { id: 38, title: "You Will Thank Me Later", artist: "Dominic", videoId: "n6OgobffCzo", storyDate: "JUN 2020 (PRISON)", galleryTrack: "track_38" },
+            { id: 39, title: "No Sparrow Caught Mid Flight", artist: "Ethel", videoId: "t6vLU0uqIfc", storyDate: "DEC 2024 (POST-TRIAL)", galleryTrack: "track_39" },
+            { id: 40, title: "Ethel's Intro: Dominic's Escape", artist: "Ethel", videoId: "kB5lGHjUqUY", storyDate: "(ARCHIVE REVIEW)", galleryTrack: "track_40" },
+            { id: 41, title: "Dominic's Escape", artist: "Dominic", videoId: "6eZwBGXGSO4", storyDate: "JAN 2024 (THE ESCAPE)", galleryTrack: "track_41" },
+            { id: 42, title: "Ethel's Story - Overview", artist: "Ethel", videoId: "dLUClmr_Pf4", storyDate: "(ARCHIVE REVIEW)", galleryTrack: "track_42" },
+            { id: 43, title: "Ethel's Conclusion", artist: "Ethel", videoId: "D5afy4FucwA", storyDate: "(ARCHIVE REVIEW)", galleryTrack: "track_43" },
+            { id: 44, title: "Ethel:Spoken: Projection", artist: "Ethel", videoId: "AOktpmGD0Po", storyDate: "UNKNOWN", galleryTrack: "track_44" },
+            { id: 45, title: "Platform 18", artist: "Ethel", videoId: "VC6vQGPyF4c", storyDate: "UNKNOWN", galleryTrack: "track_45" },
+            { id: 46, title: "Kinley (Guilt Money)", artist: "Kinley", videoId: "Ac3cRsmjKpE", storyDate: "UNKNOWN", galleryTrack: "track_46" },
+            { id: 47, title: "Ants On The Vine", artist: "Ethel", videoId: "CaBcQ2aSjog", storyDate: "UNKNOWN", galleryTrack: "track_47" },
+            { id: 48, title: "Rattled", artist: "Ethel", videoId: "Fs7BXBOVnvY", storyDate: "UNKNOWN", galleryTrack: "track_48" },
+            { id: 49, title: "Clipboard Man", artist: "Ethel", videoId: "ZAhqNWTHTGU", storyDate: "UNKNOWN", galleryTrack: "track_49" },
+            { id: 50, title: "Make A Mistake On Purpose", artist: "Ethel", videoId: "s9Z8dgRk-Q8", storyDate: "UNKNOWN", galleryTrack: "track_50" },
+            { id: 51, title: "Red Stick", artist: "Ethel", videoId: "iTOKsLS3jhM", storyDate: "UNKNOWN", galleryTrack: "track_51" },
+            { id: 52, title: "Harms Ghost", artist: "Ethel", videoId: "WZ3P96AJfEc", storyDate: "UNKNOWN", galleryTrack: "track_52" },
+            { id: 53, title: "Ethe's Intro: Normal?!", artist: "Ethel", videoId: "V0hvxqMWcnE", storyDate: "UNKNOWN", galleryTrack: "track_53" },
+            { id: 54, title: "Normal?!", artist: "Ethel", videoId: "8GCXnOQI60g", storyDate: "UNKNOWN", galleryTrack: "track_54" },
+            { id: 55, title: "This isn't therapy", artist: "Isla", videoId: "0tzOaukuBns", storyDate: "UNKNOWN", galleryTrack: "track_55" },
+            { id: 56, title: "A Drop From the Forth", artist: "Isla", videoId: "6bwKDegeBHU", storyDate: "UNKNOWN", galleryTrack: "track_56" },
+            { id: 57, title: "The Porcelain Lie", artist: "Isla", videoId: "GFkK21BdE9o", storyDate: "UNKNOWN", galleryTrack: "track_57" },
+            { id: 58, title: "Memory under Water", artist: "Isla", videoId: "nk4Re7OjTTM", storyDate: "UNKNOWN", galleryTrack: "track_58" },
+            { id: 59, title: "Raise The Fourth", artist: "Isla", videoId: "ey20cJsY82M", storyDate: "UNKNOWN", galleryTrack: "track_59" },
+            { id: 60, title: "Raise The Fourth Version 2", artist: "Isla", videoId: "fNVKsxe_EcM", storyDate: "UNKNOWN", galleryTrack: "track_60" },
+            { id: 61, title: "Intro to Shiny Headed Radio Man", artist: "Isla", videoId: "dK8mqLNRZ2Q", storyDate: "UNKNOWN", galleryTrack: "track_61" },
+            { id: 62, title: "Shiny Headed Radio Man", artist: "Isla", videoId: "UFZeKCcSMoE", storyDate: "UNKNOWN", galleryTrack: "track_62" },
+            { id: 63, title: "Stanmore Farewell", artist: "Isla", videoId: "-3m2_zUNBlo", storyDate: "UNKNOWN", galleryTrack: "track_63" },
+            { id: 64, title: "Don't Wake Him Yet", artist: "Isla", videoId: "NwqHLFYR1mA", storyDate: "UNKNOWN", galleryTrack: "track_64" },
+            { id: 65, title: "What You Don't See", artist: "Isla", videoId: "Y4VC6mh37NI", storyDate: "UNKNOWN", galleryTrack: "track_65" },
+            { id: 66, title: "Melody of Normality (Live)", artist: "Isla", videoId: "a4TpIhna55k", storyDate: "UNKNOWN", galleryTrack: "track_66" },
+            { id: 67, title: "Drop From the Fourth (Symphony)", artist: "Isla", videoId: "7UOZCk5vvbA", storyDate: "UNKNOWN", galleryTrack: "track_67" },
+            { id: 68, title: "What you dont see (Symphony)", artist: "Isla", videoId: "hm2kp7LOhsg", storyDate: "UNKNOWN", galleryTrack: "track_68" },
+            { id: 69, title: "Give it back", artist: "Isla", videoId: "Aw2ZAkxp6b0", storyDate: "UNKNOWN", galleryTrack: "track_69" },
+            { id: 70, title: "What This Was Always For", artist: "Isla", videoId: "X9EUb1_QC9c", storyDate: "UNKNOWN", galleryTrack: "track_70" },
+            { id: 71, title: "FIELD NOTES FROM THE LANGTANG TRAIL, 1966", artist: "UNKNOWN", videoId: "8nuKkf_oe1s", storyDate: "1966", galleryTrack: "track_71" }
         ];
 
         // --- GALLERY ENGINE (Image Slideshow) ---
@@ -469,71 +496,59 @@
             }
         }
 
-        // --- COLOR EXTRACTOR (Spatial Looking Glass) ---
-        // Maps the current gallery image to a grid for coordinate-based color extraction
+        // --- COLOR EXTRACTOR (Shape & Color Hotspot Scanner) ---
+        // Scans image for bright/colorful regions and uses those as fluid spawn points
         class ColorExtractor {
             constructor() {
                 this.canvas = document.createElement('canvas');
                 this.ctx = this.canvas.getContext('2d', { willReadFrequently: true });
-                this.width = 128; // Higher resolution for spatial mapping
+                this.width = 128;
                 this.height = 128;
                 this.canvas.width = this.width;
                 this.canvas.height = this.height;
-                this.imageData = null;
+                this.hotspots = []; // Stores coordinates of bright/colorful pixels
             }
 
             extractFromImage(img) {
                 try {
                     this.ctx.drawImage(img, 0, 0, this.width, this.height);
-                    this.imageData = this.ctx.getImageData(0, 0, this.width, this.height).data;
-                    console.log('[Color] Image mapped for spatial extraction');
+                    const data = this.ctx.getImageData(0, 0, this.width, this.height).data;
+                    this.hotspots = [];
+
+                    // Scan the image for non-dark areas to extract shape
+                    for (let i = 0; i < data.length; i += 4) {
+                        let r = data[i] / 255;
+                        let g = data[i + 1] / 255;
+                        let b = data[i + 2] / 255;
+                        let luminance = (r * 0.299 + g * 0.587 + b * 0.114);
+
+                        // If it's bright or colorful enough, log it as a fluid spawn point
+                        if (luminance > 0.15) {
+                            let x = ((i / 4) % this.width) / this.width;
+                            let y = Math.floor((i / 4) / this.width) / this.height;
+
+                            // Boost saturation slightly for the mist effect
+                            const max = Math.max(r, g, b);
+                            if (max > 0 && max < 0.8) {
+                                const boost = 0.8 / max;
+                                r *= boost; g *= boost; b *= boost;
+                            }
+
+                            this.hotspots.push({ x: x, y: 1.0 - y, r, g, b }); // Y inverted for WebGL
+                        }
+                    }
+                    console.log(`[Color] Mapped ${this.hotspots.length} emission points.`);
                 } catch (e) {
-                    console.warn('[Color] Extraction failed (CORS?):', e.message);
-                    this.imageData = null;
+                    console.warn('[Color] Extraction failed:', e.message);
+                    this.hotspots = [];
                 }
             }
 
-            // Get color at normalized coordinates (0.0 to 1.0)
-            getColorAt(nx, ny) {
-                if (!this.imageData) return this._getFallback(nx, ny);
-
-                // WebGL Y is inverted compared to Canvas Y
-                const canvasY = 1.0 - ny;
-
-                // Clamp coordinates
-                const x = Math.max(0, Math.min(this.width - 1, Math.floor(nx * this.width)));
-                const y = Math.max(0, Math.min(this.height - 1, Math.floor(canvasY * this.height)));
-
-                const idx = (y * this.width + x) * 4;
-
-                let r = this.imageData[idx] / 255;
-                let g = this.imageData[idx + 1] / 255;
-                let b = this.imageData[idx + 2] / 255;
-
-                // "Looking Glass" Enhancement:
-                // Boost dim colors so the fluid glows brilliantly
-                // against the dim, blurred background memory.
-                const max = Math.max(r, g, b);
-                if (max > 0 && max < 0.6) {
-                    const boost = 0.6 / max;
-                    r *= boost; g *= boost; b *= boost;
+            getRandomHotspot() {
+                if (this.hotspots.length === 0) {
+                    return { x: 0.2 + Math.random() * 0.6, y: 0.2 + Math.random() * 0.6, r: 0, g: 0.6, b: 0.3 };
                 }
-
-                // Prevent pure black fluid (invisible in screen blend)
-                r = Math.max(0.08, r);
-                g = Math.max(0.08, g);
-                b = Math.max(0.08, b);
-
-                return { r, g, b };
-            }
-
-            _getFallback(nx, ny) {
-                // A moody cyan/purple algorithmic fallback if no image is present
-                return {
-                    r: nx * 0.4,
-                    g: 0.1,
-                    b: ny * 0.6 + 0.2
-                };
+                return this.hotspots[Math.floor(Math.random() * this.hotspots.length)];
             }
         }
 
@@ -572,58 +587,19 @@
             }
 
             triggerBeat() {
-                const intensity = Math.random();
+                if (!colorExtractor) return;
 
-                // 1. AMBIENT MIST (Always happens on beat ticks)
-                // Gently pulls color from random parts of the image and drifts it around
+                // Spawn a few gentle wisps from the bright areas of the image
+                // This makes the image look like it is steaming or smoking
                 for (let i = 0; i < 3; i++) {
-                    const mx = Math.random();
-                    const my = Math.random();
-                    const baseColor = colorExtractor.getColorAt(mx, my);
+                    const spot = colorExtractor.getRandomHotspot();
                     this.fluid.splatStack.push({
-                        x: mx,
-                        y: my,
-                        dx: (Math.random() - 0.5) * 200, // Very slow drift
-                        dy: (Math.random() - 0.5) * 200,
-                        color: { r: baseColor.r * 0.3, g: baseColor.g * 0.3, b: baseColor.b * 0.3 } // Dimmer for ambient mist
-                    });
-                }
-
-                // 2. BEAT EXPLOSIONS
-                if (intensity > 0.8) {
-                    // BIG EXPLOSION: Focuses on one area and blows its specific colors outward
-                    const originX = 0.2 + Math.random() * 0.6;
-                    const originY = 0.2 + Math.random() * 0.6;
-
-                    for (let i = 0; i < 6; i++) {
-                        const angle = Math.random() * Math.PI * 2;
-                        const r = Math.random() * 0.15;
-                        const sx = originX + Math.cos(angle) * r;
-                        const sy = originY + Math.sin(angle) * r;
-
-                        this.fluid.splatStack.push({
-                            x: sx,
-                            y: sy,
-                            dx: Math.cos(angle) * 3500,
-                            dy: Math.sin(angle) * 3500,
-                            color: colorExtractor.getColorAt(sx, sy) // Spatial color grab!
-                        });
-                    }
-                    const tt = document.getElementById('track-title');
-                    if (tt) {
-                        tt.style.textShadow = '0 0 15px rgba(255,255,255,0.3)';
-                        setTimeout(() => tt.style.textShadow = 'none', 150);
-                    }
-                } else if (intensity > 0.4) {
-                    // Small Splat
-                    const sx = Math.random();
-                    const sy = Math.random();
-                    this.fluid.splatStack.push({
-                        x: sx,
-                        y: sy,
-                        dx: (Math.random() - 0.5) * 1200,
-                        dy: (Math.random() - 0.5) * 1200,
-                        color: colorExtractor.getColorAt(sx, sy)
+                        x: spot.x,
+                        y: spot.y,
+                        // Very gentle, slightly upward drifting velocity
+                        dx: (Math.random() - 0.5) * 400,
+                        dy: Math.random() * 600 - 100,
+                        color: { r: spot.r * 0.5, g: spot.g * 0.5, b: spot.b * 0.5 }
                     });
                 }
             }
@@ -833,13 +809,12 @@
             galleryEngine.onImageReady = (img) => colorExtractor.extractFromImage(img);
             galleryEngine.loadMap(); // Async — loads gallery_map.json in background
 
-            // --- MIST CONFIGURATION ---
-            // Override the default fluid settings to feel like heavy, lingering fog
+            // --- ELEGANT MIST CONFIGURATION ---
             if (window.FLUID_CONFIG) {
-                window.FLUID_CONFIG.DENSITY_DISSIPATION = 0.985; // Lingers longer in the air
-                window.FLUID_CONFIG.VELOCITY_DISSIPATION = 0.99; // Flows smoother and further
-                window.FLUID_CONFIG.SPLAT_RADIUS = 0.5;          // Wider, softer color injections
-                window.FLUID_CONFIG.CURL = 15;                   // Less aggressive swirling, more gentle drifting
+                window.FLUID_CONFIG.DENSITY_DISSIPATION = 0.992; // Lingers much longer
+                window.FLUID_CONFIG.VELOCITY_DISSIPATION = 0.985; // Slows down gracefully
+                window.FLUID_CONFIG.SPLAT_RADIUS = 0.9;          // Very wide, soft clouds
+                window.FLUID_CONFIG.CURL = 2;                    // VERY low curl to stop the messy swirling
             }
 
             // Init Jukebox Logic
