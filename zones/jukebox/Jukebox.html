@@ -279,6 +279,8 @@
             mix-blend-mode: screen;
             opacity: 0.75;
             filter: contrast(1.15) saturate(1.25);
+            display: none;
+            /* Disabled: causes GPU sync artifacts in Chrome/Edge */
         }
 
         #glyph-canvas {
@@ -291,6 +293,8 @@
             mix-blend-mode: screen;
             filter: contrast(1.1) saturate(1.15);
             opacity: 0.40;
+            display: none;
+            /* Disabled: causes GPU sync artifacts in Chrome/Edge */
         }
     </style>
 
@@ -1445,12 +1449,14 @@
                 const c = document.getElementById('postfx-canvas');
                 const g = document.getElementById('glyph-canvas');
                 if (EXTREME) {
-                    c.style.opacity = "0.98";
-                    g.style.opacity = "0.62";
+                    c.style.display = "block";
+                    c.style.opacity = "0.75";
+                    g.style.display = "block";
+                    g.style.opacity = "0.40";
                     whisper.say("EXTREME MODE: ON", { meta: "SYSTEM", fast: true });
                 } else {
-                    c.style.opacity = "0.70";
-                    g.style.opacity = "0.34";
+                    c.style.display = "none";
+                    g.style.display = "none";
                     whisper.say("EXTREME MODE: OFF", { meta: "SYSTEM", fast: true });
                 }
             }
