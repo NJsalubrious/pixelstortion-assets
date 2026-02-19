@@ -1244,6 +1244,144 @@
                 height: 120px !important;
             }
         }
+
+        /* ========== JB (JUKEBOX) TRIGGER BUTTON ========== */
+        #jb-trigger {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            z-index: 9500;
+            width: 52px;
+            height: 52px;
+            border-radius: 50%;
+            background: rgba(0, 10, 0, 0.7);
+            backdrop-filter: blur(8px);
+            border: 1.5px solid rgba(0, 255, 65, 0.35);
+            color: #00ff41;
+            font-family: 'Courier Prime', monospace;
+            font-size: 14px;
+            font-weight: bold;
+            letter-spacing: 1px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0.65;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 8px rgba(0, 255, 65, 0.12);
+            animation: jb-pulse 3s ease-in-out infinite;
+        }
+
+        @keyframes jb-pulse {
+
+            0%,
+            100% {
+                box-shadow: 0 0 8px rgba(0, 255, 65, 0.12);
+            }
+
+            50% {
+                box-shadow: 0 0 16px rgba(0, 255, 65, 0.3);
+            }
+        }
+
+        #jb-trigger:hover {
+            opacity: 1;
+            border-color: rgba(0, 255, 65, 0.8);
+            color: #00ff41;
+            box-shadow: 0 0 20px rgba(0, 255, 65, 0.4);
+            transform: scale(1.1);
+            animation: none;
+        }
+
+        #jb-trigger.jb-active {
+            opacity: 0.85;
+            border-color: rgba(0, 255, 65, 0.6);
+            color: #00ff41;
+            animation: none;
+        }
+
+        /* ========== JUKEBOX POPUP ========== */
+        #jb-popup {
+            display: none;
+            position: fixed;
+            z-index: 9600;
+            width: 420px;
+            height: 520px;
+            max-width: 90vw;
+            max-height: 80vh;
+            background: #0a0a0a;
+            border: 1px solid rgba(0, 255, 65, 0.3);
+            border-radius: 6px;
+            box-shadow: 0 8px 40px rgba(0, 0, 0, 0.8), 0 0 20px rgba(0, 255, 65, 0.1);
+            overflow: hidden;
+            flex-direction: column;
+        }
+
+        #jb-popup.open {
+            display: flex;
+        }
+
+        #jb-popup-handle {
+            height: 32px;
+            min-height: 32px;
+            background: linear-gradient(135deg, #111 0%, #0a0a0a 100%);
+            border-bottom: 1px solid rgba(0, 255, 65, 0.15);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 10px;
+            cursor: grab;
+            user-select: none;
+        }
+
+        #jb-popup-handle:active {
+            cursor: grabbing;
+        }
+
+        #jb-popup-handle span {
+            font-family: 'Courier Prime', monospace;
+            font-size: 10px;
+            letter-spacing: 2px;
+            color: rgba(0, 255, 65, 0.5);
+            text-transform: uppercase;
+        }
+
+        #jb-popup-close {
+            background: none;
+            border: none;
+            color: rgba(255, 255, 255, 0.4);
+            font-size: 16px;
+            cursor: pointer;
+            padding: 2px 6px;
+            line-height: 1;
+            transition: color 0.2s ease;
+        }
+
+        #jb-popup-close:hover {
+            color: #ff0055;
+        }
+
+        #jb-popup-iframe {
+            flex: 1;
+            width: 100%;
+            border: none;
+        }
+
+        /* Mobile: position popup more centrally */
+        @media (max-width: 767px) {
+            #jb-trigger {
+                bottom: 80px;
+                right: 12px;
+                width: 32px;
+                height: 32px;
+                font-size: 10px;
+            }
+
+            #jb-popup {
+                width: 95vw;
+                height: 75vh;
+            }
+        }
     </style>
 </head>
 
@@ -2713,6 +2851,138 @@
             panel.classList.add('open');
             mediaPanelOpen = true;
         }
+    </script>
+
+    <!-- JB (Jukebox) Trigger -->
+    <button id="jb-trigger" title="Jukebox" onclick="toggleJBPopup()">JB</button>
+
+    <!-- Jukebox Popup -->
+    <div id="jb-popup">
+        <div id="jb-popup-handle">
+            <span>JUKEBOX</span>
+            <button id="jb-popup-close" onclick="closeJBPopup()">✕</button>
+        </div>
+        <iframe id="jb-popup-iframe" src="about:blank" allow="autoplay; encrypted-media"></iframe>
+    </div>
+
+    <script>
+        // --- JUKEBOX POPUP LOGIC ---
+        let jbPopupOpen = false;
+
+        function toggleJBPopup() {
+            if (jbPopupOpen) {
+                closeJBPopup();
+            } else {
+                openJBPopup();
+            }
+        }
+
+        function openJBPopup() {
+            const popup = document.getElementById('jb-popup');
+            const iframe = document.getElementById('jb-popup-iframe');
+            const trigger = document.getElementById('jb-trigger');
+
+            // Load jukebox
+            iframe.src = '../jukebox/Jukebox.html';
+
+            // Pause main site music (same pattern as openGameModal)
+            if (ytPlayer && typeof ytPlayer.pauseVideo === 'function') {
+                ytPlayer.pauseVideo();
+            }
+
+            // Position popup (centered, offset from bottom-right)
+            popup.style.bottom = '70px';
+            popup.style.right = '24px';
+            popup.style.top = 'auto';
+            popup.style.left = 'auto';
+
+            // Show popup
+            popup.classList.add('open');
+            trigger.classList.add('jb-active');
+            jbPopupOpen = true;
+        }
+
+        function closeJBPopup() {
+            const popup = document.getElementById('jb-popup');
+            const iframe = document.getElementById('jb-popup-iframe');
+            const trigger = document.getElementById('jb-trigger');
+
+            // Clear iframe to stop audio
+            iframe.src = 'about:blank';
+
+            // Resume main site music (same pattern as closeGameModal)
+            if (ytPlayer && typeof ytPlayer.playVideo === 'function') {
+                ytPlayer.playVideo();
+            }
+
+            // Hide popup
+            popup.classList.remove('open');
+            trigger.classList.remove('jb-active');
+            jbPopupOpen = false;
+        }
+
+        // --- DRAG LOGIC ---
+        (function () {
+            const handle = document.getElementById('jb-popup-handle');
+            const popup = document.getElementById('jb-popup');
+            let isDragging = false;
+            let dragStartX, dragStartY, popupStartX, popupStartY;
+
+            function startDrag(clientX, clientY) {
+                isDragging = true;
+                const rect = popup.getBoundingClientRect();
+                dragStartX = clientX;
+                dragStartY = clientY;
+                popupStartX = rect.left;
+                popupStartY = rect.top;
+
+                // Switch to top/left positioning for dragging
+                popup.style.right = 'auto';
+                popup.style.bottom = 'auto';
+                popup.style.left = rect.left + 'px';
+                popup.style.top = rect.top + 'px';
+            }
+
+            function doDrag(clientX, clientY) {
+                if (!isDragging) return;
+                let newX = popupStartX + (clientX - dragStartX);
+                let newY = popupStartY + (clientY - dragStartY);
+
+                // Clamp to viewport
+                const w = popup.offsetWidth;
+                const h = popup.offsetHeight;
+                newX = Math.max(0, Math.min(window.innerWidth - w, newX));
+                newY = Math.max(0, Math.min(window.innerHeight - h, newY));
+
+                popup.style.left = newX + 'px';
+                popup.style.top = newY + 'px';
+            }
+
+            function stopDrag() {
+                isDragging = false;
+            }
+
+            // Mouse events
+            handle.addEventListener('mousedown', (e) => {
+                e.preventDefault();
+                startDrag(e.clientX, e.clientY);
+            });
+            document.addEventListener('mousemove', (e) => doDrag(e.clientX, e.clientY));
+            document.addEventListener('mouseup', stopDrag);
+
+            // Touch events
+            handle.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                const t = e.touches[0];
+                startDrag(t.clientX, t.clientY);
+            }, { passive: false });
+            document.addEventListener('touchmove', (e) => {
+                if (!isDragging) return;
+                const t = e.touches[0];
+                doDrag(t.clientX, t.clientY);
+            }, { passive: false });
+            document.addEventListener('touchend', stopDrag);
+        })();
     </script>
 
 </body>
