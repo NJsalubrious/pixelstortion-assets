@@ -2862,7 +2862,10 @@
             <span>JUKEBOX</span>
             <button id="jb-popup-close" onclick="closeJBPopup()">✕</button>
         </div>
-        <iframe id="jb-popup-iframe" src="about:blank" allow="autoplay; encrypted-media"></iframe>
+        <iframe id="jb-popup-iframe" src="about:blank"
+            allow="autoplay; encrypted-media; fullscreen; picture-in-picture; accelerometer; gyroscope"
+            sandbox="allow-scripts allow-same-origin allow-popups allow-forms allow-presentation"
+            referrerpolicy="no-referrer-when-downgrade"></iframe>
     </div>
 
     <script>
