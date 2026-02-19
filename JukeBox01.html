@@ -40,7 +40,7 @@
             inset: 0;
             z-index: 1;
             overflow: hidden;
-            transition: opacity 0.8s ease;
+            background: #000;
         }
 
         .gallery-img {
@@ -50,11 +50,17 @@
             height: 100%;
             object-fit: cover;
             opacity: 0;
-            transition: opacity 1.5s ease;
+            /* The Mist Effect: Blurred, slightly desaturated, and darkened */
+            filter: blur(8px) brightness(0.4) grayscale(0.3);
+            transform: scale(1.1);
+            transition: opacity 2s ease, transform 15s linear;
         }
 
         .gallery-img.active {
-            opacity: 0.4;
+            opacity: 1.0;
+            /* Brightness controlled via filter */
+            transform: scale(1.0);
+            /* Slow Ken Burns drift outward */
         }
 
         /* Layer 1: Fluid Canvas (screen blend drops out black) */
@@ -66,6 +72,7 @@
             height: 100%;
             z-index: 2;
             mix-blend-mode: screen;
+            opacity: 0.9;
         }
 
         .scanlines {
@@ -462,65 +469,71 @@
             }
         }
 
-        // --- COLOR EXTRACTOR (The Brains) ---
-        // Draws current gallery image to a tiny off-screen canvas, samples vibrant colors
+        // --- COLOR EXTRACTOR (Spatial Looking Glass) ---
+        // Maps the current gallery image to a grid for coordinate-based color extraction
         class ColorExtractor {
             constructor() {
                 this.canvas = document.createElement('canvas');
                 this.ctx = this.canvas.getContext('2d', { willReadFrequently: true });
-                this.canvas.width = 64;  // Tiny — we only need color samples
-                this.canvas.height = 64;
-                this.currentPalette = [];
+                this.width = 128; // Higher resolution for spatial mapping
+                this.height = 128;
+                this.canvas.width = this.width;
+                this.canvas.height = this.height;
+                this.imageData = null;
             }
 
             extractFromImage(img) {
                 try {
-                    this.ctx.drawImage(img, 0, 0, 64, 64);
-                    const data = this.ctx.getImageData(0, 0, 64, 64).data;
-                    const palette = [];
-                    let attempts = 0;
-
-                    // Sample up to 8 vibrant colors, filtering out mud
-                    while (palette.length < 8 && attempts < 50) {
-                        const x = Math.floor(Math.random() * 64);
-                        const y = Math.floor(Math.random() * 64);
-                        const idx = (y * 64 + x) * 4;
-                        const r = data[idx] / 255;
-                        const g = data[idx + 1] / 255;
-                        const b = data[idx + 2] / 255;
-
-                        // Luminance filter: reject pure shadows and pure highlights
-                        const luminance = 0.299 * r + 0.587 * g + 0.114 * b;
-
-                        // Saturation filter: reject desaturated greys
-                        const max = Math.max(r, g, b);
-                        const min = Math.min(r, g, b);
-                        const saturation = max === 0 ? 0 : (max - min) / max;
-
-                        if (luminance > 0.1 && luminance < 0.9 && saturation > 0.12) {
-                            palette.push({ r, g, b });
-                        }
-                        attempts++;
-                    }
-
-                    if (palette.length > 0) {
-                        this.currentPalette = palette;
-                        console.log('[Color] Extracted', palette.length, 'vibrant colors');
-                    } else {
-                        console.log('[Color] No vibrant colors found, keeping previous palette');
-                    }
+                    this.ctx.drawImage(img, 0, 0, this.width, this.height);
+                    this.imageData = this.ctx.getImageData(0, 0, this.width, this.height).data;
+                    console.log('[Color] Image mapped for spatial extraction');
                 } catch (e) {
-                    // CORS tainted canvas — fail silently, keep existing palette or fallback
                     console.warn('[Color] Extraction failed (CORS?):', e.message);
+                    this.imageData = null;
                 }
             }
 
-            getRandomColor() {
-                if (this.currentPalette.length > 0) {
-                    return this.currentPalette[Math.floor(Math.random() * this.currentPalette.length)];
+            // Get color at normalized coordinates (0.0 to 1.0)
+            getColorAt(nx, ny) {
+                if (!this.imageData) return this._getFallback(nx, ny);
+
+                // WebGL Y is inverted compared to Canvas Y
+                const canvasY = 1.0 - ny;
+
+                // Clamp coordinates
+                const x = Math.max(0, Math.min(this.width - 1, Math.floor(nx * this.width)));
+                const y = Math.max(0, Math.min(this.height - 1, Math.floor(canvasY * this.height)));
+
+                const idx = (y * this.width + x) * 4;
+
+                let r = this.imageData[idx] / 255;
+                let g = this.imageData[idx + 1] / 255;
+                let b = this.imageData[idx + 2] / 255;
+
+                // "Looking Glass" Enhancement:
+                // Boost dim colors so the fluid glows brilliantly
+                // against the dim, blurred background memory.
+                const max = Math.max(r, g, b);
+                if (max > 0 && max < 0.6) {
+                    const boost = 0.6 / max;
+                    r *= boost; g *= boost; b *= boost;
                 }
-                // Fallback: green/matrix color scheme
-                return { r: 0, g: Math.random() * 0.8 + 0.2, b: Math.random() * 0.25 };
+
+                // Prevent pure black fluid (invisible in screen blend)
+                r = Math.max(0.08, r);
+                g = Math.max(0.08, g);
+                b = Math.max(0.08, b);
+
+                return { r, g, b };
+            }
+
+            _getFallback(nx, ny) {
+                // A moody cyan/purple algorithmic fallback if no image is present
+                return {
+                    r: nx * 0.4,
+                    g: 0.1,
+                    b: ny * 0.6 + 0.2
+                };
             }
         }
 
@@ -559,34 +572,58 @@
             }
 
             triggerBeat() {
-                // Determine intensity (Random chance for a "Drop")
                 const intensity = Math.random();
 
+                // 1. AMBIENT MIST (Always happens on beat ticks)
+                // Gently pulls color from random parts of the image and drifts it around
+                for (let i = 0; i < 3; i++) {
+                    const mx = Math.random();
+                    const my = Math.random();
+                    const baseColor = colorExtractor.getColorAt(mx, my);
+                    this.fluid.splatStack.push({
+                        x: mx,
+                        y: my,
+                        dx: (Math.random() - 0.5) * 200, // Very slow drift
+                        dy: (Math.random() - 0.5) * 200,
+                        color: { r: baseColor.r * 0.3, g: baseColor.g * 0.3, b: baseColor.b * 0.3 } // Dimmer for ambient mist
+                    });
+                }
+
+                // 2. BEAT EXPLOSIONS
                 if (intensity > 0.8) {
-                    // BIG EXPLOSION — multiple splats via splatStack
-                    for (let i = 0; i < 5; i++) {
+                    // BIG EXPLOSION: Focuses on one area and blows its specific colors outward
+                    const originX = 0.2 + Math.random() * 0.6;
+                    const originY = 0.2 + Math.random() * 0.6;
+
+                    for (let i = 0; i < 6; i++) {
                         const angle = Math.random() * Math.PI * 2;
+                        const r = Math.random() * 0.15;
+                        const sx = originX + Math.cos(angle) * r;
+                        const sy = originY + Math.sin(angle) * r;
+
                         this.fluid.splatStack.push({
-                            x: 0.5 + Math.cos(angle) * Math.random() * 0.15,
-                            y: 0.5 + Math.sin(angle) * Math.random() * 0.15,
-                            dx: Math.cos(angle) * 3000,
-                            dy: Math.sin(angle) * 3000,
-                            color: colorExtractor.getRandomColor()
+                            x: sx,
+                            y: sy,
+                            dx: Math.cos(angle) * 3500,
+                            dy: Math.sin(angle) * 3500,
+                            color: colorExtractor.getColorAt(sx, sy) // Spatial color grab!
                         });
                     }
                     const tt = document.getElementById('track-title');
                     if (tt) {
-                        tt.style.textShadow = '0 0 20px #00ff41';
-                        setTimeout(() => tt.style.textShadow = 'none', 100);
+                        tt.style.textShadow = '0 0 15px rgba(255,255,255,0.3)';
+                        setTimeout(() => tt.style.textShadow = 'none', 150);
                     }
                 } else if (intensity > 0.4) {
-                    // Small Splat — single push to splatStack (normalized 0-1 coords)
+                    // Small Splat
+                    const sx = Math.random();
+                    const sy = Math.random();
                     this.fluid.splatStack.push({
-                        x: Math.random(),
-                        y: Math.random(),
-                        dx: (Math.random() - 0.5) * 1000,
-                        dy: (Math.random() - 0.5) * 1000,
-                        color: colorExtractor.getRandomColor()
+                        x: sx,
+                        y: sy,
+                        dx: (Math.random() - 0.5) * 1200,
+                        dy: (Math.random() - 0.5) * 1200,
+                        color: colorExtractor.getColorAt(sx, sy)
                     });
                 }
             }
@@ -795,6 +832,15 @@
             colorExtractor = new ColorExtractor();
             galleryEngine.onImageReady = (img) => colorExtractor.extractFromImage(img);
             galleryEngine.loadMap(); // Async — loads gallery_map.json in background
+
+            // --- MIST CONFIGURATION ---
+            // Override the default fluid settings to feel like heavy, lingering fog
+            if (window.FLUID_CONFIG) {
+                window.FLUID_CONFIG.DENSITY_DISSIPATION = 0.985; // Lingers longer in the air
+                window.FLUID_CONFIG.VELOCITY_DISSIPATION = 0.99; // Flows smoother and further
+                window.FLUID_CONFIG.SPLAT_RADIUS = 0.5;          // Wider, softer color injections
+                window.FLUID_CONFIG.CURL = 15;                   // Less aggressive swirling, more gentle drifting
+            }
 
             // Init Jukebox Logic
             jukebox.init(fluid);
