@@ -1254,8 +1254,7 @@
             width: 52px;
             height: 52px;
             border-radius: 50%;
-            background: rgba(0, 10, 0, 0.7);
-            backdrop-filter: blur(8px);
+            background: rgba(0, 10, 0, 0.85);
             border: 1.5px solid rgba(0, 255, 65, 0.35);
             color: #00ff41;
             font-family: 'Courier Prime', monospace;
@@ -1267,37 +1266,20 @@
             align-items: center;
             justify-content: center;
             opacity: 0.65;
-            transition: all 0.3s ease;
-            box-shadow: 0 0 8px rgba(0, 255, 65, 0.12);
-            animation: jb-pulse 3s ease-in-out infinite;
-        }
-
-        @keyframes jb-pulse {
-
-            0%,
-            100% {
-                box-shadow: 0 0 8px rgba(0, 255, 65, 0.12);
-            }
-
-            50% {
-                box-shadow: 0 0 16px rgba(0, 255, 65, 0.3);
-            }
+            transition: opacity 0.3s ease, border-color 0.3s ease, transform 0.3s ease;
+            box-shadow: 0 0 10px rgba(0, 255, 65, 0.15);
         }
 
         #jb-trigger:hover {
             opacity: 1;
             border-color: rgba(0, 255, 65, 0.8);
-            color: #00ff41;
             box-shadow: 0 0 20px rgba(0, 255, 65, 0.4);
             transform: scale(1.1);
-            animation: none;
         }
 
         #jb-trigger.jb-active {
             opacity: 0.85;
             border-color: rgba(0, 255, 65, 0.6);
-            color: #00ff41;
-            animation: none;
         }
 
         /* Mobile: adjust trigger position */
