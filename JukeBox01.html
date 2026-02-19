@@ -381,8 +381,20 @@
             async loadMap() {
                 try {
                     const resp = await fetch('library/char_ethel_media/gallery_map.json');
-                    this.galleryMap = await resp.json();
-                    console.log('[Gallery] Map loaded:', Object.keys(this.galleryMap).length, 'tracks');
+                    const rawMap = await resp.json();
+
+                    // Transform remote GitHub Pages URLs to local relative paths.
+                    // GitHub Pages 301-redirects case-mismatched URLs, stripping CORS headers.
+                    // Local paths eliminate CORS entirely since images are co-located.
+                    const REMOTE_BASE = /https:\/\/NJsalubrious\.github\.io\/pixelstortion-assets\/assets_for_ethel_songs\/images\//gi;
+                    const LOCAL_BASE = 'library/char_ethel_media/images/';
+
+                    this.galleryMap = {};
+                    for (const [track, urls] of Object.entries(rawMap)) {
+                        this.galleryMap[track] = urls.map(url => url.replace(REMOTE_BASE, LOCAL_BASE));
+                    }
+
+                    console.log('[Gallery] Map loaded:', Object.keys(this.galleryMap).length, 'tracks (local paths)');
                 } catch (e) {
                     console.warn('[Gallery] Failed to load gallery_map.json:', e);
                 }
