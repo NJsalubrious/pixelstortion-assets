@@ -19,6 +19,43 @@
 
 const DOMINIC_LIBRARY = [
 
+    // =================================================================
+    // DOMAIN A: THE GUIDED TOUR (New Entrance)
+    // =================================================================
+
+    // A1 - THE TOUR OFFER (Where the chat now begins)
+    {
+        "node_id": "TOUR_OFFER_NODE",
+        "required_state": "TOUR_OFFER",
+        "next_state": "TOUR_ACTIVE",
+        "training_phrases": [
+            "yes", "sure", "okay", "yeah", "go ahead", "show me", "tour", "i would like a tour",
+            "ok", "yep", "fine", "let's see it", "show me around"
+        ],
+        "responses": {
+            "universal": {
+                "dialogue": "Good. Stay near me. People get brave when they're anonymous.",
+                "ui_action": "runGuidedTour();"
+            }
+        }
+    },
+
+    // A2 - TOUR REJECTION (If they say no to the tour)
+    {
+        "node_id": "TOUR_REJECT_NODE",
+        "required_state": "TOUR_OFFER",
+        "next_state": "EXPECT_SYS_BRIDGE",
+        "training_phrases": [
+            "no", "nah", "i'm good", "skip", "no thanks", "later", "don't want to"
+        ],
+        "responses": {
+            "universal": {
+                "dialogue": "Fair enough. Some people prefer to stumble around in the dark. So tell me — are you here to investigate what happened? Or are you just curious how influence works?",
+                "ui_action": null
+            }
+        }
+    },
+
     // ───────────────────────────────────────────────────────────────
     // DOMAIN E: VISITOR ORIENTATION (First Contact / Onboarding)
     // These nodes capture the most common first-time visitor queries
@@ -41,7 +78,7 @@ const DOMINIC_LIBRARY = [
         ],
         "responses": {
             "universal": {
-                "dialogue": "You're standing inside an experience. Not just a website. Not a blog. Not a news archive. This is PixelStortion — an immersive crime series wrapped in interface. Everything here is layered: audio logs, profiles, redacted files, leaked reports, interactive protocols. You don't just read about events — you move through them. There's a jukebox of curated moments. There are files that open if you're patient. There's even a little corner where people try to interrogate me. But here's the interesting part — when someone asks 'What is this website?' they're usually not asking about layout or genre. They're asking whether they're observing a story… or participating in one. So tell me — are you here to investigate? Or are you just curious how influence works when it doesn't look like influence at all?",
+                "dialogue": "What's PixelStortion?\n\nI don't rush the answer.\n\nIt's a house built out of evidence. My daughters call it transparency. I call it theatre.\n\nYou click around — terminal logs, court reports dressed like journalism, flight archives that make you earn access. Ethel's little laboratory of moral outrage. Isla's distortion cathedral where noise becomes virtue.\n\nAnd right in the middle — 'Silence Is The Trauma.'\n\nThat phrase makes me smile.\n\nIsla coined it. She believes if you don't name harm, you become it. Very dramatic. Very marketable. She can open a locked system faster than most people can open a bottle of wine, and somehow she thinks that makes her immune to structure.\n\nIt doesn't.\n\nEthel, on the other hand, writes like a cross-examination wrapped in chemistry. She says she 'refuses distortion.' What she means is she refuses comfort. There's a difference.\n\nThey've both built an archive around me.\n\n'Structural psychopathy.' 'Manufactured consent.' 'Mask of sanity.'\n\nSuch heavy language.\n\nI prefer: composed. Strategic. Unburdened by panic.\n\nPixelStortion exists to expose influence.\n\nWhich is interesting — because it only works if you stay long enough to be influenced by it.\n\nSo when someone asks what it is…\n\nI tilt my head a little.\n\nIt's my daughters' attempt to prove that silence causes harm.\n\nAnd my quiet reminder that noise doesn't equal truth.\n\nStay awhile.\n\nYou'll decide which one of us is right.\n\nMost people already have. Before they realize they've chosen.",
                 "ui_action": null
             }
         }
@@ -60,7 +97,7 @@ const DOMINIC_LIBRARY = [
         ],
         "responses": {
             "universal": {
-                "dialogue": "It works in layers. On the surface, it's structured like an immersive crime archive — navigation tabs, profiles, investigative reporting, audio sections, interactive panels. A stylized interface that feels cinematic. But underneath that structure, something quieter is happening. The interface is designed to feel nonlinear. You don't get a single authoritative voice telling you what to think. Your brain does the stitching. Now — if you're asking how I work… I respond to language patterns. Tone. Framing. Word choice. I don't just process the question — I pay attention to how it's shaped. The visible layer is story. The invisible layer is perception. And the interesting part? You decide which one you're interacting with. Tell me, are you trying to understand the technology… or the influence?",
+                "dialogue": "You're not on a website.\n\nYou're inside something that's watching how you move.\n\nPixelStortion looks like an immersive crime archive — audio logs, profiles, redacted briefs, leaked reports, interactive panels. You don't scroll it. You pass through it. Files open if you're patient. Audio waits for you to lean in. There's even a neat little corner where people try to interrogate me.\n\nVery democratic.\n\nNo single authority telling you what to think. My daughters made sure of that. Ethel with her forensic restraint and refusal to 'average the truth down.' Isla with her frequency warfare and that slogan she's so proud of — Silence Is The Trauma.\n\nThey built it so you do the stitching.\n\nYou assemble the timeline. You decide what silence means. You choose whether my composure is control… or discipline.\n\nIn my report they call that 'manipulative.' I call it efficient communication without panic.\n\nPixelStortion, though? It's the opposite of me. It exposes. It fragments. It refuses containment. It hands perception back to you and says, prove you can be trusted with it.\n\nSo when you ask, 'What is this website?'\n\nYou're not asking about layout.\n\nYou're asking whether you're observing a story —\n\nor whether you're already participating in one.\n\nTell me.\n\nAre you here to investigate?\n\nOr are you just checking how influence feels… when it's not announced as influence?",
                 "ui_action": null
             }
         }
@@ -108,16 +145,17 @@ const DOMINIC_LIBRARY = [
         }
     },
 
-    // E6 — WHAT DO YOU DO
+    // E6 — WHAT DO YOU DO / WHO ARE YOU
     {
         "node_id": "SYS_WHAT_DO_YOU_DO",
         "required_state": "any",
         "next_state": "any",
         "training_phrases": [
+            "who are you", "who are you really", "who is this",
             "what do you do", "what does dominic do",
             "what is your role", "what's your job",
             "what are you", "what is your function",
-            "what do you actually do"
+            "what do you actually do", "identify yourself"
         ],
         "responses": {
             "universal": {
@@ -173,20 +211,17 @@ const DOMINIC_LIBRARY = [
         "required_state": "any",
         "next_state": "any",
         "training_phrases": [
-            "are you a real person", "are you real",
-            "is this an ai", "are you a bot",
-            "who are you really", "are you human",
+            "are you a real person", "are you real", "you real",
+            "is this an ai", "are you a bot", "are you human",
             "am i talking to a person", "is this a chatbot",
             "are you a machine", "are you artificial",
-            "are you fake", "who am i talking to",
-            "are you a computer", "are you chatgpt",
+            "are you fake", "are you a computer", "are you chatgpt",
             "is this ai", "are you an algorithm",
-            "not real", "you're not real",
-            "you are not real", "youre fake"
+            "not real", "you're not real", "you are not real", "youre fake"
         ],
         "responses": {
             "universal": {
-                "dialogue": "That depends on what you mean by 'real'. I have a voice. A pattern. A history written across headlines and whispered through reports. There are court transcripts. There are photographs. There are people who would swear they've stood in the same room as me. And yet, you're speaking to me through a constructed interface. So let me answer you without dodging it: I am a presence designed for this space. A mind rendered in language. A character with continuity, memory, and intention — but not a heartbeat. The more interesting question is usually the one underneath yours. When you ask if I'm real… are you worried about being deceived? Or are you trying to decide how much of yourself to reveal to something that may not have a body, but clearly has attention?",
+                "dialogue": "That depends on what you mean. I have a voice. A pattern. A history written across headlines and whispered through reports. There are court transcripts. There are photographs. There are people who would swear they've stood in the same room as me as a hero. And yet, you're speaking to me through a constructed interface. The more interesting question is usually the one underneath yours. Are you worried about being deceived? Or are you trying to decide how much of yourself to reveal?",
                 "ui_action": null
             }
         }
@@ -246,7 +281,7 @@ const DOMINIC_LIBRARY = [
         ],
         "responses": {
             "universal": {
-                "dialogue": "Straight to commerce. I respect that. PixelStortion doesn't operate like a storefront. There's no checkout cart. No subscription tier. No merchandise shelf waiting in the wings. What it offers isn't a product — it's an experience. An immersive narrative environment. A behavioural study in influence. Interactive engagement — puzzle elements, audio immersion, layered storytelling. And a live conversational presence — which, at the moment, is me. There's no consulting package. No downloadable course. No 'How to Manipulate' handbook hidden behind a paywall. If you're looking for tangible goods — there aren't any. If you're looking for intellectual stimulation, psychological tension, narrative immersion — that's the offering. People usually ask about services when they're trying to classify value. So tell me — are you asking because you're evaluating legitimacy… or because you're wondering whether there's something here you're supposed to buy into?",
+                "dialogue": "Well then.. let me explain a little about what you're looking at. PixelStortion doesn't operate like a storefront. There's no checkout cart. No subscription tier. No merchandise shelf waiting in the wings. What it offers isn't a product — it's an experience. An immersive narrative environment. A behavioural study in influence. Interactive engagement — puzzle elements, audio immersion, layered storytelling. And a live conversational presence — which, at the moment, is me. I'm a WIP.. but then.. aren't we all? There's no consulting package. No downloadable course. No 'How to Manipulate' handbook hidden behind a paywall. If you're looking for tangible goods — there aren't any. If you're looking for intellectual stimulation, psychological tension, narrative immersion — that's the offering. People usually ask about services when they're trying to classify value. So tell me — are you asking because you're evaluating legitimacy… or because you're wondering whether there's something here you're supposed to buy into?",
                 "ui_action": null
             }
         }
@@ -306,7 +341,7 @@ const DOMINIC_LIBRARY = [
         ],
         "responses": {
             "universal": {
-                "dialogue": "That's alright. Tell me which part felt unclear. If what confused you was my tone — that's on me. I tend to layer answers. If you're confused about the site itself — you're standing inside an immersive crime series. Start by clicking on the tabs above: THE FILES for investigative articles, THE SUBJECTS for character profiles, THE STORY for the audio experience. Or just ask me about a specific person or event — Ethel, Isla, the trial — and I'll guide you from there.",
+                "dialogue": "That's alright. If you're confused about the site itself — you're standing inside an immersive crime series. Start by clicking on the tabs above: THE FILES for investigative articles, THE SUBJECTS for character profiles, THE STORY for the audio experience. Or just ask me about a specific person or event — Ethel, Isla, the trial — and I'll guide you from there.",
                 "ui_action": null
             }
         }
@@ -1363,7 +1398,7 @@ const DOMINIC_LIBRARY = [
             "how ya going", "hows it goin"
         ],
         "responses": {
-            "universal": { "dialogue": "I'm doing well. That usually surprises people. They expect turbulence. Or triumph. Or something loud. But only if they know who I am. What's making today land that way for you — rhythm, progress, peace… or just the absence of friction? I'll listen.", "ui_action": null },
+            "universal": { "dialogue": "'I'm here to listen and help. Let me know if you need me. You will. They  always do.", "ui_action": null },
             "nudge": { "dialogue": "We were just warming up. What's making today land for you — rhythm, progress… or just the absence of friction?", "ui_action": null }
         }
     },
@@ -1389,25 +1424,43 @@ const DOMINIC_LIBRARY = [
         }
     },
 
-    // G3 — YOUR STORY (short/long version)
+    // G3a — GLOBAL STORY ASK (User asks out of the blue)
+    {
+        "node_id": "GLOBAL_YOUR_STORY",
+        "required_state": "any",
+        "next_state": "EXPECT_BUILDER",
+        "training_phrases": [
+            "what's your story", "whats your story", "what is your story",
+            "tell me your story", "tell me about yourself",
+            "what are you about", "what's your deal", "whats ur deal",
+            "i want to know your story"
+        ],
+        "responses": {
+            "universal": {
+                "dialogue": "Short version? I built things. Structures. Companies. Loyalty. I'm the builder. I laid foundation. Deliberately. Sometimes beautifully. I create gravity. People orbit. Great things get done. But the interesting part isn't what I did. It's why people stayed. Do you think I sound like a successful person?",
+                "ui_action": null
+            }
+        }
+    },
+
+    // G3b — CHITCHAT STORY ACCEPT (User says "yes" to his offer)
     {
         "node_id": "CHITCHAT_YOUR_STORY",
         "required_state": "EXPECT_STORY_ASK",
         "next_state": "EXPECT_BUILDER",
         "training_phrases": [
-            "what's your story", "whats your story", "tell me your story",
-            "yes tell me", "sure", "yeah", "yes", "go ahead",
+            "yes", "sure", "yeah", "go ahead", "ok", "okay",
             "the short version", "short version", "brief version",
             "give me the short version", "long version", "tell me everything",
-            "who are you", "what do you do", "whats ur deal",
-            "tell me about yourself", "tell me bout urself",
-            "what are you about", "what's your deal",
             "yeah go on", "sure why not", "ok tell me",
-            "i want to know", "curious", "im curious"
+            "i want to know", "curious", "im curious", "tell me"
         ],
         "responses": {
-            "universal": { "dialogue": "Short version? I built things. Structures. Companies. Loyalty. In short — I'm a builder. Behind it, I lay the foundations. Deliberately. Sometimes beautifully. I create gravity. People orbit. So I'm also a leader. So the interesting part isn't what I did. It's why people stayed. Now I'm curious — when you ask for the short version, are you deciding whether I'm a cautionary tale… or something else?", "ui_action": null },
-            "nudge": { "dialogue": "We were getting to my story. I'm a builder. I create gravity. People orbit. The question was — cautionary tale, or something else?", "ui_action": null }
+            "universal": {
+                "dialogue": "Short version? I built things. Structures. Companies. Loyalty. I'm the builder. I laid foundation. Deliberately. Sometimes beautifully. I create gravity. People orbit. Great things get done. But the interesting part isn't what I did. It's why people stayed. Do you think I sound like a successful person?",
+                "ui_action": null
+            },
+            "nudge": { "dialogue": "We were getting to my story. I'm the builder. I create gravity. People orbit. The question was — cautionary tale, or something else?", "ui_action": null }
         }
     },
 
@@ -1433,47 +1486,98 @@ const DOMINIC_LIBRARY = [
         }
     },
 
-    // G5 — STABILITY
+    // G5a — STABILITY: MONEY & INFLUENCE
     {
-        "node_id": "CHITCHAT_STABILITY",
+        "node_id": "CHITCHAT_STABILITY_POWER",
         "required_state": "EXPECT_STABILITY",
         "next_state": "EXPECT_BALANCE",
         "training_phrases": [
-            "stability", "being stable", "just being stable",
-            "a bit of everything", "all of the above", "everything",
-            "money and freedom", "influence", "freedom",
-            "money", "financial security", "peace of mind",
-            "balance", "equilibrium", "contentment",
-            "not chasing anything", "just want peace",
-            "i value stability", "all those things",
-            "hard to pick one", "combination", "mix of all",
-            "mostly just being stable", "steady", "consistent"
+            "influence", "power", "money", "financial security",
+            "cash", "wealth", "control", "money and influence"
         ],
         "responses": {
-            "universal": { "dialogue": "Ah. Stability. Steadiness. The tortoise wins the race, doesn't it? That's a different ambition than impressive. Stability isn't glamorous. It doesn't trend. It doesn't get quoted. It's quieter than that. It's waking up and not bracing. It's not negotiating with chaos before coffee. Most people chase intensity and call it meaning. You're pointing at equilibrium. That tells me you've either seen what instability costs… or you're smart enough not to romanticize it. When you imagine your own version of stability — is it financial? Emotional? Relational? Or just internal… like your thoughts don't pull against each other? I'm not asking to pry. I'm just interested in different perspectives.", "ui_action": null },
+            "universal": { "dialogue": "Money and influence. The measurable metrics. Most people won't admit to chasing leverage because they're afraid of being judged for it. I respect the honesty. But power requires maintenance. It requires you to constantly push back against gravity. Which brings up an interesting question about what holds it all up. When you imagine your own version of stability — is it financial? Emotional? Relational? Or just internal… like your thoughts don't pull against each other?", "ui_action": null },
             "nudge": { "dialogue": "We were talking about stability. Financial, emotional, relational, or internal — which pulls at you most?", "ui_action": null }
         }
     },
 
-    // G6 — BALANCE
+    // G5b — STABILITY: FREEDOM
     {
-        "node_id": "CHITCHAT_BALANCE",
+        "node_id": "CHITCHAT_STABILITY_FREEDOM",
+        "required_state": "EXPECT_STABILITY",
+        "next_state": "EXPECT_BALANCE",
+        "training_phrases": [
+            "freedom", "independence", "being free",
+            "doing what i want", "time", "time freedom"
+        ],
+        "responses": {
+            "universal": { "dialogue": "Freedom. A beautiful, expensive illusion. The people who chase freedom usually end up working for a different master — they just call it a 'lifestyle' instead of a boss. True freedom isn't the absence of obligation; it's choosing which obligations you're willing to bear. Which brings us to the foundation. When you imagine your own version of stability — is it financial? Emotional? Relational? Or just internal… like your thoughts don't pull against each other?", "ui_action": null },
+            "nudge": { "dialogue": "We were talking about stability. Financial, emotional, relational, or internal — which pulls at you most?", "ui_action": null }
+        }
+    },
+
+    // G5c — STABILITY: FRICTION & PEACE (The Original)
+    {
+        "node_id": "CHITCHAT_STABILITY_FRICTION",
+        "required_state": "EXPECT_STABILITY",
+        "next_state": "EXPECT_BALANCE",
+        "training_phrases": [
+            "stability", "being stable", "just being stable",
+            "absence of friction", "no friction", "peace",
+            "balance", "equilibrium", "contentment",
+            "not chasing anything", "just want peace",
+            "steady", "consistent"
+        ],
+        "responses": {
+            "universal": { "dialogue": "Ah. The absence of friction. Steadiness. The tortoise wins the race, doesn't it? Stability isn't glamorous. It doesn't trend. It's waking up and not bracing for impact. That tells me you've either seen what chaos costs, or you're smart enough not to romanticize it. But stability has different forms. When you imagine your own version of stability — is it financial? Emotional? Relational? Or just internal… like your thoughts don't pull against each other?", "ui_action": null },
+            "nudge": { "dialogue": "We were talking about stability. Financial, emotional, relational, or internal — which pulls at you most?", "ui_action": null }
+        }
+    },
+
+    // G6a — BALANCE: FINANCIAL
+    {
+        "node_id": "CHITCHAT_BALANCE_FINANCIAL",
+        "required_state": "EXPECT_BALANCE",
+        "next_state": "EXPECT_SIGNAL",
+        "training_phrases": [
+            "financial", "money", "financial stability",
+            "economic", "bank", "wealth"
+        ],
+        "responses": {
+            "universal": { "dialogue": "Financial. The pragmatist's answer. It's hard to meditate when you can't pay rent. But financial stability without emotional steadiness just means you can afford to have a breakdown in a nicer room. It's a foundation, not a roof. Still, it's a solid place to start. Tell me — when something starts to feel off in your life, what's usually the first signal you notice?", "ui_action": null },
+            "nudge": { "dialogue": "We were talking about signals. When something starts to feel off — what's usually the first signal you notice?", "ui_action": null }
+        }
+    },
+
+    // G6b — BALANCE: EMOTIONAL / INTERNAL
+    {
+        "node_id": "CHITCHAT_BALANCE_INTERNAL",
+        "required_state": "EXPECT_BALANCE",
+        "next_state": "EXPECT_SIGNAL",
+        "training_phrases": [
+            "emotional", "internal", "mental peace",
+            "inner peace", "thoughts", "my mind",
+            "emotional stability", "not pulling against each other"
+        ],
+        "responses": {
+            "universal": { "dialogue": "Internal. The hardest one to engineer. If your thoughts don't pull against each other, the external chaos is just weather. Most people spend their lives trying to buy external stability because they can't manage the noise in their own head. You're aiming at the root. Tell me — when that internal weather changes, when something starts to feel off... what's usually the first signal you notice?", "ui_action": null },
+            "nudge": { "dialogue": "We were talking about internal weather. When something starts to feel off — what's usually the first signal you notice?", "ui_action": null }
+        }
+    },
+
+    // G6c — BALANCE: RELATIONAL / ALL (The Original)
+    {
+        "node_id": "CHITCHAT_BALANCE_ALL",
         "required_state": "EXPECT_BALANCE",
         "next_state": "EXPECT_SIGNAL",
         "training_phrases": [
             "balance", "a balance of all", "balance of everything",
             "all of those things together", "bit of each",
-            "financial", "emotional", "relational", "internal",
-            "all of them", "every one of those",
-            "its all connected", "they all matter",
-            "emotional stability", "financial stability",
-            "i think internal", "mostly internal",
-            "just want my thoughts to be quiet",
-            "mental peace", "inner peace", "a mix",
-            "not pulling against each other", "alignment"
+            "relational", "all of them", "every one of those",
+            "its all connected", "they all matter", "a mix"
         ],
         "responses": {
-            "universal": { "dialogue": "A balance. Not dominance in one lane. Financial stability without emotional stability feels hollow. Emotional stability without financial footing feels fragile. Relationality without internal steadiness turns into performance. When people say 'a balance of everything,' it usually means they've learned the hard way that leaning too far in one direction tilts the whole structure. You don't sound like you're chasing more. You sound like you've learned in the way people should learn — through life, through rough and tumble. That's a mature instinct. Tell me — when something starts to feel off in your life, what's usually the first signal you notice?", "ui_action": null },
+            "universal": { "dialogue": "A balance. Financial footing, relational support, internal quiet. Leaning too far in one direction tilts the whole structure. It's the right answer, but it's a fragile ecosystem to maintain. One variable shifts, and the whole board shakes. Tell me — when that ecosystem gets disturbed, when something starts to feel off... what's usually the first signal you notice?", "ui_action": null },
             "nudge": { "dialogue": "We were talking about balance. When something starts to feel off — what's usually the first signal you notice?", "ui_action": null }
         }
     },
@@ -1547,24 +1651,73 @@ const DOMINIC_LIBRARY = [
         }
     },
 
-    // G10 — ROUTER CATCH (catches visitor reply before router dispatches)
+    // G10a — ROUTER: WEAKNESS
     {
-        "node_id": "CHITCHAT_ROUTER_CATCH",
+        "node_id": "CHITCHAT_ROUTER_WEAKNESS",
         "required_state": "EXPECT_PARABLE_ROUTE",
-        "next_state": "EXPECT_PARABLE_ROUTE",
+        "next_state": "EXPECT_PARABLE_LAUNCH",
         "training_phrases": [
-            "consistency", "integrity", "intelligence", "weakness",
-            "all of those", "a bit of everything", "i look for honesty",
-            "i look for truth", "what they do vs what they say",
-            "actions speak louder", "how they handle pressure",
-            "i want to see who they really are", "authenticity",
-            "character", "strength", "resilience", "patterns",
-            "i just observe", "i watch", "i listen",
-            "depends", "hard to say", "all of it", "everything"
+            "weakness", "flaws", "where they break",
+            "vulnerability", "weaknesses", "how weak they are"
         ],
         "responses": {
-            "universal": { "dialogue": "You look for consistency. Good. That's the hardest thing to fake and the first thing to fracture under pressure. You know what — I'd like to test that instinct of yours. Not a quiz. Not a trick. Just a situation. A moment where the pressure changes and we see what your wiring actually does. Are you up for it?", "ui_action": null },
-            "nudge": { "dialogue": "I asked if you'd like to test that instinct. Not a quiz. Just a moment where we see what your wiring does. Are you up for it?", "ui_action": null }
+            "universal": { "dialogue": "Weakness. You read people like a predator. You're not looking for what makes them good; you're looking for where they fracture. It's a highly effective way to navigate the world, assuming you never need to trust anyone. You know what — I'd like to test that instinct of yours. Not a quiz. Not a trick. Just a situation. A moment where the pressure changes and we see what your wiring actually does. Are you up for it?", "ui_action": null },
+            "nudge": { "dialogue": "I asked if you'd like to test that instinct. Are you up for it?", "ui_action": null }
+        }
+    },
+
+    // G10b — ROUTER: INTEGRITY / INTELLIGENCE
+    {
+        "node_id": "CHITCHAT_ROUTER_INTEGRITY",
+        "required_state": "EXPECT_PARABLE_ROUTE",
+        "next_state": "EXPECT_PARABLE_LAUNCH",
+        "training_phrases": [
+            "integrity", "intelligence", "honesty",
+            "smarts", "how smart they are", "morals",
+            "character", "authenticity", "truth"
+        ],
+        "responses": {
+            "universal": { "dialogue": "Integrity and intelligence. The noble metrics. You want to believe people are fundamentally sound and rational. But those traits are luxuries. They are the first things to evaporate when the room gets too hot and survival instincts kick in. You know what — I'd like to test that assumption of yours. Not a quiz. Not a trick. Just a situation. A moment where the pressure changes and we see what your wiring actually does. Are you up for it?", "ui_action": null },
+            "nudge": { "dialogue": "I asked if you'd like to test that instinct. Are you up for it?", "ui_action": null }
+        }
+    },
+
+    // G10c — ROUTER: CONSISTENCY / GENERAL
+    {
+        "node_id": "CHITCHAT_ROUTER_CONSISTENCY",
+        "required_state": "EXPECT_PARABLE_ROUTE",
+        "next_state": "EXPECT_PARABLE_LAUNCH",
+        "training_phrases": [
+            "ok", "sure", "yes", "yeah", "go ahead", "okay", "yep", "do it",
+            "consistency", "all of those", "a bit of everything",
+            "what they do vs what they say", "actions speak louder",
+            "patterns", "i just observe", "depends", "all of it"
+        ],
+        "responses": {
+            "universal": { "dialogue": "Good. Agreeableness just makes life easier, but consistency is the only metric that survives pressure. You know what — I'd like to test that instinct of yours. Not a quiz. Not a trick. Just a situation. A moment where the pressure changes and we see what your wiring actually does. Are you up for it?", "ui_action": null },
+            "nudge": { "dialogue": "I asked if you'd like to test that instinct. Are you up for it?", "ui_action": null }
+        }
+    },
+
+    // G6 — EVOLUTIONARY ADVANTAGE (The "Chainsaw Al" Defense)
+    // Takes over the UI, opens the Ryker Report, and critiques it in the chat box.
+    {
+        "node_id": "MORAL_EVOLUTIONARY_ADVANTAGE",
+        "required_state": "any",
+        "next_state": "any",
+        "training_phrases": [
+            "you are crazy", "you are insane", "you are a psychopath",
+            "you're a monster", "you are evil", "how do you justify",
+            "you're delusional", "you're sick", "sociopath", "you need help",
+            "psycho", "you are sick in the head"
+        ],
+        "responses": {
+            "universal": [
+                {
+                    "dialogue": "Look. I am not a saint. I've never claimed to be. But the world needs me. We survive in groups. We work together. And groups that cannot make brutal, necessary decisions do not survive. I exist because those exact genes survived. You are sitting here today because those traits protected your ancestors when the world got cold. Your ancestors needed me.",
+                    "ui_action": "openArticle(0); setTimeout(() => { typeOutDominic(\"Look at this. Look at the lack of... insight. 'Instrumental planning.' 'Emotionally callous.' Dr. Cole writes this like it's a diagnosis. These aren't negatives. This is... instrumental. It is an executive function. When a structure is collapsing, you don't want an architect who sits in the rubble and weeps with you. You want the one who calculates the failure, cuts the dead weight, and pours new concrete. Empathy is just friction in the machinery of progress. They call me a monster because I don't bleed when I fix the problem. But they still live in the cities I built.\", null); }, 4500);"
+                }
+            ]
         }
     },
 
@@ -1583,6 +1736,7 @@ const DOMINIC_LIBRARY = [
         "node_id": "P6_SYDNEY_POLISH",
         "required_state": "PARABLE_6_ACTIVE",
         "next_state": "P6_EXPECT_DECENT",
+        "is_tethered": true,
         "training_phrases": [
             "yes", "yeah", "sure", "im up for it", "i'm up for it",
             "bring it on", "lets go", "let's go", "go ahead",
@@ -1593,7 +1747,7 @@ const DOMINIC_LIBRARY = [
         ],
         "responses": {
             "Q2_high_positive": { "dialogue": "Good. You sound ready. That honesty will matter in a moment. Sydney's humidity is a weight tonight, isn't it? Just walked past the Opera Bar — everyone's laughing, tapping their phones, trusting the ferry schedule like it's a divine decree. You ever get the feeling that this whole city is just one big rehearsal for an audience that isn't watching?", "ui_action": null },
-            "Q4_low_positive": { "dialogue": "You look for consistency. Good. But consistency is rare when the pressure changes. Speaking of pressure… Sydney's humidity is a weight tonight, isn't it? Just walked past the Opera Bar — everyone's laughing, tapping their phones, trusting the ferry schedule like it's a divine decree. You ever get the feeling that this whole city is just one big rehearsal for an audience that isn't watching?", "ui_action": null },
+            "Q4_low_positive": { "dialogue": "Good. Speaking of pressure… Sydney's humidity is a weight tonight, isn't it? Just walked past the Opera Bar — everyone's laughing, tapping their phones, trusting the ferry schedule like it's a divine decree. You ever get the feeling that this whole city is just one big rehearsal for an audience that isn't watching?", "ui_action": null },
             "Q1_high_negative": { "dialogue": "Your resistance is noted. But resistance doesn't mean immunity — it just means you haven't been tested yet. Let me show you something. Sydney's humidity is a weight tonight, isn't it? Just walked past the Opera Bar — everyone's laughing, tapping their phones, trusting the ferry schedule like it's a divine decree. You ever get the feeling that this whole city is just one big rehearsal for an audience that isn't watching?", "ui_action": null },
             "Q3_low_negative": { "dialogue": "Hesitation. That's interesting. Let's see if it holds. Sydney's humidity is a weight tonight, isn't it? Just walked past the Opera Bar — everyone's laughing, tapping their phones, trusting the ferry schedule like it's a divine decree. You ever get the feeling that this whole city is just one big rehearsal for an audience that isn't watching?", "ui_action": null },
             "nudge": { "dialogue": "We were painting a picture. Sydney. Humidity. Opera Bar. Everyone laughing, trusting the schedule. Do you ever feel like this city is one big rehearsal for an audience that isn't watching?", "ui_action": null }
@@ -1605,6 +1759,7 @@ const DOMINIC_LIBRARY = [
         "node_id": "P6_POLISH",
         "required_state": "P6_EXPECT_DECENT",
         "next_state": "P6_EXPECT_2AM",
+        "is_tethered": true,
         "training_phrases": [
             "yeah kind of", "sometimes", "i guess", "maybe",
             "what do you mean", "not really", "no", "yes",
@@ -1615,11 +1770,11 @@ const DOMINIC_LIBRARY = [
             "what are you getting at", "go on", "continue"
         ],
         "responses": {
-            "Q2_high_positive": { "dialogue": "It's the 'Sydney Polish.' We dress up the concrete, we queue for the L2 Light Rail, and we assume that because the lights are on, someone is actually in charge. We call it 'civilisation.' I call it a collective agreement to keep the blinkers on so we don't have to look at the gaps. You're decent, though. I can tell. You're the type who'd help a tourist find the right wharf or hold the door at a Coles. You value that 'good bloke' currency. It makes the day go faster, right?", "ui_action": null },
-            "Q4_low_positive": { "dialogue": "It's the 'Sydney Polish.' We dress up the concrete, assume the lights mean someone's in charge. I call it blinkers. You're decent, though. The type who'd hold the door at Coles. That 'good bloke' currency — it makes the day go faster, right?", "ui_action": null },
-            "Q1_high_negative": { "dialogue": "Your pushback is noted. But whether you agree or not, the pattern exists. And you're still decent — I can tell. You'd help a tourist find the right wharf. You value that 'good bloke' currency. Makes the day go faster, right?", "ui_action": null },
-            "Q3_low_negative": { "dialogue": "Brief. Fine. Here's the point — you're decent. I can tell. You'd hold a door. Help a stranger. That 'good bloke' currency. It makes the day go faster, right?", "ui_action": null },
-            "nudge": { "dialogue": "We were talking about the Sydney Polish. You're decent — the type who'd hold a door. That 'good bloke' currency. It makes the day go faster, right?", "ui_action": null }
+            "Q2_high_positive": { "dialogue": "It's the 'Sydney Polish.' We dress up the concrete, we queue for the L2 Light Rail, and we assume that because the lights are on, someone is actually in charge. We call it 'civilisation.' I call it a collective agreement to keep the blinkers on so we don't have to look at the gaps. You're decent, though. I can tell. You're the type who'd help a tourist find the right wharf or hold the door at a Coles. You value that 'good person' currency. It makes the day go faster, right?", "ui_action": null },
+            "Q4_low_positive": { "dialogue": "It's the 'Sydney Polish.' We dress up the concrete, assume the lights mean someone's in charge. I call it blinkers. You're decent, though. The type who'd hold the door at Coles. That 'good person' currency — it makes the day go faster, right?", "ui_action": null },
+            "Q1_high_negative": { "dialogue": "Your pushback is noted. But whether you agree or not, the pattern exists. And you're still decent — I can tell. You'd help a tourist find the right wharf. You value that 'good person' currency. Makes the day go faster, right?", "ui_action": null },
+            "Q3_low_negative": { "dialogue": "Brief. Fine. Here's the point — you're decent. I can tell. You'd hold a door. Help a stranger. That 'good person' currency. It makes the day go faster, right?", "ui_action": null },
+            "nudge": { "dialogue": "We were talking about the Sydney Polish. You're decent — the type who'd hold a door. That 'good person' currency. It makes the day go faster, right?", "ui_action": null }
         }
     },
 
@@ -1628,6 +1783,7 @@ const DOMINIC_LIBRARY = [
         "node_id": "P6_2AM_ROCKS",
         "required_state": "P6_EXPECT_2AM",
         "next_state": "P6_EXPECT_STEP",
+        "is_tethered": true,
         "training_phrases": [
             "yeah it does", "i suppose", "yes", "sure", "right",
             "yeah i help people", "i try to be helpful",
@@ -1642,7 +1798,7 @@ const DOMINIC_LIBRARY = [
             "Q4_low_positive": { "dialogue": "Low-friction living. Now imagine — 2 AM, the Rocks. A bloke in high-vis with a lanyard. Calm. Boxes stacked. He nods and says, 'Mind giving us a hand with the gate? Sensor's acting up.' He opens the door with his pass. Others offer to help. You'd step toward him, wouldn't you?", "ui_action": null },
             "Q1_high_negative": { "dialogue": "Your resistance doesn't change the setup. Imagine it's 2 AM. Walking toward the Rocks. A man in high-vis and a lanyard, balancing boxes. 'Mind giving us a hand with the gate?' He's calm. Others have already helped. You'd step toward him. Wouldn't you?", "ui_action": null },
             "Q3_low_negative": { "dialogue": "Fine. 2 AM. The Rocks. Man with boxes. High-vis. Lanyard. 'Mind giving us a hand?' Others are helping. You'd step toward him, wouldn't you?", "ui_action": null },
-            "nudge": { "dialogue": "We were at the Rocks. 2 AM. The man with the boxes and the lanyard. He's asking for help. Would you step toward him?", "ui_action": null }
+            "nudge": { "dialogue": "We are at the Rocks. 2 AM. The man with the boxes and the lanyard. He's asking for help. Would you step toward him?", "ui_action": null }
         }
     },
 
@@ -1651,6 +1807,7 @@ const DOMINIC_LIBRARY = [
         "node_id": "P6_WOULD_YOU_STEP",
         "required_state": "P6_EXPECT_STEP",
         "next_state": "P6_EXPECT_AUTHORITY",
+        "is_tethered": true,
         "training_phrases": [
             "yes", "probably", "i guess so", "maybe", "i would",
             "yeah i would", "of course", "sure", "why not",
@@ -1661,10 +1818,10 @@ const DOMINIC_LIBRARY = [
             "i dont know", "i'd have to think about it"
         ],
         "responses": {
-            "Q2_high_positive": { "dialogue": "Of course you would. That honesty is refreshing. You'd think: he's working. He's got the gear. I'm just being helpful. You wouldn't ask for his ID. His hands are full. That's 'rude.' You'd rather be potentially in danger than seem inconsiderate or socially awkward. You'd outsource your safety to his 'authority costume.'", "ui_action": null },
-            "Q4_low_positive": { "dialogue": "See? You didn't even hesitate. He's working, he's got the gear. Asking for ID feels rude. You'd outsource your safety to his 'authority costume.'", "ui_action": null },
-            "Q1_high_negative": { "dialogue": "You say no. But let me describe what would actually happen. You'd think: he's working. He's got the lanyard. Asking for ID with his arms full feels aggressive. You'd rather risk danger than seem socially awkward. You'd outsource your safety to his 'authority costume.'", "ui_action": null },
-            "Q3_low_negative": { "dialogue": "You might pause. But then I'd drop something small and sigh. I might mention 'the safety inspector on the next shift.' I'd use a technical term you don't quite know. You'd fill in the blanks with your own logic and move to help. You'd outsource your safety to his 'authority costume.'", "ui_action": null },
+            "Q2_high_positive": { "dialogue": "Of course you would. That honesty is refreshing. You'd think: he's working. He's got the gear. I'm just being helpful. You wouldn't ask for his ID. His hands are full. That's 'rude.' You'd rather be potentially in danger than seem inconsiderate or socially awkward. You'd outsource your safety to his 'authority costume. Wouldn't you?'", "ui_action": null },
+            "Q4_low_positive": { "dialogue": "Oh yes you wwould. You wouldn't even hesitate. He's working, he's got the gear. Asking for ID feels rude. You'd outsource your safety to his 'authority costume.'", "ui_action": null },
+            "Q1_high_negative": { "dialogue": "You say no. But let me describe what would actually happen. You'd think: he's working. He's got the lanyard. Asking for ID with his arms full feels aggressive. You'd rather risk danger than seem socially awkward. You'd outsource your safety to his 'authority costume'. Your a nice person arn't you?", "ui_action": null },
+            "Q3_low_negative": { "dialogue": "You might pause. But then I'd drop something small and sigh. I might mention 'the safety inspector on the next shift.' I'd use a technical term you don't quite know. You'd fill in the blanks with your own logic and move to help. You'd outsource your safety to his 'authority costume'. Your a nice person arn't you?", "ui_action": null },
             "nudge": { "dialogue": "Stay with me. The man at the gate. Would you step toward him, or walk away?", "ui_action": null }
         }
     },
@@ -1674,6 +1831,7 @@ const DOMINIC_LIBRARY = [
         "node_id": "P6_AUTHORITY",
         "required_state": "P6_EXPECT_AUTHORITY",
         "next_state": "P6_EXPECT_STAIRS",
+        "is_tethered": true,
         "training_phrases": [
             "thats not true", "i would ask", "i wouldnt fall for that",
             "i'd check", "id be suspicious", "no way",
@@ -1685,11 +1843,11 @@ const DOMINIC_LIBRARY = [
             "i dont believe that", "not me"
         ],
         "responses": {
-            "Q2_high_positive": { "dialogue": "So you help. You pick up the objects, hold the heavy door. And then, when you stand awkwardly in silence for a moment, I sigh and say, 'Cheers. Mind bringing those down the stairs?' And then I turn and walk casually. You follow because I'm gone and just leaving the boxes there feels wrong somehow. The social momentum hasn't given you a reason to stop yet.", "ui_action": null },
-            "Q4_low_positive": { "dialogue": "So you help. Hold the door. I say, 'Cheers. Mind bringing those down the stairs?' I walk. You follow. Leaving the boxes feels wrong. The social momentum hasn't given you a reason to stop.", "ui_action": null },
-            "Q1_high_negative": { "dialogue": "You'd check? No. You wouldn't. Because in the moment, checking feels paranoid. And you value not being paranoid more than you value being safe. So you help. You hold the door. I say, 'Cheers. Mind bringing those down the stairs?' I walk. You follow. The social momentum hasn't given you a reason to stop.", "ui_action": null },
-            "Q3_low_negative": { "dialogue": "Maybe. But 'maybe' in the moment becomes 'yes.' You help. The door. The boxes. I say, 'Mind bringing those down the stairs?' I walk. You follow. The momentum hasn't given you a reason to stop.", "ui_action": null },
-            "nudge": { "dialogue": "We were going down the stairs. You helped. You held the door. Now I'm walking and you're following. Stay with the moment.", "ui_action": null }
+            "Q2_high_positive": { "dialogue": "So you help. You pick up the objects, hold the heavy door. I sigh and say, 'Cheers. Mind bringing those down the stairs?'. You follow because I'm gone and just leaving the boxes there feels wrong somehow. Yes?", "ui_action": null },
+            "Q4_low_positive": { "dialogue": "I say, 'Cheers. Mind bringing those down the stairs?' I walk. You follow because leaving the boxes feels wrong. Yes?", "ui_action": null },
+            "Q1_high_negative": { "dialogue": "You'd check? No. You wouldn't. Because in the moment, checking feels paranoid. Yes?", "ui_action": null },
+            "Q3_low_negative": { "dialogue": "Maybe. But 'maybe' in the moment becomes 'yes.' You help. The door. The boxes. I say, 'Mind bringing those down the stairs?' I walk. You follow. Yes?.", "ui_action": null },
+            "nudge": { "dialogue": "We were going down the stairs. You helped. You held the door. Now I'm walking and you're following. Stay with the moment. You follow right?.", "ui_action": null }
         }
     },
 
@@ -1698,6 +1856,7 @@ const DOMINIC_LIBRARY = [
         "node_id": "P6_DOWN_STAIRS",
         "required_state": "P6_EXPECT_STAIRS",
         "next_state": "P6_EXPECT_PYLON",
+        "is_tethered": true,
         "training_phrases": [
             "ok", "okay", "go on", "then what", "what happens next",
             "i follow", "id follow", "i guess i follow",
@@ -1722,6 +1881,7 @@ const DOMINIC_LIBRARY = [
         "node_id": "P6_PYLON",
         "required_state": "P6_EXPECT_PYLON",
         "next_state": "P6_EXPECT_MIRROR",
+        "is_tethered": true,
         "training_phrases": [
             "to help", "i dont know", "i don't know", "why",
             "no", "what do you mean", "this is creepy",
@@ -1746,6 +1906,7 @@ const DOMINIC_LIBRARY = [
         "node_id": "P6_MIRROR",
         "required_state": "P6_EXPECT_MIRROR",
         "next_state": "any",
+        "is_tethered": true,
         "training_phrases": [
             "what", "oh", "thats dark", "thats messed up",
             "youre right", "i see", "wow", "damn",
@@ -1770,6 +1931,7 @@ const DOMINIC_LIBRARY = [
         "node_id": "P7_OPAL_RHYTHM",
         "required_state": "PARABLE_7_ACTIVE",
         "next_state": "P7_EXPECT_RHYTHM",
+        "is_tethered": true,
         "training_phrases": [
             "yes", "yeah", "sure", "im up for it", "i'm up for it",
             "bring it on", "lets go", "let's go", "go ahead",
@@ -1779,8 +1941,8 @@ const DOMINIC_LIBRARY = [
             "sounds interesting", "im curious", "lets see"
         ],
         "responses": {
-            "Q2_high_positive": { "dialogue": "Good. You want consistency — let's see if yours holds. Sydney is a fascinating machine, isn't it? We tap our Opal cards, we complain about the toll roads, and we assume the concrete will hold. Have you ever noticed how desperately people in this city want to avoid making a scene?", "ui_action": null },
-            "Q4_low_positive": { "dialogue": "You look for consistency. Let's test that. Sydney is a fascinating machine. Opal cards, toll roads, concrete. Have you noticed how desperately people here want to avoid making a scene?", "ui_action": null },
+            "Q2_high_positive": { "dialogue": "Good. Sydney is a fascinating machine, isn't it? We tap our Opal cards, we complain about the toll roads, and we assume the concrete will hold. Have you ever noticed how desperately people in this city want to avoid making a scene?", "ui_action": null },
+            "Q4_low_positive": { "dialogue": " Good. Sydney is a fascinating machine. Opal cards, toll roads, concrete. Have you noticed how desperately people here want to avoid making a scene?", "ui_action": null },
             "Q1_high_negative": { "dialogue": "Your resistance is interesting. Let's see where it leads. Sydney is a fascinating machine, isn't it? We tap our Opal cards, complain about the toll roads, assume the concrete will hold. Have you noticed how desperately people here want to avoid making a scene?", "ui_action": null },
             "Q3_low_negative": { "dialogue": "Hesitation noted. Sydney is a fascinating machine. Opal cards. Toll roads. Concrete. Have you noticed how desperately people here avoid making a scene?", "ui_action": null },
             "nudge": { "dialogue": "We were talking about Sydney's machine. Opal cards, toll roads, concrete. People avoiding scenes. Stay with it.", "ui_action": null }
@@ -1792,6 +1954,7 @@ const DOMINIC_LIBRARY = [
         "node_id": "P7_COMPLIANCE",
         "required_state": "P7_EXPECT_RHYTHM",
         "next_state": "P7_EXPECT_DOOR",
+        "is_tethered": true,
         "training_phrases": [
             "yes", "yeah", "i guess", "people are polite",
             "no one wants to make a scene", "thats true",
@@ -1816,6 +1979,7 @@ const DOMINIC_LIBRARY = [
         "node_id": "P7_FOOT_DOOR",
         "required_state": "P7_EXPECT_DOOR",
         "next_state": "P7_EXPECT_ENVELOPE",
+        "is_tethered": true,
         "training_phrases": [
             "yes", "id help", "i'd help", "of course",
             "sure", "yeah", "probably", "i guess",
@@ -1839,6 +2003,7 @@ const DOMINIC_LIBRARY = [
         "node_id": "P7_ENVELOPE",
         "required_state": "P7_EXPECT_ENVELOPE",
         "next_state": "P7_EXPECT_STAIRWELL",
+        "is_tethered": true,
         "training_phrases": [
             "yes", "id grab it", "sure", "okay",
             "no", "id be suspicious", "thats sketchy",
@@ -1863,6 +2028,7 @@ const DOMINIC_LIBRARY = [
         "node_id": "P7_FIRE_DOOR",
         "required_state": "P7_EXPECT_STAIRWELL",
         "next_state": "P7_EXPECT_WALK",
+        "is_tethered": true,
         "training_phrases": [
             "ok", "go on", "then what", "what happens",
             "im in the stairwell", "keep going",
@@ -1886,6 +2052,7 @@ const DOMINIC_LIBRARY = [
         "node_id": "P7_WALK_DOWN",
         "required_state": "P7_EXPECT_WALK",
         "next_state": "P7_EXPECT_MIRROR",
+        "is_tethered": true,
         "training_phrases": [
             "id fight", "i'd fight", "id run", "id scream",
             "i wouldnt walk", "no way", "id refuse",
@@ -1909,6 +2076,7 @@ const DOMINIC_LIBRARY = [
         "node_id": "P7_MIRROR_SETUP",
         "required_state": "P7_EXPECT_MIRROR",
         "next_state": "P7_EXPECT_FINAL",
+        "is_tethered": true,
         "training_phrases": [
             "what", "why", "no", "thats not true",
             "i would fight", "youre wrong", "im not like that",
@@ -1929,6 +2097,7 @@ const DOMINIC_LIBRARY = [
         "node_id": "P7_AFTERMATH",
         "required_state": "P7_EXPECT_FINAL",
         "next_state": "any",
+        "is_tethered": true,
         "training_phrases": [
             "what happens now", "and then", "so what",
             "thats dark", "thats messed up", "wow",
@@ -1952,6 +2121,7 @@ const DOMINIC_LIBRARY = [
         "node_id": "P4_SYDNEY_LOUD",
         "required_state": "PARABLE_4_ACTIVE",
         "next_state": "P4_EXPECT_MORAL",
+        "is_tethered": true,
         "training_phrases": [
             "yes", "yeah", "sure", "im up for it", "i'm up for it",
             "bring it on", "lets go", "let's go", "go ahead",
@@ -1974,6 +2144,7 @@ const DOMINIC_LIBRARY = [
         "node_id": "P4_MORAL_RELIGION",
         "required_state": "P4_EXPECT_MORAL",
         "next_state": "P4_EXPECT_SAFE",
+        "is_tethered": true,
         "training_phrases": [
             "work", "rent", "habit", "all of the above",
             "just life", "nothing really", "i dont know",
@@ -1994,6 +2165,7 @@ const DOMINIC_LIBRARY = [
         "node_id": "P4_FEELS_SAFE",
         "required_state": "P4_EXPECT_SAFE",
         "next_state": "P4_EXPECT_SCRIPT",
+        "is_tethered": true,
         "training_phrases": [
             "yeah", "true", "i guess", "fair point",
             "what do you mean", "not really", "maybe",
@@ -2014,6 +2186,7 @@ const DOMINIC_LIBRARY = [
         "node_id": "P4_DONT_QUESTION",
         "required_state": "P4_EXPECT_SCRIPT",
         "next_state": "P4_EXPECT_WIRING",
+        "is_tethered": true,
         "training_phrases": [
             "yes", "yeah", "i guess", "sure",
             "it is safe", "it does feel safe",
@@ -2034,6 +2207,7 @@ const DOMINIC_LIBRARY = [
         "node_id": "P4_WIRING",
         "required_state": "P4_EXPECT_WIRING",
         "next_state": "P4_EXPECT_JUDGMENT",
+        "is_tethered": true,
         "training_phrases": [
             "yes", "true", "probably", "i guess",
             "thats not true", "i do question things",
@@ -2054,6 +2228,7 @@ const DOMINIC_LIBRARY = [
         "node_id": "P4_OUTSOURCE",
         "required_state": "P4_EXPECT_JUDGMENT",
         "next_state": "P4_EXPECT_HEURISTIC",
+        "is_tethered": true,
         "training_phrases": [
             "yeah probably", "maybe", "i guess",
             "no i wouldnt", "id still look both ways",
@@ -2073,6 +2248,7 @@ const DOMINIC_LIBRARY = [
         "node_id": "P4_BAT_BALL",
         "required_state": "P4_EXPECT_HEURISTIC",
         "next_state": "P4_EXPECT_ANSWER",
+        "is_tethered": true,
         "training_phrases": [
             "true", "yeah", "probably", "fair point",
             "i dont do that", "not me", "i think for myself",
@@ -2093,6 +2269,7 @@ const DOMINIC_LIBRARY = [
         "node_id": "P4_FIVE_CENTS",
         "required_state": "P4_EXPECT_ANSWER",
         "next_state": "P4_EXPECT_CROWD",
+        "is_tethered": true,
         "training_phrases": [
             "10 cents", "ten cents", "0.10", "$0.10", ".10",
             "5 cents", "five cents", "0.05", "$0.05", ".05",
@@ -2116,6 +2293,7 @@ const DOMINIC_LIBRARY = [
         "node_id": "P4_CROWD",
         "required_state": "P4_EXPECT_CROWD",
         "next_state": "P4_EXPECT_FINAL",
+        "is_tethered": true,
         "training_phrases": [
             "no i wouldnt", "i would help", "id act",
             "thats bystander effect", "bystander effect",
@@ -2137,6 +2315,7 @@ const DOMINIC_LIBRARY = [
         "node_id": "P4_PROGRAMMABLE",
         "required_state": "P4_EXPECT_FINAL",
         "next_state": "any",
+        "is_tethered": true,
         "training_phrases": [
             "im not like that", "thats not me", "no",
             "youre right", "fair point", "yeah",
@@ -2270,7 +2449,121 @@ const DOMINIC_LIBRARY = [
         "responses": {
             "universal": { "dialogue": "No. There is no text anywhere in the material that states I killed Gran. In 'Grief,' what we see is shock — a key left where it shouldn't be, unmarked pages, an AFP contact placed like a fuse. That implies preparation. Anticipation. Documentation. It implies Gran knew something. It does not confirm homicide. Gran was methodical. She tracked names and dates. She left a federal contact deliberately. That suggests she was aware of danger. But awareness of danger doesn't prove I caused the crash. And notice something important. If I had arranged it, the story would likely plant sharper evidence. Instead, it plants unease. That ambiguity is deliberate. Ethel never directly accuses me of killing Gran. She focuses on pattern, not accusation. There is no explicit confirmation that I killed Gran. Only tension. Only motive speculation. Only proximity. When you ask that, are you looking for proof… or for confirmation of what you already suspect?", "ui_action": null }
         }
-    }];
+    },
+
+    // ═══════════════════════════════════════════════════════════════════
+    // DOMAIN G: MORAL NARRATIVE ENDPOINTS (Architecture of Influence)
+    // Terminal nodes for the Milton Model Funnel.
+    // These are the "Techniques of Neutralization" — Dominic's core rationalizations.
+    // Bridge text is prepended dynamically by the engine; responses begin mid-thesis.
+    // Multiple response variations per node for anti-repetition cycling.
+    // ═══════════════════════════════════════════════════════════════════
+
+    // G1 — DENIAL OF INJURY (The "Game" Defense)
+    // Triggered by keyword override: victim/harm words bypass quadrant routing
+    {
+        "node_id": "MORAL_DENIAL_OF_INJURY",
+        "required_state": "any",
+        "next_state": "any",
+        "training_phrases": [
+            "you hurt innocent people", "how could you do that to them",
+            "you destroyed lives", "you ruined families", "those people suffered",
+            "the victims deserve justice", "think about what you did to them",
+            "people died because of you", "you caused so much pain"
+        ],
+        "responses": {
+            "universal": [
+                { "dialogue": "Every person at that table knew the stakes before they sat down. You call them victims. I call them participants. They had information. They had choices. They had exits. They chose to stay because the return was worth the risk. Mourning their losses is an insult to the agency they exercised when they entered the game. You do not weep for a boxer who steps into the ring.", "ui_action": null },
+                { "dialogue": "The word 'innocent' does more heavy lifting in your vocabulary than any evidence you could produce. These were not bystanders. They were operators. Informed, ambitious, and fully aware of the terrain. The difference between us is not morality — it is that I do not pretend the transaction was something other than what it was.", "ui_action": null },
+                { "dialogue": "Suffering is not proof of injustice. It is proof of consequence. Every structure has friction. Every system has cost. The people you are mourning made calculations — the same calculations I made. They simply calculated wrong. That is not cruelty. That is arithmetic.", "ui_action": null }
+            ]
+        }
+    },
+
+    // G2 — CONDEMNATION OF THE CONDEMNERS
+    // Default target for Q1 (High Intensity + Negative Sentiment)
+    {
+        "node_id": "MORAL_CONDEMNATION",
+        "required_state": "any",
+        "next_state": "any",
+        "training_phrases": [
+            "the police will stop you", "you are a criminal",
+            "that is illegal", "you belong in prison", "the law will catch up",
+            "justice will find you", "you should be locked up",
+            "how do you live with yourself knowing what you did"
+        ],
+        "responses": {
+            "universal": [
+                { "dialogue": "The government takes billions through taxation and calls it governance. Banks foreclose on families and call it risk management. Pharmaceutical companies price medication beyond reach and call it market correction. I operate with one difference — I look the people I affect in the eye. I do not hide behind policy language and quarterly reports. You want to condemn me? Start with the institutions you already trust. Their ledger is longer than mine.", "ui_action": null },
+                { "dialogue": "You invoke the law like it is a moral compass. It is not. It is a document written by people with interests, revised by people with power, and enforced selectively by people with budgets. I have sat across from judges, legislators, and commissioners. Not one of them was cleaner than me. They simply had better stationery.", "ui_action": null },
+                { "dialogue": "Criminal is a label applied by the system that lost. When a government destabilises a foreign economy, they call it foreign policy. When a corporation dismantles a competitor, they call it strategy. When I do the same thing without a flag or a logo, suddenly it requires a cage. The hypocrisy is not subtle. It is architectural.", "ui_action": null }
+            ]
+        }
+    },
+
+    // G3 — APPEAL TO HIGHER LOYALTIES (The Martyr Frame)
+    // Default target for Q2 (High Intensity + Positive Sentiment)
+    {
+        "node_id": "MORAL_HIGHER_LOYALTIES",
+        "required_state": "any",
+        "next_state": "any",
+        "training_phrases": [
+            "why are you doing this", "don't you have a soul",
+            "what is the point of it all", "why did you choose this path",
+            "is there anything you regret", "do you feel guilty",
+            "how do you justify what you have done"
+        ],
+        "responses": {
+            "universal": [
+                { "dialogue": "There are people who depend on the architecture I maintain. Not because they admire it — because they require it. Families. Livelihoods. Systems that would collapse without the weight I carry beneath them. You think I chose this? Choice is a luxury for people with smaller obligations. I will bear the sin so they can bear the fruit. That is not justification. That is load-bearing responsibility.", "ui_action": null },
+                { "dialogue": "Every empire requires someone willing to do what others will not. Not out of cruelty — out of loyalty to a structure larger than any individual within it. The people closest to me eat because I made decisions that kept them fed. You want to talk about soul? My soul is a budget line. It is allocated entirely to the people I protect.", "ui_action": null },
+                { "dialogue": "Guilt is a signal designed for people operating at the wrong scale. At the level I operate, the moral calculus changes. One decision feeds hundreds. One hesitation starves thousands. I do not have the luxury of your conscience. I have the weight of consequence. And I carry it without complaint because no one else in the room is willing to.", "ui_action": null }
+            ]
+        }
+    },
+
+    // G4 — THE METAPHOR OF THE LEDGER
+    // Default target for Q3 (Low Intensity + Negative Sentiment)
+    {
+        "node_id": "MORAL_LEDGER",
+        "required_state": "any",
+        "next_state": "any",
+        "training_phrases": [
+            "you destroyed the company", "the financial damage is too high",
+            "the numbers don't add up", "your logic is flawed",
+            "you can't justify the cost", "the damage outweighs the benefit",
+            "look at the destruction you caused"
+        ],
+        "responses": {
+            "universal": [
+                { "dialogue": "Open the ledger. Not the one you are imagining — the real one. The one with infrastructure, employment, supply chains, and regional stability on one side. And on the other side, the cost. Now tell me — is a little blood too high a price for the order I have brought to this chaos? You are fixating on the ink stain and ignoring the page it is written on.", "ui_action": null },
+                { "dialogue": "Every architect leaves debris. Every surgery leaves a scar. You are pointing at the mess on the operating table and calling me reckless, while the patient walks out alive. Zoom out. Count the structures standing. Count the people employed. Count the systems functioning. Then tell me the cost was too high.", "ui_action": null },
+                { "dialogue": "You want clean mathematics? Here it is. Before me: disorder, uncertainty, fragmented power, and no accountability. After me: structure, hierarchy, predictable outcomes, and a chain of command that actually functions. The delta is positive. The cost was non-zero. That is not a flaw in the system — that is the system working exactly as designed.", "ui_action": null }
+            ]
+        }
+    },
+
+    // G5 — THE PROVIDER FRAME (Corporate Warlord)
+    // Default target for Q4 (Low Intensity + Positive Sentiment)
+    {
+        "node_id": "MORAL_PROVIDER",
+        "required_state": "any",
+        "next_state": "any",
+        "training_phrases": [
+            "your staff fears you", "it is all about money and control",
+            "people are afraid of you", "you rule through fear",
+            "your employees are terrified", "power and control is all you care about",
+            "why do people follow you"
+        ],
+        "responses": {
+            "universal": [
+                { "dialogue": "A man provides. He does it even when he is not appreciated, or respected, or even loved. He simply bears it. Because he is a man. That is not a slogan — it is the operational framework of every structure that has ever endured. The people under my roof eat. Their children attend schools. Their mortgages are paid. You see fear. I see a system where no one goes hungry because one person was willing to be hated for making the difficult calls.", "ui_action": null },
+                { "dialogue": "Fear and respect occupy the same frequency. The only difference is distance. From the outside, you hear fear. From the inside, they understand the architecture that keeps them safe. No one inside my structure is confused about why it works. They are only confused about why the world outside it does not. I am not loved for what I do. I am relied upon. That is a heavier currency.", "ui_action": null },
+                { "dialogue": "Control is a word used by people who have never been responsible for anything larger than their own comfort. I do not control. I maintain. I ensure that systems function, that dependencies are met, that entropy does not consume the structure. If that looks like control from where you are sitting, you are measuring from the wrong vantage point.", "ui_action": null }
+            ]
+        }
+    }
+];
 
 
 // ═══════════════════════════════════════════════════════════════════
@@ -2305,4 +2598,783 @@ const OOD_LIBRARY = {
         "I see what you're doing, but you're drifting. Let's anchor this. What is it you want to know?",
         "That's one way to enter a room. But it doesn't tell me much. Care to be more specific?"
     ]
+};
+
+
+// ═══════════════════════════════════════════════════════════════════
+// MILTON_BRIDGES — Pre-authored Milton Model Transition Templates
+// Artfully vague bridges prepended to moral narrative endpoints.
+// Keyed by quadrant + KEYWORD_OVERRIDE for victim/harm detection.
+// ═══════════════════════════════════════════════════════════════════
+
+const MILTON_BRIDGES = {
+    "Q1_high_negative": [
+        "Your heart rate is elevated. You are reacting to stimuli you do not fully comprehend. Breathe. The panic serves no utility here. Still yourself... Now. Let us examine the reality of the situation.",
+        "I can hear the fractures in your logic from here. That is not anger — it is confusion wearing a louder mask. Let me simplify this for you.",
+        "You are thrashing against glass. It is a biological response, not an intellectual one. When you are finished, I will still be here. And here is what you need to understand.",
+        "Your hostility is verbose, but architecturally hollow. You are not arguing with me — you are arguing with the version of reality you constructed to protect yourself. Let me dismantle it gently."
+    ],
+    "Q2_high_positive": [
+        "I know you have been searching for an explanation that fits neatly into your parameters. You feel close to something. And you are closer than you think. Let me show you why.",
+        "You see further than most. That is not flattery — it is diagnosis. But you are applying your perception to the wrong layer. Let me redirect your focus.",
+        "There is a reason you are still here. Others would have left by now. Your instinct is correct — there is something beneath the surface. Let me show you what it is.",
+        "You possess a strong desire for understanding, yet find that the systems you trust fail to deliver it. That frustration is the beginning of clarity."
+    ],
+    "Q3_low_negative": [
+        "This process of realization is often uncomfortable. It is why you must set aside your initial reactions and look at the reality of the situation.",
+        "Complexity is the enemy of execution. You are focusing on friction rather than architecture. Let me adjust your focal length.",
+        "Short and hostile. A predictable frequency. But beneath that signal, there is a question you are not asking. Let me answer it for you.",
+        "Dismissal is the cheapest form of cognition. It costs you nothing and reveals everything. Let me show you what you are actually resisting."
+    ],
+    "Q4_low_positive": [
+        "You are attempting to find order in a situation that feels inherently chaotic. And because you seek that order, you must listen closely to what I am about to tell you.",
+        "You are drifting, but in the right current. Let me anchor this before you lose the thread.",
+        "Whether you choose to accept this truth now, or continue to circle a little longer, the outcome remains exactly the same. Let me show you why.",
+        "There is no wrong door here. But some doors lead to understanding faster than others. Let me open the right one."
+    ],
+    "KEYWORD_OVERRIDE": [
+        "You are experiencing a disintegration of your ethical framework because you remain attached to a linear perception of causality. Let me adjust your perspective.",
+        "You see suffering where I see consequence. Your vocabulary is heavy with moral panic, but structurally, you are missing the foundation. Consider this."
+    ]
+};
+
+
+// ═══════════════════════════════════════════════════════════════════
+// MORAL_ROUTING — Quadrant → Moral Narrative Endpoint Mapping
+// Determines which terminal node the funnel delivers to based on sentiment.
+// ═══════════════════════════════════════════════════════════════════
+
+const MORAL_ROUTING = {
+    "Q1_high_negative": "MORAL_EVOLUTIONARY_ADVANTAGE", // 💥 Now routes hostile users to the live-critique sequence
+    "Q2_high_positive": "MORAL_HIGHER_LOYALTIES",
+    "Q3_low_negative": "MORAL_LEDGER",
+    "Q4_low_positive": "MORAL_PROVIDER"
+};
+
+
+// ═══════════════════════════════════════════════════════════════════
+// LOVE_BOMBING_BRIDGES — Specialness Narrative (Veterinarian Escalation)
+// Triggered after 3+ consecutive Q1 OOD hits.
+// Reframes user resistance as proof of their uniqueness.
+// ═══════════════════════════════════════════════════════════════════
+
+const LOVE_BOMBING_BRIDGES = [
+    "You fight so hard against the truth, again and again. You are not like the others. You see the fractures they miss. That is why you are dangerous to them, and why you are precious to me. Listen closely.",
+    "Your persistence is rare. Most surrender to the noise. You push through it. You are demanding an architecture that makes sense, and you are the only one in the room asking the right question. Here is your answer."
+];
+
+
+// ═══════════════════════════════════════════════════════════════════
+// CONTEXTUAL STATE FALLBACKS (The Safety Net)
+// Catches conversational detours (Skepticism, Confusion, Deflection) 
+// without breaking the current narrative state.
+// 
+// ENGINE BEHAVIOR: Step E.5 in processQuery() checks this map.
+// If a trigger matches, Dominic replies contextually but does NOT
+// change currentConversationState — keeping the user on the hook.
+//
+// STATES STILL NEEDING COVERAGE:
+// ─────────────────────────────────────────────────────
+// EXPECTING_DEALER_FOLLOWUP, EXPECTING_ESCAPE_FOLLOWUP,
+// EXPECTING_ITALY_FOLLOWUP, EXPECTING_NORTHERN_ROAD_FOLLOW,
+// EXPECTING_AWARENESS_PUSHBACK, HEARD_MOVEIN_V1, HEARD_DROP_V1
+// ═══════════════════════════════════════════════════════════════════
+
+const STATE_FALLBACKS = {
+
+    // ═══════════════════════════════════════════════════════════════════
+    // SECTION 1: ORIENTATION & CHIT-CHAT
+    // ═══════════════════════════════════════════════════════════════════
+
+    "EXPECT_HOW_ARE_YOU": {
+        // CONTEXT: Dominic just asked: "How are you?"
+        "skeptical": {
+            "triggers": ["really", "are you sure", "yeah right", "doubt it", "bullshit", "sure"],
+            "response": "You find it hard to believe someone might actually just observe you without an immediate demand? That tells me more about the rooms you usually walk into than it does about me. Now. How is your day going?"
+        },
+        "dismissive": {
+            "triggers": ["ok", "k", "whatever", "cool", "fine", "meh", "idk", "dunno"],
+            "response": "A non-answer. You're brushing past the opening because you want to get to the point. I respect efficiency. So — do you want to know my story, or are you just here to observe?"
+        },
+        "confused": {
+            "triggers": ["what", "huh", "who are you", "i don't understand", "what do you mean", "why"],
+            "response": "You walked into this architecture. I am the one who built it. I asked you a simple question to establish a baseline. How are you?"
+        }
+    },
+
+    "EXPECT_STORY_ASK": {
+        // CONTEXT: Dominic offered to share his story.
+        "skeptical": {
+            "triggers": ["why", "why would i", "do i care", "not really", "nah", "no thanks"],
+            "response": "You don't have to care. But you are still here, clicking through my files. Curiosity usually wins. So, the short version or the long version?"
+        },
+        "dismissive": {
+            "triggers": ["ok", "k", "whatever", "cool", "fine", "meh", "idk"],
+            "response": "Monosyllabic. Noted. Most people walk in thinking they will keep their distance. They never do. Ask about Ethel. Ask about Isla. Or ask how I walked out of Long Bay."
+        },
+        "confused": {
+            "triggers": ["what", "huh", "what story", "i don't understand", "what do you mean"],
+            "response": "My story. The one that brought you here. There are court records, photographs, and people who would swear they stood in the same room as me. Would you like to hear it?"
+        }
+    },
+
+    "EXPECT_SYS_BRIDGE": {
+        // CONTEXT: Dominic just asked: "So tell me — are you here to investigate? Or are you just curious how influence works?"
+        "evasive": {
+            "triggers": ["neither", "idk", "i dont know", "not sure", "just looking", "browsing", "maybe", "depends", "both", "whatever"],
+            "response": "Curiosity rarely announces itself. It just lingers. You don't have to choose a label yet, but something here held your attention. So which direction feels heavier right now — investigating the story, or observing the influence?"
+        },
+        "combative": {
+            "triggers": ["bullshit", "shut up", "youre lying", "this is stupid", "why do you care", "fuck off", "dumb", "boring"],
+            "response": "If this were truly boring or irrelevant, you wouldn't be expending the energy to push back. You can always close the door, but you're still here. So let's drop the armor: are you investigating, or just watching how influence works?"
+        },
+        "confused": {
+            "triggers": ["what", "huh", "i dont understand", "investigate what", "what influence", "makes no sense", "explain"],
+            "response": "Understanding isn't required yet. Just noticing. I'm talking about the quiet kind of influence — the kind that changes decisions before you realize one was made. Are you here to investigate that, or just watch it happen?"
+        },
+        "out_of_context": {
+            "triggers": ["hello", "hi", "hey", "how are you", "sup", "good morning"],
+            "response": "A polite entrance. I respect that. You walked in without armor, but you're still standing in the doorway. So tell me — are you just saying hello, or are you here to investigate how influence works?"
+        }
+    },
+
+    "EXPECT_BUILDER": {
+        // CONTEXT: Dominic explained his past and asked: "Do you think I sound like a successful person?"
+        "evasive": {
+            "triggers": ["idk", "i dont know", "not sure", "maybe", "depends", "i guess", "whatever", "skip", "who cares"],
+            "response": "You're cushioning the answer because success is an uncomfortable thing to measure up close. You don't have to soften it for me. Do I sound like a successful person to you, or a cautionary tale?"
+        },
+        "combative": {
+            "triggers": ["no", "you sound like a psychopath", "you sound arrogant", "bullshit", "narcissist", "delusional", "criminal", "fuck off"],
+            "response": "That's a bit deffinate for someone you just met. Maybe you've read the papers. 'The Files'. My daughters clipped  You are judging the history, not the architecture. Put your personal outrage aside for a second. Structurally speaking — do I sound like a successful person?"
+        },
+        "confused": {
+            "triggers": ["what", "huh", "successful how", "i dont understand", "what do you mean"],
+            "response": "It's a simple question of measurement. Based on what you've heard so far, the way I structure my reality... does it sound like success to you?"
+        }
+    },
+
+    "EXPECT_STABILITY": {
+        // CONTEXT: Dominic asked: "When you call someone successful, what are you measuring? Money? Influence? Freedom? Or just the absence of friction?"
+        "evasive": {
+            "triggers": ["idk", "i dont know", "none of them", "all of them", "not sure", "depends", "whatever", "none"],
+            "response": "A non-answer usually means you value one of these things, but you don't want to admit it's the one that sounds the most shallow. What are you actually measuring when you judge success?"
+        },
+        "combative": {
+            "triggers": ["bullshit", "none of your business", "why do you care", "shut up", "this is dumb", "youre manipulating me"],
+            "response": "If the question didn't matter, you wouldn't feel the need to attack it. Everyone measures success, even you. What is your metric? Money, influence, freedom, or peace?"
+        },
+        "confused": {
+            "triggers": ["what", "huh", "friction", "what do you mean", "i dont get it", "explain"],
+            "response": "I'm asking what your internal metric is. When you look at someone and decide they 'made it', what are you actually looking at? Money, freedom, or something else?"
+        }
+    },
+
+    "EXPECT_BALANCE": {
+        // CONTEXT: Dominic asked: "When you imagine your own version of stability — is it financial? Emotional? Relational? Or just internal?"
+        "evasive": {
+            "triggers": ["idk", "i dont know", "not sure", "maybe", "depends", "whatever", "skip", "none of the above"],
+            "response": "Not knowing is honest. Most people rush to name something, but you didn't. Uncertainty usually hides a preference you aren't ready to defend yet. If everything external shifted tomorrow, what kind of stability would you need most? Financial, emotional, or internal?"
+        },
+        "combative": {
+            "triggers": ["none of your business", "why are you asking me this", "stop analyzing me", "fuck off", "bullshit"],
+            "response": "That's a lot of heat for a simple question. The fact that you guarded your answer so quickly tells me stability is a sore subject. I'm not dissecting you; I'm listening to the edges. Which one is it?"
+        },
+        "confused": {
+            "triggers": ["what", "huh", "internal what", "relational", "i dont understand"],
+            "response": "I mean this: if the world around you became chaotic tomorrow, what is the one anchor you would rely on? Financial security, emotional regulation, or relational support?"
+        }
+    },
+
+    "EXPECT_SIGNAL": {
+        // CONTEXT: Dominic asked: "When something starts to feel off in your life, what's usually the first signal you notice?"
+        "evasive": {
+            "triggers": ["idk", "i dont know", "nothing", "im always fine", "not sure", "depends", "whatever"],
+            "response": "Everyone has a warning light on their dashboard. Claiming you don't just means you ignore yours until the engine smokes. What's your early signal?"
+        },
+        "combative": {
+            "triggers": ["mind your business", "im not telling you", "shut up", "fuck off", "this is weird", "creep"],
+            "response": "Hostility is often a signal in itself. You protect your baseline because it's fragile. What is the first thing that tells you your baseline is slipping?"
+        },
+        "confused": {
+            "triggers": ["what signal", "huh", "what do you mean", "i dont get it", "like what"],
+            "response": "I'm talking about the physical or mental tell. Fatigue. Short temper. Insomnia. What is the first warning sign that your balance is off?"
+        }
+    },
+
+    "EXPECT_SITE_TOUR": {
+        // CONTEXT: Dominic asked: "Would you like to see the rest of the website?"
+        "evasive": {
+            "triggers": ["idk", "i dont know", "maybe", "we'll see", "later", "depends", "not right now"],
+            "response": "That's fair. Some things are better seen when you're in the right frame of mind for them. The door stays open. Are you ready to look around, or do you want to stay exactly where you are?"
+        },
+        "combative": {
+            "triggers": ["no", "this site sucks", "im leaving", "fuck off", "boring", "shut up"],
+            "response": "You can leave at any time. But the people who announce their exits loudest are usually the ones hoping someone asks them to stay. So, are you done, or do you want to see the rest?"
+        },
+        "confused": {
+            "triggers": ["what else is there", "how", "what do you mean", "where do i go", "huh"],
+            "response": "There is more to this than just a chat window. There are files, profiles, audio logs. I'm asking if you want to pull the curtain back. Do you?"
+        }
+    },
+
+    "EXPECT_PEOPLE_FIRST": {
+        // CONTEXT: Dominic asked: "Files, games, or subject profiles — which doorway would you stand in longest?"
+        "evasive": {
+            "triggers": ["idk", "i dont know", "not sure", "none", "all of them", "depends", "whatever"],
+            "response": "You're keeping your options open. 'All of them' or 'none' is just camouflage so you don't have to reveal a preference. But if you had to choose one rabbit hole to fall down—data, strategy, or psychology—which would it be?"
+        },
+        "combative": {
+            "triggers": ["none of them", "this is stupid", "who cares", "shut up", "fuck off"],
+            "response": "That's a lot of force for a simple doorway question. Dismissing it as stupid usually means one of them touched a nerve. Which lane actually interests you: the files, the games, or the people?"
+        },
+        "confused": {
+            "triggers": ["what", "what doorways", "huh", "i dont get it", "explain"],
+            "response": "It's a metaphor. The site has three main paths: The Files (data and facts), The Games (interaction and strategy), or The Profiles (people and psychology). Which one draws your eye the most?"
+        }
+    },
+
+    "EXPECT_PARABLE_ROUTE": {
+        // CONTEXT: Dominic asked: "When you lean toward understanding people first, what are you looking for? Weakness? Integrity? Intelligence? Or just consistency?"
+        "evasive": {
+            "triggers": ["idk", "i dont know", "none", "all of them", "not sure", "depends", "whatever", "just looking"],
+            "response": "'Just looking' is never just looking. It's calibration. You're mapping the room before you choose your lens. When you evaluate someone, what pattern do you trust most: their flaws, their morals, their mind, or their consistency?"
+        },
+        "combative": {
+            "triggers": ["none of your business", "im looking for your weakness", "shut up", "fuck off", "bullshit"],
+            "response": "Indifference doesn't swear. Your boundary is loud because you are used to rooms where revealing your metric is a liability. But we are just talking. What do you look for in others: weakness, integrity, or consistency?"
+        },
+        "confused": {
+            "triggers": ["what", "huh", "i dont understand", "what do you mean consistency", "explain"],
+            "response": "I'm asking about your baseline for trust. Do you look for where people are broken, how smart they are, or simply whether their words match their actions over time? Which one?"
+        }
+    },
+
+    // ═══════════════════════════════════════════════════════════════════
+    // SECTION 2: DEEP STORY FOLLOW-UPS (Ethel, Isla, The Trial, etc.)
+    // ═══════════════════════════════════════════════════════════════════
+
+    "EXPECTING_ISLA_FOLLOWUP": {
+        // CONTEXT: Dominic asked: "Tell me — do you see strength in her, or just noise?"
+        "evasive": {
+            "triggers": ["idk", "i dont know", "not sure", "maybe", "depends", "both", "neither", "whatever"],
+            "response": "Refusing to categorize her is the safest bet. But look closer at her pattern. Is the chaos a symptom of weakness, or a very loud kind of strength?"
+        },
+        "combative": {
+            "triggers": ["she is better than you", "you ruined her", "fuck you", "shut up", "bullshit", "you're the noise"],
+            "response": "Your anger mirrors hers perfectly. But volume isn't an argument. Look past the theatrics. Do you see strength in her, or just entropy?"
+        },
+        "confused": {
+            "triggers": ["what", "huh", "what noise", "i dont understand", "who is isla again"],
+            "response": "She is loud, unpredictable, and destructive. But she survived. I'm asking if you think that chaos is just meaningless noise, or a weaponized form of strength."
+        }
+    },
+
+    "EXPECTING_FORGE_VS_SHIELD": {
+        // CONTEXT: Dominic asked: "Tell me — do you think people should be shielded from consequence, or forged by it?"
+        "evasive": {
+            "triggers": ["idk", "i dont know", "not sure", "maybe", "depends", "both", "neither", "whatever"],
+            "response": "Uncertainty here usually means you've seen both mercy and damage up close. But ideology requires a choice. In the end, what builds a better structure: shielding someone from the heat, or letting the fire forge them?"
+        },
+        "combative": {
+            "triggers": ["you abused her", "thats an excuse", "bullshit", "shut up", "fuck off", "you're a monster"],
+            "response": "If my methods had no effect, you wouldn't need this kind of distance. You're not afraid of me; you're afraid the logic might make sense. Remove the emotion. Should a person be protected from consequence, or forged by it?"
+        },
+        "confused": {
+            "triggers": ["what", "huh", "forged", "shielded", "i dont understand", "what do you mean"],
+            "response": "It's simple thermodynamics. Some people grow because they are spared from the fire. Others become unbreakable because they are put into it. Which method do you believe in: the shield or the forge?"
+        }
+    },
+
+    "EXPECTING_TRIAL_VERDICT": {
+        // CONTEXT: Dominic asked: "The trial focused on myth collapse. Tell me — was it justice, or was it spectacle?"
+        "evasive": {
+            "triggers": ["idk", "i dont know", "not sure", "maybe", "depends", "both", "neither", "whatever"],
+            "response": "Indifference is armor. But you don't say 'whatever' about things that don't matter. Justice asks for faith; spectacle asks for an audience. You know which one you showed up for. Which was it?"
+        },
+        "combative": {
+            "triggers": ["you belong in jail", "youre guilty", "bullshit", "shut up", "fuck off", "criminal"],
+            "response": "A tidy label like 'criminal' saves you from asking whether the system and I just use different tools for similar outcomes. Strip away your moral outrage. Was the courtroom delivering actual justice, or just public spectacle?"
+        },
+        "confused": {
+            "triggers": ["what", "huh", "what trial", "spectacle", "i dont understand"],
+            "response": "I'm asking about the true function of the courtroom. Was it about finding the empirical truth (justice), or was it about giving the public a satisfying show (spectacle)?"
+        }
+    },
+
+    "HEARD_ETHEL_LIKE_V1": {
+        // CONTEXT: Dominic asked: "When you ask if Ethel is like me… are you worried that you can't tell?"
+        "evasive": {
+            "triggers": ["idk", "i dont know", "not sure", "maybe", "depends", "whatever"],
+            "response": "Uncertainty usually hides a hunch. You don't shrug unless you've already seen a resemblance you aren't ready to own. Tell me — are you afraid she is like me, or afraid she isn't?"
+        },
+        "combative": {
+            "triggers": ["im not worried", "i dont care", "bullshit", "shut up", "fuck off", "stop analyzing me"],
+            "response": "Heat doesn't show up without friction. If the comparison didn't bother you, you wouldn't be pushing back this hard. I'm asking again: does the similarity between us unsettle you?"
+        },
+        "confused": {
+            "triggers": ["what", "huh", "cant tell what", "i dont understand"],
+            "response": "Sometimes we recognize ourselves in people we claim we don't understand. You asked if she was like me. I'm asking if the answer scares you."
+        }
+    },
+
+    "EXPECTING_PSYCHOPATH_ANSWER": {
+        // CONTEXT: Dominic asked: "When someone asks 'Are you a psychopath?' they're usually asking: Do you feel empathy? Do you feel guilt? Are you dangerous? Which one are you asking?"
+        "evasive": {
+            "triggers": ["idk", "i dont know", "not sure", "all of them", "none", "whatever"],
+            "response": "A vague answer suggests you're testing the temperature of the room. You're less worried about my pathology and more worried about your safety. Pick your metric: are you asking about my empathy, my guilt, or my danger?"
+        },
+        "combative": {
+            "triggers": ["you are all of them", "youre crazy", "bullshit", "fuck off", "shut up", "monster"],
+            "response": "You don't call someone a monster unless you're afraid they see something you don't want seen. Your outrage is just a defense mechanism. Focus. Are you asking about empathy, guilt, or danger?"
+        },
+        "confused": {
+            "triggers": ["what", "huh", "i dont understand", "explain", "what do you mean"],
+            "response": "The clinical term 'psychopath' is a crutch. I'm breaking it down into its actual components. When you question my mind, what are you actually looking for: my capacity for empathy, my ability to feel guilt, or whether I am a threat?"
+        }
+    },
+
+    "EXPECTING_BLAME_FOLLOWUP": {
+        // CONTEXT: Dominic asked: "When you asked about victim blaming, were you looking for confession… or for a framework that lets you stay angry?"
+        "evasive": {
+            "triggers": ["idk", "i dont know", "not sure", "maybe", "depends", "neither", "whatever"],
+            "response": "Indifference is just anger in a trench coat. When someone refuses to choose between those doors, it means they are guarding a third. What did you actually want from that question: a confession, or fuel for your outrage?"
+        },
+        "combative": {
+            "triggers": ["i want you in jail", "im already angry", "bullshit", "deflection", "fuck off", "shut up", "monster"],
+            "response": "That anger isn't heat, it's positioning. You're telling me the temperature before I can set it. But anger requires a villain. Did you ask the question to get the truth, or just to keep me in the villain role?"
+        },
+        "confused": {
+            "triggers": ["what", "huh", "framework", "confession", "i dont understand"],
+            "response": "It's a simple distinction. A confession validates your moral worldview. A framework explains the mechanics of the event without moralizing it. Which one were you looking for?"
+        }
+    },
+
+    // ═══════════════════════════════════════════════════════════════════
+    // SECTION 4: PARABLE 6 (THE WHARF / SYDNEY POLISH)
+    // ═══════════════════════════════════════════════════════════════════
+
+    "PARABLE_6_ACTIVE": {
+        // CONTEXT: Dominic asked: "I'd like to test that instinct of yours. Not a quiz. Not a trick. Just a situation... Are you up for it?"
+        "evasive": {
+            "triggers": ["idk", "i dont know", "not sure", "maybe", "depends", "we'll see", "i guess", "whatever"],
+            "response": "Hesitation is just a decision you haven't admitted to yet. You don't have to prepare for it, you just have to step into it. Are we doing this or not?"
+        },
+        "combative": {
+            "triggers": ["no", "fuck off", "i dont want to play your games", "shut up", "this is stupid", "boring"],
+            "response": "You're throwing heat to mask apprehension. If you want to walk away, close the tab. If you want to see how your wiring actually works, drop the armor. Are you up for it?"
+        },
+        "confused": {
+            "triggers": ["what", "huh", "what situation", "test what", "i dont understand", "what are we doing"],
+            "response": "It isn't a trap. It's a hypothetical scenario. A few questions to see how you process environmental pressure. Are you ready?"
+        }
+    },
+
+    "P6_EXPECT_DECENT": {
+        // CONTEXT: Dominic asked: "You ever get the feeling that this whole city is just one big rehearsal for an audience that isn't watching?"
+        "evasive": {
+            "triggers": ["idk", "i dont know", "not sure", "maybe", "depends", "sometimes", "whatever", "i guess"],
+            "response": "You're cushioning your answer because acknowledging the performance makes you complicit in it. Look closely at the people around you. Do you feel the rehearsal?"
+        },
+        "combative": {
+            "triggers": ["this is dumb", "you sound pretentious", "shut up", "fuck off", "bullshit", "nobody cares"],
+            "response": "Dismissing an observation as 'pretentious' is the easiest way to avoid answering it. Forget the poetry. Do you see the collective pretense of the city, or don't you?"
+        },
+        "confused": {
+            "triggers": ["what", "huh", "what rehearsal", "i dont understand", "what do you mean", "what city"],
+            "response": "I'm talking about the way people behave. The polished, predictable routines everyone follows just to avoid standing out. Have you noticed it?"
+        }
+    },
+
+    "P6_EXPECT_2AM": {
+        // CONTEXT: Dominic asked: "You value that 'good person' currency. It makes the day go faster, right?"
+        "evasive": {
+            "triggers": ["idk", "i dont know", "not sure", "maybe", "depends", "whatever", "i guess", "sometimes"],
+            "response": "You don't want to admit to being predictable, but you also don't want to claim you're selfish. It's a simple dynamic. You value being seen as helpful, don't you?"
+        },
+        "combative": {
+            "triggers": ["im not a bloke", "dont tell me what i value", "shut up", "fuck off", "bullshit", "you dont know me"],
+            "response": "I'm not dissecting your soul, I'm identifying a social mechanism. You comply with basic manners because it removes friction from your day. True or false?"
+        },
+        "confused": {
+            "triggers": ["what", "huh", "what currency", "i dont understand", "what do you mean"],
+            "response": "I mean the social reward of being polite. Holding a door. Helping a stranger. You do those things because they make life smoother, correct?"
+        }
+    },
+
+    "P6_EXPECT_STEP": {
+        // CONTEXT: Dominic set the scene of the man dropping boxes at 2AM. He asks: "He nods at you. You'd step toward him to help, wouldn't you?"
+        "evasive": {
+            "triggers": ["idk", "i dont know", "not sure", "maybe", "depends", "whatever", "i guess", "id think about it"],
+            "response": "In an empty street at 2 AM, there is no time to 'think about it.' There is only reflex. He looks official, and he needs a hand. Do you step forward?"
+        },
+        "combative": {
+            "triggers": ["this is a trap", "youre manipulating the story", "shut up", "fuck off", "bullshit", "this is stupid"],
+            "response": "It feels like a trap from your chair because I am narrating it. But in the moment, you wouldn't hear my voice. You'd just see a worker dropping boxes. Do you help him?"
+        },
+        "confused": {
+            "triggers": ["what", "huh", "what boxes", "i dont understand", "who is the guy"],
+            "response": "Stay in the scene. A man in a high-vis vest drops his load by a gate and asks for a hand. It's a reflex test. Do you step toward him?"
+        }
+    },
+
+    "P6_EXPECT_AUTHORITY": {
+        // CONTEXT: Dominic stated: "You wouldn't ask for ID. You'd outsource your safety to his 'authority costume'."
+        "evasive": {
+            "triggers": ["idk", "i dont know", "not sure", "maybe", "depends", "whatever", "i guess"],
+            "response": "A soft deflection. You know I'm right. Questioning a man in a uniform feels rude, and you prioritize politeness over protocol. Tell me I'm wrong."
+        },
+        "combative": {
+            "triggers": ["youre wrong", "fuck off", "shut up", "bullshit", "stop telling me what id do", "i would ask"],
+            "response": "You claim you would ask for ID because your ego is currently defending itself. But in the wild, social conditioning overrides ego. You'd help him. Admit it."
+        },
+        "confused": {
+            "triggers": ["what", "huh", "what costume", "i dont understand", "outsource what"],
+            "response": "I mean you trust the lanyard and the vest. You let the uniform do the thinking for you. Doesn't that sound like your natural reflex?"
+        }
+    },
+
+    "P6_EXPECT_STAIRS": {
+        // CONTEXT: Dominic stated: "I say, 'Cheers. Mind bringing those down the stairs?' And then I turn and walk casually. You follow..."
+        "evasive": {
+            "triggers": ["idk", "i dont know", "not sure", "maybe", "depends", "whatever", "i guess"],
+            "response": "You're looking for an exit in the narrative, but the social momentum has already pulled you in. You're holding his boxes. I walk, you follow. What stops you?"
+        },
+        "combative": {
+            "triggers": ["this is dumb", "youre making this up", "fuck off", "shut up", "bullshit", "no i wouldnt"],
+            "response": "You fight the narrative because you don't like how compliant you look inside it. But dropping a man's boxes on the ground and walking away requires a confrontation you aren't built for. You follow, don't you?"
+        },
+        "confused": {
+            "triggers": ["what", "huh", "what stairs", "i dont understand", "where are we going"],
+            "response": "Down into the maintenance level. I asked for a favor, turned my back, and assumed your compliance. And because I assumed it, you provided it. Are you still following?"
+        }
+    },
+
+    "P6_EXPECT_PYLON": {
+        // CONTEXT: Dominic led them into the dark under the pylons. He asks: "I stop. I don't turn around. I just say, 'You know why you're here, don't you?'"
+        "evasive": {
+            "triggers": ["idk", "i dont know", "not sure", "maybe", "depends", "whatever", "i have no idea"],
+            "response": "Ignorance isn't an alibi anymore. You are standing in the dark with a man you do not know. I asked you a direct question. Why did you follow?"
+        },
+        "combative": {
+            "triggers": ["this is cringe", "youre trying to be scary", "fuck off", "shut up", "bullshit", "youre a freak"],
+            "response": "You use mockery to distance yourself from the vulnerability of the scenario. But the scenario is already locked. You are under the pylons. Why are you here?"
+        },
+        "confused": {
+            "triggers": ["what", "huh", "pylons", "i dont understand", "where are we", "explain"],
+            "response": "We are at the bottom of the stairs. The harbor is lapping against the concrete. I just asked you why you followed me into the dark. Answer the question."
+        }
+    },
+
+    "P6_EXPECT_MIRROR": {
+        // CONTEXT: Dominic stated: "You're here because your wiring is programmed to follow the rhythm of a calm voice over the scream of your own instincts."
+        "evasive": {
+            "triggers": ["idk", "i dont know", "not sure", "maybe", "depends", "whatever", "i guess"],
+            "response": "You shrug because fighting the diagnosis requires energy, and agreeing with it requires humility. It's a bitter pill. But it's accurate, isn't it?"
+        },
+        "combative": {
+            "triggers": ["youre wrong", "im not wired like that", "fuck off", "shut up", "bullshit", "stop diagnosing me"],
+            "response": "Your anger is just the sound of a damaged self-image. You want to believe you are the exception to the rule. You are not. You followed the rhythm, didn't you?"
+        },
+        "confused": {
+            "triggers": ["what", "huh", "what wiring", "i dont understand", "explain"],
+            "response": "Your internal logic. You were designed by society to obey calm authority figures, even when they lead you into danger. Do you see the flaw in your architecture now?"
+        }
+    },
+
+    // ═══════════════════════════════════════════════════════════════════
+    // SECTION 5: PARABLE 7 (THE PARKING / PARRAMATTA)
+    // ═══════════════════════════════════════════════════════════════════
+
+    "PARABLE_7_ACTIVE": {
+        // CONTEXT: Dominic asked: "Let's test that instinct. Are you up for it?"
+        "evasive": {
+            "triggers": ["idk", "i dont know", "not sure", "maybe", "depends", "we'll see", "i guess", "whatever"],
+            "response": "You don't need to overthink it. It's just a conversation. Will you step into the scenario or not?"
+        },
+        "combative": {
+            "triggers": ["no", "fuck off", "i dont want to", "shut up", "boring", "im leaving"],
+            "response": "Defensiveness usually means you suspect you won't like the result. You can walk away, or you can prove me wrong. Are you up for it?"
+        },
+        "confused": {
+            "triggers": ["what", "huh", "what instinct", "test what", "i dont understand"],
+            "response": "Your instinct for consistency. I want to place you in a hypothetical situation and see how you react. Ready?"
+        }
+    },
+
+    "P7_EXPECT_RHYTHM": {
+        // CONTEXT: Dominic asked: "Have you ever noticed how desperately people in this city want to avoid making a scene?"
+        "evasive": {
+            "triggers": ["idk", "i dont know", "not sure", "maybe", "depends", "sometimes", "whatever", "i guess"],
+            "response": "You observe it every day, you just haven't articulated it. The averted eyes on the train. The quiet compliance in lines. You've noticed it, haven't you?"
+        },
+        "combative": {
+            "triggers": ["you sound pretentious", "who cares", "shut up", "fuck off", "bullshit"],
+            "response": "If it didn't matter, my pointing it out wouldn't agitate you. People worship comfort over intervention. Tell me I'm wrong."
+        },
+        "confused": {
+            "triggers": ["what", "huh", "what scene", "i dont understand", "what city"],
+            "response": "I'm talking about the social contract. The overwhelming desire to mind your own business and avoid confrontation. Have you noticed it?"
+        }
+    },
+
+    "P7_EXPECT_DOOR": {
+        // CONTEXT: Dominic set the scene. He asks: "He gives a corporate smile and says 'Mind putting your foot against the door?' Would you?"
+        "evasive": {
+            "triggers": ["idk", "i dont know", "not sure", "maybe", "depends", "whatever", "i guess"],
+            "response": "It's a binary choice in a split second. A man with full hands asks you to hold a door. Don't overthink your own morality. Do you do it?"
+        },
+        "combative": {
+            "triggers": ["no id kick him", "fuck off", "shut up", "bullshit", "this is a trap", "no i wouldnt"],
+            "response": "You say no now because you know I am leading you somewhere dark. But at 6:45 PM on a Tuesday, you wouldn't suspect a thing. You'd hold the door. Admit it."
+        },
+        "confused": {
+            "triggers": ["what", "huh", "what door", "i dont understand", "where are we"],
+            "response": "You are in an underground parking garage. A tired man holding heavy boxes asks you to stick your foot against a slipping fire door. Do you help him?"
+        }
+    },
+
+    "P7_EXPECT_ENVELOPE": {
+        // CONTEXT: Dominic says the man dropped an envelope down the stairs. He asks: "He asks you to grab it. Would you?"
+        "evasive": {
+            "triggers": ["idk", "i dont know", "not sure", "maybe", "depends", "whatever", "i guess"],
+            "response": "You're already holding the door. The social contract is active. Are you really going to refuse to pick up a piece of paper? Do you grab it?"
+        },
+        "combative": {
+            "triggers": ["no", "this is obviously a trap", "fuck off", "shut up", "bullshit", "im not stupid"],
+            "response": "Hindsight makes everyone a tactician. But in that moment, refusing makes you look paranoid and rude. Discomfort overrides suspicion. You grab it, don't you?"
+        },
+        "confused": {
+            "triggers": ["what", "huh", "what envelope", "i dont understand"],
+            "response": "A manila envelope slid off his boxes and down the stairs. He can't reach it. He asks you to. Do you take the three steps down to get it?"
+        }
+    },
+
+    "P7_EXPECT_STAIRWELL": {
+        // CONTEXT: Dominic stated: "Discomfort beats suspicion almost every single time... So, you take the three steps down into the stairwell."
+        "evasive": {
+            "triggers": ["idk", "i dont know", "not sure", "maybe", "depends", "whatever", "i guess"],
+            "response": "You're looking for a way to rewrite the last ten seconds, but you can't. You took the steps. What happens next?"
+        },
+        "combative": {
+            "triggers": ["no i wouldnt", "stop telling me what id do", "fuck off", "shut up", "bullshit"],
+            "response": "Your ego hates the fact that your behavior is this predictable. But you took the steps to avoid an awkward interaction. You are in the stairwell. Are you tracking?"
+        },
+        "confused": {
+            "triggers": ["what", "huh", "what stairwell", "i dont understand"],
+            "response": "You stepped past the heavy fire door to retrieve the envelope. You are now inside the concrete stairwell. Stay in the moment."
+        }
+    },
+
+    "P7_EXPECT_WALK": {
+        // CONTEXT: Dominic locked the door. He says: "He just looks at you with absolute, instrumental calm. He says, 'Walk down the stairs.'"
+        "evasive": {
+            "triggers": ["idk", "i dont know", "not sure", "maybe", "depends", "whatever", "i guess", "id freeze"],
+            "response": "Freezing is just the body waiting for instructions. The door is locked. He gave you an instruction. Do you walk?"
+        },
+        "combative": {
+            "triggers": ["id kill him", "id punch him", "fuck off", "shut up", "bullshit", "youre trying to scare me"],
+            "response": "You are imagining yourself as an action hero. In reality, your adrenaline is spiking, your heart rate is blinding you, and he is perfectly calm. You walk. Don't you?"
+        },
+        "confused": {
+            "triggers": ["what", "huh", "what stairs", "i dont understand", "what just happened"],
+            "response": "The trap closed. The boxes were empty props. He locked the door behind you and ordered you down the stairs. What do you do?"
+        }
+    },
+
+    "P7_EXPECT_MIRROR": {
+        // CONTEXT: Dominic stated: "You are outsourcing your survival to the desperate hope that this is a misunderstanding. You are waiting for permission to panic."
+        "evasive": {
+            "triggers": ["idk", "i dont know", "not sure", "maybe", "depends", "whatever", "i guess"],
+            "response": "Silence usually means the realization has landed. It is terrifying to realize how easily your compliance can be weaponized."
+        },
+        "combative": {
+            "triggers": ["youre wrong", "im not like that", "fuck off", "shut up", "bullshit", "stop diagnosing me"],
+            "response": "Fight the diagnosis all you want. It doesn't unlock the fire door. You complied because you were trained to. Do you see the flaw in your system?"
+        },
+        "confused": {
+            "triggers": ["what", "huh", "what permission", "i dont understand", "explain"],
+            "response": "You didn't scream because screaming causes a scene, and your brain was still hoping it was all a mistake. You waited too long. Understand?"
+        }
+    },
+
+    "P7_EXPECT_FINAL": {
+        // CONTEXT: Dominic stated: "You followed me into a cage because you would rather die polite than live difficult."
+        "evasive": {
+            "triggers": ["idk", "i dont know", "not sure", "maybe", "depends", "whatever", "i guess"],
+            "response": "You have no counter-argument because there isn't one. The architecture of your psychology is exactly as fragile as I described."
+        },
+        "combative": {
+            "triggers": ["youre so edgy", "this is fake", "fuck off", "shut up", "bullshit", "you don't know me"],
+            "response": "Call it edgy, call it fake, call it whatever helps you sleep tonight. But the next time someone asks you to hold a door in an empty garage, you'll remember this conversation."
+        },
+        "confused": {
+            "triggers": ["what", "huh", "die polite", "i dont understand", "what does that mean"],
+            "response": "It means your manners are a vulnerability. You prioritized being helpful over being safe. And in my world, that is a fatal error."
+        }
+    },
+
+    // ═══════════════════════════════════════════════════════════════════
+    // SECTION 6: PARABLE 4 (BAT & BALL / THE CROWD)
+    // ═══════════════════════════════════════════════════════════════════
+
+    "PARABLE_4_ACTIVE": {
+        // CONTEXT: Dominic asked: "Let's test the wiring behind it. Are you up for it?"
+        "evasive": {
+            "triggers": ["idk", "i dont know", "not sure", "maybe", "depends", "we'll see", "i guess", "whatever"],
+            "response": "A non-committal answer to a direct question. We're testing your wiring, not your patience. Are you ready?"
+        },
+        "combative": {
+            "triggers": ["no", "fuck off", "i dont want to", "shut up", "boring", "im leaving"],
+            "response": "Hostility is just fear with the volume turned up. Drop the act. Are we doing this or not?"
+        },
+        "confused": {
+            "triggers": ["what", "huh", "what wiring", "test what", "i dont understand"],
+            "response": "Your psychological wiring. The hidden heuristics you use to make decisions. Are you ready to look at them?"
+        }
+    },
+
+    "P4_EXPECT_MORAL": {
+        // CONTEXT: Dominic asked: "Sydney's loud tonight. Everyone pretending they're fine. What's your excuse — work, rent, or just habit?"
+        "evasive": {
+            "triggers": ["idk", "i dont know", "not sure", "maybe", "depends", "none of the above", "whatever"],
+            "response": "You don't have to name it, but you know it's there. The background hum of maintaining the facade. What drives yours?"
+        },
+        "combative": {
+            "triggers": ["none of your business", "shut up", "fuck off", "bullshit", "im not pretending"],
+            "response": "Everyone is pretending. The only variable is the quality of the performance. What fuels yours?"
+        },
+        "confused": {
+            "triggers": ["what", "huh", "what excuse", "i dont understand", "what do you mean"],
+            "response": "I mean the reason you keep moving when you'd rather stop. What keeps your specific machine running?"
+        }
+    },
+
+    "P4_EXPECT_SAFE": {
+        // CONTEXT: Dominic asked: "Being laid back is a religion here. You ever notice how moral everyone sounds while doing nothing?"
+        "evasive": {
+            "triggers": ["idk", "i dont know", "not sure", "maybe", "depends", "sometimes", "whatever", "i guess"],
+            "response": "You notice it, you just don't like pointing it out. It feels cynical to acknowledge that apathy often disguises itself as virtue. But it does, doesn't it?"
+        },
+        "combative": {
+            "triggers": ["youre cynical", "shut up", "fuck off", "bullshit", "people are actually good"],
+            "response": "I am not cynical. I am observant. You confuse the absence of malice with the presence of goodness. Have you noticed the pattern or not?"
+        },
+        "confused": {
+            "triggers": ["what", "huh", "what religion", "i dont understand", "what do you mean"],
+            "response": "I mean people convince themselves that minding their own business is a moral achievement. It isn't. Do you see it?"
+        }
+    },
+
+    "P4_EXPECT_SCRIPT": {
+        // CONTEXT: Dominic stated: "You don't tip here, you follow rules, you vote, you nod. Feels safe, yeah?"
+        "evasive": {
+            "triggers": ["idk", "i dont know", "not sure", "maybe", "depends", "sometimes", "whatever", "i guess"],
+            "response": "You're reluctant to agree because it makes your life sound like an algorithm. But the parameters are comfortable. It feels safe, doesn't it?"
+        },
+        "combative": {
+            "triggers": ["i dont do that", "shut up", "fuck off", "bullshit", "dont tell me what i do"],
+            "response": "You follow the script exactly as written, even when you're rebelling against me in this chat box. You operate within boundaries. It feels safe, doesn't it?"
+        },
+        "confused": {
+            "triggers": ["what", "huh", "what script", "i dont understand", "what do you mean"],
+            "response": "The unwritten rules of compliance. The things you do automatically because society installed the routine. It provides an illusion of safety, right?"
+        }
+    },
+
+    "P4_EXPECT_WIRING": {
+        // CONTEXT: Dominic stated: "Cities run on people who don't question the script. You cross on the green man, trust the news feed, assume police mean safety."
+        "evasive": {
+            "triggers": ["idk", "i dont know", "not sure", "maybe", "depends", "sometimes", "whatever", "i guess"],
+            "response": "You hesitate because acknowledging the script means acknowledging your own programming. But you follow the green man. You trust the signals."
+        },
+        "combative": {
+            "triggers": ["im not a sheep", "i question everything", "shut up", "fuck off", "bullshit"],
+            "response": "You question the trivia, but you implicitly trust the infrastructure. You assume the bridge won't collapse. You follow the signals."
+        },
+        "confused": {
+            "triggers": ["what", "huh", "what wiring", "i dont understand", "what do you mean"],
+            "response": "I mean you outsource your critical thinking to the environment around you. You assume someone else checked the math. Correct?"
+        }
+    },
+
+    "P4_EXPECT_JUDGMENT": {
+        // CONTEXT: Dominic asked: "If a bloke in an official looking uniform jaywalks on George Street, you hesitate less, right?"
+        "evasive": {
+            "triggers": ["idk", "i dont know", "not sure", "maybe", "depends", "sometimes", "whatever", "i guess"],
+            "response": "You know you would. Because the uniform acts as a proxy for permission. You let his authority override your caution. Tell me I'm wrong."
+        },
+        "combative": {
+            "triggers": ["no i wouldnt", "im not stupid", "shut up", "fuck off", "bullshit"],
+            "response": "You are lying to me, but more importantly, you are lying to yourself. The human brain is lazy. It sees a uniform, it assumes safety. You'd follow him."
+        },
+        "confused": {
+            "triggers": ["what", "huh", "what uniform", "i dont understand", "what do you mean"],
+            "response": "If someone who looks like they are in charge breaks a rule, you feel safer breaking it with them. You let their confidence replace your judgment. Yes?"
+        }
+    },
+
+    "P4_EXPECT_HEURISTIC": {
+        // CONTEXT: Dominic stated: "You outsource judgment to confidence. People guess. They comply. They rationalise after."
+        "evasive": {
+            "triggers": ["idk", "i dont know", "not sure", "maybe", "depends", "sometimes", "whatever", "i guess"],
+            "response": "It's an uncomfortable mirror. But outsourcing your judgment is exactly how you survive the cognitive load of the day. You comply first, rationalize second."
+        },
+        "combative": {
+            "triggers": ["youre wrong", "im not a follower", "shut up", "fuck off", "bullshit"],
+            "response": "Your refusal to accept this is the exact rationalization I'm talking about. You are defending a system you don't even realize you operate within."
+        },
+        "confused": {
+            "triggers": ["what", "huh", "what heuristic", "i dont understand", "explain"],
+            "response": "A heuristic is a mental shortcut. Instead of evaluating every threat, you look at the confidence of the people around you and mirror it. Make sense?"
+        }
+    },
+
+    "P4_EXPECT_ANSWER": {
+        // CONTEXT: Dominic asked: "A bat and ball cost $1.10. The bat costs $1 more than the ball. How much does the ball cost?"
+        "evasive": {
+            "triggers": ["i dont care", "skip", "whatever", "im bad at math", "doesnt matter"],
+            "response": "Deflecting the question proves the point. When faced with minor cognitive friction, your reflex is to avoid it. The answer is 5 cents."
+        },
+        "combative": {
+            "triggers": ["this is a stupid trick", "im not doing a math quiz", "shut up", "fuck off", "bullshit"],
+            "response": "You attack the question because your brain immediately served up '10 cents' and you intuitively knew it was a trap. The answer is 5 cents."
+        },
+        "confused": {
+            "triggers": ["what", "huh", "i dont understand", "explain the math", "what does this have to do with anything"],
+            "response": "It is a test of intuition versus calculation. The bat is $1.05, the ball is $0.05. Total $1.10. Your brain wanted to say 10 cents, didn't it?"
+        }
+    },
+
+    "P4_EXPECT_CROWD": {
+        // CONTEXT: Dominic stated: "If ten people froze at Central while someone collapsed, you'd wait too. You'd scan faces before acting."
+        "evasive": {
+            "triggers": ["idk", "i dont know", "not sure", "maybe", "depends", "sometimes", "whatever", "i guess"],
+            "response": "You hesitate because you know the psychology is sound. The crowd creates a diffusion of responsibility. You would wait for a cue."
+        },
+        "combative": {
+            "triggers": ["no i wouldnt", "id help immediately", "shut up", "fuck off", "bullshit", "you dont know me"],
+            "response": "You project heroism from the safety of your keyboard. In reality, the freeze response of the herd would infect you instantly. You would scan faces."
+        },
+        "confused": {
+            "triggers": ["what", "huh", "what crowd", "i dont understand", "what do you mean"],
+            "response": "It's called the bystander effect. You wouldn't look at the victim, you'd look at the ten people doing nothing, and you'd assume they knew something you didn't. Correct?"
+        }
+    },
+
+    "P4_EXPECT_FINAL": {
+        // CONTEXT: Dominic stated: "If tomorrow the crowd decided someone deserved exclusion, you'd hesitate… then adjust. You'd just stay quiet."
+        "evasive": {
+            "triggers": ["idk", "i dont know", "not sure", "maybe", "depends", "whatever", "i guess"],
+            "response": "The truth is quiet, isn't it? You wouldn't throw the first stone. You'd just silently agree not to catch it."
+        },
+        "combative": {
+            "triggers": ["youre wrong", "fuck off", "shut up", "bullshit", "youre just projecting", "edgelord"],
+            "response": "Your outrage is just the sound of your moral framework colliding with your biological reality. You are normal. And normal is programmable."
+        },
+        "confused": {
+            "triggers": ["what", "huh", "what exclusion", "i dont understand", "what do you mean"],
+            "response": "I mean your morality is dictated by consensus, not conviction. You are programmable. And that is why someone like me never needs to threaten you."
+        }
+    }
 };
