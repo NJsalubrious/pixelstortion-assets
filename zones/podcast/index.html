@@ -820,7 +820,9 @@
     <nav class="top-bar">
         <div class="top-bar-inner">
             <div>
-                <h1 class="brand-title glitch-text" data-text="PIXELSTORTION">PIXELSTORTION</h1>
+                <a href="https://pixelstortion.com" target="_blank" rel="noopener" style="text-decoration: none;">
+                    <h1 class="brand-title glitch-text" data-text="PIXELSTORTION">PIXELSTORTION</h1>
+                </a>
             </div>
             <div class="brand-subtitle">PODCAST</div>
         </div>
@@ -912,8 +914,9 @@
         let podcastDragging = false;
         let currentPodId = null;
 
-        // Build podcasts array from manifest
-        const podcasts = Object.entries(PIXEL_MANIFEST.PODCASTS).map(([key, pod]) => ({
+        // Build podcasts array from manifest (with defensive fallback)
+        const podcastData = (PIXEL_MANIFEST && PIXEL_MANIFEST.PODCASTS) ? PIXEL_MANIFEST.PODCASTS : {};
+        const podcasts = Object.entries(podcastData).map(([key, pod]) => ({
             id: key,
             name: pod.name,
             cover: pod.cover,
