@@ -36,7 +36,9 @@ const PIXEL_MANIFEST = {
         SONG_COVERS: '/library/media_covers_song/',
         CINEMA: '/library/media_cinema/',
         UI: '/library/media_ui_master/',
-        GAME_THUMBS: '/library/silence_games/'
+        GAME_THUMBS: '/library/silence_games/',
+        PODCAST_COVERS: '/library/Podcasts/SilenceIsTheTrauma/CoverImages/',
+        PODCAST_AUDIO: '/library/Podcasts/SilenceIsTheTrauma/'
     },
 
     // 3. GAMES (Structured game data with url, name, thumbnail, fullscreen)
@@ -79,7 +81,7 @@ const PIXEL_MANIFEST = {
         },
         DOMINIC_2: {
             url: '/zones/games/RykerGame_DeletedPicsAudioSatellites.html',
-            name: 'Forced Network Compliance V1.0', 
+            name: 'Forced Network Compliance V1.0',
             thumb: '/library/silence_games/Dominic_game_3.jpg',
             fullscreen: true
         },
@@ -97,6 +99,20 @@ const PIXEL_MANIFEST = {
         },
 
 
+    },
+
+    // 3b. PODCASTS (Structured podcast data)
+    PODCASTS: {
+        EthelRykers_Philosophy: {
+            name: "Ethel Ryker's Philosophy",
+            cover: '/library/Podcasts/SilenceIsTheTrauma/CoverImages/EthelRykers_Philosophy.jpg',
+            audio: '/library/Podcasts/SilenceIsTheTrauma/EthelRykers_Philosophy.mp3'
+        },
+        EthelRykers_TheRykerCase: {
+            name: "The Ryker Case - In Full",
+            cover: '/library/Podcasts/SilenceIsTheTrauma/CoverImages/EthelRykers_TheRykerCase.jpg',
+            audio: '/library/Podcasts/SilenceIsTheTrauma/EthelRykers_TheRykerCase.mp3'
+        }
     },
 
     // 4. DATA HOOKS    
