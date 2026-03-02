@@ -1407,6 +1407,23 @@
                 padding: 8px 16px;
             }
         }
+
+        /* Podcast Player Slide-In Animation */
+        @keyframes slideUp {
+            from {
+                transform: translateY(100%);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        #podcast-section {
+            padding-top: 120px !important;
+        }
     </style>
 </head>
 
@@ -1430,16 +1447,19 @@
                             id="nav-home" onclick="switchTab('home')">TRANSMISSION</button>
                         <button
                             class="text-gray-300 hover:text-white px-3 py-2 rounded-md font-medium transition-colors"
-                            id="nav-files" onclick="switchTab('files')">THE FILES</button>
+                            id="nav-files" onclick="switchTab('files')">FILES</button>
                         <button
                             class="text-gray-300 hover:text-white px-3 py-2 rounded-md font-medium transition-colors"
-                            id="nav-profiles" onclick="switchTab('profiles')">THE SUBJECTS</button>
+                            id="nav-profiles" onclick="switchTab('profiles')">SUBJECTS</button>
                         <button
                             class="text-gray-300 hover:text-white px-3 py-2 rounded-md font-medium transition-colors"
-                            id="nav-games" onclick="switchTab('games')">THE GAMES</button>
+                            id="nav-games" onclick="switchTab('games')">GAMES</button>
                         <button
                             class="text-gray-300 hover:text-white px-3 py-2 rounded-md font-medium transition-colors"
-                            id="nav-audio" onclick="switchTab('audio')">THE STORY</button>
+                            id="nav-podcast" onclick="switchTab('podcast')">PODCAST</button>
+                        <button
+                            class="text-gray-300 hover:text-white px-3 py-2 rounded-md font-medium transition-colors"
+                            id="nav-audio" onclick="switchTab('audio')">STORY</button>
                     </div>
                 </div>
                 <div class="-mr-2 flex md:hidden">
@@ -1460,16 +1480,19 @@
                 onclick="switchTab('home')">TRANSMISSION</button>
             <button
                 class="text-gray-300 hover:text-white block px-3 py-2 rounded-md text-base font-medium w-full text-left"
-                onclick="switchTab('files')">THE FILES</button>
+                onclick="switchTab('files')">FILES</button>
             <button
                 class="text-gray-300 hover:text-white block px-3 py-2 rounded-md text-base font-medium w-full text-left"
-                onclick="switchTab('profiles')">THE SUBJECTS</button>
+                onclick="switchTab('profiles')">SUBJECTS</button>
             <button
                 class="text-gray-300 hover:text-white block px-3 py-2 rounded-md text-base font-medium w-full text-left"
-                onclick="switchTab('games')">THE GAMES</button>
+                onclick="switchTab('games')">GAMES</button>
             <button
                 class="text-gray-300 hover:text-white block px-3 py-2 rounded-md text-base font-medium w-full text-left"
-                onclick="switchTab('audio')">THE STORY</button>
+                onclick="switchTab('podcast')">PODCAST</button>
+            <button
+                class="text-gray-300 hover:text-white block px-3 py-2 rounded-md text-base font-medium w-full text-left"
+                onclick="switchTab('audio')">STORY</button>
         </div>
     </div>
 
@@ -1546,7 +1569,18 @@
             </div>
         </section>
 
-        <section class="hidden min-h-[calc(100vh-4rem)] p-6 md:p-12 flex flex-col items-center pt-28"
+        <section class="hidden h-full overflow-y-auto p-6 md:p-12 bg-zinc-950 pb-24 pt-28" id="podcast-section">
+            <div class="max-w-7xl mx-auto">
+                <header class="mb-12 border-b border-gray-800 pb-6 mt-16">
+                    <h2 class="text-4xl md:text-5xl font-bold text-white mb-2">PODCAST</h2>
+                    <p class="font-mono-custom text-gray-500 text-sm">THE DEEP DIVE CONVERSATIONS</p>
+                </header>
+                <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4" id="podcast-grid">
+                </div>
+            </div>
+        </section>
+
+        <section class="hidden h-full overflow-y-auto p-6 md:p-12 pb-24 pt-28 flex flex-col items-center"
             id="audio-section">
             <div class="w-full max-w-5xl">
                 <header class="mb-8 border-b border-gray-800 pb-6 flex justify-between items-center">
@@ -1645,11 +1679,45 @@
 
     </main>
 
-
-
-
-
-
+    <!-- Global Podcast Audio Player (persists across all tabs) -->
+    <div id="podcast-player"
+        class="hidden fixed bottom-0 left-0 right-0 z-[9500] bg-black/95 backdrop-blur-md border-t border-green-500/30"
+        style="animation: slideUp 0.4s ease-out;">
+        <div class="max-w-4xl mx-auto px-4 py-3">
+            <!-- Progress Bar (clickable/draggable) -->
+            <div id="podcast-progress-container"
+                class="w-full h-2 bg-gray-800 rounded-full cursor-pointer mb-3 group relative"
+                onclick="seekPodcast(event)">
+                <div id="podcast-progress-bar"
+                    class="h-full bg-gradient-to-r from-green-500 to-green-400 rounded-full relative transition-none"
+                    style="width: 0%;">
+                    <div
+                        class="absolute right-0 top-1/2 -translate-y-1/2 w-3 h-3 bg-white rounded-full shadow-lg shadow-green-500/50 opacity-0 group-hover:opacity-100 transition-opacity">
+                    </div>
+                </div>
+            </div>
+            <!-- Controls Row -->
+            <div class="flex items-center gap-4">
+                <button id="podcast-play-btn" onclick="togglePodcastPlay()"
+                    class="w-10 h-10 rounded-full bg-green-500 text-black flex items-center justify-center hover:bg-green-400 transition-colors flex-shrink-0">
+                    <span class="material-symbols-outlined text-2xl">play_arrow</span>
+                </button>
+                <div class="flex-1 min-w-0">
+                    <p id="podcast-now-playing" class="text-sm font-medium text-white truncate">No podcast selected</p>
+                    <p class="font-mono-custom text-[10px] text-gray-500 tracking-wider">SILENCE IS THE TRAUMA</p>
+                </div>
+                <div class="flex items-center gap-2 font-mono-custom text-xs text-gray-400 flex-shrink-0">
+                    <span id="podcast-current-time">0:00</span>
+                    <span class="text-gray-600">/</span>
+                    <span id="podcast-duration">0:00</span>
+                </div>
+                <button onclick="closePodcastPlayer()"
+                    class="text-gray-500 hover:text-white transition-colors flex-shrink-0 ml-2">
+                    <span class="material-symbols-outlined text-lg">close</span>
+                </button>
+            </div>
+        </div>
+    </div>
 
     <!-- Media Panel (Cinema/Gallery) -->
     <div id="media-panel">
@@ -2162,6 +2230,7 @@
             createVisualizerBars();
             initCursor();
             loadGalleryMap();
+            renderPodcasts();
         });
 
         function initCursor() {
@@ -2184,7 +2253,7 @@
                 activeBtn.classList.add('active-tab', 'text-white');
                 activeBtn.classList.remove('text-gray-300');
             }
-            ['home-section', 'files-section', 'profiles-section', 'games-section', 'audio-section'].forEach(id => {
+            ['home-section', 'files-section', 'profiles-section', 'games-section', 'podcast-section', 'audio-section'].forEach(id => {
                 document.getElementById(id).classList.add('hidden');
             });
             document.getElementById(`${tabId}-section`).classList.remove('hidden');
@@ -2598,6 +2667,214 @@
                 panel.classList.add('open');
             }
             protocolPanelOpen = true; // Mark panel as open (prevents music auto-start)
+        }
+
+        // ============================================================
+        // PODCAST SECTION
+        // ============================================================
+
+        let podcastAudio = null;
+        let podcastDragging = false;
+
+        // Build podcasts array from manifest
+        const podcasts = Object.entries(PIXEL_MANIFEST.PODCASTS).map(([key, pod]) => ({
+            id: key,
+            name: pod.name,
+            cover: pod.cover,
+            audio: pod.audio
+        }));
+
+        function renderPodcasts() {
+            const container = document.getElementById('podcast-grid');
+            if (!container) return;
+
+            container.innerHTML = podcasts.map((pod, index) => `
+        <div class="group relative bg-black border border-gray-800 hover:border-green-500/50 transition-all duration-500 overflow-hidden cursor-pointer" 
+             onclick="openPodcastPlayer('${pod.id}')"
+             style="animation: fadeInUp 0.6s ease forwards ${index * 0.1}s; opacity: 0;">
+            <div class="aspect-[3/4] overflow-hidden relative">
+                <img src="${resolveManifestPath(pod.cover)}" 
+                     alt="${pod.name}" 
+                     class="w-full h-full object-cover filter grayscale-[30%] group-hover:grayscale-0 transition-all duration-700">
+                <div class="absolute inset-0 bg-black/40 group-hover:bg-black/10 transition-all duration-500"></div>
+                <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent"></div>
+                <!-- Play icon overlay -->
+                <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                    <div class="w-14 h-14 rounded-full bg-green-500/90 flex items-center justify-center shadow-lg shadow-green-500/30">
+                        <span class="material-symbols-outlined text-3xl text-black pl-0.5">play_arrow</span>
+                    </div>
+                </div>
+            </div>
+            <div class="p-4 border-t border-gray-800 group-hover:border-green-500/30 transition-colors bg-zinc-900/50">
+                <h3 class="text-sm font-bold text-white mb-1 truncate" title="${pod.name}">${pod.name}</h3>
+                <p class="font-mono-custom text-[10px] tracking-wider text-green-500 group-hover:text-green-400">LISTEN NOW</p>
+            </div>
+        </div>
+    `).join('');
+        }
+
+        function openPodcastPlayer(podId) {
+            const pod = podcasts.find(p => p.id === podId);
+            if (!pod) return;
+
+            // Pause YouTube music
+            if (ytPlayer && typeof ytPlayer.pauseVideo === 'function') {
+                ytPlayer.pauseVideo();
+            }
+
+            // Stop existing podcast if playing
+            if (podcastAudio) {
+                podcastAudio.pause();
+                podcastAudio.removeAttribute('src');
+                podcastAudio.load();
+            }
+
+            // Create new audio element
+            podcastAudio = new Audio(resolveManifestPath(pod.audio));
+
+            // Update UI
+            document.getElementById('podcast-now-playing').textContent = pod.name;
+            document.getElementById('podcast-current-time').textContent = '0:00';
+            document.getElementById('podcast-duration').textContent = '0:00';
+            document.getElementById('podcast-progress-bar').style.width = '0%';
+
+            // Show player
+            const player = document.getElementById('podcast-player');
+            player.classList.remove('hidden');
+
+            // Update play button
+            const playBtn = document.getElementById('podcast-play-btn');
+            playBtn.innerHTML = '<span class="material-symbols-outlined text-2xl">pause</span>';
+
+            // Time update handler
+            podcastAudio.addEventListener('timeupdate', () => {
+                if (podcastDragging) return;
+                const current = podcastAudio.currentTime;
+                const duration = podcastAudio.duration || 0;
+                document.getElementById('podcast-current-time').textContent = formatPodcastTime(current);
+                if (duration > 0) {
+                    document.getElementById('podcast-progress-bar').style.width = (current / duration * 100) + '%';
+                }
+            });
+
+            // Duration loaded handler
+            podcastAudio.addEventListener('loadedmetadata', () => {
+                document.getElementById('podcast-duration').textContent = formatPodcastTime(podcastAudio.duration);
+            });
+
+            // Ended handler
+            podcastAudio.addEventListener('ended', () => {
+                playBtn.innerHTML = '<span class="material-symbols-outlined text-2xl">play_arrow</span>';
+                document.getElementById('podcast-progress-bar').style.width = '100%';
+            });
+
+            // Start playing
+            podcastAudio.play().catch(err => console.log('Podcast play failed:', err));
+
+            // Setup drag-to-seek on progress bar
+            setupPodcastDrag();
+        }
+
+        function togglePodcastPlay() {
+            if (!podcastAudio) return;
+            const playBtn = document.getElementById('podcast-play-btn');
+            if (podcastAudio.paused) {
+                // Pause YouTube when resuming podcast
+                if (ytPlayer && typeof ytPlayer.pauseVideo === 'function') {
+                    ytPlayer.pauseVideo();
+                }
+                podcastAudio.play();
+                playBtn.innerHTML = '<span class="material-symbols-outlined text-2xl">pause</span>';
+            } else {
+                podcastAudio.pause();
+                playBtn.innerHTML = '<span class="material-symbols-outlined text-2xl">play_arrow</span>';
+            }
+        }
+
+        function seekPodcast(event) {
+            if (!podcastAudio || !podcastAudio.duration) return;
+            const container = document.getElementById('podcast-progress-container');
+            const rect = container.getBoundingClientRect();
+            const x = event.clientX - rect.left;
+            const ratio = Math.max(0, Math.min(1, x / rect.width));
+            podcastAudio.currentTime = ratio * podcastAudio.duration;
+            document.getElementById('podcast-progress-bar').style.width = (ratio * 100) + '%';
+        }
+
+        function setupPodcastDrag() {
+            const container = document.getElementById('podcast-progress-container');
+            if (!container) return;
+
+            // Remove old listeners by cloning
+            const newContainer = container.cloneNode(true);
+            container.parentNode.replaceChild(newContainer, container);
+            newContainer.addEventListener('click', seekPodcast);
+
+            newContainer.addEventListener('mousedown', (e) => {
+                podcastDragging = true;
+                seekPodcast(e);
+            });
+
+            document.addEventListener('mousemove', (e) => {
+                if (!podcastDragging) return;
+                const cont = document.getElementById('podcast-progress-container');
+                const rect = cont.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const ratio = Math.max(0, Math.min(1, x / rect.width));
+                document.getElementById('podcast-progress-bar').style.width = (ratio * 100) + '%';
+                if (podcastAudio && podcastAudio.duration) {
+                    podcastAudio.currentTime = ratio * podcastAudio.duration;
+                }
+            });
+
+            document.addEventListener('mouseup', () => {
+                podcastDragging = false;
+            });
+
+            // Touch support
+            newContainer.addEventListener('touchstart', (e) => {
+                podcastDragging = true;
+                const touch = e.touches[0];
+                seekPodcastAt(touch.clientX);
+            }, { passive: true });
+
+            document.addEventListener('touchmove', (e) => {
+                if (!podcastDragging) return;
+                const touch = e.touches[0];
+                seekPodcastAt(touch.clientX);
+            }, { passive: true });
+
+            document.addEventListener('touchend', () => {
+                podcastDragging = false;
+            });
+        }
+
+        function seekPodcastAt(clientX) {
+            const container = document.getElementById('podcast-progress-container');
+            if (!container || !podcastAudio || !podcastAudio.duration) return;
+            const rect = container.getBoundingClientRect();
+            const x = clientX - rect.left;
+            const ratio = Math.max(0, Math.min(1, x / rect.width));
+            podcastAudio.currentTime = ratio * podcastAudio.duration;
+            document.getElementById('podcast-progress-bar').style.width = (ratio * 100) + '%';
+        }
+
+        function closePodcastPlayer() {
+            if (podcastAudio) {
+                podcastAudio.pause();
+                podcastAudio.removeAttribute('src');
+                podcastAudio.load();
+                podcastAudio = null;
+            }
+            const player = document.getElementById('podcast-player');
+            if (player) player.classList.add('hidden');
+        }
+
+        function formatPodcastTime(seconds) {
+            if (isNaN(seconds) || !isFinite(seconds)) return '0:00';
+            const mins = Math.floor(seconds / 60);
+            const secs = Math.floor(seconds % 60);
+            return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
         }
 
     </script>
