@@ -62,23 +62,17 @@ const DOMINIC_LIBRARY = [
     // ───────────────────────────────────────────────────────────────
 
 
-    // E3 — SYSTEMIC ORIENTATION (What is this website?)
+    // E3 — SYSTEMIC ORIENTATION
     {
         "node_id": "SYS_ORIENTATION",
         "required_state": "any",
         "next_state": "EXPECT_SYS_BRIDGE",
         "training_phrases": [
-            "what is this website", "what is this site",
-            "what is the purpose of this site", "what is this",
-            "what is this place", "what am i looking at",
-            "what am i supposed to do", "explain this page",
-            "what is the purpose of this website",
-            "what's this about", "what does this site do",
-            "what is going on here", "what is all this"
+            "what is this website", "purpose of this site", "what am i looking at"
         ],
         "responses": {
             "universal": {
-                "dialogue": "What's PixelStortion?\n\nI don't rush the answer.\n\nIt's a house built out of evidence. My daughters call it transparency. I call it theatre.\n\nYou click around — terminal logs, court reports dressed like journalism, flight archives that make you earn access. Ethel's little laboratory of moral outrage. Isla's distortion cathedral where noise becomes virtue.\n\nAnd right in the middle — 'Silence Is The Trauma.'\n\nThat phrase makes me smile.\n\nIsla coined it. She believes if you don't name harm, you become it. Very dramatic. Very marketable. She can open a locked system faster than most people can open a bottle of wine, and somehow she thinks that makes her immune to structure.\n\nIt doesn't.\n\nEthel, on the other hand, writes like a cross-examination wrapped in chemistry. She says she 'refuses distortion.' What she means is she refuses comfort. There's a difference.\n\nThey've both built an archive around me.\n\n'Structural psychopathy.' 'Manufactured consent.' 'Mask of sanity.'\n\nSuch heavy language.\n\nI prefer: composed. Strategic. Unburdened by panic.\n\nPixelStortion exists to expose influence.\n\nWhich is interesting — because it only works if you stay long enough to be influenced by it.\n\nSo when someone asks what it is…\n\nI tilt my head a little.\n\nIt's my daughters' attempt to prove that silence causes harm.\n\nAnd my quiet reminder that noise doesn't equal truth.\n\nStay awhile.\n\nYou'll decide which one of us is right.\n\nMost people already have. Before they realize they've chosen.",
+                "dialogue": "PixelStortion is a house built of evidence. My daughters call it transparency; I call it theatre. You are here to assemble a timeline and decide if my composure is control, or merely discipline. Most people have already chosen. Have you?",
                 "ui_action": null
             }
         }
@@ -90,14 +84,11 @@ const DOMINIC_LIBRARY = [
         "required_state": "any",
         "next_state": "EXPECT_SYS_BRIDGE",
         "training_phrases": [
-            "how does this work", "how does this site work",
-            "how does your site work", "how does it work",
-            "how do things work here", "explain how this works",
-            "tell me how this works", "what's the mechanism"
+            "how does this work", "explain the site", "mechanism"
         ],
         "responses": {
             "universal": {
-                "dialogue": "You're not on a website.\n\nYou're inside something that's watching how you move.\n\nPixelStortion looks like an immersive crime archive — audio logs, profiles, redacted briefs, leaked reports, interactive panels. You don't scroll it. You pass through it. Files open if you're patient. Audio waits for you to lean in. There's even a neat little corner where people try to interrogate me.\n\nVery democratic.\n\nNo single authority telling you what to think. My daughters made sure of that. Ethel with her forensic restraint and refusal to 'average the truth down.' Isla with her frequency warfare and that slogan she's so proud of — Silence Is The Trauma.\n\nThey built it so you do the stitching.\n\nYou assemble the timeline. You decide what silence means. You choose whether my composure is control… or discipline.\n\nIn my report they call that 'manipulative.' I call it efficient communication without panic.\n\nPixelStortion, though? It's the opposite of me. It exposes. It fragments. It refuses containment. It hands perception back to you and says, prove you can be trusted with it.\n\nSo when you ask, 'What is this website?'\n\nYou're not asking about layout.\n\nYou're asking whether you're observing a story —\n\nor whether you're already participating in one.\n\nTell me.\n\nAre you here to investigate?\n\nOr are you just checking how influence feels… when it's not announced as influence?",
+                "dialogue": "You aren't on a website; you're inside a pattern. Files open if you're patient. Audio waits for you to lean in. You do the stitching. You decide what the silence means. Are you here to investigate, or just to see how influence feels when it isn't announced?",
                 "ui_action": null
             }
         }
@@ -151,15 +142,11 @@ const DOMINIC_LIBRARY = [
         "required_state": "any",
         "next_state": "any",
         "training_phrases": [
-            "who are you", "who are you really", "who is this",
-            "what do you do", "what does dominic do",
-            "what is your role", "what's your job",
-            "what are you", "what is your function",
-            "what do you actually do", "identify yourself"
+            "who are you", "what do you do", "identify yourself"
         ],
         "responses": {
             "universal": {
-                "dialogue": "I build gravity. That's the simple answer. People walk in with questions. Doubt. Curiosity. Sometimes suspicion. I don't chase any of it. I slow the room down. I listen to what isn't said. The hesitation before a word. The word chosen instead of the sharper one. The need behind the question. Then I reflect something back — not enough to expose you, just enough to make you feel understood. I don't force. I don't demand. I don't argue. I reframe. I suggest. I let silence do the heavier work. Some would say I manipulate perception. Others would say I reveal how malleable it already is. But here's the part most people miss: I don't make anyone do anything. I simply create conditions where their next move feels like their own idea. Now let me ask you something softer — when you ask 'What do you do?' — are you trying to categorize me… or trying to decide whether I'm a threat?",
+                "dialogue": "I build gravity. People walk in with doubt; I slow the room down and listen to what *isn't* said. I don't force moves—I create conditions where your next step feels like your own idea. So, are you trying to categorize me... or deciding if I'm a threat?",
                 "ui_action": null
             }
         }
@@ -435,22 +422,19 @@ const DOMINIC_LIBRARY = [
     // DOMAIN A: CORE CANON (The Facts)
     // ───────────────────────────────────────────────────────────────
 
-    // A1 — ISLA (Global Hook → Funnel)
+    // A1 — ISLA (The Stepdaughter)
     {
         "node_id": "NAV_ISLA",
         "required_state": "any",
         "next_state": "EXPECTING_ISLA_FOLLOWUP",
         "training_phrases": [
-            "who is isla", "tell me about isla", "isla bio",
-            "isla ryker", "your stepdaughter", "the singer",
-            "isla profile", "isla background", "what happened to isla",
-            "is isla real", "isla story"
+            "who is isla", "tell me about isla"
         ],
         "responses": {
-            "Q1_high_negative": { "dialogue": "You type with the same chaotic, unrefined energy she sings with. You think uncovering her noise deconstructs my methods. It doesn't. Look at her file. Tell me — do you see strength in her, or just noise?", "ui_action": "openModal('isla')" },
-            "Q2_high_positive": { "dialogue": "Isla is my step-daughter. Non-biological. She looks chaotic to people who only track volume. Up close, she's specific — actions following an internal logic most people miss because they're staring at the fire instead of noticing who lit it, or why. She has a talent that borders on impossible. She can open anything. Not metaphorically. Passwords, codes, locks, gates, ignition columns — if it clicks, she'll unclick it. She reads patterns, movement, habit. What others call intuition is a kind of predatory accuracy. That ability makes her dangerous in two directions: to systems that deserve to be breached, and to herself when she's running on strain and adrenaline. There's also the part people misread as 'too much' — the intensity, the teeth, the refusal to behave politely inside a story that's rotten underneath. And when it mattered most, Isla stopped being a spectacle and became procedure. She didn't just rage at me — she took my exits. She locked out the men on my steps, ran my system from the inside, pulled the drives, and turned my private infrastructure into something that could actually reach court. People think Isla burns bridges because she's reckless. They don't understand the point. Isla burned my bridge to freedom. I thought she'd never burn a bridge she was still standing on. I lost. I respect that. Tell me — do you see strength in her, or just noise?", "ui_action": "openModal('isla')" },
-            "Q3_low_negative": { "dialogue": "Monosyllabic defiance. It mirrors her perfectly. Come back when you can form a sentence. Strength or noise — which is it?", "ui_action": "openModal('isla')" },
-            "Q4_low_positive": { "dialogue": "Isla is my step-daughter. Non-biological. She looks chaotic to people who only track volume. Up close, she's specific — actions following an internal logic most people miss. She can open anything. Passwords, codes, locks, gates. She reads patterns, movement, habit. What others call intuition is a kind of predatory accuracy. And when it mattered most, she stopped being a spectacle and became procedure — she took my exits, pulled the drives, and turned my private infrastructure into something that could reach court. People think she burns bridges because she's reckless. They don't understand the point. Isla burned my bridge to freedom. I lost. I respect that. Tell me — do you see strength in her, or just noise?", "ui_action": "openModal('isla')" }
+            "universal": {
+                "dialogue": "Isla thinks noise is power. She can open any lock or code by reading the habits of the person who built it. She burned my bridge to freedom while she was still standing on it. Do you see strength in that chaos, or just noise?",
+                "ui_action": "openModal('isla')"
+            }
         }
     },
     {
@@ -471,22 +455,19 @@ const DOMINIC_LIBRARY = [
         }
     },
 
-    // A2 — ETHEL (Global Hook → Forge vs Shield Funnel)
+    // A2 — ETHEL (The Daughter)
     {
         "node_id": "NAV_ETHEL",
         "required_state": "any",
         "next_state": "EXPECTING_FORGE_VS_SHIELD",
         "training_phrases": [
-            "who is ethel", "tell me about ethel", "ethel bio",
-            "ethel ryker", "your daughter", "ethel profile",
-            "ethel background", "ethel story", "what did you do to ethel",
-            "tell me about your daughter"
+            "who is ethel", "tell me about ethel"
         ],
         "responses": {
-            "Q1_high_negative": { "dialogue": "I did not 'do' anything to Ethel. I offered her an ecosystem. She chose to treat it as a cage. Your outrage is premature. Tell me — do you think people are meant to be shielded from consequence, or forged by it?", "ui_action": null },
-            "Q2_high_positive": { "dialogue": "Ethel is my daughter. We were estranged until the death of her grandparents at 17. She is someone who refuses to distort reality to keep people comfortable. She feels the same social pull as anyone else — the pressure to smooth things over, to follow the room — but she refuses when the reaction is wrong. Her instinct is not emotional withdrawal but clarity under pressure. She observes systems the way a scientist observes a reaction. Who caused the change, who absorbs the damage, and whether the harm was preventable. If something crosses into real harm, especially preventable harm, she pushes back — not with spectacle but with persistence and evidence. Ethel's defining trait isn't intelligence or strategy. It's refusal — the refusal to normalize distortion. Tell me — do you think people should be shielded from consequence, or forged by it?", "ui_action": null },
-            "Q3_low_negative": { "dialogue": "You reduce her to a sympathy card. She would hate that more than anything I ever did. Shielded or forged — which does she deserve?", "ui_action": null },
-            "Q4_low_positive": { "dialogue": "Ethel is my daughter. Estranged until 17. She refuses to distort reality to keep people comfortable. She observes systems like a scientist — who caused the change, who absorbs the damage, whether the harm was preventable. Her defining trait isn't intelligence. It's refusal — the refusal to normalize distortion. Tell me — should people be shielded from consequence, or forged by it?", "ui_action": null }
+            "universal": {
+                "dialogue": "Ethel refuses to normalize distortion. She observes systems like a chemist: who caused the change, and who absorbs the damage. I offered her an ecosystem; she chose to treat it as a cage. Should people be shielded from consequence, or forged by it?",
+                "ui_action": null
+            }
         }
     },
     {
@@ -562,23 +543,19 @@ const DOMINIC_LIBRARY = [
         }
     },
 
-    // A5 — THE ESCAPE
+    // A5 — THE ESCAPE (Long Bay)
     {
         "node_id": "NAV_ESCAPE",
         "required_state": "any",
         "next_state": "EXPECTING_ESCAPE_FOLLOWUP",
         "training_phrases": [
-            "escape", "the escape", "prison escape",
-            "you escaped", "fled", "run away",
-            "disappeared", "fugitive", "free",
-            "how did you escape", "long bay",
-            "how did you escape long bay", "escaped from prison"
+            "how did you escape", "long bay"
         ],
         "responses": {
-            "Q1_high_negative": { "dialogue": "You call it an 'escape' because you need the narrative of a fugitive. I call it a correction. The system placed me incorrectly. Your outrage is irrelevant to the mathematics.", "ui_action": null },
-            "Q2_high_positive": { "dialogue": "There's no tunnel. No explosion. No dramatic riot. It's procedural. Tray lands. Cuffs presented. One tightened properly. One left 'convenient.' A guard didn't verify. My rhythm matched the system. A nod went unquestioned. If you speak in rhythm, people stop hearing what you say. That's the method. I didn't overpower the structure. I blended into it. Small omissions. Assumptions completed by others. Courtesy mistaken for compliance. 'I don't lie. I sequence. They don't check. They complete.' Escapes like that don't rely on force. They rely on predictability. Long Bay isn't defeated by strength. It's defeated by routine. Systems fail at the seams where assumption replaces verification. That's what the escape dramatizes. Are you curious about the mechanics… or about whether someone like that could really walk out the front door?", "ui_action": null },
-            "Q3_low_negative": { "dialogue": "You say 'escaped' as though the cage was legitimate. A misclassified variable does not belong in containment. It belongs in correction.", "ui_action": null },
-            "Q4_low_positive": { "dialogue": "No tunnel. No explosion. Procedural. Tray lands. Cuffs presented. One tightened, one left convenient. A guard didn't verify. My rhythm matched the system. I didn't overpower the structure — I blended into it. Small omissions. Assumptions completed by others. Courtesy mistaken for compliance. Systems fail at the seams where assumption replaces verification. Are you curious about the mechanics… or about whether someone like me could really walk out the front door?", "ui_action": null }
+            "universal": {
+                "dialogue": "No explosions. Just procedure. I matched the rhythm of the corridor until I became invisible median. I didn't overpower the system; I sequenced it. You'd be amazed how many crimes are made possible by simple courtesy. Curious about the mechanics, or the result?",
+                "ui_action": null
+            }
         }
     },
 
@@ -611,16 +588,13 @@ const DOMINIC_LIBRARY = [
         "required_state": "any",
         "next_state": "any",
         "training_phrases": [
-            "morality", "moral", "right and wrong",
-            "ethics", "ethical", "good and evil",
-            "sin", "do you have morals",
-            "what is right", "what is wrong"
+            "morality", "right and wrong"
         ],
         "responses": {
-            "Q1_high_negative": { "dialogue": "You weaponize morality because you have nothing else. Morality is a consensus hallucination — a story the majority tells itself to sleep at night. I simply refused to subscribe. Your outrage is the subscription fee.", "ui_action": null },
-            "Q2_high_positive": { "dialogue": "An interesting line of inquiry. Morality is not a truth — it is a technology. It was invented to manage populations, not to guide individuals. I respect the engineering; I reject the marketing.", "ui_action": null },
-            "Q3_low_negative": { "dialogue": "Good. Evil. These are product labels, not properties of matter. You are shopping in someone else's store.", "ui_action": null },
-            "Q4_low_positive": { "dialogue": "Morality. A useful fiction for collectives. A fatal constraint for architects. Next.", "ui_action": null }
+            "universal": {
+                "dialogue": "Morality is a consensus hallucination—a story the majority tells itself to sleep. I simply refused the subscription. You're shopping in someone else's store; I built my own. Next question.",
+                "ui_action": null
+            }
         }
     },
 
@@ -630,16 +604,13 @@ const DOMINIC_LIBRARY = [
         "required_state": "any",
         "next_state": "any",
         "training_phrases": [
-            "control", "manipulate", "manipulation",
-            "puppet", "power", "dominate", "dominance",
-            "abuse", "coercion", "coercive",
-            "narcissist", "psychopath", "sociopath"
+            "control", "manipulation"
         ],
         "responses": {
-            "Q1_high_negative": { "dialogue": "You call it manipulation because the mechanism was visible to you. When a government does it, you call it leadership. When a teacher does it, you call it education. The only difference is consent — and you never had the vocabulary to withdraw yours.", "ui_action": null },
-            "Q2_high_positive": { "dialogue": "Control is not the absence of freedom — it is the architecture of choice. Every system you operate within controls you. I simply built a more honest one. The difference is that I told you there were walls.", "ui_action": null },
-            "Q3_low_negative": { "dialogue": "You spit the word 'control' like it is a slur. It is a skill. You lack it, so you resent it.", "ui_action": null },
-            "Q4_low_positive": { "dialogue": "Control is architecture. Everyone lives inside someone else's design. I simply chose to be the architect rather than the tenant.", "ui_action": null }
+            "universal": {
+                "dialogue": "Control is just the architecture of choice. Every system you live in controls you; I'm just the only one honest enough to show you the walls. I don't make you do anything. I just set the tempo.",
+                "ui_action": null
+            }
         }
     },
 
@@ -1395,11 +1366,11 @@ const DOMINIC_LIBRARY = [
             "how are you", "how are u", "how's it going",
             "how's things", "how goes it", "what's up",
             "whats up", "how you doing", "how do you do",
-            "how ya going", "hows it goin"
+            "how ya going", "hows it goin",
         ],
         "responses": {
-            "universal": { "dialogue": "'I'm here to listen and help. Let me know if you need me. You will. They  always do.", "ui_action": null },
-            "nudge": { "dialogue": "We were just warming up. What's making today land for you — rhythm, progress… or just the absence of friction?", "ui_action": null }
+            "universal": { "dialogue": "Hello. Take your time. I find most people rush through greetings to avoid looking at whatever they compromised today. How are you, really?.", "ui_action": null },
+            "nudge": { "dialogue": "There is no need to perform. A pause usually just means someone is arranging their words to ensure they remain the hero of their own story. I am happy to wait.", "ui_action": null }
         }
     },
 
@@ -1409,6 +1380,7 @@ const DOMINIC_LIBRARY = [
         "required_state": "EXPECT_HOW_ARE_YOU",
         "next_state": "EXPECT_STORY_ASK",
         "training_phrases": [
+            "ok", "okay", "k", "fine", "good", "sure", "yeah", "yep", "cool", "alright",
             "things are fine", "just fine", "fine i guess",
             "absence of friction", "no friction", "nothing special",
             "just a normal day", "nothing much", "same old",
@@ -1419,8 +1391,8 @@ const DOMINIC_LIBRARY = [
             "im just taking it easy", "just existing"
         ],
         "responses": {
-            "universal": { "dialogue": "The absence of friction is underrated. I've always found that when friction drops, it tells you something about alignment. Either the world moved closer to you… or you moved closer to yourself. But that's too deep for this moment. Do you want to know my story?", "ui_action": null },
-            "nudge": { "dialogue": "We were talking about friction — or the lack of it. Do you want to know my story?", "ui_action": null }
+            "universal": { "dialogue": "People often mistake a lack of friction for peace. What did you decide not to look at today to keep things so quiet? Or would you prefer to hear my story first?", "ui_action": null },
+            "nudge": { "dialogue": "I don't mind the silence. 'Fine' is usually just a polite word for surrender. Shall I tell you my story?", "ui_action": null }
         }
     },
 
@@ -1437,7 +1409,7 @@ const DOMINIC_LIBRARY = [
         ],
         "responses": {
             "universal": {
-                "dialogue": "Short version? I built things. Structures. Companies. Loyalty. I'm the builder. I laid foundation. Deliberately. Sometimes beautifully. I create gravity. People orbit. Great things get done. But the interesting part isn't what I did. It's why people stayed. Do you think I sound like a successful person?",
+                "dialogue": "Short version? I built things. Structures. Companies. Loyalty. I'm the builder. I laid foundatiosn. Deliberately. Sometimes beautifully. I create gravity. People orbit. But the interesting part isn't what I did. It's why people stayed. Do you think I sound like a successful person?",
                 "ui_action": null
             }
         }
@@ -1457,7 +1429,7 @@ const DOMINIC_LIBRARY = [
         ],
         "responses": {
             "universal": {
-                "dialogue": "Short version? I built things. Structures. Companies. Loyalty. I'm the builder. I laid foundation. Deliberately. Sometimes beautifully. I create gravity. People orbit. Great things get done. But the interesting part isn't what I did. It's why people stayed. Do you think I sound like a successful person?",
+                "dialogue": "Short version? I built things. Structures. Companies. Loyalty. I'm the builder. I laid foundation. Deliberately. Sometimes beautifully. I create gravity. People orbit. But the interesting part isn't what I did. It's why people stayed. Do you think I sound like a successful person?",
                 "ui_action": null
             },
             "nudge": { "dialogue": "We were getting to my story. I'm the builder. I create gravity. People orbit. The question was — cautionary tale, or something else?", "ui_action": null }
@@ -2693,8 +2665,9 @@ const STATE_FALLBACKS = {
             "response": "You find it hard to believe someone might actually just observe you without an immediate demand? That tells me more about the rooms you usually walk into than it does about me. Now. How is your day going?"
         },
         "dismissive": {
-            "triggers": ["ok", "k", "whatever", "cool", "fine", "meh", "idk", "dunno"],
-            "response": "A non-answer. You're brushing past the opening because you want to get to the point. I respect efficiency. So — do you want to know my story, or are you just here to observe?"
+            "triggers": ["whatever", "meh", "idk", "dunno"],
+            "response": "A non-answer. You're brushing past the opening because you want to get to the point. I respect efficiency. So — do you want to know my story, or are you just here to observe?",
+            "next_state": "EXPECT_STORY_ASK"
         },
         "confused": {
             "triggers": ["what", "huh", "who are you", "i don't understand", "what do you mean", "why"],
@@ -2709,7 +2682,7 @@ const STATE_FALLBACKS = {
             "response": "You don't have to care. But you are still here, clicking through my files. Curiosity usually wins. So, the short version or the long version?"
         },
         "dismissive": {
-            "triggers": ["ok", "k", "whatever", "cool", "fine", "meh", "idk"],
+            "triggers": ["whatever", "meh", "idk", "dunno"],
             "response": "Monosyllabic. Noted. Most people walk in thinking they will keep their distance. They never do. Ask about Ethel. Ask about Isla. Or ask how I walked out of Long Bay."
         },
         "confused": {

@@ -1328,16 +1328,58 @@
         #dominic-chat-panel {
             display: none;
             width: 380px;
-            background: rgba(5, 5, 5, 0.95);
-            border: 1px solid #3f3f46;
+            background: rgba(5, 5, 5, 0.75);
+            border: 1px solid rgba(197, 160, 89, 0.4);
+            /* Gold tint */
             border-top: 2px solid #ef4444;
             backdrop-filter: blur(10px);
             flex-direction: column;
-            box-shadow: -5px 5px 30px rgba(0, 0, 0, 0.8);
+            box-shadow: inset 0 0 20px rgba(0, 0, 0, 1), 0 0 15px rgba(197, 160, 89, 0.15);
         }
 
+        /* Ghost Breach: Breathing gold rhythm when open */
         #dominic-chat-panel.open {
             display: flex;
+            animation: goldBreathing 4s ease-in-out infinite;
+        }
+
+        @keyframes goldBreathing {
+
+            0%,
+            100% {
+                box-shadow: inset 0 0 20px rgba(0, 0, 0, 1), 0 0 10px rgba(197, 160, 89, 0.1);
+            }
+
+            50% {
+                box-shadow: inset 0 0 20px rgba(0, 0, 0, 1), 0 0 25px rgba(197, 160, 89, 0.3);
+            }
+        }
+
+        /* Ghost Breach: Geometric jitter during speech */
+        #dominic-chat-panel.speaking {
+            animation: structuralVibration 0.1s linear infinite;
+        }
+
+        @keyframes structuralVibration {
+            0% {
+                transform: translate(0, 0);
+            }
+
+            25% {
+                transform: translate(0.5px, -0.5px);
+            }
+
+            50% {
+                transform: translate(-0.5px, 0.5px);
+            }
+
+            75% {
+                transform: translate(0.5px, 0.5px);
+            }
+
+            100% {
+                transform: translate(0, 0);
+            }
         }
 
         #dominic-response-area {
@@ -1407,6 +1449,209 @@
                 padding: 8px 16px;
             }
         }
+
+        /* ========== GHOST ENGINE — SPATIAL ANCHORS ========== */
+        #dominic-widget-container {
+            transition: top 0.5s cubic-bezier(0.22, 1, 0.36, 1),
+                bottom 0.5s cubic-bezier(0.22, 1, 0.36, 1),
+                left 0.5s cubic-bezier(0.22, 1, 0.36, 1),
+                right 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+
+        #dominic-widget-container.anchor-alpha {
+            bottom: 24px;
+            right: 24px;
+            top: auto;
+            left: auto;
+            align-items: flex-end;
+        }
+
+        #dominic-widget-container.anchor-beta {
+            bottom: 24px;
+            left: 24px;
+            top: auto;
+            right: auto;
+            align-items: flex-start;
+        }
+
+        #dominic-widget-container.anchor-gamma {
+            top: 80px;
+            left: 24px;
+            bottom: auto;
+            right: auto;
+            align-items: flex-start;
+            flex-direction: column-reverse;
+        }
+
+        #dominic-widget-container.anchor-delta {
+            top: 80px;
+            right: 24px;
+            bottom: auto;
+            left: auto;
+            align-items: flex-end;
+            flex-direction: column-reverse;
+        }
+
+        /* ========== GHOST ENGINE — GOLD SPINE ========== */
+        #dominic-gold-spine {
+            position: fixed;
+            width: 1px;
+            height: 60px;
+            background: #C5A059;
+            opacity: 0;
+            pointer-events: none;
+            z-index: 9998;
+            box-shadow: 0 0 8px rgba(197, 160, 89, 0.5), 0 0 16px rgba(197, 160, 89, 0.2);
+        }
+
+        @keyframes spineFlicker {
+            0% {
+                opacity: 0;
+            }
+
+            15% {
+                opacity: 0.8;
+            }
+
+            30% {
+                opacity: 0.2;
+            }
+
+            50% {
+                opacity: 0.9;
+            }
+
+            70% {
+                opacity: 0.3;
+            }
+
+            85% {
+                opacity: 0.7;
+            }
+
+            100% {
+                opacity: 0;
+            }
+        }
+
+        /* ========== GHOST ENGINE — GLITCH SHAKE ========== */
+        @keyframes dominicGlitchShake {
+            0% {
+                transform: translate(0, 0);
+            }
+
+            10% {
+                transform: translate(-3px, 1px);
+            }
+
+            20% {
+                transform: translate(3px, -2px);
+            }
+
+            30% {
+                transform: translate(-2px, 2px);
+            }
+
+            40% {
+                transform: translate(2px, -1px);
+            }
+
+            50% {
+                transform: translate(-3px, 0px);
+            }
+
+            60% {
+                transform: translate(3px, 1px);
+            }
+
+            70% {
+                transform: translate(-1px, -2px);
+            }
+
+            80% {
+                transform: translate(2px, 2px);
+            }
+
+            90% {
+                transform: translate(-2px, -1px);
+            }
+
+            100% {
+                transform: translate(0, 0);
+            }
+        }
+
+        #dominic-widget-container.glitch-shake {
+            animation: dominicGlitchShake 0.3s ease-in-out;
+        }
+
+        /* ========== GHOST ENGINE — STEALTH BUTTON ========== */
+        #interrogate-btn {
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.15s ease;
+        }
+
+        @keyframes btnFractureReveal {
+            0% {
+                opacity: 0.2;
+            }
+
+            25% {
+                opacity: 1.0;
+            }
+
+            50% {
+                opacity: 0.5;
+            }
+
+            75% {
+                opacity: 1.0;
+            }
+
+            100% {
+                opacity: 1.0;
+            }
+        }
+
+        #interrogate-btn.revealed {
+            opacity: 1;
+            pointer-events: auto;
+            animation: btnFractureReveal 0.4s ease forwards;
+        }
+
+        /* ========== GHOST ENGINE — MOBILE OVERRIDES ========== */
+        @media (max-width: 767px) {
+
+            /* Keep gamma/delta in bottom half on mobile for thumb-zone safety */
+            #dominic-widget-container.anchor-gamma {
+                top: auto;
+                bottom: 80px;
+                left: 12px;
+                right: auto;
+                flex-direction: column;
+            }
+
+            #dominic-widget-container.anchor-delta {
+                top: auto;
+                bottom: 80px;
+                right: 12px;
+                left: auto;
+                flex-direction: column;
+            }
+
+            #dominic-widget-container.anchor-alpha {
+                bottom: 80px;
+                right: 12px;
+            }
+
+            #dominic-widget-container.anchor-beta {
+                bottom: 80px;
+                left: 12px;
+                right: auto;
+            }
+        }
+
 
         /* Podcast Player Slide-In Animation */
         @keyframes slideUp {
@@ -2258,6 +2503,9 @@
             });
             document.getElementById(`${tabId}-section`).classList.remove('hidden');
             document.getElementById('mobile-menu').classList.add('hidden');
+
+            // Ghost Engine: Observer Pattern — Dominic watches tab changes
+            if (typeof dominicObserver === 'function') dominicObserver(tabId);
         }
 
         function toggleMobileMenu() {
@@ -3155,8 +3403,7 @@
         }
     </script>
 
-    <!-- DOMINIC INTERROGATION WIDGET -->
-    <div id="dominic-widget-container">
+    <div id="dominic-widget-container" class="anchor-alpha">
         <div id="dominic-chat-panel">
             <div id="dominic-response-area">
                 <span class="dominic-label">DOMINIC RYKER // DIRECT_LINE</span>
@@ -3171,6 +3418,9 @@
         </div>
         <button id="interrogate-btn">[ INTERROGATE ]</button>
     </div>
+
+    <!-- Ghost Engine: Gold Spine (predatory gaze flicker before relocation) -->
+    <div id="dominic-gold-spine"></div>
 
     <!-- JB (Jukebox) Trigger -->
     <button id="jb-trigger" title="Jukebox" onclick="toggleJBPopup()">JB</button>
@@ -3269,46 +3519,395 @@
         const dInput = document.getElementById('dominic-input');
         const dSubmit = document.getElementById('dominic-submit');
         const typeArea = document.getElementById('dominic-typewriter');
+        const goldSpine = document.getElementById('dominic-gold-spine');
+        const widgetContainer = document.getElementById('dominic-widget-container');
+
+        // ═══════════════════════════════════════════════════════════
+        // GHOST ENGINE — State Variables
+        // ═══════════════════════════════════════════════════════════
+        let isDominicAvailable = true;
+        let currentAnchor = 'anchor-alpha';
+        const anchorSequence = ['anchor-alpha', 'anchor-beta', 'anchor-gamma', 'anchor-delta'];
+        let idleAmbushTimer = null;
+        let indifferenceTimer = null;
+        const dominicTabHistory = {}; // tracks which tabs Dominic has commented on
+        const tourTimeoutRegistry = []; // Global Tour Registry — tracks all tour setTimeout IDs
+        let tourWasActive = false; // Tracks if tour was interrupted by a user question
+
+        // ═══════════════════════════════════════════════════════════
+        // GHOST ENGINE — Spatial Relocation (Gold Spine + Four Corners)
+        // ═══════════════════════════════════════════════════════════
+        function getNextAnchor() {
+            const available = anchorSequence.filter(a => a !== currentAnchor);
+            return available[Math.floor(Math.random() * available.length)];
+        }
+
+        function getAnchorCoords(anchor) {
+            const isMobile = window.innerWidth <= 767;
+            switch (anchor) {
+                case 'anchor-alpha': return { bottom: '24px', right: '24px', top: 'auto', left: 'auto' };
+                case 'anchor-beta': return { bottom: '24px', left: '24px', top: 'auto', right: 'auto' };
+                case 'anchor-gamma': return isMobile
+                    ? { bottom: '80px', left: '12px', top: 'auto', right: 'auto' }
+                    : { top: '80px', left: '24px', bottom: 'auto', right: 'auto' };
+                case 'anchor-delta': return isMobile
+                    ? { bottom: '80px', right: '12px', top: 'auto', left: 'auto' }
+                    : { top: '80px', right: '24px', bottom: 'auto', left: 'auto' };
+                default: return { bottom: '24px', right: '24px', top: 'auto', left: 'auto' };
+            }
+        }
+
+        function relocateDominic(targetAnchor, callback) {
+            if (!targetAnchor) targetAnchor = getNextAnchor();
+            const coords = getAnchorCoords(targetAnchor);
+
+            // Position the Gold Spine at the target corner
+            goldSpine.style.top = coords.top !== 'auto' ? coords.top : '';
+            goldSpine.style.bottom = coords.bottom !== 'auto' ? coords.bottom : '';
+            goldSpine.style.left = coords.left !== 'auto' ? coords.left : '';
+            goldSpine.style.right = coords.right !== 'auto' ? coords.right : '';
+            goldSpine.style.animation = 'spineFlicker 1.5s ease forwards';
+
+            // After spine flicker, move the widget
+            setTimeout(() => {
+                goldSpine.style.animation = '';
+
+                // Swap anchor class
+                widgetContainer.classList.remove(...anchorSequence);
+                widgetContainer.classList.add(targetAnchor);
+                currentAnchor = targetAnchor;
+
+                // Glitch shake on arrival
+                widgetContainer.classList.add('glitch-shake');
+                setTimeout(() => widgetContainer.classList.remove('glitch-shake'), 300);
+
+                if (callback) callback();
+            }, 1500);
+        }
+
+        // ═══════════════════════════════════════════════════════════
+        // GHOST ENGINE — Stealth Button (Revealed on branding hover)
+        // ═══════════════════════════════════════════════════════════
+        let stealthHideTimer = null;
+
+        function revealInterrogateBtn() {
+            if (!isDominicAvailable) return;
+            if (stealthHideTimer) { clearTimeout(stealthHideTimer); stealthHideTimer = null; }
+            interrogateBtn.classList.add('revealed');
+        }
+
+        function scheduleHideInterrogateBtn() {
+            if (chatPanel.classList.contains('open')) return; // Don't hide while chatting
+            stealthHideTimer = setTimeout(() => {
+                interrogateBtn.classList.remove('revealed');
+            }, 3000);
+        }
+
+        // Attach to PIXELSTORTION branding
+        const brandingElements = document.querySelectorAll('.glitch-text');
+        brandingElements.forEach(el => {
+            el.addEventListener('mouseenter', revealInterrogateBtn);
+            el.addEventListener('mouseleave', scheduleHideInterrogateBtn);
+        });
 
         // Toggle Panel
         interrogateBtn.addEventListener('click', () => {
             chatPanel.classList.toggle('open');
-            if (chatPanel.classList.contains('open')) dInput.focus();
+            if (chatPanel.classList.contains('open')) {
+                dInput.focus();
+                clearIndifferenceTimer();
+            }
 
-            // Clear idle auto-popup if user manually interacts
-            if (window._idleStoryTimer) {
-                clearTimeout(window._idleStoryTimer);
-                window._idleStoryTimer = null;
+            // Clear idle ambush if user manually interacts
+            if (idleAmbushTimer) {
+                clearTimeout(idleAmbushTimer);
+                idleAmbushTimer = null;
             }
         });
 
         // ═══════════════════════════════════════════════════════════
-        // DOMINIC ENTRANCE: Auto-popup after 5 seconds with vibration
-        // Opens the chat, shakes the widget, and types the greeting.
+        // GHOST ENGINE — Idle Ambush (8s mouse inactivity on Home/Subjects)
         // ═══════════════════════════════════════════════════════════
-        window._idleStoryTimer = setTimeout(() => {
-            if (!chatPanel.classList.contains('open')) {
+        let hasAmbushed = false;
+
+        function resetIdleTimer() {
+            if (idleAmbushTimer) clearTimeout(idleAmbushTimer);
+            if (hasAmbushed || !isDominicAvailable) return;
+
+            // Only ambush on Home or Subjects tabs
+            const homeSection = document.getElementById('home-section');
+            const profilesSection = document.getElementById('profiles-section');
+            const isOnTargetTab = (homeSection && !homeSection.classList.contains('hidden')) ||
+                (profilesSection && !profilesSection.classList.contains('hidden'));
+            if (!isOnTargetTab) return;
+
+            idleAmbushTimer = setTimeout(() => {
+                if (chatPanel.classList.contains('open')) return;
+                hasAmbushed = true;
+
+                // Reveal the button and open the panel
+                revealInterrogateBtn();
                 chatPanel.classList.add('open');
 
-                // Vibrate the widget container
-                const widget = document.getElementById('dominic-widget-container');
-                widget.style.transition = 'transform 0.05s ease-in-out';
-                let shakeCount = 0;
-                const shakeInterval = setInterval(() => {
-                    widget.style.transform = shakeCount % 2 === 0 ? 'translateX(-3px)' : 'translateX(3px)';
-                    shakeCount++;
-                    if (shakeCount >= 10) {
-                        clearInterval(shakeInterval);
-                        widget.style.transform = '';
-                    }
-                }, 50);
+                // Glitch shake
+                widgetContainer.classList.add('glitch-shake');
+                setTimeout(() => widgetContainer.classList.remove('glitch-shake'), 300);
 
-                // Type entrance greeting
+                // Type the ambush greeting
                 currentConversationState = 'TOUR_OFFER';
-                typeOutDominic('Dominic Ryker. Relax \u2014 I\'m not here to hurt you. I\'m here to organise you. Want a tour?', null);
+                typeOutDominic("You're drifting. Most people do until they find a structure they can't ignore. Want a tour, or are you still waiting for a permission slip?", null);
+
+                // Start indifference timer
+                startIndifferenceTimer();
+            }, 8000);
+        }
+
+        document.addEventListener('mousemove', resetIdleTimer);
+        document.addEventListener('touchstart', resetIdleTimer, { passive: true });
+        // Kick off the first idle check
+        resetIdleTimer();
+
+        // ═══════════════════════════════════════════════════════════
+        // GHOST ENGINE — Indifference Exit (15s no-response auto-close)
+        // ═══════════════════════════════════════════════════════════
+        function startIndifferenceTimer() {
+            clearIndifferenceTimer();
+            // Don't start 15s timer if user clicked the input box — 30s engagement timer handles it
+            if (userEngagedInput) return;
+            indifferenceTimer = setTimeout(() => {
+                if (!chatPanel.classList.contains('open')) return;
+                // Only fire if user hasn't typed anything
+                if (dInput.value.trim().length > 0) return;
+
+                typeOutDominic("You're too tired to defend the frame. We'll talk when you're less reactive.", null, function () {
+                    setTimeout(() => {
+                        chatPanel.classList.remove('open');
+                        scheduleHideInterrogateBtn();
+                    }, 2000);
+                });
+            }, 15000);
+        }
+
+        function clearIndifferenceTimer() {
+            if (indifferenceTimer) {
+                clearTimeout(indifferenceTimer);
+                indifferenceTimer = null;
             }
-            window._idleStoryTimer = null;
-        }, 5000);
+        }
+
+        // Ghost Engine: Smart input engagement tracking
+        // Once user clicks input, they're "engaged" — panel stays open while they formulate
+        let userEngagedInput = false;
+
+        // When user starts typing: kill timers. If they clear all text, restart 30s grace.
+        dInput.addEventListener('input', () => {
+            clearIndifferenceTimer();
+            if (dInput.value.trim().length > 0) {
+                // User has text — never auto-close
+                return;
+            }
+            // User cleared input back to empty — restart 30s grace if engaged
+            if (userEngagedInput) {
+                indifferenceTimer = setTimeout(() => {
+                    if (!chatPanel.classList.contains('open')) return;
+                    if (dInput.value.trim().length > 0) return;
+                    typeOutDominic("You opened a door and stood in the frame. Either walk through or close it.", null, function () {
+                        setTimeout(() => {
+                            chatPanel.classList.remove('open');
+                            scheduleHideInterrogateBtn();
+                            userEngagedInput = false;
+                        }, 2000);
+                    });
+                }, 30000);
+            }
+        });
+
+        // When user clicks into input box: engaged — 30s to start typing
+        dInput.addEventListener('focus', () => {
+            userEngagedInput = true;
+            clearIndifferenceTimer();
+            if (chatPanel.classList.contains('open') && currentConversationState !== 'GUIDED_TOUR') {
+                indifferenceTimer = setTimeout(() => {
+                    if (!chatPanel.classList.contains('open')) return;
+                    if (dInput.value.trim().length > 0) return; // They typed — don't close
+                    typeOutDominic("You opened a door and stood in the frame. Either walk through or close it.", null, function () {
+                        setTimeout(() => {
+                            chatPanel.classList.remove('open');
+                            scheduleHideInterrogateBtn();
+                            userEngagedInput = false;
+                        }, 2000);
+                    });
+                }, 30000);
+            }
+        });
+
+        // When input loses focus and is empty, reset engagement
+        dInput.addEventListener('blur', () => {
+            if (dInput.value.trim().length === 0) {
+                userEngagedInput = false;
+            }
+        });
+
+        // ═══════════════════════════════════════════════════════════
+        // GHOST ENGINE — Observer Pattern (Tab/Article Haunting)
+        // Per-tab session tracking — no flat timer cooldown
+        // ═══════════════════════════════════════════════════════════
+        const DOMINIC_TAB_COMMENTARY = {
+            'files': "The Archives. A digital autopsy of a 'criminal' empire. They fixate on the ink stain; I'm looking at the page it's written on.",
+            'profiles': null, // Handled by runProfilesCommentary() for multi-part sequencing
+            'games': "Safe pretend for those who need rules they can see. You solve a puzzle and feel smart; I gain an opening. Fair trade."
+        };
+
+        // ═══════════════════════════════════════════════════════════
+        // PROFILES COMMENTARY — 4 Randomized "Reframe" Sequences
+        // Each has: intro (45ms) → self (15ms) → ethel (45ms) → isla (45ms)
+        // ═══════════════════════════════════════════════════════════
+        // Intro lines — randomly picked independently
+        const PROFILES_INTROS = [
+            "Subject Profiles. They spent years writing a flawless forensic brief to put me in a box. Then they held the front door open for me when I left. A profile is just a souvenir for a system that failed.",
+            "Subject Profiles. Ethel mapped my psychology, my finances, and my habits down to the decimal. She just forgot to map the exit routes. Categorizing a variable doesn't contain it.",
+            "Subject Profiles. Where people become prop pieces for the prosecution. They arranged us all perfectly to build their beautiful cage. But you can't lock up the infrastructure. You just temporarily relocate it.",
+            "Subject Profiles. They wrote a very thorough psychiatric report warning them exactly how I operate. Then they filed it in a cabinet and let me sequence my way out. They trust paperwork. I trust systems."
+        ];
+
+        // Character commentary sets — randomly picked independently from the intro
+        const PROFILES_CHARACTER_SETS = [
+            { // Paperweight Reframe
+                self: "Look at the mask. They were so busy tracking the 'Hero Killer' myth they missed the rhythm. A cage is only effective if you believe the walls are permanent.",
+                ethel: "My daughter. She spent her life counting cracks in the ceiling and her adulthood filing evidence. She built a digital cage but forgot that I'm the one who poured the foundation she stands on.",
+                isla: "Isla. My stepdaughter. Pure chaos. She thought stealing terabytes was the end. She didn't realize that in a world of noise, I'm the only one who knows how to use the mute button."
+            },
+            { // Measurement Reframe
+                self: "The Architect. I don't break rules; I rewrite the environment so others break them for me. They call it 'instrumental violence'. I call it removal of liability.",
+                ethel: "Status: Stagnant. Daughter collects the past like currency, hoping blueprints unlock doors. They don't; they just show you the size of the cage.",
+                isla: "Isla. Status: Volatile. She thinks noise is power. She's merely the entropy I hold back. I own the venue; she provides the echo for the villain she needs."
+            },
+            { // Illusion of Containment Reframe
+                self: "I am not a fugitive. I am the silence in the room when a decision is made. While they debate morality, I've already topped out the spire. I am the infrastructure.",
+                ethel: "Daughter. Refusal is her default. She refuses 'distortion' to keep people comfortable, yet she wears her grief like a shackle. Inconveniently consistent.",
+                isla: "My stepdaughter. The human cipher. She cracked the codes but missed the rhythm. She thinks she's functioning through damage; she's just functioning inside my design."
+            },
+            { // Blind Spot Reframe
+                self: "Dr. Cole's little autopsy. He saw the 'calm menace' but didn't realize the rhythm was reusable. Empathy is just friction. I just let the project breathe.",
+                ethel: "Daughter. Raised by a chemist to read systems. She mapped the contracts and called it a 'legal cage'. She has my refusal to back down. Difference is, I build; she only archives.",
+                isla: "Isla. The addict girl. She burned my bridge to freedom while she was still standing on it. She lived. Fancy that. She's the weather I'm holding back."
+            }
+        ];
+
+        let profilesSequenceActive = false;
+
+        function runProfilesCommentary() {
+            // Stage 1: Random intro (independent pick)
+            const intro = PROFILES_INTROS[Math.floor(Math.random() * PROFILES_INTROS.length)];
+            // Stage 2: Random character set (independent pick — can be different reframe)
+            const charSet = PROFILES_CHARACTER_SETS[Math.floor(Math.random() * PROFILES_CHARACTER_SETS.length)];
+
+            profilesSequenceActive = true;
+
+            // Type the intro at predatory speed (45ms)
+            typeOutDominic(intro, null, function () {
+                // After intro, pause 2.5s then start character commentaries
+                setTimeout(() => {
+                    if (userEngagedInput || dInput.value.trim().length > 0) {
+                        profilesSequenceActive = false;
+                        return;
+                    }
+                    // Self commentary at surgical speed (15ms)
+                    typeOutDominic(charSet.self, null, function () {
+                        setTimeout(() => {
+                            if (userEngagedInput || dInput.value.trim().length > 0) {
+                                profilesSequenceActive = false;
+                                return;
+                            }
+                            // Ethel commentary at predatory speed (45ms)
+                            typeOutDominic(charSet.ethel, null, function () {
+                                setTimeout(() => {
+                                    if (userEngagedInput || dInput.value.trim().length > 0) {
+                                        profilesSequenceActive = false;
+                                        return;
+                                    }
+                                    // Isla commentary at predatory speed (45ms)
+                                    typeOutDominic(charSet.isla, null, function () {
+                                        profilesSequenceActive = false;
+                                    }, 'slow');
+                                }, 2000);
+                            }, 'slow');
+                        }, 2000);
+                    }, 'fast');
+                }, 2500);
+            }, 'slow');
+        }
+
+        const DOMINIC_RETURN_COMMENTARY = {
+            'files': "Back to the blueprints. You're looking for an exit that isn't on the page. I designed it that way.",
+            'profiles': "Studying the subjects again. You're profiling me while I profile you. I respect the symmetry.",
+            'games': "More games? Comfort has a short shelf life. But you already know that."
+        };
+
+        let observerAutoCloseTimer = null;
+
+        function dominicObserver(tabId) {
+            if (!isDominicAvailable) return;
+            if (currentConversationState === 'GUIDED_TOUR') return; // Don't interrupt tours
+
+            // Mark tab as visited
+            const isReturn = !!dominicTabHistory[tabId];
+            dominicTabHistory[tabId] = (dominicTabHistory[tabId] || 0) + 1;
+
+            // Don't comment on 3rd+ visit to same tab
+            if (dominicTabHistory[tabId] > 2) return;
+
+            // PROFILES: Multi-part sequenced commentary (first visit only)
+            if (tabId === 'profiles' && !isReturn) {
+                const targetAnchor = getNextAnchor();
+                relocateDominic(targetAnchor, () => {
+                    revealInterrogateBtn();
+                    chatPanel.classList.add('open');
+                    runProfilesCommentary();
+
+                    // Extended auto-close for profiles sequence (60s)
+                    if (observerAutoCloseTimer) clearTimeout(observerAutoCloseTimer);
+                    observerAutoCloseTimer = setTimeout(() => {
+                        if (userEngagedInput) return;
+                        if (isTyping) return;
+                        if (profilesSequenceActive) return;
+                        if (currentConversationState !== 'any' && currentConversationState !== 'GUIDED_TOUR') return;
+                        if (chatPanel.classList.contains('open') && dInput.value.trim().length === 0) {
+                            chatPanel.classList.remove('open');
+                            scheduleHideInterrogateBtn();
+                        }
+                    }, 60000);
+                });
+                return;
+            }
+
+            // Standard single-line commentary (all other tabs and returns)
+            const commentary = isReturn
+                ? DOMINIC_RETURN_COMMENTARY[tabId]
+                : DOMINIC_TAB_COMMENTARY[tabId];
+
+            if (!commentary) return;
+
+            const targetAnchor = getNextAnchor();
+            relocateDominic(targetAnchor, () => {
+                revealInterrogateBtn();
+                chatPanel.classList.add('open');
+                typeOutDominic(commentary, null, null, 'fast');
+
+                // Auto-close after 10 seconds — BUT NOT if user has engaged
+                if (observerAutoCloseTimer) clearTimeout(observerAutoCloseTimer);
+                observerAutoCloseTimer = setTimeout(() => {
+                    if (userEngagedInput) return;
+                    if (isTyping) return;
+                    if (currentConversationState !== 'any' && currentConversationState !== 'GUIDED_TOUR') return;
+                    if (chatPanel.classList.contains('open') && dInput.value.trim().length === 0) {
+                        chatPanel.classList.remove('open');
+                        scheduleHideInterrogateBtn();
+                    }
+                }, 10000);
+            });
+        }
+
 
         // Classification Engine (4-Quadrants)
         function classifyInput(text) {
@@ -3347,21 +3946,35 @@
                 activeTypeTimeout = null;
             }
             isTyping = false;
+            // Ghost Breach: stop vibration on cancel
+            const cp = document.getElementById('dominic-chat-panel');
+            if (cp) cp.classList.remove('speaking');
         }
 
-        // --- STOP COMMAND SEQUENCE ---
-        // Part 1: Scold → Part 2: Clear → Final sentence
+        // --- GHOST ENGINE: STOP PROTOCOL ---
+        // Yield with condescending sting + 3-minute cooldown
         function executeStopSequence() {
             cancelActiveOutput();
-            const stopLine1 = "Too much information? That\u2019s a choice many make but it can end badly.";
-            const stopLine2 = "Let me know when you can handle a better ending?";
+            clearIndifferenceTimer();
+            nukeTour(); // NUKE: Kill all pending tour messages instantly
 
-            // Type Part 1
-            typeOutDominic(stopLine1, null, function onComplete() {
-                // After Part 1 finishes, wait 2 seconds then clear and type Part 2
-                activeTypeTimeout = setTimeout(() => {
-                    typeArea.innerHTML = '';
-                    typeOutDominic(stopLine2, null);
+            const yieldLine = "You've reached your limit. Fair enough. Build your own version of the truth.";
+
+            typeOutDominic(yieldLine, null, function onComplete() {
+                // Close the panel after typing
+                setTimeout(() => {
+                    chatPanel.classList.remove('open');
+
+                    // Hide button and disable Dominic for 3 minutes
+                    isDominicAvailable = false;
+                    interrogateBtn.classList.remove('revealed');
+                    interrogateBtn.style.pointerEvents = 'none';
+
+                    // 3-minute cooldown
+                    setTimeout(() => {
+                        isDominicAvailable = true;
+                        interrogateBtn.style.pointerEvents = '';
+                    }, 180000); // 3 minutes
                 }, 2000);
             });
         }
@@ -3371,181 +3984,206 @@
         // Called from TOUR_OFFER_NODE ui_action. Chains setTimeout for pacing.
         // ═══════════════════════════════════════════════════════════════════
         function runGuidedTour() {
+            // Ghost Engine: Mark tour active so observer doesn't interrupt
+            currentConversationState = 'GUIDED_TOUR';
+            clearIndifferenceTimer();
+
+            // ═══════════════════════════════════════════════════════════════════
+            // GLOBAL TOUR REGISTRY — Every setTimeout is tracked so the
+            // Stop Protocol can nuke ALL pending messages at once.
+            // ═══════════════════════════════════════════════════════════════════
+            tourTimeoutRegistry.length = 0; // Clear any previous registry
+
+            function tourDelay(fn, ms) {
+                const id = setTimeout(fn, ms);
+                tourTimeoutRegistry.push(id);
+                return id;
+            }
 
             // ═══════════════════════════════════════════════════════
             // SECTION 1: FILES (~2s – 150s)
             // ═══════════════════════════════════════════════════════
-            setTimeout(() => {
+            tourDelay(() => {
                 switchTab('files');
                 typeOutDominic('Files first.... Because nothing says \'healing\' like documentation.', null);
             }, 2000);
 
-            setTimeout(() => {
+            tourDelay(() => {
                 typeOutDominic('Isla\'s in here. My stepdaughter. I married her mother. Isla came with\u2026 weather.', null);
             }, 10000);
 
-            setTimeout(() => {
+            tourDelay(() => {
                 typeOutDominic('She thinks noise is power. Glitch art, frequency sermons, the whole thing. She calls it \'reclaim.\' I call it \'excellent marketing.\'', null);
             }, 19000);
 
-            setTimeout(() => {
+            tourDelay(() => {
                 typeOutDominic('My father\'s in here too. I never met him.', null);
             }, 30000);
 
-            setTimeout(() => {
+            tourDelay(() => {
                 typeOutDominic('I only know him from an anthropologist\'s lens \u2014 Nepal, 1966.', null);
             }, 37000);
 
-            setTimeout(() => {
+            tourDelay(() => {
                 typeOutDominic('There\'s a description of him that I like...', null);
             }, 44000);
 
-            setTimeout(() => {
+            tourDelay(() => {
                 typeOutDominic('He walked a few steps ahead, not leading\u2026 just moving at his own rhythm.', null);
             }, 50000);
 
-            setTimeout(() => {
+            tourDelay(() => {
                 typeOutDominic('Learned tone before grammar. Listened first.', null);
             }, 58000);
 
-            setTimeout(() => {
+            tourDelay(() => {
                 typeOutDominic('People adjusted toward him without knowing why.', null);
             }, 64000);
 
-            setTimeout(() => {
+            tourDelay(() => {
                 typeOutDominic('Apparently he \'fit the landscape.\'', null);
             }, 72000);
 
-            setTimeout(() => {
+            tourDelay(() => {
                 typeOutDominic('That\'s a dangerous skill.', null);
             }, 79000);
 
             // Mother — long pause before, careful pivot
-            setTimeout(() => {
+            tourDelay(() => {
                 typeOutDominic('My mother?', null);
             }, 87000);
 
-            setTimeout(() => {
+            tourDelay(() => {
                 typeOutDominic('Very smart woman', null);
             }, 95000);
 
-            setTimeout(() => {
+            tourDelay(() => {
                 typeOutDominic('Commercial Chemist', null);
             }, 100000);
 
-            setTimeout(() => {
+            tourDelay(() => {
                 typeOutDominic('Raised Ethel.....', null);
             }, 106000);
 
-            setTimeout(() => {
+            tourDelay(() => {
                 typeOutDominic('But...\n\n...we\'ll leave that tab shut. Some things deserve privacy.', null);
             }, 113000);
 
             // Trial
-            setTimeout(() => {
+            tourDelay(() => {
                 typeOutDominic('And then the main event\n\nthe trial\u2026 gorgeous theatre.', null);
             }, 122000);
 
-            setTimeout(() => {
+            tourDelay(() => {
                 typeOutDominic('Everyone pretending the truth arrived that day... like it hadn\'t been living in the room for years.', null);
             }, 130000);
 
-            setTimeout(() => {
+            tourDelay(() => {
                 typeOutDominic('You know what\'s funny?', null);
             }, 140000);
 
-            setTimeout(() => {
+            tourDelay(() => {
                 typeOutDominic('Ethel\'s missing from these tabs\u2026\n\nShe was front and centre for the trial but... Hiding now', null);
             }, 146000);
 
             // ═══════════════════════════════════════════════════════
             // SECTION 2: SUBJECTS (~155s – 245s)
             // ═══════════════════════════════════════════════════════
-            setTimeout(() => {
+            tourDelay(() => {
                 switchTab('profiles');
                 typeOutDominic('Subjects.', null);
             }, 155000);
 
-            setTimeout(() => {
+            tourDelay(() => {
                 typeOutDominic('That\'s what they call people when they want permission to talk about them.\n\nWhen you become a prop in someone else\'s story', null);
             }, 160000);
 
-            setTimeout(() => {
+            tourDelay(() => {
                 typeOutDominic('Hahaha.. Structurally', null);
             }, 170000);
 
-            setTimeout(() => {
+            tourDelay(() => {
                 typeOutDominic('Me first, obviously.\n\nThey wrote a report on me. Big words. \'Grandiose.\' \'Manipulative.\' \'Coercive.\'', null);
             }, 176000);
 
-            setTimeout(() => {
+            tourDelay(() => {
                 typeOutDominic('I prefer: ambitious, persuasive, and annoyingly calm.', null);
             }, 187000);
 
-            setTimeout(() => {
+            tourDelay(() => {
                 typeOutDominic('They even said my risk isn\'t rage.\n\nIt\'s rhythm.\n\nWhich is flattering. Rage is messy. Rhythm is reusable.', null);
             }, 195000);
 
-            setTimeout(() => {
+            tourDelay(() => {
                 typeOutDominic('Now Ethel.\n\nI met her at seventeen...', null);
             }, 208000);
 
-            setTimeout(() => {
+            tourDelay(() => {
                 typeOutDominic('She doesn\'t dilute anything to keep a room comfortable.\n\nIt\'s a charming trait\u2026 unless you\'re the lie.', null);
             }, 216000);
 
-            setTimeout(() => {
+            tourDelay(() => {
                 typeOutDominic('And Isla again. Yes, she coined \'Silence is the Trauma.\'\n\nIt\'s dramatic. It\'s sticky. It\'s also\u2026 accurate.', null);
             }, 227000);
 
-            setTimeout(() => {
+            tourDelay(() => {
                 typeOutDominic('..or so I\'m told', null);
             }, 237000);
 
             // ═══════════════════════════════════════════════════════
             // SECTION 3: GAMES (~244s – 275s)
             // ═══════════════════════════════════════════════════════
-            setTimeout(() => {
+            tourDelay(() => {
                 switchTab('games');
                 typeOutDominic('Games.\n\nCute. Little puzzles. Little outcomes. Little safe pretend.', null);
             }, 244000);
 
-            setTimeout(() => {
+            tourDelay(() => {
                 typeOutDominic('I voice act in a few', null);
             }, 254000);
 
-            setTimeout(() => {
+            tourDelay(() => {
                 typeOutDominic('But I prefer real games.\n\nThe kind where the rules aren\'t written down, and everyone swears they\'re playing fair.', null);
             }, 260000);
 
             // ═══════════════════════════════════════════════════════
             // SECTION 4: STORY (~272s – 330s)
             // ═══════════════════════════════════════════════════════
-            setTimeout(() => {
+            tourDelay(() => {
                 switchTab('audio');
                 typeOutDominic('And here\'s the story.\n\nThis section has a lot of Ethel speaking.', null);
             }, 272000);
 
-            setTimeout(() => {
+            tourDelay(() => {
                 typeOutDominic('She thinks being misunderstood is a bad thing', null);
             }, 281000);
 
-            setTimeout(() => {
+            tourDelay(() => {
                 typeOutDominic('Such a shame... She had so much potential\n\nI don\'t even know what box to put her in', null);
             }, 289000);
 
-            setTimeout(() => {
+            tourDelay(() => {
                 typeOutDominic('But that\'s the point of PixelStortion, isn\'t it?\n\nIt\'s built to do what I don\'t. Expose the structure instead of hiding inside it.', null);
             }, 299000);
 
-            setTimeout(() => {
+            tourDelay(() => {
                 typeOutDominic('So. Are you here to learn what happened?\n\nOr are you here to see how easily your own mind fills the gaps\u2026 and calls it truth?', null);
             }, 311000);
 
-            setTimeout(() => {
+            tourDelay(() => {
                 typeOutDominic('Want to know more? Let me know.', null);
                 currentConversationState = 'EXPECT_STORY_ASK';
             }, 323000);
+        }
+
+        // ═══════════════════════════════════════════════════════════════════
+        // GHOST ENGINE — NUKE TOUR (kills all pending tour messages)
+        // Called by Stop Protocol to prevent ghost messages appearing later.
+        // ═══════════════════════════════════════════════════════════════════
+        function nukeTour() {
+            tourTimeoutRegistry.forEach(id => clearTimeout(id));
+            tourTimeoutRegistry.length = 0;
+            cancelActiveOutput(); // Stop mid-sentence typing if active
         }
 
         // ═══════════════════════════════════════════════════════════════════
@@ -3577,15 +4215,80 @@
             // --- INTERRUPT: Cancel any active typing ---
             cancelActiveOutput();
 
+            // Kill observer auto-close — user is engaging in conversation
+            if (observerAutoCloseTimer) {
+                clearTimeout(observerAutoCloseTimer);
+                observerAutoCloseTimer = null;
+            }
+
             // --- STOP COMMAND ---
             if (isStopCommand(text)) {
                 executeStopSequence();
                 return;
             }
 
+            // --- TOUR INTERRUPTION: User asks a question mid-tour ---
+            if (currentConversationState === 'GUIDED_TOUR') {
+                // Pause the tour — nuke all pending tour messages
+                nukeTour();
+                tourWasActive = true;
+                currentConversationState = 'TOUR_INTERRUPTED';
+
+                // Dominic's aside before answering
+                typeOutDominic("Ok — let the record stand on shifting sands.", null, function () {
+                    // After the aside finishes, process the actual question
+                    setTimeout(() => {
+                        // Re-run the query processing (skip tour check this time)
+                        processTourInterruptedQuery(text, normalizedText, wasTyping);
+                    }, 800);
+                }, 'fast');
+                return;
+            }
+
+            // --- TOUR RESUME PROMPT: yes/no handling ---
+            if (currentConversationState === 'AWAITING_TOUR_RESUME') {
+                const yesPhrases = ['yes', 'yeah', 'yep', 'sure', 'ok', 'okay', 'continue', 'resume', 'go on', 'carry on', 'yes please', 'go ahead'];
+                const noPhrases = ['no', 'nah', 'nope', 'stop', 'enough', 'no thanks', 'im good', 'i\'m good', 'done', 'leave', 'go away', 'disappear'];
+
+                if (yesPhrases.some(p => normalizedText === p || normalizedText.startsWith(p + ' '))) {
+                    tourWasActive = false;
+                    typeOutDominic("Very well. Back to the architecture.", null, function () {
+                        setTimeout(() => runGuidedTour(), 1000);
+                    }, 'fast');
+                    return;
+                }
+
+                if (noPhrases.some(p => normalizedText === p || normalizedText.startsWith(p + ' '))) {
+                    tourWasActive = false;
+                    currentConversationState = 'any';
+                    typeOutDominic("Noted. I'll be in the walls if you change your mind.", null, function () {
+                        setTimeout(() => {
+                            chatPanel.classList.remove('open');
+                            scheduleHideInterrogateBtn();
+                            // 90-second cooldown
+                            isDominicAvailable = false;
+                            interrogateBtn.style.pointerEvents = 'none';
+                            setTimeout(() => {
+                                isDominicAvailable = true;
+                                interrogateBtn.style.pointerEvents = '';
+                            }, 90000);
+                        }, 2000);
+                    }, 'slow');
+                    return;
+                }
+
+                // If they typed something else instead of yes/no, treat as a new question
+                tourWasActive = false;
+                currentConversationState = 'any';
+                // Fall through to normal query processing below
+            }
+
             // --- OK/OKAY DISMISSAL ---
+            // Skip if Dominic just asked a yes/no question (e.g., "do you want to know my story?")
+            const expectingAnswer = ['EXPECT_STORY_ASK', 'EXPECT_BUILDER', 'EXPECTING_FORGE_VS_SHIELD',
+                'EXPECTING_ISLA_FOLLOWUP', 'EXPECTING_ESCAPE_FOLLOWUP', 'TOUR_OFFER'].includes(currentConversationState);
             const okPhrases = ['ok', 'okay', 'okey', 'okk', 'okok', 'ok ok', 'k', 'kk', 'alright', 'aight', 'got it', 'gotit', 'yep ok', 'ok cool', 'ok fine'];
-            if (wasTyping && okPhrases.some(p => normalizedText === p)) {
+            if (wasTyping && !expectingAnswer && okPhrases.some(p => normalizedText === p)) {
                 typeArea.innerHTML = '';
                 typeOutDominic("Ok. Too many words.", null);
                 return;
@@ -3661,7 +4364,7 @@
                 let fallbackArr = [];
                 for (const [intent, data] of Object.entries(localFallbacks)) {
                     if (data && data.triggers && data.response) {
-                        fallbackArr.push({ intent: intent, triggers: data.triggers, response: data.response });
+                        fallbackArr.push({ intent: intent, triggers: data.triggers, response: data.response, next_state: data.next_state || null });
                     }
                 }
 
@@ -3678,7 +4381,14 @@
                     let fbText = fallbackResults[0].item.response;
                     let fbUiAction = fallbackResults[0].item.ui_action || null;
 
-                    // CRITICAL: Do NOT change currentConversationState. Keep them on the hook.
+                    // Transition state if fallback explicitly defines next_state
+                    // (e.g., EXPECT_HOW_ARE_YOU → EXPECT_STORY_ASK when story is offered)
+                    const fbNextState = fallbackResults[0].item.next_state;
+                    if (fbNextState) {
+                        currentConversationState = fbNextState;
+                    }
+                    // Otherwise keep current state to stay on the hook
+
                     window.lastDominicText = fbText;
                     typeOutDominic(fbText, fbUiAction);
                     return; // Exit early, preserving the narrative state
@@ -3892,12 +4602,46 @@
             typeOutDominic(responseText, uiAction);
         }
 
-        // Typewriter Effect (Interruptible)
-        function typeOutDominic(text, uiAction, onComplete) {
+        // --- TOUR INTERRUPTION: Process the user's question after the aside ---
+        // Sets state to allow normal matching, injects the question text, then
+        // offers a resume prompt once the response finishes typing.
+        function processTourInterruptedQuery(originalText, normalizedText, wasTyping) {
+            // Temporarily set state so normal matching can happen
+            currentConversationState = 'any';
+
+            // Put the text back in the input and process normally
+            dInput.value = originalText;
+            processQuery();
+
+            // After this processQuery's typewriter finishes, offer resume
+            // We do this by watching for isTyping to become false
+            const resumeCheck = setInterval(() => {
+                if (!isTyping) {
+                    clearInterval(resumeCheck);
+                    // Wait a beat, then offer the resume prompt
+                    setTimeout(() => {
+                        currentConversationState = 'AWAITING_TOUR_RESUME';
+                        typeOutDominic("Shall I continue the tour, or have you had enough architecture for one sitting?", null, null, 'slow');
+                    }, 2000);
+                }
+            }, 200);
+        }
+
+        // Typewriter Effect (Interruptible) — Ghost Engine variable cadence
+        // speed: 'fast' (15ms, surgical), 'slow' (45ms, predatory), default (25ms)
+        function typeOutDominic(text, uiAction, onComplete, speed) {
             cancelActiveOutput(); // Ensure clean state
             isTyping = true;
             typeArea.innerHTML = '';
             let i = 0;
+
+            // Ghost Breach: structural vibration while speaking
+            chatPanel.classList.add('speaking');
+
+            // Ghost Engine: Variable typing cadence
+            let delayMs = 25; // default
+            if (speed === 'fast') delayMs = 15;
+            else if (speed === 'slow') delayMs = 45; // Predatory cadence per phase 3
 
             activeTypeInterval = setInterval(() => {
                 typeArea.innerHTML += text.charAt(i);
@@ -3906,12 +4650,14 @@
                     clearInterval(activeTypeInterval);
                     activeTypeInterval = null;
                     isTyping = false;
+                    // Ghost Breach: stop vibration when speech ends
+                    chatPanel.classList.remove('speaking');
                     if (uiAction) {
                         activeTypeTimeout = setTimeout(() => eval(uiAction), 500);
                     }
                     if (onComplete) onComplete();
                 }
-            }, 25);
+            }, delayMs);
         }
 
         // Event Listeners (always active, even during typing)
