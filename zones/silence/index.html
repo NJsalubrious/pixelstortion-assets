@@ -2513,7 +2513,20 @@
             document.getElementById('mobile-menu').classList.add('hidden');
 
             // Ghost Engine: Observer Pattern — Dominic watches tab changes
-            if (typeof dominicObserver === 'function') dominicObserver(tabId);
+            if (tabId === 'home') {
+                // Always hide Dominic on TRANSMISSION tab
+                const cp = document.getElementById('dominic-chat-panel');
+                if (cp) cp.classList.remove('open');
+                if (typeof cancelActiveOutput === 'function') cancelActiveOutput();
+                if (typeof profilesSequenceActive !== 'undefined') profilesSequenceActive = false;
+                if (typeof podcastSequenceActive !== 'undefined') podcastSequenceActive = false;
+                if (typeof observerAutoCloseTimer !== 'undefined' && observerAutoCloseTimer) {
+                    clearTimeout(observerAutoCloseTimer);
+                    observerAutoCloseTimer = null;
+                }
+            } else if (typeof dominicObserver === 'function') {
+                dominicObserver(tabId);
+            }
         }
 
         function toggleMobileMenu() {
@@ -3773,6 +3786,7 @@
         const DOMINIC_TAB_COMMENTARY = {
             'files': "The Archives. A digital autopsy of a 'criminal' empire. They fixate on the ink stain; I'm looking at the page it's written on.",
             'profiles': null, // Handled by runProfilesCommentary() for multi-part sequencing
+            'podcast': null,  // Handled by runPodcastCommentary() for multi-part sequencing
             'games': "Safe pretend for those who need rules they can see. You solve a puzzle and feel smart; I gain an opening. Fair trade."
         };
 
@@ -3852,6 +3866,105 @@
                                             relocateDominic('anchor-alpha', () => {
                                                 typeOutDominic(charSet.isla, null, function () {
                                                     profilesSequenceActive = false;
+                                                    // Auto-close 10s after final segment
+                                                    if (observerAutoCloseTimer) clearTimeout(observerAutoCloseTimer);
+                                                    observerAutoCloseTimer = setTimeout(() => {
+                                                        if (userEngagedInput) return;
+                                                        if (isTyping) return;
+                                                        if (chatPanel.classList.contains('open') && dInput.value.trim().length === 0) {
+                                                            chatPanel.classList.remove('open');
+                                                        }
+                                                    }, 10000);
+                                                }, 'slow');
+                                            });
+                                        }, 6000);
+                                    }, 'slow');
+                                });
+                            }, 6000);
+                        }, 'fast');
+                    });
+                }, 7000);
+            }, 'slow');
+        }
+
+        // ═══════════════════════════════════════════════════════════════════
+        // PODCAST COMMENTARY — 3 Randomized "Reframe" Sequences (Shortened & Named)
+        // Ghost positions at Delta (Top-Right) to look down on the conversation
+        // ═══════════════════════════════════════════════════════════════════
+
+        // Podcast intro lines — randomly picked independently
+        const PODCAST_INTROS = [
+            "Podcast. The digital echo of people trying to explain a rhythm they can't dance to. They treat my life like a forensic autopsy, forgetting you can't study a pulse once you've killed the specimen.",
+            "Listen to them. They talk about the 'Social Contract of Silence' as if it's a cage. It isn't. It's the lubricant that keeps a city from grinding itself to dust. I'm not the one who broke the contract; I'm the one who fulfilled it.",
+            "Another deep dive into the 'Ryker Case'. They talk about the 'National Asset Blitz' as if the system caught me. The system is a machine that only functions because I permit it."
+        ];
+
+        // Podcast character commentary sets — randomly picked independently from the intro
+        const PODCAST_CHARACTER_SETS = [
+            { // Option 1: Narrative Autopsy Reframe
+                self: "They stumble over the term 'Structural Psychopathy'. It's simpler than that: I redesign the environment so you don't have to worry about the rules. I didn't break the law; I upgraded the plumbing.",
+                ethel: "Ethel, my daughter. They're fascinated by her 'Moral Thermodynamics'. She thinks naming the acid makes her the chemist. She didn't dismantle me with a matrix; she just filed the paperwork for a transition I already sequenced.",
+                isla: "Isla, my stepdaughter. They call her rebellion 'sound pressure'. It's just excellent marketing. She thinks she lobotomized the empire in twenty minutes. She merely turned off the lights in a room I no longer needed."
+            },
+            { // Option 2: Smoothing Agent Reframe
+                self: "Instrumental violence. They say it like a slur. If I drag a man from a fire and end him an hour later, it's the same calculation: is he a load-bearing asset or a liability on the spreadsheet?",
+                ethel: "Ethel. She refuses to be the 'smoothing agent'. She'd rather the beaker shatter than have the meniscus look calm. She built a 'legal cage' out of data, but forgot that cages are made of the same steel I used to build her school.",
+                isla: "Isla. Pure chaos. The hosts love the story of her 'kinetic decoding'. She watched the tendons in my hands to steal my passwords. She learned to read the lie, but she still hasn't learned to read the man who told it."
+            },
+            { // Option 3: Inventory Management Reframe
+                self: "The Architect. I am the infrastructure. While they debate the morality of the foundation, I've already topped out the spire. You can't convict a skyline.",
+                ethel: "Ethel, my daughter. The analyst. She thinks her 'Targeted Asset Matrix' built the cage. I let her believe it. If she needed to call it a victory to maintain her autonomy, that's just another variable I accounted for.",
+                isla: "Isla. The human cipher. She 'lobotomized' the network in twenty minutes. A visceral image. But you can't lobotomize a ghost. She stole ten terabytes of noise and called it an empire."
+            }
+        ];
+
+        let podcastSequenceActive = false;
+
+        function runPodcastCommentary() {
+            // Stage 1: Random intro (independent pick)
+            const intro = PODCAST_INTROS[Math.floor(Math.random() * PODCAST_INTROS.length)];
+            // Stage 2: Random character set (independent pick)
+            const charSet = PODCAST_CHARACTER_SETS[Math.floor(Math.random() * PODCAST_CHARACTER_SETS.length)];
+
+            podcastSequenceActive = true;
+
+            // Type the intro at predatory speed (45ms)
+            typeOutDominic(intro, null, function () {
+                // After intro, pause then relocate LEFT for self-commentary
+                setTimeout(() => {
+                    if (userEngagedInput || dInput.value.trim().length > 0) {
+                        podcastSequenceActive = false;
+                        return;
+                    }
+                    // Relocate to LEFT (anchor-beta) for self
+                    relocateDominic('anchor-beta', () => {
+                        typeOutDominic(charSet.self, null, function () {
+                            // After self, pause then relocate CENTER for Ethel
+                            setTimeout(() => {
+                                if (userEngagedInput || dInput.value.trim().length > 0) {
+                                    podcastSequenceActive = false;
+                                    return;
+                                }
+                                relocateDominic('anchor-center', () => {
+                                    typeOutDominic(charSet.ethel, null, function () {
+                                        // After Ethel, pause then relocate RIGHT for Isla
+                                        setTimeout(() => {
+                                            if (userEngagedInput || dInput.value.trim().length > 0) {
+                                                podcastSequenceActive = false;
+                                                return;
+                                            }
+                                            relocateDominic('anchor-alpha', () => {
+                                                typeOutDominic(charSet.isla, null, function () {
+                                                    podcastSequenceActive = false;
+                                                    // Auto-close 10s after final segment
+                                                    if (observerAutoCloseTimer) clearTimeout(observerAutoCloseTimer);
+                                                    observerAutoCloseTimer = setTimeout(() => {
+                                                        if (userEngagedInput) return;
+                                                        if (isTyping) return;
+                                                        if (chatPanel.classList.contains('open') && dInput.value.trim().length === 0) {
+                                                            chatPanel.classList.remove('open');
+                                                        }
+                                                    }, 10000);
                                                 }, 'slow');
                                             });
                                         }, 6000);
@@ -3867,6 +3980,7 @@
         const DOMINIC_RETURN_COMMENTARY = {
             'files': "Back to the blueprints. You're looking for an exit that isn't on the page. I designed it that way.",
             'profiles': "Studying the subjects again. You're profiling me while I profile you. I respect the symmetry.",
+            'podcast': "Still listening. They'll never quite land the rhythm. But you're starting to hear something, aren't you.",
             'games': "More games? Comfort has a short shelf life. But you already know that."
         };
 
@@ -3887,7 +4001,6 @@
             if (tabId === 'profiles' && !isReturn) {
                 const targetAnchor = getNextAnchor();
                 relocateDominic(targetAnchor, () => {
-                    revealInterrogateBtn();
                     chatPanel.classList.add('open');
                     runProfilesCommentary();
 
@@ -3900,7 +4013,28 @@
                         if (currentConversationState !== 'any' && currentConversationState !== 'GUIDED_TOUR') return;
                         if (chatPanel.classList.contains('open') && dInput.value.trim().length === 0) {
                             chatPanel.classList.remove('open');
-                            scheduleHideInterrogateBtn();
+                        }
+                    }, 60000);
+                });
+                return;
+            }
+
+            // PODCAST: Multi-part sequenced commentary (first visit only)
+            // Starts at Delta (Top-Right) — looking down on the conversation
+            if (tabId === 'podcast' && !isReturn) {
+                relocateDominic('anchor-delta', () => {
+                    chatPanel.classList.add('open');
+                    runPodcastCommentary();
+
+                    // Extended auto-close for podcast sequence (60s)
+                    if (observerAutoCloseTimer) clearTimeout(observerAutoCloseTimer);
+                    observerAutoCloseTimer = setTimeout(() => {
+                        if (userEngagedInput) return;
+                        if (isTyping) return;
+                        if (podcastSequenceActive) return;
+                        if (currentConversationState !== 'any' && currentConversationState !== 'GUIDED_TOUR') return;
+                        if (chatPanel.classList.contains('open') && dInput.value.trim().length === 0) {
+                            chatPanel.classList.remove('open');
                         }
                     }, 60000);
                 });
