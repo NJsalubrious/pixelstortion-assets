@@ -1506,6 +1506,12 @@
                     await this._audioCtx.resume();
                 }
 
+                // FIX: Properly stop current playback before starting new track
+                // This prevents the "fetching process aborted" DOMException
+                this.audio.pause();
+                this.audio.removeAttribute('src');
+                this.audio.load(); // Abort any in-flight fetch
+
                 this.audio.src = url;
                 this.audio.volume = 1.0;
 
@@ -1513,7 +1519,12 @@
                     await this.audio.play();
                     this.isPlaying = true;
                 } catch (error) {
-                    console.error('Audio playback failed:', error);
+                    // AbortError is expected when tracks switch rapidly — not a real error
+                    if (error.name === 'AbortError') {
+                        console.log('Audio switch interrupted (normal):', url.split('/').pop());
+                    } else {
+                        console.error('Audio playback failed:', error);
+                    }
                     this.isPlaying = false;
                     // FIX: If audio fails, force the 'ended' event to abort the blackout
                     this.audio.dispatchEvent(new Event('ended'));
