@@ -2512,18 +2512,19 @@
             document.getElementById(`${tabId}-section`).classList.remove('hidden');
             document.getElementById('mobile-menu').classList.add('hidden');
 
-            // Ghost Engine: Observer Pattern — Dominic watches tab changes
+            // Ghost Engine: ALWAYS cancel running sequences on tab switch
+            if (typeof cancelActiveOutput === 'function') cancelActiveOutput();
+            if (typeof profilesSequenceActive !== 'undefined') profilesSequenceActive = false;
+            if (typeof podcastSequenceActive !== 'undefined') podcastSequenceActive = false;
+            if (typeof observerAutoCloseTimer !== 'undefined' && observerAutoCloseTimer) {
+                clearTimeout(observerAutoCloseTimer);
+                observerAutoCloseTimer = null;
+            }
+
             if (tabId === 'home') {
                 // Always hide Dominic on TRANSMISSION tab
                 const cp = document.getElementById('dominic-chat-panel');
                 if (cp) cp.classList.remove('open');
-                if (typeof cancelActiveOutput === 'function') cancelActiveOutput();
-                if (typeof profilesSequenceActive !== 'undefined') profilesSequenceActive = false;
-                if (typeof podcastSequenceActive !== 'undefined') podcastSequenceActive = false;
-                if (typeof observerAutoCloseTimer !== 'undefined' && observerAutoCloseTimer) {
-                    clearTimeout(observerAutoCloseTimer);
-                    observerAutoCloseTimer = null;
-                }
             } else if (typeof dominicObserver === 'function') {
                 dominicObserver(tabId);
             }
@@ -3787,6 +3788,7 @@
             'files': "The Archives. A digital autopsy of a 'criminal' empire. They fixate on the ink stain; I'm looking at the page it's written on.",
             'profiles': null, // Handled by runProfilesCommentary() for multi-part sequencing
             'podcast': null,  // Handled by runPodcastCommentary() for multi-part sequencing
+            'audio': "The entire story. Shifting sands that never settle. Their frame. Not mine. Let me know when you need me.",
             'games': "Safe pretend for those who need rules they can see. You solve a puzzle and feel smart; I gain an opening. Fair trade."
         };
 
@@ -3981,6 +3983,7 @@
             'files': "Back to the blueprints. You're looking for an exit that isn't on the page. I designed it that way.",
             'profiles': "Studying the subjects again. You're profiling me while I profile you. I respect the symmetry.",
             'podcast': "Still listening. They'll never quite land the rhythm. But you're starting to hear something, aren't you.",
+            'audio': "Returning to the shifting sands. Careful where you stand with this story...",
             'games': "More games? Comfort has a short shelf life. But you already know that."
         };
 
@@ -4010,7 +4013,7 @@
                         if (userEngagedInput) return;
                         if (isTyping) return;
                         if (profilesSequenceActive) return;
-                        if (currentConversationState !== 'any' && currentConversationState !== 'GUIDED_TOUR') return;
+
                         if (chatPanel.classList.contains('open') && dInput.value.trim().length === 0) {
                             chatPanel.classList.remove('open');
                         }
@@ -4032,7 +4035,7 @@
                         if (userEngagedInput) return;
                         if (isTyping) return;
                         if (podcastSequenceActive) return;
-                        if (currentConversationState !== 'any' && currentConversationState !== 'GUIDED_TOUR') return;
+
                         if (chatPanel.classList.contains('open') && dInput.value.trim().length === 0) {
                             chatPanel.classList.remove('open');
                         }
@@ -4050,7 +4053,6 @@
 
             const targetAnchor = getNextAnchor();
             relocateDominic(targetAnchor, () => {
-                revealInterrogateBtn();
                 chatPanel.classList.add('open');
                 typeOutDominic(commentary, null, null, 'fast');
 
@@ -4059,10 +4061,9 @@
                 observerAutoCloseTimer = setTimeout(() => {
                     if (userEngagedInput) return;
                     if (isTyping) return;
-                    if (currentConversationState !== 'any' && currentConversationState !== 'GUIDED_TOUR') return;
+
                     if (chatPanel.classList.contains('open') && dInput.value.trim().length === 0) {
                         chatPanel.classList.remove('open');
-                        scheduleHideInterrogateBtn();
                     }
                 }, 10000);
             });
