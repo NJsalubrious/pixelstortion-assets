@@ -1306,7 +1306,8 @@
         }
 
         #interrogate-btn {
-            background: rgba(10, 10, 10, 0.95);
+            display: none;
+            /* Hidden — not needed */
             border: 1px solid #ef4444;
             color: #ef4444;
             font-family: 'Courier Prime', monospace;
@@ -1327,8 +1328,8 @@
 
         #dominic-chat-panel {
             display: none;
-            width: 380px;
-            background: rgba(5, 5, 5, 0.75);
+            width: 285px;
+            background: rgba(5, 5, 5, 0.25);
             border: 1px solid rgba(197, 160, 89, 0.4);
             /* Gold tint */
             border-top: 2px solid #ef4444;
@@ -1436,17 +1437,14 @@
         /* Mobile: adjust chat widget */
         @media (max-width: 767px) {
             #dominic-widget-container {
-                bottom: 80px;
+                bottom: 12px;
                 right: 12px;
+                left: auto;
+                top: auto;
             }
 
             #dominic-chat-panel {
-                width: calc(100vw - 24px);
-            }
-
-            #interrogate-btn {
-                font-size: 10px;
-                padding: 8px 16px;
+                width: min(285px, calc(100vw - 24px));
             }
         }
 
@@ -1455,7 +1453,8 @@
             transition: top 0.5s cubic-bezier(0.22, 1, 0.36, 1),
                 bottom 0.5s cubic-bezier(0.22, 1, 0.36, 1),
                 left 0.5s cubic-bezier(0.22, 1, 0.36, 1),
-                right 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+                right 0.5s cubic-bezier(0.22, 1, 0.36, 1),
+                transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
         }
 
         #dominic-widget-container.anchor-alpha {
@@ -1490,6 +1489,15 @@
             left: auto;
             align-items: flex-end;
             flex-direction: column-reverse;
+        }
+
+        #dominic-widget-container.anchor-center {
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%);
+            top: auto;
+            right: auto;
+            align-items: center;
         }
 
         /* ========== GHOST ENGINE — GOLD SPINE ========== */
@@ -3553,6 +3561,9 @@
                 case 'anchor-delta': return isMobile
                     ? { bottom: '80px', right: '12px', top: 'auto', left: 'auto' }
                     : { top: '80px', right: '24px', bottom: 'auto', left: 'auto' };
+                case 'anchor-center': return isMobile
+                    ? { bottom: '24px', left: '50%', top: 'auto', right: 'auto' }
+                    : { bottom: '24px', left: '50%', top: 'auto', right: 'auto' };
                 default: return { bottom: '24px', right: '24px', top: 'auto', left: 'auto' };
             }
         }
@@ -3573,9 +3584,16 @@
                 goldSpine.style.animation = '';
 
                 // Swap anchor class
-                widgetContainer.classList.remove(...anchorSequence);
+                widgetContainer.classList.remove(...anchorSequence, 'anchor-center');
                 widgetContainer.classList.add(targetAnchor);
                 currentAnchor = targetAnchor;
+
+                // Handle center positioning transform
+                if (targetAnchor === 'anchor-center') {
+                    widgetContainer.style.transform = 'translateX(-50%)';
+                } else {
+                    widgetContainer.style.transform = '';
+                }
 
                 // Glitch shake on arrival
                 widgetContainer.classList.add('glitch-shake');
@@ -3758,39 +3776,39 @@
             'games': "Safe pretend for those who need rules they can see. You solve a puzzle and feel smart; I gain an opening. Fair trade."
         };
 
-        // ═══════════════════════════════════════════════════════════
-        // PROFILES COMMENTARY — 4 Randomized "Reframe" Sequences
-        // Each has: intro (45ms) → self (15ms) → ethel (45ms) → isla (45ms)
-        // ═══════════════════════════════════════════════════════════
+        // ═══════════════════════════════════════════════════════════════════
+        // PROFILES COMMENTARY — 4 Randomized "Reframe" Sequences (Shortened & Named)
+        // ═══════════════════════════════════════════════════════════════════
+
         // Intro lines — randomly picked independently
         const PROFILES_INTROS = [
-            "Subject Profiles. They spent years writing a flawless forensic brief to put me in a box. Then they held the front door open for me when I left. A profile is just a souvenir for a system that failed.",
-            "Subject Profiles. Ethel mapped my psychology, my finances, and my habits down to the decimal. She just forgot to map the exit routes. Categorizing a variable doesn't contain it.",
-            "Subject Profiles. Where people become prop pieces for the prosecution. They arranged us all perfectly to build their beautiful cage. But you can't lock up the infrastructure. You just temporarily relocate it.",
-            "Subject Profiles. They wrote a very thorough psychiatric report warning them exactly how I operate. Then they filed it in a cabinet and let me sequence my way out. They trust paperwork. I trust systems."
+            "Subject Profiles. A souvenir for a failed system. They wrote a flawless brief to put me in a box, then held the door open when I walked out.",
+            "Subject Profiles. My daughter mapped my habits down to the decimal but forgot the exit routes. Categorizing a variable doesn't contain it.",
+            "Subject Profiles. People reduced to prosecution props. They built a beautiful cage, but you can't lock up infrastructure. You just relocate it.",
+            "Subject Profiles. They wrote a thorough report warning how I operate, filed it away, and let me sequence my exit. They trust paperwork. I trust systems."
         ];
 
         // Character commentary sets — randomly picked independently from the intro
         const PROFILES_CHARACTER_SETS = [
-            { // Paperweight Reframe
-                self: "Look at the mask. They were so busy tracking the 'Hero Killer' myth they missed the rhythm. A cage is only effective if you believe the walls are permanent.",
-                ethel: "My daughter. She spent her life counting cracks in the ceiling and her adulthood filing evidence. She built a digital cage but forgot that I'm the one who poured the foundation she stands on.",
-                isla: "Isla. My stepdaughter. Pure chaos. She thought stealing terabytes was the end. She didn't realize that in a world of noise, I'm the only one who knows how to use the mute button."
+            { // Option 1: Paperweight Reframe
+                self: "That's me, Dominic. They tracked the 'Hero Killer' myth and missed the rhythm. A cage only works if you believe the walls are permanent.",
+                ethel: "Ethel, my daughter. She built a digital cage from filed evidence, forgetting I poured the foundation she stands on.",
+                isla: "Isla, my stepdaughter. Pure chaos. She stole terabytes thinking it was the end. She doesn't realize I control the mute button."
             },
-            { // Measurement Reframe
-                self: "The Architect. I don't break rules; I rewrite the environment so others break them for me. They call it 'instrumental violence'. I call it removal of liability.",
-                ethel: "Status: Stagnant. Daughter collects the past like currency, hoping blueprints unlock doors. They don't; they just show you the size of the cage.",
-                isla: "Isla. Status: Volatile. She thinks noise is power. She's merely the entropy I hold back. I own the venue; she provides the echo for the villain she needs."
+            { // Option 2: Measurement Reframe
+                self: "That's me, Dominic. The architect. I don't break rules; I rewrite the environment so others do it for me. I just remove liability.",
+                ethel: "Ethel, my daughter. Stagnant. She hoards the past like currency, hoping blueprints unlock doors. They just show you the cage's size.",
+                isla: "Isla, my stepdaughter. Volatile. She thinks noise is power. I own the venue; she just provides the echo."
             },
-            { // Illusion of Containment Reframe
-                self: "I am not a fugitive. I am the silence in the room when a decision is made. While they debate morality, I've already topped out the spire. I am the infrastructure.",
-                ethel: "Daughter. Refusal is her default. She refuses 'distortion' to keep people comfortable, yet she wears her grief like a shackle. Inconveniently consistent.",
-                isla: "My stepdaughter. The human cipher. She cracked the codes but missed the rhythm. She thinks she's functioning through damage; she's just functioning inside my design."
+            { // Option 3: Illusion of Containment Reframe
+                self: "That's me, Dominic. Not a fugitive, but the silence when a decision is made. While they debate morality, I am the infrastructure.",
+                ethel: "Ethel, my daughter. Refusal is her default. She won't distort reality to keep people comfortable, yet wears grief like a shackle.",
+                isla: "Isla, my stepdaughter. She cracked the codes but missed the rhythm. She thinks she's functioning through damage, but she's just inside my design."
             },
-            { // Blind Spot Reframe
-                self: "Dr. Cole's little autopsy. He saw the 'calm menace' but didn't realize the rhythm was reusable. Empathy is just friction. I just let the project breathe.",
-                ethel: "Daughter. Raised by a chemist to read systems. She mapped the contracts and called it a 'legal cage'. She has my refusal to back down. Difference is, I build; she only archives.",
-                isla: "Isla. The addict girl. She burned my bridge to freedom while she was still standing on it. She lived. Fancy that. She's the weather I'm holding back."
+            { // Option 4: Blind Spot Reframe
+                self: "That's me, Dominic. They saw the 'calm menace' but missed the reusable rhythm. Empathy is just friction. I let the project breathe.",
+                ethel: "Ethel, my daughter. She mapped the contracts and called it a cage. She has my refusal to back down. Difference is, I build; she only archives.",
+                isla: "Isla, my stepdaughter. She burned my bridge to freedom while still standing on it. She lived. Fancy that. She's the weather I hold back."
             }
         ];
 
@@ -3806,35 +3824,43 @@
 
             // Type the intro at predatory speed (45ms)
             typeOutDominic(intro, null, function () {
-                // After intro, pause 2.5s then start character commentaries
+                // After intro, pause then relocate LEFT for Dominic's self-commentary
                 setTimeout(() => {
                     if (userEngagedInput || dInput.value.trim().length > 0) {
                         profilesSequenceActive = false;
                         return;
                     }
-                    // Self commentary at surgical speed (15ms)
-                    typeOutDominic(charSet.self, null, function () {
-                        setTimeout(() => {
-                            if (userEngagedInput || dInput.value.trim().length > 0) {
-                                profilesSequenceActive = false;
-                                return;
-                            }
-                            // Ethel commentary at predatory speed (45ms)
-                            typeOutDominic(charSet.ethel, null, function () {
-                                setTimeout(() => {
-                                    if (userEngagedInput || dInput.value.trim().length > 0) {
-                                        profilesSequenceActive = false;
-                                        return;
-                                    }
-                                    // Isla commentary at predatory speed (45ms)
-                                    typeOutDominic(charSet.isla, null, function () {
-                                        profilesSequenceActive = false;
+                    // Relocate to LEFT (anchor-beta) for Dominic
+                    relocateDominic('anchor-beta', () => {
+                        typeOutDominic(charSet.self, null, function () {
+                            // After self, pause then relocate CENTER for Ethel
+                            setTimeout(() => {
+                                if (userEngagedInput || dInput.value.trim().length > 0) {
+                                    profilesSequenceActive = false;
+                                    return;
+                                }
+                                // Relocate to CENTER for Ethel
+                                relocateDominic('anchor-center', () => {
+                                    typeOutDominic(charSet.ethel, null, function () {
+                                        // After Ethel, pause then relocate RIGHT for Isla
+                                        setTimeout(() => {
+                                            if (userEngagedInput || dInput.value.trim().length > 0) {
+                                                profilesSequenceActive = false;
+                                                return;
+                                            }
+                                            // Relocate to RIGHT (anchor-alpha) for Isla
+                                            relocateDominic('anchor-alpha', () => {
+                                                typeOutDominic(charSet.isla, null, function () {
+                                                    profilesSequenceActive = false;
+                                                }, 'slow');
+                                            });
+                                        }, 6000);
                                     }, 'slow');
-                                }, 2000);
-                            }, 'slow');
-                        }, 2000);
-                    }, 'fast');
-                }, 2500);
+                                });
+                            }, 6000);
+                        }, 'fast');
+                    });
+                }, 7000);
             }, 'slow');
         }
 
