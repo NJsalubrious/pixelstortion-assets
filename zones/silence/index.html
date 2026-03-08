@@ -1293,6 +1293,85 @@
             }
         }
 
+        /* Dominic Orb — pulsing circle (post-tour / hibernate state) */
+        #dominic-orb {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            z-index: 9500;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(10, 0, 0, 0.85);
+            border: 1.5px solid rgba(255, 0, 85, 0.4);
+            color: #ff0055;
+            font-family: 'Courier Prime', monospace;
+            font-size: 13px;
+            font-weight: bold;
+            cursor: pointer;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.6s ease, border-color 0.3s ease, transform 0.3s ease;
+            box-shadow: 0 0 12px rgba(255, 0, 85, 0.2);
+            animation: dominic-pulse 3s ease-in-out infinite;
+        }
+
+        #dominic-orb.visible {
+            display: flex;
+            opacity: 0.7;
+        }
+
+        #dominic-orb:hover {
+            opacity: 1;
+            border-color: rgba(255, 0, 85, 0.9);
+            box-shadow: 0 0 25px rgba(255, 0, 85, 0.5);
+            transform: scale(1.15);
+        }
+
+        @keyframes dominic-pulse {
+
+            0%,
+            18%,
+            40%,
+            100% {
+                box-shadow: 0 0 6px rgba(255, 0, 85, 0.1);
+            }
+
+            8% {
+                box-shadow: 0 0 18px rgba(255, 0, 85, 0.5);
+                border-color: rgba(255, 0, 85, 0.7);
+            }
+
+            28% {
+                box-shadow: 0 0 14px rgba(255, 0, 85, 0.35);
+                border-color: rgba(255, 0, 85, 0.55);
+            }
+        }
+
+        /* Hibernate button inside chat */
+        #dominic-hibernate-btn {
+            position: absolute;
+            top: 6px;
+            right: 8px;
+            background: transparent;
+            border: 1px solid rgba(255, 0, 85, 0.3);
+            color: rgba(255, 0, 85, 0.5);
+            font-family: 'Courier Prime', monospace;
+            font-size: 10px;
+            padding: 2px 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 10;
+        }
+
+        #dominic-hibernate-btn:hover {
+            color: #ff0055;
+            border-color: rgba(255, 0, 85, 0.8);
+            box-shadow: 0 0 8px rgba(255, 0, 85, 0.3);
+        }
+
         /* ========== DOMINIC INTERROGATION WIDGET — BOTTOM RIGHT ========== */
         #dominic-widget-container {
             position: fixed;
@@ -1408,7 +1487,7 @@
         }
 
         #dominic-input {
-            flex: 1;
+            width: 100%;
             background: transparent;
             border: none;
             outline: none;
@@ -1416,22 +1495,109 @@
             font-family: 'Courier Prime', monospace;
             font-size: 12px;
             padding: 8px;
+            letter-spacing: 0;
+            line-height: normal;
+            position: relative;
+            z-index: 1;
         }
 
         #dominic-submit {
             background: transparent;
             border: 1px solid #3f3f46;
-            color: #71717a;
-            padding: 0 16px;
+            color: #52525b;
+            width: 28px;
+            height: 28px;
+            min-width: 28px;
+            padding: 0;
             cursor: pointer;
-            font-family: 'Courier Prime', monospace;
-            font-size: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             transition: all 0.2s;
+            flex-shrink: 0;
         }
 
         #dominic-submit:hover {
             border-color: #ef4444;
             color: #ef4444;
+        }
+
+        #dominic-submit svg {
+            width: 14px;
+            height: 14px;
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 1.5;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        /* Inline predictive ghost text */
+        #dominic-input-wrapper {
+            flex: 1;
+            position: relative;
+        }
+
+        #dominic-ghost-text {
+            position: absolute;
+            left: 0;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            padding: 8px;
+            pointer-events: none;
+            font-family: 'Courier Prime', monospace;
+            font-size: 12px;
+            letter-spacing: 0;
+            line-height: normal;
+            color: transparent;
+            white-space: nowrap;
+            overflow: hidden;
+        }
+
+        #dominic-ghost-text .ghost-typed {
+            visibility: hidden;
+            white-space: pre;
+        }
+
+        #dominic-ghost-text .ghost-completion {
+            color: #444;
+            white-space: pre;
+        }
+
+        /* Action button bar — contextual tour buttons */
+        #dominic-action-bar {
+            display: none;
+            gap: 8px;
+            padding: 8px 10px;
+            background: #0a0a0a;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #dominic-action-bar.active {
+            display: flex;
+        }
+
+        .dom-action-btn {
+            background: transparent;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: rgba(239, 68, 68, 0.7);
+            font-family: 'Courier Prime', monospace;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            padding: 6px 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+
+        .dom-action-btn:hover {
+            background: rgba(239, 68, 68, 0.15);
+            border-color: #ef4444;
+            color: #ef4444;
+            box-shadow: 0 0 12px rgba(239, 68, 68, 0.3);
         }
 
         /* Mobile: adjust chat widget */
@@ -1676,6 +1842,104 @@
 
         #podcast-section {
             padding-top: 120px !important;
+        }
+
+        /* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+        /* DOMINIC RED PEN PARASITE — CSS                             */
+        /* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+        .dom-struck {
+            text-decoration: line-through;
+            text-decoration-color: #ef4444;
+            text-decoration-thickness: 2px;
+            opacity: 0.45;
+            transition: opacity 0.6s ease, text-decoration-color 0.4s ease;
+        }
+
+        /* Tour button glow pulse */
+        @keyframes tour-glow-pulse {
+
+            0%,
+            100% {
+                box-shadow: 0 0 8px rgba(255, 255, 255, 0.3);
+            }
+
+            50% {
+                box-shadow: 0 0 24px rgba(255, 255, 255, 0.7), 0 0 48px rgba(0, 255, 65, 0.3);
+            }
+        }
+
+        .tour-highlight {
+            animation: tour-glow-pulse 0.8s ease-in-out infinite;
+            filter: brightness(1.4) !important;
+            position: relative;
+            z-index: 50;
+        }
+
+        #tour-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.15);
+            z-index: 40;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.4s ease;
+        }
+
+        #tour-overlay.active {
+            opacity: 1;
+        }
+
+        .dom-correction {
+            display: block;
+            color: #ef4444;
+            font-style: italic;
+            font-family: 'Courier Prime', monospace;
+            font-size: 0.85em;
+            margin-top: 4px;
+            line-height: 1.4;
+            pointer-events: none;
+        }
+
+        .dom-signature {
+            display: inline-block;
+            color: #ef4444;
+            font-family: 'Courier Prime', monospace;
+            font-size: 0.7em;
+            letter-spacing: 2px;
+            opacity: 0;
+            margin-left: 8px;
+            transition: opacity 0.5s ease;
+        }
+
+        /* Subtle re-engage button for tour rejection */
+        #dominic-reengage-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: rgba(239, 68, 68, 0.08);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            color: rgba(239, 68, 68, 0.4);
+            cursor: pointer;
+            z-index: 9000;
+            font-family: 'Courier Prime', monospace;
+            font-size: 14px;
+            font-weight: bold;
+            transition: all 0.6s ease;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        #dominic-reengage-btn:hover {
+            background: rgba(239, 68, 68, 0.15);
+            border-color: rgba(239, 68, 68, 0.5);
+            color: rgba(239, 68, 68, 0.8);
+            transform: scale(1.1);
         }
     </style>
 </head>
@@ -2113,6 +2377,7 @@
                 date: "ARCHIVE RETRIEVAL",
                 sortDate: "2025-11-15",
                 author: "M. Harren, Anthropologist",
+                excerpt: "In March 2020 I finally began digitising the slide trays I had kept boxed for decades.They were part of my old field research grant from the Australian National University.",
                 thumbnail: "https://github.com/NJsalubrious/pixelstortion-assets/raw/2d34debdaa508ac2e8aee0b94cbf36aa4218b7cc/archives/archive_thumbs/nepal.jpg",
                 url: "https://njsalubrious.github.io/pixelstortion-assets/archives/field-notes-from-the-langtang-trail.html"
             },
@@ -2149,7 +2414,7 @@
                 date: "ARCHIVE",
                 sortDate: "2025-12-26",
                 author: "Julia Renn",
-                excerpt: "If you witness something terrible and then go back to work the next day and everyone pretends the world didn’t just split open inside you? That silence is the trauma. I make things for the people who live in that silence",
+                excerpt: "If you witness something terrible and then go back to work the next day and everyone pretends the world didn't just split open inside you? That silence is the trauma. I make things for the people who live in that silence",
                 thumbnail: "https://github.com/NJsalubrious/pixelstortion-assets/raw/6006e262815452deca7e1044a94f721bbeb3e222/isla_art/islaArtShow_nextToDrawing.jpg",
                 url: "https://njsalubrious.github.io/pixelstortion-assets/archives/Drop_From_the_Fourth_Isla_art_show.html"
             }
@@ -2290,7 +2555,7 @@
                             url.replace(gitHubBase, '').replace('/assets_for_ethel_songs/', '/library/char_ethel_media/')
                         );
                     }
-                    console.log("🏠 LOCAL MODE: URLs rewritten to local paths");
+                    console.log("ðŸ  LOCAL MODE: URLs rewritten to local paths");
                 }
 
                 galleryMap = rawMap;
@@ -2496,7 +2761,17 @@
             });
         }
 
-        function switchTab(tabId) {
+        function switchTab(tabId, force) {
+            // LOCK: Prevent navigation during an active guided tour (but allow tour-internal calls)
+            if (!force && typeof currentConversationState !== 'undefined' && currentConversationState === 'GUIDED_TOUR') {
+                return; // Nav locked during tour — only blocks user clicks, not tour internals
+            }
+
+            // Reset any stuck Red Pen effects on section switch
+            if (typeof DominicParasite !== 'undefined' && DominicParasite.cleanup) {
+                DominicParasite.cleanup();
+            }
+
             document.querySelectorAll('nav button').forEach(btn => {
                 btn.classList.remove('active-tab', 'text-white');
                 btn.classList.add('text-gray-300');
@@ -2521,13 +2796,28 @@
                 observerAutoCloseTimer = null;
             }
 
-            if (tabId === 'home') {
-                // Always hide Dominic on TRANSMISSION tab
-                const cp = document.getElementById('dominic-chat-panel');
+            // Dominic behavior on tab switch
+            const cp = document.getElementById('dominic-chat-panel');
+            const dInput = document.getElementById('dominic-input');
+            const hasEngaged = dInput && dInput.dataset.hasTyped === 'true';
+
+            if (hasEngaged) {
+                // User has engaged with the chat — DO NOTHING on tab switch.
+                // Panel stays as-is, no hibernate, no commentary, no interruption.
+            } else if (tabId === 'home') {
+                // TRANSMISSION: Hide panel if not engaged
                 if (cp) cp.classList.remove('open');
-            } else if (typeof dominicObserver === 'function') {
-                dominicObserver(tabId);
+            } else if (cp && cp.classList.contains('open')) {
+                // Panel is open but user never interacted — hibernate
+                setDominicPresence('hibernate');
+                cleanupCommentaryHovers();
+            } else if (tabId !== 'files' && tabId !== 'profiles') {
+                // Not engaged, panel not open, not FILES/SUBJECTS — run observer
+                if (typeof dominicObserver === 'function') {
+                    dominicObserver(tabId);
+                }
             }
+            // FILES / SUBJECTS with no engagement and panel not open: do nothing (passive)
         }
 
         function toggleMobileMenu() {
@@ -3173,37 +3463,37 @@
             <div class="mt-6 space-y-2 border-t border-green-500/20 pt-6">
                 <a href="https://bio.pixelstortion.com" target="_blank"
                     class="block text-green-500 hover:text-green-400 transition-colors text-sm font-mono-custom">
-                    → BIO
+                    â†’ BIO
                 </a>
                 <a href="#" class="block text-green-500 hover:text-green-400 transition-colors text-sm font-mono-custom"
                     onclick="try { window.parent.location.href = PIXEL_MANIFEST.MATAALA; } catch(e) { window.location.href = PIXEL_MANIFEST.MATAALA; } event.preventDefault();">
-                    → NALANI - Historical Fiction
+                    â†’ NALANI - Historical Fiction
                 </a>
                 <span class="block text-gray-500 text-sm font-mono-custom cursor-default">
-                    → SILENCE IS THE TRAUMA - Crime Fiction
+                    â†’ SILENCE IS THE TRAUMA - Crime Fiction
                 </span>
 
                 <!-- Social Media Links -->
                 <a href="https://open.spotify.com/artist/3iSE6REoCh9Noh6hhzIytf?si=axB0ucGeQ9KFlcvAg0ziew"
                     target="_blank"
                     class="block text-green-500 hover:text-green-400 transition-colors text-sm font-mono-custom">
-                    → Spotify
+                    â†’ Spotify
                 </a>
                 <a href="https://www.youtube.com/@PixelStortion" target="_blank"
                     class="block text-green-500 hover:text-green-400 transition-colors text-sm font-mono-custom">
-                    → YouTube
+                    â†’ YouTube
                 </a>
                 <a href="https://instagram.com/@pixelstortion" target="_blank"
                     class="block text-green-500 hover:text-green-400 transition-colors text-sm font-mono-custom">
-                    → Instagram
+                    â†’ Instagram
                 </a>
                 <a href="https://www.tiktok.com/@pixelstortion" target="_blank"
                     class="block text-green-500 hover:text-green-400 transition-colors text-sm font-mono-custom">
-                    → TikTok
+                    â†’ TikTok
                 </a>
                 <a href="https://facebook.com/PixelStortion" target="_blank"
                     class="block text-green-500 hover:text-green-400 transition-colors text-sm font-mono-custom">
-                    → Facebook
+                    â†’ Facebook
                 </a>
             </div>
         </div>
@@ -3427,22 +3717,35 @@
 
     <div id="dominic-widget-container" class="anchor-alpha">
         <div id="dominic-chat-panel">
+            <button id="dominic-hibernate-btn" title="Hibernate Dominic">×</button>
             <div id="dominic-response-area">
                 <span class="dominic-label">DOMINIC RYKER // DIRECT_LINE</span>
                 <span id="dominic-typewriter"></span>
             </div>
             <div id="dominic-input-area">
                 <span style="color:#ef4444; padding: 8px 4px 8px 8px;">&gt;</span>
-                <input type="text" id="dominic-input" maxlength="60" placeholder="Max 60 characters..."
-                    autocomplete="off">
-                <button id="dominic-submit">SEND</button>
+                <div id="dominic-input-wrapper">
+                    <span id="dominic-ghost-text"><span class="ghost-typed"></span><span
+                            class="ghost-completion"></span></span>
+                    <input type="text" id="dominic-input" maxlength="60" placeholder="" autocomplete="off">
+                </div>
+                <button id="dominic-submit"><svg viewBox="0 0 24 24">
+                        <path d="M22 2L11 13" />
+                        <path d="M22 2L15 22L11 13L2 9L22 2Z" />
+                    </svg></button>
             </div>
+            <div id="dominic-action-bar"></div>
         </div>
         <button id="interrogate-btn">[ INTERROGATE ]</button>
     </div>
 
     <!-- Ghost Engine: Gold Spine (predatory gaze flicker before relocation) -->
     <div id="dominic-gold-spine"></div>
+
+    <!-- Dominic Tour Re-engage Button (subtle, appears after tour rejection) -->
+    <div id="tour-overlay"></div>
+    <button id="dominic-reengage-btn" title="...">D</button>
+    <button id="dominic-orb" title="Wake Dominic">D</button>
 
     <!-- JB (Jukebox) Trigger -->
     <button id="jb-trigger" title="Jukebox" onclick="toggleJBPopup()">JB</button>
@@ -3503,7 +3806,7 @@
     <script src="https://cdn.jsdelivr.net/npm/fuse.js/dist/fuse.js"></script>
 
     <!-- Dominic Ryker Narrative Library (external for scalability) -->
-    <script src="dominic-library.js"></script>
+    <script src="dominic-library.js?v=7phase5"></script>
 
     <script>
         // --- DOMINIC RYKER: STATEFUL RETRIEVAL ENGINE v4.0 ---
@@ -3516,6 +3819,46 @@
         let fallbackCount = 0;
         let activeTypeInterval = null;  // Global handle for cancellation
         let activeTypeTimeout = null;   // For delayed sequences (stop command)
+
+        // Phase 2 — Active object memory
+        let dominicActiveFileTitle = null;
+        let dominicActiveProfileName = null;
+
+        function setDominicActiveFile(title) {
+            dominicActiveFileTitle = title || null;
+            console.log('[Dominic Context] Active file set:', dominicActiveFileTitle);
+        }
+
+        function setDominicActiveProfile(name) {
+            dominicActiveProfileName = name || null;
+            console.log('[Dominic Context] Active profile set:', dominicActiveProfileName);
+        }
+
+        function clearDominicActiveObjects() {
+            dominicActiveFileTitle = null;
+            dominicActiveProfileName = null;
+            console.log('[Dominic Context] Active objects cleared');
+        }
+
+        function inferDominicActiveObjectsFromDOM() {
+            // Temporary best-effort fallback (not source-of-truth)
+            var activeSectionEl = document.querySelector('[id$="-section"]:not(.hidden)');
+            var pageKey = activeSectionEl ? activeSectionEl.id.replace('-section', '') : 'home';
+
+            if (pageKey === 'files') {
+                var openFileEl = document.querySelector('.file-detail-title, .file-open-title, .file-viewer-title');
+                if (openFileEl && openFileEl.textContent.trim()) {
+                    dominicActiveFileTitle = openFileEl.textContent.trim();
+                }
+            }
+
+            if (pageKey === 'subjects') {
+                var openProfileEl = document.querySelector('.profile-name, .subject-name, .character-name-display');
+                if (openProfileEl && openProfileEl.textContent.trim()) {
+                    dominicActiveProfileName = openProfileEl.textContent.trim();
+                }
+            }
+        }
 
         // Architecture of Influence — Milton Funnel State
         let veterinarianCount = 0;            // Consecutive Q1 OOD hits (for Love Bombing)
@@ -3535,6 +3878,153 @@
             "MORAL_PROVIDER": 0
         };
 
+        // ═══════════════════════════════════════════════════════════════
+        // DECLARATIVE ENGINE V2 — Session, State Gate, Adapters
+        // ═══════════════════════════════════════════════════════════════
+        let dominicSession = dominicCreateSession({
+            state: currentConversationState || "EXPECT_HOW_ARE_YOU"
+        });
+
+        const V2_ENABLED_STATES = new Set([
+            "EXPECT_HOW_ARE_YOU",
+            "EXPECT_STORY_ASK",
+            "EXPECT_BUILDER",
+            "EXPECT_SYS_BRIDGE",
+            "EXPECT_STABILITY",
+            "EXPECT_BALANCE",
+            "EXPECT_SIGNAL",
+            "EXPECT_SITE_TOUR",
+            "EXPECT_PEOPLE_FIRST",
+            "EXPECT_PARABLE_ROUTE",
+            "EXPECT_PARABLE_LAUNCH",
+            "EXPECTING_ISLA_FOLLOWUP",
+            "EXPECTING_FORGE_VS_SHIELD",
+            "EXPECTING_TRIAL_VERDICT",
+            "EXPECTING_ESCAPE_FOLLOWUP",
+            "EXPECTING_PSYCHOPATH_ANSWER",
+            "EXPECTING_AWARENESS_PUSHBACK",
+            "EXPECTING_BLAME_FOLLOWUP",
+            "HEARD_ETHEL_LIKE_V1",
+            "HEARD_MOVEIN_V1",
+            "HEARD_DROP_V1",
+            "EXPECTING_NORTHERN_ROAD_FOLLOW"
+        ]);
+
+        function renderDominicResult(result) {
+            if (!result || !result.output) return;
+            let { text, ui_action } = result.output;
+
+            // Anti-repeat guard: if same text for same state, choose alternate
+            if (preventRepeatResponse(text, dominicSession.state)) {
+                // Try a recovery variant instead of repeating
+                text = dominicSelectVariant("redirect", dominicSession, dominicSession.state + ":anti_repeat");
+                console.log("[Dominic V2] Anti-repeat triggered, using alternate:", text);
+            }
+
+            window.lastDominicText = text;
+
+            // Page-context redirect for legacy open-mode responses
+            // (Skip OPEN_DEEP_ responses — the deep router already handles page context internally)
+            var outputId = result.output.id || '';
+            if (outputId.match(/^OPEN_(SITE|NAV|STORY|TEST|FILE|AUDIO)/) && !outputId.startsWith('OPEN_DEEP_') && typeof DOMINIC_PAGE_REDIRECTS !== 'undefined') {
+                var activeSection = document.querySelector('[id$="-section"]:not(.hidden)');
+                if (activeSection) {
+                    var pageKey = activeSection.id.replace('-section', '');
+                    var redirect = DOMINIC_PAGE_REDIRECTS[pageKey];
+                    if (redirect) {
+                        text = text + '\n\n' + redirect;
+                    }
+                }
+            }
+
+            typeOutDominic(text, null);
+            if (ui_action) {
+                runDominicUiAction(ui_action);
+            }
+        }
+
+        function runDominicUiAction(action) {
+            if (!action || !action.type) return;
+            switch (action.type) {
+                case "tour_start":
+                    if (typeof runGuidedTour === 'function') runGuidedTour();
+                    break;
+                case "highlight":
+                    // Future: highlight specific sections
+                    break;
+                case "modal":
+                    // Future: open modals
+                    break;
+            }
+        }
+
+        // ═══════════════════════════════════════════════════════════════
+        // DOMINIC PRESENCE INVARIANT — always orb OR chat, never neither
+        // ═══════════════════════════════════════════════════════════════
+        function setDominicPresence(mode) {
+            const orb = document.getElementById('dominic-orb');
+            const panel = document.getElementById('dominic-chat-panel');
+            const widget = document.getElementById('dominic-widget-container');
+            if (!orb || !panel || !widget) return;
+
+            // Widget container must always be visible
+            widget.style.display = 'flex';
+
+            if (mode === 'hibernate') {
+                orb.classList.add('visible');
+                panel.classList.remove('open');
+            } else if (mode === 'chat') {
+                orb.classList.remove('visible');
+                panel.classList.add('open');
+            }
+        }
+
+        // ═══════════════════════════════════════════════════════════════
+        // WATCHDOG — Nuclear guarantee: Dominic can NEVER be invisible
+        // Runs every 2s. If neither orb nor panel is visible, force hibernate.
+        // ═══════════════════════════════════════════════════════════════
+        setInterval(function () {
+            const orb = document.getElementById('dominic-orb');
+            const panel = document.getElementById('dominic-chat-panel');
+            const widget = document.getElementById('dominic-widget-container');
+            if (!orb || !panel || !widget) return;
+
+            const orbVisible = orb.classList.contains('visible');
+            const panelOpen = panel.classList.contains('open');
+
+            // If NEITHER is showing, force hibernate
+            if (!orbVisible && !panelOpen) {
+                console.warn('[Dominic Watchdog] Neither orb nor panel visible — forcing hibernate');
+                widget.style.display = 'flex';
+                orb.classList.add('visible');
+            }
+
+            // If widget container somehow got hidden, force it back
+            if (widget.style.display === 'none' || getComputedStyle(widget).display === 'none') {
+                console.warn('[Dominic Watchdog] Widget container hidden — forcing visible');
+                widget.style.display = 'flex';
+                if (!panelOpen) {
+                    orb.classList.add('visible');
+                }
+            }
+        }, 2000);
+
+        // ═══════════════════════════════════════════════════════════════
+        // ANTI-REPEAT GUARD — prevents "ok" loops and recovery cycling
+        // ═══════════════════════════════════════════════════════════════
+        let _lastDominicOutput = { text: '', state: '' };
+
+        function preventRepeatResponse(candidateText, currentState) {
+            // If exact same text for exact same state → blocked
+            if (candidateText === _lastDominicOutput.text && currentState === _lastDominicOutput.state) {
+                return true; // blocked — caller should choose alternate
+            }
+            // Record this output
+            _lastDominicOutput.text = candidateText;
+            _lastDominicOutput.state = currentState;
+            return false; // not blocked — proceed
+        }
+
         // UI Elements
         const chatPanel = document.getElementById('dominic-chat-panel');
         const interrogateBtn = document.getElementById('interrogate-btn');
@@ -3543,10 +4033,123 @@
         const typeArea = document.getElementById('dominic-typewriter');
         const goldSpine = document.getElementById('dominic-gold-spine');
         const widgetContainer = document.getElementById('dominic-widget-container');
+        const actionBar = document.getElementById('dominic-action-bar');
+        const inputArea = document.getElementById('dominic-input-area');
 
-        // ═══════════════════════════════════════════════════════════
+        // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+        // ACTION BUTTON SYSTEM — contextual buttons during tour
+        // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+        function showActionButtons(buttons) {
+            inputArea.style.display = 'none';
+            actionBar.innerHTML = '';
+            buttons.forEach(b => {
+                const btn = document.createElement('button');
+                btn.className = 'dom-action-btn';
+                btn.textContent = b.label;
+                btn.addEventListener('click', b.onClick);
+                actionBar.appendChild(btn);
+            });
+            actionBar.classList.add('active');
+        }
+
+        function hideActionButtons() {
+            actionBar.classList.remove('active');
+            actionBar.innerHTML = '';
+            // Only restore text input if NOT in guided tour
+            if (currentConversationState !== 'GUIDED_TOUR') {
+                inputArea.style.display = 'flex';
+            }
+        }
+
+        // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+        // HOVER RED PEN — file card â†’ Red Pen mapping
+        // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+        const fileRedPenMap = [
+            {
+                titleFind: 'ISLA AND THE QUIET TRUTH BEHIND THE NOISE',
+                titleReplace: 'ISLA: TURNING TRAUMA INTO PERFORMANCE',
+                subtextFind: 'If you witness something terrible and then go back to work the next day and everyone pretends the world didn\'t just split open inside',
+                subtextReplace: 'If you witness something terrible and then just yell it like Isla.. well.. need I say more? // Dominic Ryker //',
+                commentary: 'Isla hates silence. She needs an audience for her \'reclaim\'.'
+            },
+            {
+                titleFind: 'From Pymble to the Pit',
+                titleReplace: 'FROM PRIVILEGE TO THE PODIUM',
+                subtextFind: 'From Pymble to the Pit: How Isla Turned Silence Into Sound',
+                subtextReplace: 'How Isla turned privilege into a trauma brand. // Dominic Ryker //',
+                commentary: 'A trajectory for someone who never actually lacked a safety net.'
+            },
+            {
+                titleFind: 'THE MERIDIAN',
+                titleReplace: 'BLUEPRINT: THE ORIGIN OF GRAVITY',
+                subtextFind: 'In March 2020 I finally began digitising the slide trays I had kept boxed for decades',
+                subtextReplace: 'Conversations gathered around him. He did not seek attention, but people adjusted themselves toward him all the same. // Dominic Ryker //',
+                commentary: 'I know little about my father.\n\nThey say that \'people adjusted themselves toward him\'.\n\nHe was the blueprint for the gravity I now use to hold this city together.'
+            },
+            {
+                titleFind: 'Isla\'s Emotional Return',
+                titleReplace: 'Isla\'s Emotional Return \u2013 A Case Study in Hysteria',
+                subtextFind: 'Pigeons walk like priests',
+                subtextReplace: 'The crowd leans in to a rehearsal of an absence that never arrived. She isn\u2019t writing about a suicide; she\u2019s writing a r\u00e9sum\u00e9. \u2014 // Dominic Ryker //',
+                commentary: 'Isla\'s noise is performance. Her need is not hidden.'
+            },
+            {
+                titleFind: 'ISLA - FLIGHT TRAGEDY',
+                titleReplace: 'ISLA \u2013 FLIGHT INSTABILITY \u2013 2017',
+                subtextFind: 'This archive collects three foundational posts concerning the July 2017',
+                subtextReplace: 'Isla collects moments the way actors collect props. Even in the clouds. \u2014 // Dominic Ryker //',
+                commentary: 'Isla\u2014my step daughter.\n\nShe came with weather.'
+            },
+            {
+                titleFind: 'ANALYSIS: NEGATIVE SPACE',
+                titleReplace: 'ANALYSIS: FICTIONAL SPACE',
+                subtextFind: 'A deep dive into the patterns of silence',
+                subtextReplace: 'Reality isn\u2019t written with your pen, Miss Quinn. \u2014 // Dominic Ryker //',
+                commentary: 'Journalism is fiction with a deadline.\n\nThey want patterns. I give them symmetry.'
+            },
+            {
+                titleFind: 'THE RYKER REPORT',
+                titleReplace: 'CASE STUDY: A STRUCTURAL PROBLEM',
+                subtextFind: 'Clinical Warning: The primary risk is not embedded in rage, but in rhythm',
+                subtextReplace: 'The world is not neat. Structure is not a suggestion. \u2014 // Dominic Ryker //',
+                commentary: 'Dr. Cole was a poet in a white coat.\n\nHe calls me instrumental. That\'s a compliment.\n\nInstruments are useful.'
+            }
+        ];
+
+        // Active hover cleanup references
+        let activeHoverCleanups = [];
+
+        // Profile Red Pen data for hover-triggered SUBJECTS
+        const profileRedPenMap = [
+            {
+                nameFind: 'ETHEL',
+                statusFind: 'STATUS: SURVEILLANCE',
+                statusReplace: 'STATUS: STAGNANT',
+                descFind: 'An observer. A chemist of human behavior.',
+                descReplace: 'An archivist. She archives the fire while I build the furnace. - // Dominic Ryker //',
+                commentary: 'My daughter. She mapped my habits but forgot my exits.\n\nShe hoards the past like currency, hoping blueprints unlock doors.'
+            },
+            {
+                nameFind: 'ISLA',
+                statusFind: 'STATUS: PUBLIC FIGURE',
+                statusReplace: 'STATUS: VOLATILE',
+                descFind: 'Silence is the trauma.',
+                descReplace: 'Silence is just an unanswered invoice. - // Dominic Ryker //',
+                commentary: 'Isla\u2014pure chaos. She thinks noise is power.\n\nShe burned my bridge to freedom while she was still standing on it.'
+            },
+            {
+                nameFind: 'DOMINIC RYKER',
+                statusFind: 'STATUS: ESCAPED',
+                statusReplace: 'STATUS: UNCONTAINED',
+                descFind: 'Views control as a form of care.',
+                descReplace: 'Structure is not a suggestion. - // Dominic Ryker //',
+                commentary: 'That\'s me. Not a fugitive, but the silence when a decision is made.\n\nThey saw the \'calm menace\' but missed the reusable rhythm.'
+            }
+        ];
+
+        // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
         // GHOST ENGINE — State Variables
-        // ═══════════════════════════════════════════════════════════
+        // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
         let isDominicAvailable = true;
         let currentAnchor = 'anchor-alpha';
         const anchorSequence = ['anchor-alpha', 'anchor-beta', 'anchor-gamma', 'anchor-delta'];
@@ -3555,10 +4158,11 @@
         const dominicTabHistory = {}; // tracks which tabs Dominic has commented on
         const tourTimeoutRegistry = []; // Global Tour Registry — tracks all tour setTimeout IDs
         let tourWasActive = false; // Tracks if tour was interrupted by a user question
+        let activeTourSegment = null; // Current tour segment name for skip logic
 
-        // ═══════════════════════════════════════════════════════════
+        // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
         // GHOST ENGINE — Spatial Relocation (Gold Spine + Four Corners)
-        // ═══════════════════════════════════════════════════════════
+        // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
         function getNextAnchor() {
             const available = anchorSequence.filter(a => a !== currentAnchor);
             return available[Math.floor(Math.random() * available.length)];
@@ -3617,9 +4221,9 @@
             }, 1500);
         }
 
-        // ═══════════════════════════════════════════════════════════
+        // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
         // GHOST ENGINE — Stealth Button (Revealed on branding hover)
-        // ═══════════════════════════════════════════════════════════
+        // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
         let stealthHideTimer = null;
 
         function revealInterrogateBtn() {
@@ -3657,41 +4261,130 @@
             }
         });
 
-        // ═══════════════════════════════════════════════════════════
-        // GHOST ENGINE — Idle Ambush (8s mouse inactivity on Home/Subjects)
-        // ═══════════════════════════════════════════════════════════
+        // Dominic Orb — click to wake / reopen chat
+        let dominicWasRejected = false; // tracks if user said NO to tour
+        const dominicOrb = document.getElementById('dominic-orb');
+        if (dominicOrb) {
+            dominicOrb.addEventListener('click', () => {
+                setDominicPresence('chat');
+                // Full state reset — ensure nothing is stuck
+                cancelActiveOutput();
+                currentConversationState = 'any';
+                actionBar.classList.remove('active');
+                actionBar.innerHTML = '';
+                typeArea.innerHTML = '';
+                dInput.value = '';
+
+                if (dominicWasRejected) {
+                    // After rejection: offer TOUR / STORY choice
+                    dominicWasRejected = false;
+                    inputArea.style.display = 'none';
+                    typeOutDominic('Tour? Or Story?', null);
+                    showActionButtons([
+                        {
+                            label: 'TOUR', onClick: () => {
+                                hideActionButtons();
+                                currentConversationState = 'GUIDED_TOUR';
+                                processQuery_simulateInput('yes');
+                            }
+                        },
+                        {
+                            label: 'STORY', onClick: () => {
+                                actionBar.classList.remove('active');
+                                actionBar.innerHTML = '';
+                                inputArea.style.display = 'flex';
+                                currentConversationState = 'PARABLE_READY_GATE';
+                                typeOutDominic('Let me show you something.\n\nA story about trust, compliance, and what happens when you follow a stranger down the stairs.\n\nAre you ready?', null);
+                            }
+                        }
+                    ]);
+                } else {
+                    // Normal wake — "Need me?" with YES/NO
+                    inputArea.style.display = 'none';
+                    currentConversationState = 'AWAITING_NEED_ME';
+                    typeOutDominic('Need me?', null);
+                    showActionButtons([
+                        {
+                            label: 'YES', onClick: () => {
+                                actionBar.classList.remove('active');
+                                actionBar.innerHTML = '';
+                                inputArea.style.display = 'flex';
+                                currentConversationState = 'any';
+                                typeOutDominic('Ask away \u2014 but be sensible.', null);
+                                dInput.focus();
+                            }
+                        },
+                        {
+                            label: 'NO', onClick: () => {
+                                actionBar.classList.remove('active');
+                                actionBar.innerHTML = '';
+                                setTimeout(() => {
+                                    setDominicPresence('hibernate');
+                                }, 300);
+                            }
+                        }
+                    ]);
+                }
+            });
+        }
+
+        // Hibernate button — collapse chat back to orb
+        const hibernateBtn = document.getElementById('dominic-hibernate-btn');
+        if (hibernateBtn) {
+            hibernateBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                // If tour is active, kill it completely
+                if (typeof currentConversationState !== 'undefined' && currentConversationState === 'GUIDED_TOUR') {
+                    nukeTour();
+                    currentConversationState = 'any';
+                }
+                setTimeout(() => {
+                    setDominicPresence('hibernate');
+                }, 300);
+            });
+        }
+
+        // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+        // PHASE 1 TOUR — Initialization (2s auto-open on page load)
+        // "Care for a tour… or do you prefer discovering mistakes the hard way?"
+        // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
         let hasAmbushed = false;
 
+        setTimeout(() => {
+            if (chatPanel.classList.contains('open')) return;
+            hasAmbushed = true;
+
+            // Reveal the button and open the panel
+            revealInterrogateBtn();
+            chatPanel.classList.add('open');
+
+            // Glitch shake
+            widgetContainer.classList.add('glitch-shake');
+            setTimeout(() => widgetContainer.classList.remove('glitch-shake'), 300);
+
+            // Hide text input, show YES/NO immediately
+            currentConversationState = 'TOUR_OFFER';
+            showActionButtons([
+                { label: 'YES', onClick: () => { actionBar.classList.remove('active'); actionBar.innerHTML = ''; processQuery_simulateInput('yes'); } },
+                {
+                    label: 'NO', onClick: () => {
+                        actionBar.classList.remove('active');
+                        actionBar.innerHTML = '';
+                        cancelActiveOutput();
+                        dominicWasRejected = true;
+                        currentConversationState = 'any';
+                        inputArea.style.display = 'flex';
+                        chatPanel.classList.remove('open');
+                        setDominicPresence('hibernate');
+                    }
+                }
+            ]);
+            typeOutDominic("Care for a tour\u2026\n\nor do you prefer discovering mistakes the hard way?", null);
+
+        }, 2000);
+
         function resetIdleTimer() {
-            if (idleAmbushTimer) clearTimeout(idleAmbushTimer);
-            if (hasAmbushed || !isDominicAvailable) return;
-
-            // Only ambush on Home or Subjects tabs
-            const homeSection = document.getElementById('home-section');
-            const profilesSection = document.getElementById('profiles-section');
-            const isOnTargetTab = (homeSection && !homeSection.classList.contains('hidden')) ||
-                (profilesSection && !profilesSection.classList.contains('hidden'));
-            if (!isOnTargetTab) return;
-
-            idleAmbushTimer = setTimeout(() => {
-                if (chatPanel.classList.contains('open')) return;
-                hasAmbushed = true;
-
-                // Reveal the button and open the panel
-                revealInterrogateBtn();
-                chatPanel.classList.add('open');
-
-                // Glitch shake
-                widgetContainer.classList.add('glitch-shake');
-                setTimeout(() => widgetContainer.classList.remove('glitch-shake'), 300);
-
-                // Type the ambush greeting
-                currentConversationState = 'TOUR_OFFER';
-                typeOutDominic("You're drifting. Most people do until they find a structure they can't ignore. Want a tour, or are you still waiting for a permission slip?", null);
-
-                // Start indifference timer
-                startIndifferenceTimer();
-            }, 8000);
+            // Legacy stub — no longer needed for idle ambush
         }
 
         document.addEventListener('mousemove', resetIdleTimer);
@@ -3699,9 +4392,9 @@
         // Kick off the first idle check
         resetIdleTimer();
 
-        // ═══════════════════════════════════════════════════════════
+        // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
         // GHOST ENGINE — Indifference Exit (15s no-response auto-close)
-        // ═══════════════════════════════════════════════════════════
+        // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
         function startIndifferenceTimer() {
             clearIndifferenceTimer();
             // Don't start 15s timer if user clicked the input box — 30s engagement timer handles it
@@ -3780,10 +4473,10 @@
             }
         });
 
-        // ═══════════════════════════════════════════════════════════
+        // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
         // GHOST ENGINE — Observer Pattern (Tab/Article Haunting)
         // Per-tab session tracking — no flat timer cooldown
-        // ═══════════════════════════════════════════════════════════
+        // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
         const DOMINIC_TAB_COMMENTARY = {
             'files': "The Archives. A digital autopsy of a 'criminal' empire. They fixate on the ink stain; I'm looking at the page it's written on.",
             'profiles': null, // Handled by runProfilesCommentary() for multi-part sequencing
@@ -3792,9 +4485,9 @@
             'games': "Safe pretend for those who need rules they can see. You solve a puzzle and feel smart; I gain an opening. Fair trade."
         };
 
-        // ═══════════════════════════════════════════════════════════════════
+        // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
         // PROFILES COMMENTARY — 4 Randomized "Reframe" Sequences (Shortened & Named)
-        // ═══════════════════════════════════════════════════════════════════
+        // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
         // Intro lines — randomly picked independently
         const PROFILES_INTROS = [
@@ -3889,10 +4582,10 @@
             }, 'slow');
         }
 
-        // ═══════════════════════════════════════════════════════════════════
+        // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
         // PODCAST COMMENTARY — 3 Randomized "Reframe" Sequences (Shortened & Named)
         // Ghost positions at Delta (Top-Right) to look down on the conversation
-        // ═══════════════════════════════════════════════════════════════════
+        // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
         // Podcast intro lines — randomly picked independently
         const PODCAST_INTROS = [
@@ -3992,6 +4685,9 @@
         function dominicObserver(tabId) {
             if (!isDominicAvailable) return;
             if (currentConversationState === 'GUIDED_TOUR') return; // Don't interrupt tours
+            // Don't auto-open if Dominic is hibernating as the orb
+            const orb = document.getElementById('dominic-orb');
+            if (orb && orb.classList.contains('visible')) return;
 
             // Mark tab as visited
             const isReturn = !!dominicTabHistory[tabId];
@@ -4140,20 +4836,173 @@
             });
         }
 
-        // ═══════════════════════════════════════════════════════════════════
-        // GUIDED TOUR — Cinematic tab walkthrough narrated by Dominic
+        // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+        // STANDALONE SECTION COMMENTARY (Non-Tour)
+        // Triggered by truth/opinion questions. Same hover + Red Pen as tour,
+        // but completely independent. Can be tweaked separately.
+        // ═══════════════════════════════════════════════════════════════
+        let commentaryHoverHandlers = [];
+
+        function cleanupCommentaryHovers() {
+            commentaryHoverHandlers.forEach(h => {
+                h.card.removeEventListener('mouseenter', h.enter);
+                h.card.removeEventListener('mouseleave', h.leave);
+            });
+            commentaryHoverHandlers = [];
+        }
+
+        function activateSectionCommentary() {
+            cleanupCommentaryHovers();
+
+            const sectionIds = [
+                { id: 'files-section', tab: 'files' },
+                { id: 'profiles-section', tab: 'profiles' },
+                { id: 'games-section', tab: 'games' },
+                { id: 'podcast-section', tab: 'podcast' },
+                { id: 'audio-section', tab: 'audio' },
+                { id: 'home-section', tab: 'home' }
+            ];
+            let currentTab = 'home';
+            for (const s of sectionIds) {
+                const el = document.getElementById(s.id);
+                if (el && !el.classList.contains('hidden')) { currentTab = s.tab; break; }
+            }
+
+            switch (currentTab) {
+                case 'files':
+                    _setupCommentaryFileHovers();
+                    typeOutDominic('The Archives. Hover over them. I\'ll tell you what they don\'t.', null);
+                    break;
+                case 'profiles':
+                    _setupCommentaryProfileHovers();
+                    typeOutDominic('Subject Profiles. Hover over them. See what they really are.', null);
+                    break;
+                case 'games':
+                    typeOutDominic('Safe little pretend for those who need rules they can see.', null);
+                    break;
+                case 'podcast':
+                    typeOutDominic('Silence is lubricant, not a cage. I didn\'t break the contract; I fulfilled it.', null);
+                    break;
+                case 'audio':
+                    typeOutDominic('This is where my daughter speaks. The silence between her words is where the truth hides.', null);
+                    break;
+                default:
+                    typeOutDominic('You\'re looking at the surface. The architecture is underneath. Pick a section.', null);
+                    break;
+            }
+        }
+        window.activateSectionCommentary = activateSectionCommentary;
+
+        function _setupCommentaryFileHovers() {
+            const cards = document.querySelectorAll('#files-grid > div');
+            cards.forEach(card => {
+                const h3 = card.querySelector('h3');
+                if (!h3) return;
+                const cardTitle = h3.textContent;
+                const config = fileRedPenMap.find(f => cardTitle.includes(f.titleFind));
+                if (!config) return;
+
+                let restoreFns = [];
+                let pendingTimeouts = [];
+                let isHovered = false;
+
+                const enterHandler = () => {
+                    isHovered = true;
+                    cancelActiveOutput();
+                    typeOutDominic(config.commentary, null);
+                    if (!config.noRewrite) {
+                        const t1 = setTimeout(() => {
+                            if (!isHovered) return;
+                            const titleResult = DominicParasite.hijackByText(
+                                config.titleFind, config.titleReplace,
+                                '#files-grid h3', 0, { manualRestore: true }
+                            );
+                            if (titleResult && titleResult.restore) restoreFns.push(titleResult.restore);
+                        }, 400);
+                        const t2 = setTimeout(() => {
+                            if (!isHovered) return;
+                            const subtextResult = DominicParasite.hijackByText(
+                                config.subtextFind, config.subtextReplace,
+                                '#files-grid .text-gray-400.text-sm', 0, { manualRestore: true }
+                            );
+                            if (subtextResult && subtextResult.restore) restoreFns.push(subtextResult.restore);
+                        }, 800);
+                        pendingTimeouts.push(t1, t2);
+                    }
+                };
+                const leaveHandler = () => {
+                    isHovered = false;
+                    pendingTimeouts.forEach(id => clearTimeout(id));
+                    pendingTimeouts = [];
+                    restoreFns.forEach(fn => fn());
+                    restoreFns = [];
+                };
+
+                card.addEventListener('mouseenter', enterHandler);
+                card.addEventListener('mouseleave', leaveHandler);
+                commentaryHoverHandlers.push({ card, enter: enterHandler, leave: leaveHandler });
+            });
+        }
+
+        function _setupCommentaryProfileHovers() {
+            const cards = document.querySelectorAll('#profiles-grid > div');
+            cards.forEach(card => {
+                const h3 = card.querySelector('h3');
+                if (!h3) return;
+                const cardName = h3.textContent.trim();
+                const config = profileRedPenMap.find(p => cardName.includes(p.nameFind));
+                if (!config) return;
+
+                let restoreFns = [];
+                let pendingTimeouts = [];
+                let isHovered = false;
+
+                const enterHandler = () => {
+                    isHovered = true;
+                    cancelActiveOutput();
+                    typeOutDominic(config.commentary, null);
+                    const t1 = setTimeout(() => {
+                        if (!isHovered) return;
+                        const statusResult = DominicParasite.hijackByText(
+                            config.statusFind, config.statusReplace,
+                            '#profiles-grid .font-mono-custom.text-xs', 0, { manualRestore: true }
+                        );
+                        if (statusResult && statusResult.restore) restoreFns.push(statusResult.restore);
+                    }, 400);
+                    const t2 = setTimeout(() => {
+                        if (!isHovered) return;
+                        const descResult = DominicParasite.hijackByText(
+                            config.descFind, config.descReplace,
+                            '#profiles-grid .text-gray-400.text-sm', 0, { manualRestore: true }
+                        );
+                        if (descResult && descResult.restore) restoreFns.push(descResult.restore);
+                    }, 800);
+                    pendingTimeouts.push(t1, t2);
+                };
+                const leaveHandler = () => {
+                    isHovered = false;
+                    pendingTimeouts.forEach(id => clearTimeout(id));
+                    pendingTimeouts = [];
+                    restoreFns.forEach(fn => fn());
+                    restoreFns = [];
+                };
+
+                card.addEventListener('mouseenter', enterHandler);
+                card.addEventListener('mouseleave', leaveHandler);
+                commentaryHoverHandlers.push({ card, enter: enterHandler, leave: leaveHandler });
+            });
+        }
+
+        // GUIDED TOUR — Phase 1: The Architect's Reframe (8-Segment Tour)
         // Called from TOUR_OFFER_NODE ui_action. Chains setTimeout for pacing.
-        // ═══════════════════════════════════════════════════════════════════
+        // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+        let storyBeatActive = false; // Guard: behavioural lines must not interrupt story beats
+
         function runGuidedTour() {
-            // Ghost Engine: Mark tour active so observer doesn't interrupt
             currentConversationState = 'GUIDED_TOUR';
             clearIndifferenceTimer();
-
-            // ═══════════════════════════════════════════════════════════════════
-            // GLOBAL TOUR REGISTRY — Every setTimeout is tracked so the
-            // Stop Protocol can nuke ALL pending messages at once.
-            // ═══════════════════════════════════════════════════════════════════
-            tourTimeoutRegistry.length = 0; // Clear any previous registry
+            storyBeatActive = false;
+            tourTimeoutRegistry.length = 0;
 
             function tourDelay(fn, ms) {
                 const id = setTimeout(fn, ms);
@@ -4161,213 +5010,461 @@
                 return id;
             }
 
-            // ═══════════════════════════════════════════════════════
-            // SECTION 1: FILES (~2s – 150s)
-            // ═══════════════════════════════════════════════════════
-            tourDelay(() => {
-                switchTab('files');
-                typeOutDominic('Files first.... Because nothing says \'healing\' like documentation.', null);
-            }, 2000);
+            // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+            // SEGMENT QUEUE — each segment calls advanceToSegment() when done
+            // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+            function advanceToSegment(name) {
+                nukeTour(); // kill pending timers from previous segment
+                tourTimeoutRegistry.length = 0;
+                activeTourSegment = name;
+                currentConversationState = 'GUIDED_TOUR';
+                hideActionButtons();
+                cleanupFileHoverListeners();
+                cleanupProfileHoverListeners();
 
-            tourDelay(() => {
-                typeOutDominic('Isla\'s in here. My stepdaughter. I married her mother. Isla came with\u2026 weather.', null);
-            }, 10000);
+                switch (name) {
+                    case 'A': runSegmentA(); break;
+                    case 'B': runSegmentB(); break;
+                    case 'C': runSegmentC(); break;
+                    case 'D': runSegmentD(); break;
+                    case 'E': runSegmentE(); break;
+                    case 'F': runSegmentF(); break;
+                    case 'G': runSegmentG(); break;
+                    case 'H': runSegmentH(); break;
+                    case 'END': endTour(); break;
+                }
+            }
 
-            tourDelay(() => {
-                typeOutDominic('She thinks noise is power. Glitch art, frequency sermons, the whole thing. She calls it \'reclaim.\' I call it \'excellent marketing.\'', null);
-            }, 19000);
+            // File hover listener management
+            let fileHoverHandlers = [];
 
-            tourDelay(() => {
-                typeOutDominic('My father\'s in here too. I never met him.', null);
-            }, 30000);
+            function cleanupFileHoverListeners() {
+                fileHoverHandlers.forEach(h => {
+                    h.card.removeEventListener('mouseenter', h.enter);
+                    h.card.removeEventListener('mouseleave', h.leave);
+                });
+                fileHoverHandlers = [];
+                activeHoverCleanups.forEach(fn => fn());
+                activeHoverCleanups = [];
+            }
 
-            tourDelay(() => {
-                typeOutDominic('I only know him from an anthropologist\'s lens \u2014 Nepal, 1966.', null);
-            }, 37000);
 
-            tourDelay(() => {
-                typeOutDominic('There\'s a description of him that I like...', null);
-            }, 44000);
+            function setupFileHoverListeners() {
+                const cards = document.querySelectorAll('#files-grid > div');
+                const hoveredFiles = new Set();
+                const totalMapped = fileRedPenMap.length;
+                cards.forEach(card => {
+                    const h3 = card.querySelector('h3');
+                    if (!h3) return;
+                    const cardTitle = h3.textContent;
+                    const config = fileRedPenMap.find(f => cardTitle.includes(f.titleFind));
+                    if (!config) return;
 
-            tourDelay(() => {
-                typeOutDominic('He walked a few steps ahead, not leading\u2026 just moving at his own rhythm.', null);
-            }, 50000);
+                    let restoreFns = [];
+                    let pendingTimeouts = [];
+                    let isHovered = false;
 
-            tourDelay(() => {
-                typeOutDominic('Learned tone before grammar. Listened first.', null);
-            }, 58000);
+                    const enterHandler = () => {
+                        const allFilesSeen = hoveredFiles.size >= totalMapped;
+                        isHovered = true;
 
-            tourDelay(() => {
-                typeOutDominic('People adjusted toward him without knowing why.', null);
-            }, 64000);
+                        // Only show commentary for unseen items
+                        if (!allFilesSeen) {
+                            cancelActiveOutput();
+                            typeOutDominic(config.commentary, null);
+                        }
 
-            tourDelay(() => {
-                typeOutDominic('Apparently he \'fit the landscape.\'', null);
-            }, 72000);
+                        // Track hover for NEXT SECTION upgrade
+                        hoveredFiles.add(config.titleFind);
+                        if (hoveredFiles.size >= totalMapped && !allFilesSeen) {
+                            // All items hovered — upgrade button
+                            showActionButtons([
+                                { label: 'NEXT SECTION \u2192', onClick: () => { clearTimeout(window._filesAutoAdvance); advanceToSegment('C'); } }
+                            ]);
+                            // Auto-advance after 10s if still on FILES tab
+                            window._filesAutoAdvance = setTimeout(() => {
+                                const filesSection = document.getElementById('files-section');
+                                if (filesSection && !filesSection.classList.contains('hidden')) {
+                                    typeOutDominic('You have seen enough here. Let me show you the people.', null, function () {
+                                        advanceToSegment('C');
+                                    });
+                                }
+                            }, 10000);
+                        }
 
-            tourDelay(() => {
-                typeOutDominic('That\'s a dangerous skill.', null);
-            }, 79000);
+                        // Red Pen effects only on fresh hovers
+                        if (!allFilesSeen && !config.noRewrite) {
+                            const t1 = setTimeout(() => {
+                                if (!isHovered) return;
+                                const titleResult = DominicParasite.hijackByText(
+                                    config.titleFind, config.titleReplace,
+                                    '#files-grid h3', 0, { manualRestore: true }
+                                );
+                                if (titleResult && titleResult.restore) restoreFns.push(titleResult.restore);
+                            }, 400);
+                            const t2 = setTimeout(() => {
+                                if (!isHovered) return;
+                                const subtextResult = DominicParasite.hijackByText(
+                                    config.subtextFind, config.subtextReplace,
+                                    '#files-grid .text-gray-400.text-sm', 0, { manualRestore: true }
+                                );
+                                if (subtextResult && subtextResult.restore) restoreFns.push(subtextResult.restore);
+                            }, 800);
+                            pendingTimeouts.push(t1, t2);
+                        }
+                    };
 
-            // Mother — long pause before, careful pivot
-            tourDelay(() => {
-                typeOutDominic('My mother?', null);
-            }, 87000);
+                    const leaveHandler = () => {
+                        isHovered = false;
+                        pendingTimeouts.forEach(id => clearTimeout(id));
+                        pendingTimeouts = [];
+                        restoreFns.forEach(fn => fn());
+                        restoreFns = [];
+                    };
 
-            tourDelay(() => {
-                typeOutDominic('Very smart woman', null);
-            }, 95000);
-
-            tourDelay(() => {
-                typeOutDominic('Commercial Chemist', null);
-            }, 100000);
-
-            tourDelay(() => {
-                typeOutDominic('Raised Ethel.....', null);
-            }, 106000);
-
-            tourDelay(() => {
-                typeOutDominic('But...\n\n...we\'ll leave that tab shut. Some things deserve privacy.', null);
-            }, 113000);
-
-            // Trial
-            tourDelay(() => {
-                typeOutDominic('And then the main event\n\nthe trial\u2026 gorgeous theatre.', null);
-            }, 122000);
-
-            tourDelay(() => {
-                typeOutDominic('Everyone pretending the truth arrived that day... like it hadn\'t been living in the room for years.', null);
-            }, 130000);
-
-            tourDelay(() => {
-                typeOutDominic('You know what\'s funny?', null);
-            }, 140000);
-
-            tourDelay(() => {
-                typeOutDominic('Ethel\'s missing from these tabs\u2026\n\nShe was front and centre for the trial but... Hiding now', null);
-            }, 146000);
-
-            // ═══════════════════════════════════════════════════════
-            // SECTION 2: SUBJECTS (~155s – 245s)
-            // ═══════════════════════════════════════════════════════
-            tourDelay(() => {
-                switchTab('profiles');
-                typeOutDominic('Subjects.', null);
-            }, 155000);
-
-            tourDelay(() => {
-                typeOutDominic('That\'s what they call people when they want permission to talk about them.\n\nWhen you become a prop in someone else\'s story', null);
-            }, 160000);
-
-            tourDelay(() => {
-                typeOutDominic('Hahaha.. Structurally', null);
-            }, 170000);
-
-            tourDelay(() => {
-                typeOutDominic('Me first, obviously.\n\nThey wrote a report on me. Big words. \'Grandiose.\' \'Manipulative.\' \'Coercive.\'', null);
-            }, 176000);
-
-            tourDelay(() => {
-                typeOutDominic('I prefer: ambitious, persuasive, and annoyingly calm.', null);
-            }, 187000);
-
-            tourDelay(() => {
-                typeOutDominic('They even said my risk isn\'t rage.\n\nIt\'s rhythm.\n\nWhich is flattering. Rage is messy. Rhythm is reusable.', null);
-            }, 195000);
-
-            tourDelay(() => {
-                typeOutDominic('Now Ethel.\n\nI met her at seventeen...', null);
-            }, 208000);
-
-            tourDelay(() => {
-                typeOutDominic('She doesn\'t dilute anything to keep a room comfortable.\n\nIt\'s a charming trait\u2026 unless you\'re the lie.', null);
-            }, 216000);
-
-            tourDelay(() => {
-                typeOutDominic('And Isla again. Yes, she coined \'Silence is the Trauma.\'\n\nIt\'s dramatic. It\'s sticky. It\'s also\u2026 accurate.', null);
-            }, 227000);
-
-            tourDelay(() => {
-                typeOutDominic('..or so I\'m told', null);
-            }, 237000);
+                    card.addEventListener('mouseenter', enterHandler);
+                    card.addEventListener('mouseleave', leaveHandler);
+                    fileHoverHandlers.push({ card, enter: enterHandler, leave: leaveHandler });
+                });
+            }
 
             // ═══════════════════════════════════════════════════════
-            // SECTION 3: GAMES (~244s – 275s)
+            // PROFILE HOVER LISTENERS — for SUBJECTS section
             // ═══════════════════════════════════════════════════════
-            tourDelay(() => {
-                switchTab('games');
-                typeOutDominic('Games.\n\nCute. Little puzzles. Little outcomes. Little safe pretend.', null);
-            }, 244000);
+            let profileHoverHandlers = [];
 
-            tourDelay(() => {
-                typeOutDominic('I voice act in a few', null);
-            }, 254000);
+            function cleanupProfileHoverListeners() {
+                profileHoverHandlers.forEach(h => {
+                    h.card.removeEventListener('mouseenter', h.enter);
+                    h.card.removeEventListener('mouseleave', h.leave);
+                });
+                profileHoverHandlers = [];
+            }
 
-            tourDelay(() => {
-                typeOutDominic('But I prefer real games.\n\nThe kind where the rules aren\'t written down, and everyone swears they\'re playing fair.', null);
-            }, 260000);
+            function setupProfileHoverListeners() {
+                const cards = document.querySelectorAll('#profiles-grid > div');
+                const hoveredProfiles = new Set();
+                const totalMapped = profileRedPenMap.length;
+                cards.forEach(card => {
+                    const h3 = card.querySelector('h3');
+                    if (!h3) return;
+                    const cardName = h3.textContent.trim();
+                    const config = profileRedPenMap.find(p => cardName.includes(p.nameFind));
+                    if (!config) return;
+
+                    let restoreFns = [];
+                    let pendingTimeouts = [];
+                    let isHovered = false;
+                    let hoverQualifyTimer = null;
+
+                    const enterHandler = () => {
+                        const allProfilesSeen = hoveredProfiles.size >= totalMapped;
+                        isHovered = true;
+
+                        // Only show commentary for unseen items
+                        if (!allProfilesSeen) {
+                            cancelActiveOutput();
+                            typeOutDominic(config.commentary, null);
+                        }
+
+                        // Track hover for NEXT SECTION upgrade — but ONLY after
+                        // enough hover time that the red-pen strike/rewrite is clearly
+                        // visible (status strike @ 400ms + 500ms transition, desc strike
+                        // @ 800ms + 500ms transition, wave-reveal starts after).
+                        // 2500ms = both strikes visible + wave-reveal clearly underway.
+                        if (!hoveredProfiles.has(config.nameFind)) {
+                            hoverQualifyTimer = setTimeout(() => {
+                                if (!isHovered) return; // Left before animation was visible
+                                hoveredProfiles.add(config.nameFind);
+                                if (hoveredProfiles.size >= totalMapped) {
+                                    showActionButtons([
+                                        { label: 'NEXT SECTION \u2192', onClick: () => { clearTimeout(window._profilesAutoAdvance); advanceToSegment('D'); } }
+                                    ]);
+                                    // Auto-advance after 10s if still on SUBJECTS tab
+                                    window._profilesAutoAdvance = setTimeout(() => {
+                                        const profilesSection = document.getElementById('profiles-section');
+                                        if (profilesSection && !profilesSection.classList.contains('hidden')) {
+                                            typeOutDominic('Enough portraits. Time for something interactive.', null, function () {
+                                                advanceToSegment('D');
+                                            });
+                                        }
+                                    }, 10000);
+                                }
+                            }, 2500);
+                        }
+
+                        // Red Pen effects only on fresh hovers
+                        if (!allProfilesSeen) {
+                            // Status strike → rewrite
+                            const t1 = setTimeout(() => {
+                                if (!isHovered) return;
+                                const statusResult = DominicParasite.hijackByText(
+                                    config.statusFind, config.statusReplace,
+                                    '#profiles-grid .font-mono-custom.text-xs', 0, { manualRestore: true }
+                                );
+                                if (statusResult && statusResult.restore) restoreFns.push(statusResult.restore);
+                            }, 400);
+
+                            // Description strike → rewrite
+                            const t2 = setTimeout(() => {
+                                if (!isHovered) return;
+                                const descResult = DominicParasite.hijackByText(
+                                    config.descFind, config.descReplace,
+                                    '#profiles-grid .text-gray-400.text-sm', 0, { manualRestore: true }
+                                );
+                                if (descResult && descResult.restore) restoreFns.push(descResult.restore);
+                            }, 800);
+
+                            pendingTimeouts.push(t1, t2);
+                        }
+                    };
+
+                    const leaveHandler = () => {
+                        isHovered = false;
+                        // Cancel hover qualification if they left too early
+                        if (hoverQualifyTimer) {
+                            clearTimeout(hoverQualifyTimer);
+                            hoverQualifyTimer = null;
+                        }
+                        pendingTimeouts.forEach(id => clearTimeout(id));
+                        pendingTimeouts = [];
+                        restoreFns.forEach(fn => fn());
+                        restoreFns = [];
+                    };
+
+                    card.addEventListener('mouseenter', enterHandler);
+                    card.addEventListener('mouseleave', leaveHandler);
+                    profileHoverHandlers.push({ card, enter: enterHandler, leave: leaveHandler });
+                });
+            }
+
+            // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+            // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+            // SEGMENT A: TRANSMISSION — Newcomer Orientation
+            // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+            function runSegmentA() {
+                // Open Poetry panel
+                tourDelay(() => {
+                    toggleMediaPanel('gallery');
+                }, 1500);
+
+                // Dominic's commentary while Poetry is open
+                tourDelay(() => {
+                    typeOutDominic('The story.\n\nThe world doesn\'t work the way Ethel and Isla think it does.\n\nYou need people like me.\n\nYou\'ll see.', null);
+                }, 3000);
+
+                // Close Poetry panel and advance to FILES
+                tourDelay(() => {
+                    toggleMediaPanel(); // close (no args = close)
+                    advanceToSegment('B');
+                }, 14000);
+            }
+
+            // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+            // SEGMENT B: FILES — Hover-Triggered Red Pen
+            // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+            function runSegmentB() {
+                switchTab('files', true);
+                typeOutDominic('Hover over the articles and I\u2019ll show you the truth.', null, function () {
+                    setupFileHoverListeners();
+                    showActionButtons([
+                        { label: 'SKIP FILES \u2192', onClick: () => advanceToSegment('C') }
+                    ]);
+                });
+            }
+
+            // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+            // SEGMENT C: SUBJECT PROFILES — Forensic Reframe
+            // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+            function runSegmentC() {
+                switchTab('profiles', true);
+                setupProfileHoverListeners();
+                showActionButtons([
+                    { label: 'SKIP SUBJECTS \u2192', onClick: () => advanceToSegment('D') }
+                ]);
+                typeOutDominic('Subject Profiles. That\'s what they call people when they\'re relegated to props in another person\'s story.\n\nHover over them and see...', null);
+            }
+
+            // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+            // SEGMENT D: GAMES — Safe Pretend
+            // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+            function runSegmentD() {
+                switchTab('games', true);
+                typeOutDominic('Safe little pretend for those who need rules they can see.', null);
+                tourDelay(() => advanceToSegment('E'), 6000);
+            }
 
             // ═══════════════════════════════════════════════════════
-            // SECTION 4: STORY (~272s – 330s)
+            // SEGMENT E: PODCAST — Quick Pass
             // ═══════════════════════════════════════════════════════
-            tourDelay(() => {
-                switchTab('audio');
-                typeOutDominic('And here\'s the story.\n\nThis section has a lot of Ethel speaking.', null);
-            }, 272000);
+            function runSegmentE() {
+                switchTab('podcast', true);
+                typeOutDominic('Silence is lubricant, not a cage.\n\nI didn\'t break the contract; I fulfilled it.', null);
+                tourDelay(() => advanceToSegment('F'), 8000);
+            }
 
-            tourDelay(() => {
-                typeOutDominic('She thinks being misunderstood is a bad thing', null);
-            }, 281000);
 
-            tourDelay(() => {
-                typeOutDominic('Such a shame... She had so much potential\n\nI don\'t even know what box to put her in', null);
-            }, 289000);
+            // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+            // SEGMENT F: TRANSITION TO STORY
+            // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+            function runSegmentF() {
+                switchTab('audio', true);
+                typeOutDominic('Now we reach the part where my daughter speaks.', null);
+                tourDelay(() => advanceToSegment('G'), 6000);
+            }
 
-            tourDelay(() => {
-                typeOutDominic('But that\'s the point of PixelStortion, isn\'t it?\n\nIt\'s built to do what I don\'t. Expose the structure instead of hiding inside it.', null);
-            }, 299000);
+            // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+            // SEGMENT G: STORY — The Line Dominic Cannot Cross
+            // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+            function runSegmentG() {
+                storyBeatActive = true;
+                hideActionButtons();
 
-            tourDelay(() => {
-                typeOutDominic('So. Are you here to learn what happened?\n\nOr are you here to see how easily your own mind fills the gaps\u2026 and calls it truth?', null);
-            }, 311000);
+                tourDelay(() => {
+                    typeOutDominic('You\'ll notice something interesting here.', null);
+                }, 700);
 
-            tourDelay(() => {
-                typeOutDominic('Want to know more? Let me know.', null);
-                currentConversationState = 'EXPECT_STORY_ASK';
-            }, 323000);
+                tourDelay(() => {
+                    typeOutDominic('Ethel doesn\'t shout like Isla.', null);
+                }, 4000);
+
+                tourDelay(() => {
+                    typeOutDominic('She builds things.', null);
+                }, 7300);
+
+                tourDelay(() => {
+                    typeOutDominic('She believes systems can be corrected.', null);
+                }, 12300);
+
+                tourDelay(() => {
+                    typeOutDominic('I believe systems reveal what people really are.', null);
+                }, 16300);
+
+                tourDelay(() => {
+                    typeOutDominic('My daughter thinks silence hides harm.', null);
+                }, 20700);
+
+                tourDelay(() => {
+                    typeOutDominic('I think silence reveals who benefits.', null);
+                }, 23700);
+
+                tourDelay(() => {
+                    typeOutDominic('Of course\u2026 she may be right about one thing.', null);
+                }, 27700);
+
+                tourDelay(() => {
+                    typeOutDominic('Silence is dangerous.', null);
+                }, 30300);
+
+                tourDelay(() => {
+                    typeOutDominic('Noise isn\'t containment.', null);
+                }, 33700);
+
+                tourDelay(() => {
+                    typeOutDominic('She was always better at containment.', null);
+                    storyBeatActive = false;
+                }, 37000);
+
+                tourDelay(() => advanceToSegment('H'), 40300);
+            }
+
+            // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+            // SEGMENT H: CIRCULAR CONCLUSION
+            // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+            function runSegmentH() {
+                hideActionButtons();
+
+                typeOutDominic('You arrived knowing I was the villain.', null);
+
+                tourDelay(() => {
+                    typeOutDominic('Now you might be wondering if I\'m simply the only one being honest.', null);
+                }, 11000);
+
+                tourDelay(() => {
+                    typeOutDominic('That\'s how influence works.', null);
+                }, 23000);
+
+                tourDelay(() => {
+                    typeOutDominic('Don\'t misunderstand.', null);
+                }, 31000);
+
+                tourDelay(() => {
+                    typeOutDominic('I am exactly as terrible as they say.', null);
+                }, 38000);
+
+                tourDelay(() => {
+                    typeOutDominic('I just explain the system better than most.', null);
+                }, 47000);
+
+                tourDelay(() => {
+                    typeOutDominic('You simply listened longer than most.', null, function () {
+                        setTimeout(() => {
+                            chatPanel.classList.remove('open');
+                            hideActionButtons();
+                            currentConversationState = 'EXPECT_STORY_ASK';
+                        }, 4000);
+                    }, 'slow');
+                }, 57000);
+            }
+
+            // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+            // END TOUR — early exit via button
+            // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+            function endTour() {
+                nukeTour();
+                hideActionButtons();
+                cleanupFileHoverListeners();
+                cleanupProfileHoverListeners();
+                storyBeatActive = false;
+                currentConversationState = 'any';
+                inputArea.style.display = 'flex';
+                typeOutDominic('Very well. I\'ll be in the walls if you change your mind.', null, function () {
+                    setTimeout(() => {
+                        setDominicPresence('hibernate');
+                    }, 2000);
+                });
+            }
+
+            // START
+            advanceToSegment('A');
         }
 
-        // ═══════════════════════════════════════════════════════════════════
+
+
+        // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
         // GHOST ENGINE — NUKE TOUR (kills all pending tour messages)
         // Called by Stop Protocol to prevent ghost messages appearing later.
-        // ═══════════════════════════════════════════════════════════════════
+        // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
         function nukeTour() {
             tourTimeoutRegistry.forEach(id => clearTimeout(id));
             tourTimeoutRegistry.length = 0;
-            cancelActiveOutput(); // Stop mid-sentence typing if active
+            cancelActiveOutput();
+            storyBeatActive = false;
+            hideActionButtons();
+            // Clean up any active Red Pen edits
+            if (typeof DominicParasite !== 'undefined') {
+                DominicParasite.cleanup();
+            }
         }
 
         // ═══════════════════════════════════════════════════════════════════
-        // PARABLE ROUTER — Weighted dispatch to moral parables
-        // 60% Parable 6 (Wharf), 30% Parable 7 (Parking), 10% Parable 4 (Bat & Ball)
+        // PARABLE ROUTER — Single staircase parable
         // ═══════════════════════════════════════════════════════════════════
         function routeToParable() {
-            const roll = Math.random();
-            let entryNodeId;
-            if (roll < 0.60) {
-                entryNodeId = "P6_SYDNEY_POLISH";
-            } else if (roll < 0.90) {
-                entryNodeId = "P7_OPAL_RHYTHM";
-            } else {
-                entryNodeId = "P4_SYDNEY_LOUD";
-            }
-            return DOMINIC_LIBRARY.find(n => n.node_id === entryNodeId);
+            return DOMINIC_LIBRARY.find(n => n.node_id === "PARABLE_ENTRY");
+        }
+
+        // Simulate user input for action buttons (sets input value and triggers processQuery)
+        function processQuery_simulateInput(text) {
+            dInput.value = text;
+            processQuery();
         }
 
         // Retrieval & Routing Logic (FUZZY INTENT ENGINE v4.0 — Architecture of Influence)
         function processQuery() {
             const text = dInput.value.trim();
             if (!text) return;
+            dInput.dataset.hasTyped = 'true'; // Mark user engagement for switchTab hibernation check
 
             const wasTyping = isTyping;
             dInput.value = '';
@@ -4404,6 +5501,47 @@
                     }, 800);
                 }, 'fast');
                 return;
+            }
+
+            // ═══ V2 ENGINE GATE ═══
+            // If current state is V2-managed, route through dominicResolveTurn
+            if (V2_ENABLED_STATES.has(currentConversationState)) {
+                // Sync session state from legacy before V2 processes
+                dominicSession.state = currentConversationState;
+
+                // Build full context object for deep open router
+                var dominicCtx = getDominicContext();
+
+                const v2Result = dominicResolveTurn(text, dominicSession, {
+                    legacyProcessQuery: null,
+                    dominicContext: dominicCtx
+                });
+
+                console.log("[Dominic V2]", {
+                    handled: v2Result?.handled,
+                    stateBefore: currentConversationState,
+                    stateAfter: dominicSession.state,
+                    outputId: v2Result?.output?.id,
+                    uiAction: v2Result?.output?.ui_action || null
+                });
+
+                // Store last matched topic for suggestion follow-ups
+                if (v2Result && v2Result.output && v2Result.output.id && v2Result.output.id.startsWith('OPEN_DEEP_')) {
+                    dominicSession._lastOpenTopic = v2Result.output.id.replace('OPEN_DEEP_', '').toLowerCase();
+                }
+
+                if (v2Result && v2Result.handled) {
+                    // V2 owns this turn — sync state back to legacy
+                    currentConversationState = dominicSession.state;
+                    hideDominicSuggestions();
+                    renderDominicResult(v2Result);
+                    return;
+                }
+
+                // V2 did not handle — fall through to legacy below
+                console.log("[Dominic V2] Unhandled, falling to legacy");
+            } else {
+                console.log("[Dominic Legacy]", { state: currentConversationState, input: text });
             }
 
             // --- TOUR RESUME PROMPT: yes/no handling ---
@@ -4444,15 +5582,104 @@
                 // Fall through to normal query processing below
             }
 
-            // --- OK/OKAY DISMISSAL ---
-            // Skip if Dominic just asked a yes/no question (e.g., "do you want to know my story?")
+            // --- "NEED ME?" CONTEXTUAL HANDLER ---
+            if (currentConversationState === 'AWAITING_NEED_ME') {
+                const yesPhrases = [
+                    'yes', 'yeah', 'yep', 'yup', 'ya', 'yah', 'ye', 'yea', 'yess', 'yesss',
+                    'ok', 'okay', 'okee', 'okey', 'oki', 'okie', 'okk', 'okkk', 'okayy',
+                    'sure', 'sure thing', 'shure', 'sur',
+                    'alright', 'all right', 'alrite', 'alrighty', 'alrigh',
+                    'k', 'kk', 'kkk', 'kay',
+                    'go ahead', 'go on', 'continue', 'proceed', 'do it', 'show me',
+                    'lets go', 'lets see', 'go for it', 'go', 'start', 'begin', 'carry on',
+                    'sounds good', 'works for me', 'im good', 'im in', 'im ready',
+                    'fine', 'fine go ahead', 'yeah ok', 'yeah sure', 'yeah go ahead',
+                    'ok go', 'ok go ahead', 'ok do it', 'ok show me', 'ok continue',
+                    'y', 'yep yep', 'yup yep'
+                ];
+                const noPhrases = [
+                    'no', 'nah', 'nope', 'no thanks', 'nah im good', 'im good thanks',
+                    'not now', 'not really', 'leave me alone', 'go away', 'bye', 'later'
+                ];
+
+                if (noPhrases.some(p => normalizedText === p || normalizedText.startsWith(p + ' '))) {
+                    currentConversationState = 'any';
+                    actionBar.classList.remove('active');
+                    actionBar.innerHTML = '';
+                    chatPanel.classList.remove('open');
+                    setTimeout(() => {
+                        setDominicPresence('hibernate');
+                    }, 300);
+                    return;
+                }
+
+                // YES or anything else — treat as engagement
+                currentConversationState = 'any';
+                actionBar.classList.remove('active');
+                actionBar.innerHTML = '';
+                inputArea.style.display = 'flex';
+
+                if (yesPhrases.some(p => normalizedText === p)) {
+                    typeOutDominic('Ask away \u2014 but be sensible.', null);
+                    dInput.focus();
+                    return;
+                }
+
+                // They typed an actual question — process it normally
+                // Fall through to normal processing below
+            }
+            // Pre-compute here so context-aware handler can use them
+            const strippedText = normalizedText.replace(/[^\w\s]/g, '').trim();
+            const isInStory = currentConversationState.startsWith("PARABLE_") ||
+                currentConversationState.startsWith("EXPECTING_") ||
+                currentConversationState.startsWith("HEARD_");
+
+            // --- CONTEXT-AWARE ACKNOWLEDGEMENT HANDLER ---
+            // Catches ok/sure/yeah/alright when NOT expecting a specific answer.
+            // Uses lastDominicText to determine context.
             const expectingAnswer = ['EXPECT_STORY_ASK', 'EXPECT_BUILDER', 'EXPECTING_FORGE_VS_SHIELD',
-                'EXPECTING_ISLA_FOLLOWUP', 'EXPECTING_ESCAPE_FOLLOWUP', 'TOUR_OFFER'].includes(currentConversationState);
-            const okPhrases = ['ok', 'okay', 'okey', 'okk', 'okok', 'ok ok', 'k', 'kk', 'alright', 'aight', 'got it', 'gotit', 'yep ok', 'ok cool', 'ok fine'];
-            if (wasTyping && !expectingAnswer && okPhrases.some(p => normalizedText === p)) {
-                typeArea.innerHTML = '';
-                typeOutDominic("Ok. Too many words.", null);
-                return;
+                'EXPECTING_ISLA_FOLLOWUP', 'EXPECTING_ESCAPE_FOLLOWUP', 'TOUR_OFFER',
+                'EXPECT_PARABLE_ROUTE', 'EXPECT_PARABLE_LAUNCH'].includes(currentConversationState);
+            const ackPhrases = [
+                'ok', 'okay', 'okee', 'okey', 'okeyy', 'oki', 'okie', 'okiee', 'okies',
+                'okayy', 'okaay', 'okaaay', 'okk', 'okkk', 'okkkkk',
+                'ok then', 'ok sure', 'ok fine', 'ok got it', 'ok go', 'ok go ahead',
+                'oc', 'oky', 'oke', 'okai', 'okei', 'okkay', 'okayyy',
+                'k', 'kk', 'kkk', 'kkkk', 'k then', 'k sure', 'k go', 'k fine', 'k got it',
+                'kay', 'kayy',
+                'alright', 'all right', 'alrigh', 'alrite', 'alritey', 'alrighty',
+                'alright then', 'alright sure', 'alright go ahead', 'alright fine',
+                'alrght', 'alrigt', 'alrigth', 'alriht', 'alriight',
+                'sure', 'sure thing', 'sure ok', 'sure go ahead', 'sure why not',
+                'shure', 'surr', 'sur', 'sre',
+                'yep', 'yup', 'ya', 'yah', 'ye', 'yea', 'yess', 'yesss',
+                'yeah ok', 'yeah sure', 'yeah go ahead',
+                'go ahead', 'go on', 'carry on', 'got it', 'gotit',
+                'sounds good', 'works for me', 'fine', 'aight',
+                'cool', 'ok cool', 'fair enough', 'right', 'righto',
+                'hmm', 'hm', 'mhm', 'mmhm', 'uh huh', 'yep ok'
+            ];
+
+            if (!expectingAnswer && !isInStory && ackPhrases.some(p => strippedText === p || normalizedText === p)) {
+                const lastText = window.lastDominicText || '';
+                const wasQuestion = lastText.trim().endsWith('?');
+
+                if (wasTyping) {
+                    // They interrupted Dominic — dismiss
+                    typeArea.innerHTML = '';
+                    typeOutDominic("Ok. Too many words.", null);
+                    return;
+                } else if (wasQuestion) {
+                    // Dominic asked a question and they said "ok" / "sure" — treat as YES
+                    // Feed it back as 'yes' so the matching system picks up the right node
+                    dInput.value = 'yes';
+                    processQuery();
+                    return;
+                } else {
+                    // Dominic made a statement, visitor acknowledged — Dominic waits
+                    typeOutDominic("I\u2019m here. Ask when you\u2019re ready.", null);
+                    return;
+                }
             }
 
             // Step A: Classify user state
@@ -4460,8 +5687,6 @@
 
             // --- MULTI-TIERED MATCHING CONFIGURATION ---
             const inputLength = normalizedText.length;
-            // Strip punctuation for exact matching (so "hello!" matches "hello")
-            const strippedText = normalizedText.replace(/[^\w\s]/g, '').trim();
 
             // Dynamic threshold: strict for short words (prevents hallucinations), looser for long sentences
             const dynamicThreshold = inputLength < 12 ? 0.2 : 0.35;
@@ -4469,21 +5694,15 @@
             const fuseOptions = {
                 includeScore: true,
                 threshold: dynamicThreshold,
-                ignoreLocation: false,    // 💥 FIX: Prevents "yes" from anagram-matching "system"
-                distance: 100,            // 💥 FIX: Requires words to be somewhat contiguous
+                ignoreLocation: false,    // ðŸ’¥ FIX: Prevents "yes" from anagram-matching "system"
+                distance: 100,            // ðŸ’¥ FIX: Requires words to be somewhat contiguous
                 minMatchCharLength: 3,
                 keys: ['training_phrases']
             };
 
             let matchedNode = null;
 
-            // Define narrative boundaries globally so all steps can use it
-            const isInStory = currentConversationState.startsWith("P4_") ||
-                currentConversationState.startsWith("P6_") ||
-                currentConversationState.startsWith("P7_") ||
-                currentConversationState.startsWith("EXPECTING_") ||
-                currentConversationState.startsWith("HEARD_") ||
-                currentConversationState.startsWith("PARABLE_");
+            // (isInStory already computed above)
 
             // 1. EXACT MATCH PRE-CHECK (Current State)
             if (currentConversationState !== "any") {
@@ -4503,14 +5722,19 @@
                         matchedNode = funnelResults[0].item;
                     }
 
-                    // 💥 THE NARRATIVE GLIDE: If in a linear story and they type a simple continuation word, force progress 💥
-                    // 💥 THE NARRATIVE GLIDE: Expanded vocabulary to catch all passive agreements 💥
+                    // ðŸ’¥ THE NARRATIVE GLIDE: If in a linear story and they type a simple continuation word, force progress ðŸ’¥
+                    // ðŸ’¥ THE NARRATIVE GLIDE: Expanded vocabulary to catch all passive agreements ðŸ’¥
                     const continuationWords = [
                         "ok", "okay", "sure", "yes", "yeah", "yep", "yup",
                         "go on", "continue", "keep going", "then what", "and then", "what next",
                         "right", "alright", "k", "no", "nah", "maybe", "i guess",
                         "i suppose", "suppose so", "i suppose so", "fair enough",
-                        "makes sense", "true", "agreed", "agree", "very well", "fine"
+                        "makes sense", "true", "agreed", "agree", "very well", "fine",
+                        "idk", "i dont know", "i don't know", "dunno", "not sure",
+                        "im not sure", "i'm not sure", "whatever", "hard to say",
+                        "probably", "i think so", "dont know", "who knows", "beats me",
+                        "hmm", "hm", "meh", "lol", "haha", "wow", "damn", "whoa",
+                        "interesting", "go ahead", "tell me", "what happened", "and"
                     ];
                     if (!matchedNode && isInStory && continuationWords.includes(strippedText.toLowerCase())) {
                         matchedNode = funnelNodes[0]; // Force progression to the next story node seamlessly
@@ -4543,7 +5767,7 @@
                     let fbUiAction = fallbackResults[0].item.ui_action || null;
 
                     // Transition state if fallback explicitly defines next_state
-                    // (e.g., EXPECT_HOW_ARE_YOU → EXPECT_STORY_ASK when story is offered)
+                    // (e.g., EXPECT_HOW_ARE_YOU â†’ EXPECT_STORY_ASK when story is offered)
                     const fbNextState = fallbackResults[0].item.next_state;
                     if (fbNextState) {
                         currentConversationState = fbNextState;
@@ -4568,9 +5792,26 @@
                 }
             }
 
+            // 4b. PARABLE LOCK — If in a parable, NEVER fall through to global matching.
+            //     Force the story forward with the nudge response or force-progress to next node.
+            if (!matchedNode && isInStory) {
+                const parableNodes = DOMINIC_LIBRARY.filter(n => n.required_state === currentConversationState);
+                if (parableNodes.length > 0) {
+                    // Try nudge first
+                    const nudgeNode = parableNodes.find(n => n.responses && n.responses["nudge"]);
+                    if (nudgeNode && window.lastDominicText !== nudgeNode.responses["nudge"].dialogue) {
+                        window.lastDominicText = nudgeNode.responses["nudge"].dialogue;
+                        typeOutDominic(nudgeNode.responses["nudge"].dialogue, nudgeNode.responses["nudge"].ui_action);
+                        return;
+                    }
+                    // If nudge already used, force-progress with the next node
+                    matchedNode = parableNodes[0];
+                }
+            }
+
             // 5. EXACT MATCH - GLOBAL STATE
-            // Always runs so exact questions ("who are you") work immediately, even inside stories.
-            if (!matchedNode) {
+            // Always runs so exact questions ("who are you") work immediately — BUT NOT during parables.
+            if (!matchedNode && !isInStory) {
                 const globalNodes = DOMINIC_LIBRARY.filter(n => n.required_state === "any");
                 matchedNode = globalNodes.find(node =>
                     node.training_phrases && node.training_phrases.some(phrase => strippedText === phrase.toLowerCase())
@@ -4578,7 +5819,7 @@
             }
 
             // 6. GLOBAL BREAKOUT (Strict Fuzzy)
-            // 💥 THE NARRATIVE SHIELD: Skipped entirely if in a story to prevent anagram hallucinations! 💥
+            // ðŸ’¥ THE NARRATIVE SHIELD: Skipped entirely if in a story to prevent anagram hallucinations! ðŸ’¥
             if (!matchedNode && !isInStory) {
                 const globalNodes = DOMINIC_LIBRARY.filter(node => node.required_state === "any");
                 const globalFuse = new Fuse(globalNodes, fuseOptions);
@@ -4608,8 +5849,8 @@
                 uiAction = responseData.ui_action;
 
             } else {
-                // Step G: FALLBACK ROUTING (Tether → Milton Funnel → OOD)
-                // ═══════════════════════════════════════════════════════════
+                // Step G: FALLBACK ROUTING (Tether â†’ Milton Funnel â†’ OOD)
+                // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
                 // G.1 — TETHERED STATE: If inside a parable/funnel, preserve nudge behavior
                 if (currentConversationState !== "any") {
@@ -4644,14 +5885,14 @@
 
                 } else {
                     // G.2 — OPEN STATE: User is not in any funnel. Activate Milton Funnel.
-                    // ═════════════════════════════════════════════════════
+                    // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
                     let bridgeKey = quadrant;
                     let targetNodeId = MORAL_ROUTING[quadrant];
                     let useMiltonFunnel = true;
                     let forceDelay = false;
 
-                    // G.2a — KEYWORD OVERRIDE: victim/harm words → Denial of Injury
+                    // G.2a — KEYWORD OVERRIDE: victim/harm words â†’ Denial of Injury
                     const harmKeywords = ['hurt', 'innocent', 'victims', 'victim', 'cruel', 'destroyed lives', 'ruined', 'suffered', 'pain', 'killed', 'murder', 'died'];
                     const isKeywordOverride = harmKeywords.some(kw => normalizedText.includes(kw));
 
@@ -4662,7 +5903,7 @@
                         veterinarianCount = 0; // Reset vet counter on keyword override
                     }
 
-                    // 💥 ANTI-TRAUMA-DUMP THROTTLE 💥
+                    // ðŸ’¥ ANTI-TRAUMA-DUMP THROTTLE ðŸ’¥
                     // If the input is short and lacks keywords, do NOT fire a heavy moral monologue.
                     if (!isKeywordOverride) {
                         const wordCount = text.trim().split(/\s+/).length;
@@ -4760,6 +6001,31 @@
             window.lastDominicText = responseText;
 
             // Execute Typewriter Output
+            // FAST PATH: activateSectionCommentary — call directly, skip double-dialogue
+            if (uiAction && uiAction.includes('activateSectionCommentary')) {
+                window.lastDominicText = responseText;
+                activateSectionCommentary();
+                return;
+            }
+            // PARABLE PUNCHLINE: Auto-deliver the final line after a timed pause
+            if (uiAction === 'parable_punchline') {
+                typeOutDominic(responseText, null, function () {
+                    // Pause 4 seconds after reveal finishes typing, then deliver punchline
+                    setTimeout(function () {
+                        const punchline = "And that\u2019s why the most dangerous sentence in the world is:\n\n\"Sure, I can help.\"";
+                        currentConversationState = 'any';
+                        window.lastDominicText = punchline;
+                        typeOutDominic(punchline, null);
+                    }, 4000);
+                });
+                return;
+            }
+            // Anti-repeat guard for legacy output
+            if (preventRepeatResponse(responseText, currentConversationState)) {
+                const fallbackOptions = OOD_LIBRARY[quadrant] || OOD_LIBRARY['Q4_low_positive'];
+                responseText = fallbackOptions[Math.floor(Math.random() * fallbackOptions.length)];
+                console.log('[Dominic Legacy] Anti-repeat triggered, using alternate');
+            }
             typeOutDominic(responseText, uiAction);
         }
 
@@ -4826,6 +6092,412 @@
         dInput.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') processQuery();
         });
+
+        // ═══════════════════════════════════════════════════════════════
+        // PREDICTIVE GHOST TEXT ENGINE — inline autocomplete
+        // ═══════════════════════════════════════════════════════════════
+        var _currentGhostSuggestion = null;
+
+        function getDominicContext() {
+            var activeSectionEl = document.querySelector('[id$="-section"]:not(.hidden)');
+            var pageKey = activeSectionEl ? activeSectionEl.id.replace('-section', '') : 'home';
+
+            // Canonicalize page keys to match suggestion bank keys
+            if (pageKey === 'profiles') pageKey = 'subjects';
+            if (pageKey === 'audio') pageKey = 'story';
+            var trackTitle = null;
+            if (typeof currentTrackId !== 'undefined' && currentTrackId) {
+                var track = tracks.find(t => t.id === currentTrackId);
+                if (track) trackTitle = track.title;
+            }
+
+            // Infer active objects from DOM as fallback
+            inferDominicActiveObjectsFromDOM();
+
+            var policy = dominicGetSuggestionPolicy(currentConversationState);
+
+            return {
+                page: pageKey,
+                activeTrackTitle: trackTitle,
+                activeFileTitle: dominicActiveFileTitle || null,
+                activeProfileName: dominicActiveProfileName || null,
+                lastTopic: (dominicSession && dominicSession._lastOpenTopic) || null,
+                conversationState: currentConversationState,
+                suggestionMode: policy.mode
+            };
+        }
+
+        function updateGhostText() {
+            var ghostTyped = document.querySelector('#dominic-ghost-text .ghost-typed');
+            var ghostCompletion = document.querySelector('#dominic-ghost-text .ghost-completion');
+
+            // Hide ghost during locked sequence states (Dominic controls the interaction)
+            var _ghostPolicy = dominicGetSuggestionPolicy(currentConversationState);
+            if (_ghostPolicy.mode === 'LOCKED_SEQUENCE') {
+                ghostTyped.textContent = '';
+                ghostCompletion.textContent = '';
+                _currentGhostSuggestion = null;
+                return;
+            }
+
+            var typed = dInput.value;
+            if (!typed || typed.length < 1) {
+                ghostTyped.textContent = '';
+                ghostCompletion.textContent = '';
+                _currentGhostSuggestion = null;
+                return;
+            }
+
+            var ctx = getDominicContext();
+            var suggestions = getDominicSuggestions(typed, ctx);
+            var typedLower = typed.toLowerCase();
+            // Find the best suggestion that STARTS WITH typed text
+            // Ghost text should only ever be a valid CONTINUATION of what's typed
+            var match = null;
+            for (var i = 0; i < suggestions.length; i++) {
+                if (suggestions[i].startsWith(typedLower) && suggestions[i].length > typedLower.length) {
+                    match = suggestions[i];
+                    break;
+                }
+            }
+
+            if (match) {
+                // Show typed portion (invisible, same width) + completion (grey)
+                ghostTyped.textContent = typed;
+                ghostCompletion.textContent = match.substring(typed.length);
+                _currentGhostSuggestion = match;
+            } else if (typedLower.length <= 2 && suggestions.length > 0) {
+                // Very short input — show the top suggestion as a full hint
+                ghostTyped.textContent = '';
+                ghostCompletion.textContent = suggestions[0];
+                _currentGhostSuggestion = suggestions[0];
+            } else {
+                ghostTyped.textContent = '';
+                ghostCompletion.textContent = '';
+                _currentGhostSuggestion = null;
+            }
+        }
+
+        function clearGhostText() {
+            var ghostTyped = document.querySelector('#dominic-ghost-text .ghost-typed');
+            var ghostCompletion = document.querySelector('#dominic-ghost-text .ghost-completion');
+            ghostTyped.textContent = '';
+            ghostCompletion.textContent = '';
+            _currentGhostSuggestion = null;
+        }
+
+        // Alias for V2 gate usage
+        function hideDominicSuggestions() { clearGhostText(); }
+
+        // Wire ghost text to input events
+        dInput.addEventListener('input', function () {
+            dInput.dataset.hasTyped = 'true'; // Mark engagement on any typing
+            updateGhostText();
+        });
+        dInput.addEventListener('focus', function () {
+            dInput.dataset.hasTyped = 'true'; // Mark engagement on focus
+            setTimeout(updateGhostText, 50); // Refresh ghost text on refocus
+        });
+
+        dInput.addEventListener('blur', function () {
+            // Only clear ghost text if input is empty — preserve it during tab switching
+            if (!dInput.value || dInput.value.trim().length === 0) {
+                setTimeout(clearGhostText, 150);
+            }
+        });
+
+        // Tab or right-arrow to accept ghost completion
+        dInput.addEventListener('keydown', function (e) {
+            if (!_currentGhostSuggestion) return;
+
+            if (e.key === 'Tab' || (e.key === 'ArrowRight' && dInput.selectionStart === dInput.value.length)) {
+                e.preventDefault();
+                dInput.value = _currentGhostSuggestion;
+                clearGhostText();
+                // Re-evaluate ghost for the now-complete text
+                setTimeout(updateGhostText, 10);
+            }
+        });
+        // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+        // DOMINIC DOM PARASITE — THE RED PEN
+        // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+        const DominicParasite = (() => {
+            const edits = [];
+
+            function pick(a) { return a[Math.floor(Math.random() * a.length)]; }
+
+            function hijack(element, correction, holdMs, opts) {
+                opts = opts || {};
+                if (!element || element.dataset.domActive) return false;
+                holdMs = holdMs || 5000;
+                if (!opts.manualRestore) {
+                    holdMs = holdMs + Math.floor(Math.random() * 600 - 300);
+                }
+                element.dataset.domActive = 'true';
+
+                // SMOOTH STRIKE-ON: prepare invisible strike, then transition color
+                element.style.transition = 'opacity 0.6s ease, text-decoration-color 0.5s ease';
+                element.style.textDecoration = 'line-through';
+                element.style.textDecorationThickness = '2px';
+                element.style.textDecorationColor = 'transparent';
+
+                // Next frame: fade in strike color + dim text
+                requestAnimationFrame(() => {
+                    element.style.textDecorationColor = '#ef4444';
+                    element.style.opacity = '0.45';
+                });
+
+                const correctionEl = document.createElement('span');
+                correctionEl.className = 'dom-correction';
+
+                const chars = [];
+                for (let i = 0; i < correction.length; i++) {
+                    const span = document.createElement('span');
+                    span.textContent = correction[i];
+                    span.style.opacity = '0';
+                    span.style.transition = 'opacity 0.18s ease';
+                    span.style.transitionDelay = (i * 22) + 'ms';
+                    correctionEl.appendChild(span);
+                    chars.push(span);
+                }
+
+                let sigEl = null;
+                if (!correction.includes('// Dominic Ryker //') && !correction.includes('// DOMINIC RYKER //')) {
+                    sigEl = document.createElement('span');
+                    sigEl.className = 'dom-signature';
+                    sigEl.textContent = ' // DOMINIC RYKER //';
+                    correctionEl.appendChild(sigEl);
+                }
+
+                element.parentNode.insertBefore(correctionEl, element.nextSibling);
+
+                // Wave ON — reveal correction chars
+                requestAnimationFrame(() => {
+                    requestAnimationFrame(() => {
+                        chars.forEach(c => { c.style.opacity = '1'; });
+                        if (sigEl) {
+                            setTimeout(() => { sigEl.style.opacity = '0.7'; }, correction.length * 22 + 200);
+                        }
+                    });
+                });
+
+                edits.push({ element, correctionEl, chars, sigEl });
+
+                // Restore function — used by both auto-restore timer and manual calls
+                function doRestore() {
+                    chars.forEach((c, i) => {
+                        c.style.transitionDelay = (i * 18) + 'ms';
+                        c.style.opacity = '0';
+                    });
+                    if (sigEl) sigEl.style.opacity = '0';
+
+                    setTimeout(() => {
+                        element.style.textDecorationColor = 'transparent';
+                        element.style.opacity = '1';
+                    }, Math.min(chars.length * 18, 400));
+
+                    setTimeout(() => {
+                        element.style.textDecoration = '';
+                        element.style.textDecorationColor = '';
+                        element.style.textDecorationThickness = '';
+                        element.style.opacity = '';
+                        element.style.transition = '';
+                        if (correctionEl.parentNode) correctionEl.remove();
+                        delete element.dataset.domActive;
+                        const idx = edits.findIndex(e => e.element === element);
+                        if (idx > -1) edits.splice(idx, 1);
+                    }, chars.length * 18 + 800);
+                }
+
+                if (opts.manualRestore) {
+                    // Return restore function — caller controls when to fade off
+                    return { restore: doRestore };
+                }
+
+                // Auto-restore timer (default behaviour)
+                setTimeout(doRestore, holdMs);
+                return true;
+            }
+
+            function hijackByText(originalTextFragment, correction, selector, holdMs, opts) {
+                const candidates = Array.from(document.querySelectorAll(selector));
+                const target = candidates.find(el =>
+                    el.textContent.includes(originalTextFragment) && !el.dataset.domActive
+                );
+                if (target) {
+                    return hijack(target, correction, holdMs, opts);
+                }
+                return false;
+            }
+
+            function hijackProfileStatus(profileId, originalStatus, newStatus, holdMs, opts) {
+                const statusEls = document.querySelectorAll('#profiles-grid .font-mono-custom.text-xs');
+                for (const el of statusEls) {
+                    if (el.textContent.includes('STATUS: ' + originalStatus) && !el.dataset.domActive) {
+                        return hijack(el, 'STATUS: ' + newStatus, holdMs, opts);
+                    }
+                }
+                return false;
+            }
+
+            function cleanup() {
+                edits.forEach(({ element, correctionEl }) => {
+                    element.classList.remove('dom-struck');
+                    delete element.dataset.domActive;
+                    if (correctionEl && correctionEl.parentNode) correctionEl.remove();
+                });
+                edits.length = 0;
+                document.querySelectorAll('.dom-struck').forEach(el => el.classList.remove('dom-struck'));
+                document.querySelectorAll('.dom-correction').forEach(el => el.remove());
+            }
+
+            return { hijack, hijackByText, hijackProfileStatus, cleanup, get edits() { return edits; } };
+        })();
+
+        // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+        // TOUR REJECTION FLOW — 3-tier re-engagement
+        // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+        let tourRejectionCount = 0;
+        const reengageBtn = document.getElementById('dominic-reengage-btn');
+
+        function showReengageButton() {
+            if (reengageBtn) {
+                reengageBtn.style.opacity = '1';
+                reengageBtn.style.pointerEvents = 'auto';
+            }
+        }
+
+        function hideReengageButton() {
+            if (reengageBtn) {
+                reengageBtn.style.opacity = '0';
+                reengageBtn.style.pointerEvents = 'none';
+            }
+        }
+
+        function handleTourRejection() {
+            setTimeout(() => {
+                chatPanel.classList.remove('open');
+                setTimeout(() => {
+                    // Hibernate Dominic to pulsing orb
+                    setDominicPresence('hibernate');
+                }, 400);
+            }, 2000);
+        }
+
+        if (reengageBtn) {
+            reengageBtn.addEventListener('click', () => {
+                tourRejectionCount++;
+
+                hideReengageButton();
+
+                if (tourRejectionCount === 1) {
+                    chatPanel.classList.add('open');
+                    typeOutDominic('Stories are what make us human.\n\nOur sense of self is just narrative stitched together.\n\nWant one?', null, function () {
+                        currentConversationState = 'TOUR_OFFER';
+                    });
+                } else if (tourRejectionCount === 2) {
+                    chatPanel.classList.add('open');
+                    typeOutDominic('Resistance is limiting.\n\nBetter to lean.', null, function () {
+                        setTimeout(() => {
+                            chatPanel.classList.remove('open');
+                            setTimeout(() => { showReengageButton(); }, 3000);
+                        }, 3000);
+                    });
+                } else {
+                    chatPanel.classList.add('open');
+                    typeOutDominic('You\'ll need me eventually.\n\nThey always do.', null, function () {
+                        setTimeout(() => {
+                            chatPanel.classList.remove('open');
+                            isDominicAvailable = false;
+                            if (interrogateBtn) {
+                                interrogateBtn.classList.remove('revealed');
+                                interrogateBtn.style.pointerEvents = 'none';
+                            }
+                            setTimeout(() => {
+                                isDominicAvailable = true;
+                                if (interrogateBtn) interrogateBtn.style.pointerEvents = '';
+                            }, 180000);
+                        }, 2000);
+                    }, 'slow');
+                }
+            });
+        }
+
+        // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+        // BEHAVIOURAL AWARENESS — rare, one-shot observations
+        // Guard: never interrupts Red Pen animation or Story beats
+        // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+        const behaviourFlags = {
+            fastScroll: false,
+            pauseDetected: false,
+            islaFirst: false
+        };
+
+        let scrollAccumulator = 0;
+
+        document.addEventListener('scroll', () => {
+            scrollAccumulator += Math.abs(window.scrollY || 0);
+        }, { passive: true });
+
+        setInterval(() => {
+            if (scrollAccumulator > 3000 &&
+                !behaviourFlags.fastScroll &&
+                currentConversationState === 'GUIDED_TOUR' &&
+                !storyBeatActive &&
+                DominicParasite.edits.length === 0) {
+                behaviourFlags.fastScroll = true;
+                const checkTyping = setInterval(() => {
+                    if (!isTyping) {
+                        clearInterval(checkTyping);
+                        typeOutDominic('Fast hands.\n\nPeople skim when they\'re uncomfortable.', null);
+                    }
+                }, 500);
+            }
+            scrollAccumulator = 0;
+        }, 2000);
+
+        let lastInteractionTime = Date.now();
+        ['mousemove', 'keypress', 'click', 'scroll', 'touchstart'].forEach(evt => {
+            document.addEventListener(evt, () => {
+                lastInteractionTime = Date.now();
+            }, { passive: true });
+        });
+
+        setInterval(() => {
+            const elapsed = Date.now() - lastInteractionTime;
+            if (elapsed > 15000 &&
+                !behaviourFlags.pauseDetected &&
+                currentConversationState === 'GUIDED_TOUR' &&
+                !storyBeatActive &&
+                DominicParasite.edits.length === 0 &&
+                !isTyping) {
+                behaviourFlags.pauseDetected = true;
+            }
+        }, 3000);
+
+        // Isla-first detection
+        let firstTabVisited = null;
+        document.querySelectorAll('nav button').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const tabId = btn.id ? btn.id.replace('nav-', '') : '';
+                if (!firstTabVisited && tabId) {
+                    firstTabVisited = tabId;
+                    if ((tabId === 'profiles' || tabId === 'files') &&
+                        !behaviourFlags.islaFirst &&
+                        currentConversationState === 'TOUR_OFFER' &&
+                        !storyBeatActive &&
+                        !isTyping) {
+                        behaviourFlags.islaFirst = true;
+                        setTimeout(() => {
+                            if (!isTyping) {
+                                typeOutDominic('Ah. Isla.\n\nMost people start there.', null);
+                            }
+                        }, 1500);
+                    }
+                }
+            });
+        });
+
     </script>
 
 </body>

@@ -1,4 +1,4 @@
-// ═══════════════════════════════════════════════════════════════════
+﻿// ═══════════════════════════════════════════════════════════════════
 // DOMINIC RYKER — STATEFUL NARRATIVE LIBRARY v2.0
 // ═══════════════════════════════════════════════════════════════════
 // Architecture: Hierarchical Narrative Taxonomy + Fuzzy Intent Engine
@@ -16,6 +16,215 @@
 //
 // Fuzzy matching via Fuse.js (Bitap / Levenshtein distance)
 // ═══════════════════════════════════════════════════════════════════
+
+// ═══════════════════════════════════════════════════════════════════
+// PARABLE ENGINE — Word Catch Arrays (shared across all stages)
+// Each array contains every phrase from the word catches specification.
+// Referenced by parable nodes so phrases are defined once, not duplicated.
+// ═══════════════════════════════════════════════════════════════════
+const PARABLE_AGREE = [
+    "yes", "yeah", "yep", "yup", "ya", "yah", "yea", "ye", "y", "yes please", "yes go on", "yes go ahead",
+    "yes please do", "yes sure", "yes ok", "yes okay", "yes of course", "yes definitely", "yes absolutely",
+    "yes please continue", "yes tell me", "yes tell me more", "yes I want to hear", "yes let's do it",
+    "yes let's go", "yeah sure", "yeah ok", "yeah okay", "yeah go on", "yeah go ahead", "yeah tell me",
+    "yeah tell me more", "yeah I'm listening", "yep sure", "yep go on", "yep go ahead", "yep let's go",
+    "yup sure", "yup go ahead", "yup go on", "sure thing", "sure do", "sure go ahead", "sure tell me",
+    "sure let's go", "sure why not", "sure ok", "sure okay", "sure thing go ahead", "absolutely",
+    "absolutely yes", "absolutely go ahead", "absolutely tell me", "absolutely continue", "definitely",
+    "definitely yes", "definitely go ahead", "definitely tell me", "of course", "of course yes",
+    "of course go ahead", "of course continue", "please do", "please go on", "please continue",
+    "please tell me", "ok", "okay", "kk", "k", "kay", "okey", "okie", "okie dokie", "okie dokey", "oki",
+    "oky", "oki doki", "okk", "okkk", "okkkk", "okkkkk", "okee", "okayy", "okaay", "okaaay", "okaaaay",
+    "okayyy", "okayyyy", "okeee", "oke", "okai", "okei", "okkay", "okies", "okiee", "okiii",
+    "mk", "mkay", "mmkay", "mmmkay", "mkk", "mmk",
+    "alright", "all right", "aight", "ight", "right", "fine", "fine go on", "fine tell me",
+    "ready", "I'm ready", "ready now", "ready when you are", "ready go ahead", "ready let's go",
+    "ready tell me", "I'm listening", "I'm all ears", "go for it", "hit me", "hit me with it",
+    "lay it on me", "let's hear it", "let's hear", "let's hear it then", "let's hear what you've got",
+    "show me", "show me then", "show me what you mean", "show me the truth", "go ahead", "go on",
+    "go right ahead", "go ahead then", "go ahead please", "go ahead tell me", "go ahead I'm listening",
+    "continue", "continue please", "continue then", "proceed", "proceed please", "proceed then",
+    "why not", "why not sure", "sure why not", "sounds good", "sounds good to me", "sounds fine",
+    "sounds alright", "that's fine", "that works", "that works for me", "I'm in", "I'm game", "I'm down",
+    "I'm down for that", "let's do it", "let's do this", "let's go", "let's go then", "ok what is it",
+    "ok what do you mean", "ok tell me", "ok tell me then", "ok explain", "ok explain it",
+    "sure what is it", "sure what do you mean", "sure tell me", "alright what's next", "alright tell me",
+    "alright explain", "whatever go on", "whatever tell me", "ok sure", "fine go ahead", "fine tell me",
+    "I guess", "I guess go on", "I guess tell me", "maybe", "maybe sure", "maybe go on",
+    "yeah go for it", "yeah hit me", "yeah sure why not", "yep go for it", "yep hit me",
+    "sure thing boss", "sure thing go on", "do it", "do it then", "do it go ahead", "send it",
+    "send it through", "send it over", "yess", "yees", "yesss", "yeppe", "yupp", "yuppp", "yaah", "yahh",
+    "okee", "okayy", "okaaaay", "okeee", "okkk", "okk", "alrite", "alrighty", "alryt", "shure", "shur",
+    "shure thing", "go ahad", "go ahed", "go head", "go aheads", "lets go", "letsgo", "lets do it",
+    "lets hear it", "k go", "k sure", "k go ahead", "ok go", "ok tell", "ok continue",
+    "yes please proceed", "please go ahead", "please explain further", "certainly",
+    "certainly go ahead", "certainly please continue", "yes definitely", "yes absolutely",
+    "yes let's do this", "hell yes", "hell yeah", "oh yes", "oh yeah", "bring it on",
+    "okay I'm curious", "ok I'm listening", "sure I'm curious", "sure explain", "alright I'm curious"
+];
+
+const PARABLE_CURIOUS = [
+    "maybe", "may be", "maybe yeah", "maybe yes", "maybe ok", "maybe okay", "maybe sure", "maybe later",
+    "maybe now", "maybe go on", "maybe tell me", "maybe explain", "maybe continue", "maybe I guess",
+    "maybe I suppose", "maybe possibly", "perhaps", "perhaps yes", "perhaps maybe", "perhaps go on",
+    "possibly", "possibly yes", "possibly maybe", "I guess", "I guess maybe", "I guess so", "I guess yeah",
+    "kinda", "kind of", "sort of", "sorta", "not sure", "not really sure", "not totally sure",
+    "I'm not sure", "I'm unsure", "I'm not certain", "we'll see", "maybe we'll see",
+    "we'll see I guess", "depends", "it depends", "depends what", "depends why", "depends how",
+    "depends on what", "depends on why", "depends what you mean", "depends what it is",
+    "depends what you want", "depends I guess", "depends maybe", "depends on the story",
+    "depends on the situation", "depends who you are", "depends what you're asking",
+    "depends honestly", "depends really", "maybe depends", "what is it", "what is it then",
+    "what is it exactly", "what is it about", "what is it supposed to be", "what is this",
+    "what's this", "whats this", "what's it", "what is it though", "what are you talking about",
+    "what are you referring to", "what do you mean", "what do you mean exactly",
+    "what do you mean by that", "what are you saying", "what are you asking", "tell me what it is",
+    "just tell me what it is", "ok what is it", "alright what is it", "what story",
+    "what story are you talking about", "what story is this", "what story do you mean",
+    "which story", "which story exactly", "what story is that", "what story are we talking about",
+    "what story do you have", "what kind of story", "what story do you want to tell", "why",
+    "why though", "why exactly", "why is that", "why do you ask", "why would I", "why should I",
+    "why tell me that", "why say that", "why are you asking", "why are you saying that",
+    "why do you want to know", "why does that matter", "why would that matter", "why should I care",
+    "why should I believe you", "why should I listen", "why does it matter", "what for",
+    "what for though", "for what reason", "what's the reason", "what's your point",
+    "maybe what is it", "maybe tell me", "depends what it is", "depends what you're saying",
+    "maybe depends what", "so what is it", "so what are you saying", "ok why", "alright why",
+    "what is this about", "what's this about", "what are you getting at",
+    "what are you trying to say", "what are you implying", "what's the catch", "what's the angle",
+    "what's the point", "what's the deal", "what's going on", "what's up", "whats up",
+    "what you mean", "what u mean", "what's that supposed to mean", "why tho", "why tho lol",
+    "why would I do that", "maybee", "mayb", "mayby", "depnds", "depend", "dependz", "whats it",
+    "what it", "wat is it", "wht is it", "wat story", "wht story", "wy", "huh why", "why tho",
+    "depends lol", "maybe idk", "I don't know", "idk", "idk maybe", "not sure", "not sure yet",
+    "we'll see", "I guess maybe", "could be"
+];
+
+const PARABLE_FEAR = [
+    "not sure", "not really sure", "not too sure", "not quite sure", "I'm not sure", "I am not sure",
+    "I'm unsure", "I am unsure", "not certain", "I'm not certain", "I am not certain", "don't know",
+    "I don't know", "idk", "i dunno", "not sure yet", "not sure about that", "not convinced",
+    "I'm not convinced", "maybe not sure", "maybe I'm not sure", "not sure honestly", "not sure really",
+    "I guess I'm not sure", "I guess not sure", "unsure", "very unsure", "a bit unsure", "uncertain",
+    "pretty uncertain", "we'll see", "I guess we'll see", "maybe later", "maybe not", "no", "nope", "nah",
+    "na", "no thanks", "no thank you", "no way", "no chance", "not happening", "not interested",
+    "I'm not interested", "not really interested", "don't want to", "I don't want to", "I'd rather not",
+    "rather not", "I'll pass", "pass", "not now", "not today", "maybe later", "not right now", "I'm good",
+    "I'm fine", "leave it", "forget it", "skip", "skip that", "no thanks I'm good", "absolutely not",
+    "definitely not", "hell no", "not a chance", "not gonna happen", "I refuse", "I'm refusing",
+    "not doing that", "I'm not doing that", "I'm not going to do that", "drop it", "stop", "just stop",
+    "I don't trust you", "I do not trust you", "don't trust you", "not trusting you",
+    "I don't believe you", "I don't believe that", "don't believe you", "I doubt that", "I doubt you",
+    "this feels wrong", "this sounds wrong", "something feels off", "something seems off",
+    "this is suspicious", "you're suspicious", "I don't buy it", "I'm skeptical", "very skeptical",
+    "sounds like a scam", "this feels like a scam", "this sounds like a trap",
+    "I'm not comfortable", "this is sketchy", "you seem sketchy", "I don't trust this",
+    "this feels unsafe", "this feels dangerous", "I don't feel safe", "this makes me uncomfortable",
+    "I'm uncomfortable", "this is weird", "this is creepy", "this feels creepy", "this feels wrong",
+    "I'm uneasy", "I'm nervous", "I'm worried", "I'm concerned", "this is concerning",
+    "something is off", "this is shady", "this seems shady", "I don't like this",
+    "I don't like where this is going", "why should I", "why should I do that",
+    "why should I trust you", "why should I listen", "why should I care",
+    "why should I believe you", "why would I", "why would I do that", "why would I trust you",
+    "why would I listen", "why would I believe you", "give me a reason", "give me one reason",
+    "what's the reason", "what's in it for me", "what do I get out of it", "why does this matter",
+    "why does that matter", "why should that matter", "why are you asking", "why do you want that",
+    "what's the catch", "what's the catch here", "what's the angle", "what's the trick",
+    "what's the scam", "what's the trap", "what's going on", "what are you trying to do",
+    "what are you trying to get", "what are you after", "I'm leaving", "I'm done", "I'm out",
+    "I'm not doing this", "never mind", "stop messaging me", "leave me alone", "I'm done here",
+    "I'm going", "not shure", "not shur", "not shor", "noo", "nooo", "nop", "nopeee", "nahh", "naah",
+    "dont trust you", "dont trust u", "i dont trust u", "i dont trust this", "why shud I",
+    "why shuld I", "why shld I", "wy should I", "naw", "no thx", "no thnx", "dont trust",
+    "not trusting", "maybe not", "probably not", "I don't think so", "I doubt it", "not really",
+    "not really interested", "I'm not convinced", "I'm hesitant", "I'm hesitant about that"
+];
+
+const PARABLE_HUMOR = [
+    "lol", "loll", "lolol", "lololol", "lmao", "lmfao", "rofl", "roflmao", "haha", "hahaha", "ha ha", "hah",
+    "hehe", "hehehe", "heh", "hehh", "lol sure", "lol ok", "lol yeah", "lol what", "lol why", "lol go on",
+    "lol tell me", "lol ok sure", "sure dude", "sure man", "sure buddy", "sure bro", "sure mate",
+    "sure mate lol", "sure champ", "sure chief", "sure thing buddy", "sure whatever",
+    "yeah sure dude", "ok dude", "ok man", "ok bro", "ok buddy", "ok champ", "ok chief", "ok mate",
+    "ok boss", "ok boss lol", "ok captain", "ok commander", "ok general", "ok master", "ok king",
+    "ok boss man", "ok boss whatever", "ok sure boss", "alright boss", "hit me", "hit me then",
+    "hit me with it", "hit me with the story", "hit me with the truth", "hit me with it then",
+    "go on hit me", "alright hit me", "ok hit me", "yeah hit me", "go on then", "go on mate",
+    "go ahead genius", "go ahead Sherlock", "go ahead professor", "go ahead philosopher",
+    "alright go on", "fine go on", "fine tell me", "ok go on then", "alright let's hear it",
+    "let's hear it then", "this should be good", "this ought to be interesting",
+    "oh this should be good", "alright this should be fun", "entertain me", "go on entertain me",
+    "impress me", "try me", "go on try me", "ok whatever", "sure whatever", "yeah whatever",
+    "fine whatever", "whatever dude", "whatever man", "whatever mate", "ok sure whatever",
+    "ok sure lol", "yeah sure lol", "sure thing lol", "alright sure lol", "ok sure buddy",
+    "sure buddy", "ok sure mate", "lol what", "lol what is this", "lol what are you talking about",
+    "lol why", "lol ok why", "haha what", "haha why", "haha ok", "yeah right mate", "sure thing mate",
+    "ok mate", "righto mate", "go on then mate", "alright mate", "yeah alright mate", "lol ok", "lol k",
+    "k lol", "kk lol", "ok lol", "sure lol", "oh boy", "here we go", "here we go again",
+    "alright here we go", "this better be good", "this better be worth it", "alright genius",
+    "ok smart guy", "go on big brain", "go on mastermind", "ok mastermind", "lool", "loool", "lolz",
+    "lmaoo", "lmaooo", "hahaa", "haaha", "okey boss", "okee boss", "surr dude", "shure dude",
+    "ok if you say so", "sure if you say so", "alright if you say so", "go on then I guess",
+    "ok tell me then"
+];
+
+const PARABLE_WEIRD = [
+    "this is weird", "this is really weird", "this is very weird", "this is kinda weird",
+    "this is kind of weird", "this feels weird", "this seems weird", "this is strange",
+    "this is really strange", "this is very strange", "this feels strange", "this seems strange",
+    "this is odd", "this is really odd", "this is pretty odd", "this feels odd", "this seems odd",
+    "this is a bit weird", "this is kinda strange", "this is a little weird", "this is getting weird",
+    "this is getting strange", "this is kinda odd", "this is a bit odd", "this is uncomfortable",
+    "this feels uncomfortable", "this is awkward", "this feels awkward", "this is kinda awkward",
+    "this is making me uncomfortable", "this is a bit uncomfortable", "this feels off",
+    "something feels off", "something is off", "this seems off", "this feels wrong", "this seems wrong",
+    "something is weird here", "something is strange here", "something is not right",
+    "this isn't right", "this doesn't feel right", "this is creepy", "this feels creepy",
+    "this is kinda creepy", "this is a little creepy", "this is getting creepy", "this is unsettling",
+    "this feels unsettling", "this is disturbing", "this feels disturbing", "what is this",
+    "what is going on", "what's going on", "what's happening", "what is happening here",
+    "what is this supposed to be", "what are you doing", "what are you talking about",
+    "this is awkward lol", "this is weird lol", "ok this is weird", "alright this is weird",
+    "uh this is weird", "um this is weird", "this feels like a trap", "this seems like a trap",
+    "this seems sketchy", "this feels sketchy", "this is sketchy", "this feels shady",
+    "this seems shady", "this is too weird", "this is getting too weird", "this is too strange",
+    "this is too much", "I don't like this", "I don't like where this is going", "this is sus",
+    "this feels sus", "this is kinda sus", "this is weird bro", "this is weird man",
+    "this is weird dude", "weird", "so weird", "kinda weird", "pretty weird", "really weird",
+    "wierd", "weirdd", "strnage", "strangee", "oddde", "weird lol", "wierd lol", "this wierd",
+    "this is wierd"
+];
+
+const PARABLE_FAKE = [
+    "this sounds fake", "this seems fake", "this is fake", "that sounds fake", "that seems fake",
+    "this feels fake", "this looks fake", "this is so fake", "this is really fake",
+    "this seems very fake", "this sounds made up", "this seems made up", "this feels made up",
+    "that sounds made up", "this sounds like a story", "this sounds like fiction",
+    "this sounds like a movie", "this sounds like a script",
+    "this sounds like a story someone invented", "you're lying", "this is a lie", "that's a lie",
+    "you're making this up", "you just made that up", "that's made up", "this is fabricated",
+    "this is invented", "you invented that", "fake", "so fake", "this is so fake", "lol fake",
+    "fake story", "fake af", "fake as hell", "this is cap", "that's cap", "no way that's real",
+    "this sounds like a scam", "this is a scam", "this feels like a scam", "this looks like a scam",
+    "this is a scam story", "this is some scam", "this sounds like a setup",
+    "this sounds like a trap", "this feels like a trap", "this seems like bait",
+    "I don't believe you", "I don't buy that", "I don't buy it", "not buying it", "I doubt that",
+    "that's hard to believe", "that's unbelievable", "that's not believable",
+    "that doesn't sound believable", "this isn't believable", "that's not real", "this isn't real",
+    "this can't be real", "no way that's real", "that's impossible", "that didn't happen",
+    "that never happened", "that's not true", "yeah right", "yeah right lol", "sure lol",
+    "sure buddy", "sure dude", "sure mate", "ok sure", "ok sure lol", "alright sure",
+    "this sounds like a thriller", "this sounds like a tv show", "this sounds like a plot",
+    "this sounds like a novel", "this sounds like a made-up story", "what",
+    "what are you talking about", "what even is this", "this makes no sense", "that makes no sense",
+    "this sounds ridiculous", "this is ridiculous", "nah fake", "nope fake", "not real", "cap", "bs",
+    "bullshit", "fak", "faake", "fakee", "fke", "fakke", "fakey", "mdae up", "madeup", "maked up",
+    "this sound fake", "this sonds fake", "this doesn't add up", "this doesn't sound right",
+    "something about this is off", "this story doesn't add up", "this isn't convincing",
+    "this feels staged", "this feels scripted", "complete bullshit", "this is bullshit",
+    "that's bullshit", "this is total bullshit", "that's total bullshit", "this is nonsense",
+    "that's nonsense"
+];
 
 const DOMINIC_LIBRARY = [
 
@@ -44,15 +253,134 @@ const DOMINIC_LIBRARY = [
     {
         "node_id": "TOUR_REJECT_NODE",
         "required_state": "TOUR_OFFER",
-        "next_state": "EXPECT_SYS_BRIDGE",
+        "next_state": "any",
         "training_phrases": [
             "no", "nah", "i'm good", "skip", "no thanks", "later", "don't want to"
         ],
         "responses": {
             "universal": {
-                "dialogue": "Fair enough. Some people prefer to stumble around in the dark. So tell me — are you here to investigate what happened? Or are you just curious how influence works?",
-                "ui_action": null
+                "dialogue": "Noted.",
+                "ui_action": "handleTourRejection();"
             }
+        }
+    },
+
+    // ───────────────────────────────────────────────────────────────
+    // DOMAIN T: TRUTH / OPINION / EXPLAIN INTENTS
+    // Triggered outside tour — activates section commentary hover
+    // ───────────────────────────────────────────────────────────────
+
+    // T1 — SHOW ME THE TRUTH
+    {
+        "node_id": "SHOW_ME_TRUTH",
+        "required_state": "any",
+        "next_state": "any",
+        "training_phrases": [
+            "show me the truth", "show me the truth dominic", "show me the truth about this",
+            "show me the real truth", "show me the real story", "show me the real version",
+            "show me what really happened", "show me what actually happened",
+            "show me whats really going on", "show me whats really happening",
+            "show the truth", "show the real truth", "show the real story", "show what really happened",
+            "tell me the truth", "tell me the real truth", "tell me the truth about this",
+            "tell me what really happened", "tell me what actually happened",
+            "tell me whats really going on", "tell me the real story", "tell me the real version",
+            "give me the truth", "give me the real truth", "give me the real story",
+            "give me the truth about this",
+            "i want the truth", "i want the real truth", "i want to know the truth",
+            "i want to know what really happened", "i want the real story", "i want the real version",
+            "let me see the truth", "let me see the real story", "let me see whats real",
+            "can you show me the truth", "can you tell me the truth",
+            "can you tell me what really happened", "can you show me what really happened",
+            "so whats the truth", "so whats really going on", "so whats actually going on",
+            "so what really happened", "whats the truth", "whats the real truth",
+            "whats the real story", "whats the real version",
+            "what actually happened here", "what really happened here",
+            "truth", "the truth", "real truth", "real story", "real version", "real answer",
+            "what happened", "what happened here", "what really happened",
+            "show me the trueth", "show me the trth", "show me the tru", "show me teh truth",
+            "sho me the truth", "show me the trooth", "show me the trurh", "show truth",
+            "tell me the trueth", "tell me the trooth", "tell me the tru",
+            "tel me the truth", "tell me teh truth",
+            "giv me the truth", "give me teh truth", "giv the truth"
+        ],
+        "responses": {
+            "universal": { "dialogue": "Truth is not a destination. It is a lens. Look at what is in front of you.", "ui_action": "activateSectionCommentary();" }
+        }
+    },
+
+    // T2 — WHAT DO YOU THINK
+    {
+        "node_id": "WHAT_DO_YOU_THINK",
+        "required_state": "any",
+        "next_state": "any",
+        "training_phrases": [
+            "what do you think", "what do you think dominic", "what do you think about this",
+            "what do you think about it", "what do you think happened",
+            "what do you think really happened", "what do you think the truth is",
+            "what do you think is going on", "what do you think is happening",
+            "what do you think about the case", "what do you think about isla",
+            "what do you think about ethel",
+            "so what do you think", "so what do you think about this",
+            "so what do you think really happened", "so what do you think is true",
+            "what do you make of this", "what do you make of all this",
+            "what do you make of the situation", "what do you make of the story",
+            "what do you make of the case",
+            "your thoughts", "your opinion", "what's your opinion",
+            "what is your opinion", "what do you make of it",
+            "what do you think then", "so your view", "your take",
+            "what do you thinkk", "what do you thnk", "what do you thnk about this",
+            "what do you thik", "what do you thikn", "what do you tink",
+            "what do you tthink", "what do you thignk",
+            "wht do you think", "wat do you think", "what do yu think", "what do yo think",
+            "what do u think", "what do u think about this",
+            "what do u think happened", "what do u think is true", "so what do u think"
+        ],
+        "responses": {
+            "universal": { "dialogue": "You want my opinion? Look around you. This section is my opinion.", "ui_action": "activateSectionCommentary();" }
+        }
+    },
+
+    // T3 — IS THIS TRUE
+    {
+        "node_id": "IS_THIS_TRUE",
+        "required_state": "any",
+        "next_state": "any",
+        "training_phrases": [
+            "is this true", "is this actually true", "is this really true",
+            "is this the truth", "is this real", "is this actually real",
+            "is this accurate", "is this correct", "is this right",
+            "is this what happened", "is this what really happened",
+            "is this what actually happened", "is this the real story", "is this the real version",
+            "so is this true", "so is this actually true", "so is this real",
+            "so is this what happened", "so this is true", "so this really happened",
+            "so this is the truth",
+            "can you confirm this", "can you confirm if this is true",
+            "can you confirm this happened", "can you tell me if this is true",
+            "can you tell me if this actually happened", "is this legit", "is this real or not",
+            "true", "really", "real", "is it true",
+            "is this tru", "is this truue", "is this ture", "is this truw",
+            "is this trrue", "is ths true", "is tihs true",
+            "is this treu", "is this ttrue", "is thiis true"
+        ],
+        "responses": {
+            "universal": { "dialogue": "True enough to keep you here. That should concern you.", "ui_action": "activateSectionCommentary();" }
+        }
+    },
+
+    // T4 — EXPLAIN THIS
+    {
+        "node_id": "EXPLAIN_THIS",
+        "required_state": "any",
+        "next_state": "any",
+        "training_phrases": [
+            "explain this", "explain this to me", "explain whats going on",
+            "explain what happened", "explain the story", "explain the case",
+            "can you explain this", "can you explain what happened",
+            "help me understand this", "help me understand whats going on",
+            "what does this mean", "what am i looking at", "what is this about"
+        ],
+        "responses": {
+            "universal": { "dialogue": "You want me to explain it. Fine. Look closer.", "ui_action": "activateSectionCommentary();" }
         }
     },
 
@@ -161,7 +489,7 @@ const DOMINIC_LIBRARY = [
             "what is the story behind your website",
             "what is the story behind this site",
             "what's the backstory", "tell me the story",
-            "what happened", "what is the story",
+            "what is the story",
             "what's the background", "give me the story",
             "tell me what happened", "what's going on"
         ],
@@ -882,7 +1210,7 @@ const DOMINIC_LIBRARY = [
             "coastal oregon woman"
         ],
         "responses": {
-            "universal": { "dialogue": "Ah. Isla's mother. Isla's mother isn't publicly documented anywhere formal. No birth registry floating around, no archived interview, no sentimental tribute page. That absence is intentional. Some stories survive because they're told. Others survive because they're protected. What's interesting isn't her name. It's the pattern. Isla carries restraint the way some people carry inherited jewelry — not flashy, not performative. That kind of restraint is almost always maternal in origin. Learned young. Modeled daily. A woman who didn't raise her voice to win arguments… but didn't lose them either. If you're asking biologically — the name that surfaces in quieter records is Maris Vance. Not a public figure. No social trail worth following. Background in coastal Oregon. Left the visible grid before most people knew what that meant. But here's the better question. Why are you asking? Are you trying to understand Isla… or are you trying to understand what shaped her? There's a difference. And the second one tells me more about you than the first ever could.", "ui_action": null }
+            "universal": { "dialogue": "Ah. Isla's mother. Isla's mother isn't publicly documented anywhere formal. No birth registry floating around, no archived interview, no sentimental tribute page. That absence is intentional. Some stories survive because they're told. Others survive because they're protected. What's interesting isn't her name. It's the pattern. Isla's mother carried restraint the way some people carry inherited jewelry. Like it meant something personal. That kind of restraint is almost always maternal in origin. Learned young. Modeled daily. A woman who didn't raise her voice to win arguments…  The name that surfaces in quieter records is Maris Vance. Not a public figure. No social trail worth following. Background invisible. But here's the better question. Why are you asking? Are you trying to understand Isla?… or are you trying to understand what shaped her noise? There's a difference. And the second one tells me more about you than the first ever could.", "ui_action": null }
         }
     },
 
@@ -1369,8 +1697,8 @@ const DOMINIC_LIBRARY = [
             "how ya going", "hows it goin",
         ],
         "responses": {
-            "universal": { "dialogue": "Hello. Take your time. I find most people rush through greetings to avoid looking at whatever they compromised today. How are you, really?.", "ui_action": null },
-            "nudge": { "dialogue": "There is no need to perform. A pause usually just means someone is arranging their words to ensure they remain the hero of their own story. I am happy to wait.", "ui_action": null }
+            "universal": { "dialogue": "Hello. How are you, really?.", "ui_action": null },
+            "nudge": { "dialogue": "There is no need to perform. I am happy to wait.", "ui_action": null }
         }
     },
 
@@ -1391,8 +1719,8 @@ const DOMINIC_LIBRARY = [
             "im just taking it easy", "just existing"
         ],
         "responses": {
-            "universal": { "dialogue": "People often mistake a lack of friction for peace. What did you decide not to look at today to keep things so quiet? Or would you prefer to hear my story first?", "ui_action": null },
-            "nudge": { "dialogue": "I don't mind the silence. 'Fine' is usually just a polite word for surrender. Shall I tell you my story?", "ui_action": null }
+            "universal": { "dialogue": "People often mistake a lack of friction for peace. Would you like to hear my story?", "ui_action": null },
+            "nudge": { "dialogue": "Shall I tell you my story?", "ui_action": null }
         }
     },
 
@@ -1694,614 +2022,271 @@ const DOMINIC_LIBRARY = [
     },
 
     // ═══════════════════════════════════════════════════════════════════
-    // DOMAIN H: MORAL PARABLES (Deep Funnels — weighted 60/30/10)
-    // Parable 6 = The Wharf (60%), Parable 7 = The Parking (30%),
-    // Parable 4 = Bat & Ball (10%)
+    // DOMAIN H: THE PARABLE ENGINE — Single Story Funnel (The Staircase)
+    // 4 stages: READY_GATE → HELP_DECISION → COMFORT_CHECK → REVEAL
+    // Each stage has category-matched sub-nodes sharing required_state.
+    // Fuzzy matcher picks the best category → reframe fires → story continues.
+    // PARABLE LOCK handles any unmatched input (forces progression).
     // ═══════════════════════════════════════════════════════════════════
 
+    // ENTRY NODE — Used by routeToParable() from the chit-chat funnel
+    {
+        "node_id": "PARABLE_ENTRY",
+        "required_state": "EXPECT_PARABLE_LAUNCH",
+        "next_state": "PARABLE_READY_GATE",
+        "is_tethered": true,
+        "training_phrases": [...PARABLE_AGREE, ...PARABLE_CURIOUS, ...PARABLE_FEAR, ...PARABLE_HUMOR, ...PARABLE_WEIRD, ...PARABLE_FAKE],
+        "responses": {
+            "universal": { "dialogue": "Let me show you something.\n\nA story about trust, compliance, and what happens when you follow a stranger down the stairs.\n\nAre you ready?", "ui_action": null }
+        }
+    },
+
     // ─────────────────────────────────────────────────────────────────
-    // PARABLE 6: THE WHARF / SYDNEY POLISH (8 nodes)
+    // STAGE 1: READY GATE — "Are you ready?"
+    // 6 category-matched reframes, then story begins
     // ─────────────────────────────────────────────────────────────────
 
-    // P6.1 — Sydney Polish (Entry with conversational bridge)
+    // S1: Agreement → Story start
     {
-        "node_id": "P6_SYDNEY_POLISH",
-        "required_state": "PARABLE_6_ACTIVE",
-        "next_state": "P6_EXPECT_DECENT",
+        "node_id": "PARABLE_GATE_AGREE",
+        "required_state": "PARABLE_READY_GATE",
+        "next_state": "PARABLE_HELP_DECISION",
         "is_tethered": true,
-        "training_phrases": [
-            "yes", "yeah", "sure", "im up for it", "i'm up for it",
-            "bring it on", "lets go", "let's go", "go ahead",
-            "ok", "okay", "test me", "try me", "i can handle it",
-            "alright", "why not", "sure thing", "yep",
-            "do it", "go for it", "hit me", "ready",
-            "sounds interesting", "im curious", "lets see"
-        ],
+        "training_phrases": PARABLE_AGREE,
         "responses": {
-            "Q2_high_positive": { "dialogue": "Good. You sound ready. That honesty will matter in a moment. Sydney's humidity is a weight tonight, isn't it? Just walked past the Opera Bar — everyone's laughing, tapping their phones, trusting the ferry schedule like it's a divine decree. You ever get the feeling that this whole city is just one big rehearsal for an audience that isn't watching?", "ui_action": null },
-            "Q4_low_positive": { "dialogue": "Good. Speaking of pressure… Sydney's humidity is a weight tonight, isn't it? Just walked past the Opera Bar — everyone's laughing, tapping their phones, trusting the ferry schedule like it's a divine decree. You ever get the feeling that this whole city is just one big rehearsal for an audience that isn't watching?", "ui_action": null },
-            "Q1_high_negative": { "dialogue": "Your resistance is noted. But resistance doesn't mean immunity — it just means you haven't been tested yet. Let me show you something. Sydney's humidity is a weight tonight, isn't it? Just walked past the Opera Bar — everyone's laughing, tapping their phones, trusting the ferry schedule like it's a divine decree. You ever get the feeling that this whole city is just one big rehearsal for an audience that isn't watching?", "ui_action": null },
-            "Q3_low_negative": { "dialogue": "Hesitation. That's interesting. Let's see if it holds. Sydney's humidity is a weight tonight, isn't it? Just walked past the Opera Bar — everyone's laughing, tapping their phones, trusting the ferry schedule like it's a divine decree. You ever get the feeling that this whole city is just one big rehearsal for an audience that isn't watching?", "ui_action": null },
-            "nudge": { "dialogue": "We were painting a picture. Sydney. Humidity. Opera Bar. Everyone laughing, trusting the schedule. Do you ever feel like this city is one big rehearsal for an audience that isn't watching?", "ui_action": null }
+            "universal": { "dialogue": "Good.\n\nMost people say yes before they know what they're agreeing to.\n\nPicture this.\n\nYou're walking past a clean, quiet apartment building. A man in a faded maintenance polo, looking slightly winded, stops you. He's propping a heavy, taped-up box against his knee.\n\nHe asks:\n\n\"Mind helping me take this down the stairs?\"\n\nDo you help him?", "ui_action": null }
         }
     },
 
-    // P6.2 — Sydney Polish / Blinkers
+    // S1: Curiosity → Story start
     {
-        "node_id": "P6_POLISH",
-        "required_state": "P6_EXPECT_DECENT",
-        "next_state": "P6_EXPECT_2AM",
+        "node_id": "PARABLE_GATE_CURIOUS",
+        "required_state": "PARABLE_READY_GATE",
+        "next_state": "PARABLE_HELP_DECISION",
         "is_tethered": true,
-        "training_phrases": [
-            "yeah kind of", "sometimes", "i guess", "maybe",
-            "what do you mean", "not really", "no", "yes",
-            "i see what you mean", "thats deep", "interesting point",
-            "everyone is pretending", "we are all pretending",
-            "yeah i get that", "true", "fair point",
-            "i dont think so", "nah", "not sure",
-            "what are you getting at", "go on", "continue"
-        ],
+        "training_phrases": PARABLE_CURIOUS,
         "responses": {
-            "Q2_high_positive": { "dialogue": "It's the 'Sydney Polish.' We dress up the concrete, we queue for the L2 Light Rail, and we assume that because the lights are on, someone is actually in charge. We call it 'civilisation.' I call it a collective agreement to keep the blinkers on so we don't have to look at the gaps. You're decent, though. I can tell. You're the type who'd help a tourist find the right wharf or hold the door at a Coles. You value that 'good person' currency. It makes the day go faster, right?", "ui_action": null },
-            "Q4_low_positive": { "dialogue": "It's the 'Sydney Polish.' We dress up the concrete, assume the lights mean someone's in charge. I call it blinkers. You're decent, though. The type who'd hold the door at Coles. That 'good person' currency — it makes the day go faster, right?", "ui_action": null },
-            "Q1_high_negative": { "dialogue": "Your pushback is noted. But whether you agree or not, the pattern exists. And you're still decent — I can tell. You'd help a tourist find the right wharf. You value that 'good person' currency. Makes the day go faster, right?", "ui_action": null },
-            "Q3_low_negative": { "dialogue": "Brief. Fine. Here's the point — you're decent. I can tell. You'd hold a door. Help a stranger. That 'good person' currency. It makes the day go faster, right?", "ui_action": null },
-            "nudge": { "dialogue": "We were talking about the Sydney Polish. You're decent — the type who'd hold a door. That 'good person' currency. It makes the day go faster, right?", "ui_action": null }
+            "universal": { "dialogue": "Fair question.\n\nIt's a very short story. About trust. And the architecture of compliance.\n\nPicture this.\n\nYou're walking past a clean, quiet apartment building. A man in a faded maintenance polo, looking slightly winded, stops you. He's propping a heavy, taped-up box against his knee.\n\nHe asks:\n\n\"Mind helping me take this down the stairs?\"\n\nDo you help him?", "ui_action": null }
         }
     },
 
-    // P6.3 — 2AM Rocks Setup
+    // S1: Fear/Hesitation → Story start
     {
-        "node_id": "P6_2AM_ROCKS",
-        "required_state": "P6_EXPECT_2AM",
-        "next_state": "P6_EXPECT_STEP",
+        "node_id": "PARABLE_GATE_FEAR",
+        "required_state": "PARABLE_READY_GATE",
+        "next_state": "PARABLE_HELP_DECISION",
         "is_tethered": true,
-        "training_phrases": [
-            "yeah it does", "i suppose", "yes", "sure", "right",
-            "yeah i help people", "i try to be helpful",
-            "i guess so", "most of the time", "generally",
-            "no not really", "i mind my own business",
-            "sometimes", "depends", "depends on the situation",
-            "whats your point", "where is this going",
-            "thats me", "yeah fair enough", "low friction"
-        ],
+        "training_phrases": PARABLE_FEAR,
         "responses": {
-            "Q2_high_positive": { "dialogue": "Exactly. It's low-friction living. Now, imagine it's 2 AM. You're walking toward the Rocks. A bloke in a high-vis vest and a lanyard — looks like he's from 'Harbour Management' — is standing by a locked maintenance gate. He's calm, under-reacting, and he's dropped a stack of small boxes that were perched on top of the heavy boxes he's carrying. He steadies. He just nods at you and says, 'Mind giving us a hand with the gate? The sensor's acting up.' You have a moment of unease but he opens a security door with his pass. People pass by. He nods at another person and they offer to help. You'd step toward him, wouldn't you?", "ui_action": null },
-            "Q4_low_positive": { "dialogue": "Low-friction living. Now imagine — 2 AM, the Rocks. A bloke in high-vis with a lanyard. Calm. Boxes stacked. He nods and says, 'Mind giving us a hand with the gate? Sensor's acting up.' He opens the door with his pass. Others offer to help. You'd step toward him, wouldn't you?", "ui_action": null },
-            "Q1_high_negative": { "dialogue": "Your resistance doesn't change the setup. Imagine it's 2 AM. Walking toward the Rocks. A man in high-vis and a lanyard, balancing boxes. 'Mind giving us a hand with the gate?' He's calm. Others have already helped. You'd step toward him. Wouldn't you?", "ui_action": null },
-            "Q3_low_negative": { "dialogue": "Fine. 2 AM. The Rocks. Man with boxes. High-vis. Lanyard. 'Mind giving us a hand?' Others are helping. You'd step toward him, wouldn't you?", "ui_action": null },
-            "nudge": { "dialogue": "We are at the Rocks. 2 AM. The man with the boxes and the lanyard. He's asking for help. Would you step toward him?", "ui_action": null }
+            "universal": { "dialogue": "Sensible instinct.\n\nBut the story doesn't work unless someone says yes. And someone always says yes.\n\nPicture this.\n\nYou're walking past a clean, quiet apartment building. A man in a faded maintenance polo, looking slightly winded, stops you. He's propping a heavy, taped-up box against his knee.\n\nHe asks:\n\n\"Mind helping me take this down the stairs?\"\n\nDo you help him?", "ui_action": null }
         }
     },
 
-    // P6.4 — Would You Step?
+    // S1: Humor/Dismissive → Story start
     {
-        "node_id": "P6_WOULD_YOU_STEP",
-        "required_state": "P6_EXPECT_STEP",
-        "next_state": "P6_EXPECT_AUTHORITY",
+        "node_id": "PARABLE_GATE_HUMOR",
+        "required_state": "PARABLE_READY_GATE",
+        "next_state": "PARABLE_HELP_DECISION",
         "is_tethered": true,
-        "training_phrases": [
-            "yes", "probably", "i guess so", "maybe", "i would",
-            "yeah i would", "of course", "sure", "why not",
-            "no", "no way", "i wouldnt", "i wouldn't", "hell no",
-            "id be careful", "i'd be cautious", "depends",
-            "i might", "possibly", "not sure",
-            "id help", "i'd help", "yeah id help him",
-            "i dont know", "i'd have to think about it"
-        ],
+        "training_phrases": PARABLE_HUMOR,
         "responses": {
-            "Q2_high_positive": { "dialogue": "Of course you would. That honesty is refreshing. You'd think: he's working. He's got the gear. I'm just being helpful. You wouldn't ask for his ID. His hands are full. That's 'rude.' You'd rather be potentially in danger than seem inconsiderate or socially awkward. You'd outsource your safety to his 'authority costume. Wouldn't you?'", "ui_action": null },
-            "Q4_low_positive": { "dialogue": "Oh yes you wwould. You wouldn't even hesitate. He's working, he's got the gear. Asking for ID feels rude. You'd outsource your safety to his 'authority costume.'", "ui_action": null },
-            "Q1_high_negative": { "dialogue": "You say no. But let me describe what would actually happen. You'd think: he's working. He's got the lanyard. Asking for ID with his arms full feels aggressive. You'd rather risk danger than seem socially awkward. You'd outsource your safety to his 'authority costume'. Your a nice person arn't you?", "ui_action": null },
-            "Q3_low_negative": { "dialogue": "You might pause. But then I'd drop something small and sigh. I might mention 'the safety inspector on the next shift.' I'd use a technical term you don't quite know. You'd fill in the blanks with your own logic and move to help. You'd outsource your safety to his 'authority costume'. Your a nice person arn't you?", "ui_action": null },
-            "nudge": { "dialogue": "Stay with me. The man at the gate. Would you step toward him, or walk away?", "ui_action": null }
+            "universal": { "dialogue": "Humor is a common coping mechanism. Keep it if you like.\n\nYou'll still walk down the stairs.\n\nPicture this.\n\nYou're walking past a clean, quiet apartment building. A man in a faded maintenance polo, looking slightly winded, stops you. He's propping a heavy, taped-up box against his knee.\n\nHe asks:\n\n\"Mind helping me take this down the stairs?\"\n\nDo you help him?", "ui_action": null }
         }
     },
 
-    // P6.5 — Authority Costume / Skepticism Handler
+    // S1: "This is weird" → Story start
     {
-        "node_id": "P6_AUTHORITY",
-        "required_state": "P6_EXPECT_AUTHORITY",
-        "next_state": "P6_EXPECT_STAIRS",
+        "node_id": "PARABLE_GATE_WEIRD",
+        "required_state": "PARABLE_READY_GATE",
+        "next_state": "PARABLE_HELP_DECISION",
         "is_tethered": true,
-        "training_phrases": [
-            "thats not true", "i would ask", "i wouldnt fall for that",
-            "i'd check", "id be suspicious", "no way",
-            "maybe", "i guess", "thats scary", "thats creepy",
-            "authority costume", "makes sense", "youre right",
-            "yeah probably", "fair point", "i see what you mean",
-            "so what happens next", "then what", "go on",
-            "what happens", "continue", "keep going",
-            "i dont believe that", "not me"
-        ],
+        "training_phrases": PARABLE_WEIRD,
         "responses": {
-            "Q2_high_positive": { "dialogue": "So you help. You pick up the objects, hold the heavy door. I sigh and say, 'Cheers. Mind bringing those down the stairs?'. You follow because I'm gone and just leaving the boxes there feels wrong somehow. Yes?", "ui_action": null },
-            "Q4_low_positive": { "dialogue": "I say, 'Cheers. Mind bringing those down the stairs?' I walk. You follow because leaving the boxes feels wrong. Yes?", "ui_action": null },
-            "Q1_high_negative": { "dialogue": "You'd check? No. You wouldn't. Because in the moment, checking feels paranoid. Yes?", "ui_action": null },
-            "Q3_low_negative": { "dialogue": "Maybe. But 'maybe' in the moment becomes 'yes.' You help. The door. The boxes. I say, 'Mind bringing those down the stairs?' I walk. You follow. Yes?.", "ui_action": null },
-            "nudge": { "dialogue": "We were going down the stairs. You helped. You held the door. Now I'm walking and you're following. Stay with the moment. You follow right?.", "ui_action": null }
+            "universal": { "dialogue": "Awareness usually arrives late.\n\nAbout the second flight of stairs.\n\nPicture this.\n\nYou're walking past a clean, quiet apartment building. A man in a faded maintenance polo, looking slightly winded, stops you. He's propping a heavy, taped-up box against his knee.\n\nHe asks:\n\n\"Mind helping me take this down the stairs?\"\n\nDo you help him?", "ui_action": null }
         }
     },
 
-    // P6.6 — Down the Stairs
+    // S1: "This sounds fake" → Story start
     {
-        "node_id": "P6_DOWN_STAIRS",
-        "required_state": "P6_EXPECT_STAIRS",
-        "next_state": "P6_EXPECT_PYLON",
+        "node_id": "PARABLE_GATE_FAKE",
+        "required_state": "PARABLE_READY_GATE",
+        "next_state": "PARABLE_HELP_DECISION",
         "is_tethered": true,
-        "training_phrases": [
-            "ok", "okay", "go on", "then what", "what happens next",
-            "i follow", "id follow", "i guess i follow",
-            "i wouldnt follow", "no way id follow",
-            "this is getting scary", "where is this going",
-            "i dont like this", "im uncomfortable",
-            "keep going", "continue", "and then",
-            "yes", "sure", "what happens", "tell me more",
-            "id stop there", "id turn around"
-        ],
+        "training_phrases": PARABLE_FAKE,
         "responses": {
-            "Q2_high_positive": { "dialogue": "We're down the stairs now. Under the pylons. The city noise is gone. Just the lap of the harbour and the smell of salt and old grease. I stop. I don't turn around. I just say, 'You know why you're here, don't you?'", "ui_action": null },
-            "Q4_low_positive": { "dialogue": "Under the pylons now. City noise gone. Harbour water. Salt. I stop. 'You know why you're here, don't you?'", "ui_action": null },
-            "Q1_high_negative": { "dialogue": "You say you'd stop. But the stairs are already behind you. The social contract already signed. Under the pylons. Harbour lapping. I stop. 'You know why you're here, don't you?'", "ui_action": null },
-            "Q3_low_negative": { "dialogue": "Too late to turn around in the scenario. Under the pylons. I stop. 'You know why you're here, don't you?'", "ui_action": null },
-            "nudge": { "dialogue": "We're under the pylons. Harbour lapping. I've stopped walking. 'You know why you're here, don't you?'", "ui_action": null }
+            "universal": { "dialogue": "Reality rarely announces itself clearly.\n\nPicture this.\n\nYou're walking past a clean, quiet apartment building. A man in a faded maintenance polo, looking slightly winded, stops you. He's propping a heavy, taped-up box against his knee.\n\nHe asks:\n\n\"Mind helping me take this down the stairs?\"\n\nDo you help him?", "ui_action": null }
         }
     },
 
-    // P6.7 — Pylon Reveal (Fear/Defiance)
+    // ─────────────────────────────────────────────────────────────────
+    // STAGE 2: HELP DECISION — "Do you help him?"
+    // User locked into protagonist role. Always moves forward.
+    // ─────────────────────────────────────────────────────────────────
+
+    // S2: Yes/Agreement → Story continues
     {
-        "node_id": "P6_PYLON",
-        "required_state": "P6_EXPECT_PYLON",
-        "next_state": "P6_EXPECT_MIRROR",
+        "node_id": "PARABLE_HELP_AGREE",
+        "required_state": "PARABLE_HELP_DECISION",
+        "next_state": "PARABLE_COMFORT_CHECK",
         "is_tethered": true,
-        "training_phrases": [
-            "to help", "i dont know", "i don't know", "why",
-            "no", "what do you mean", "this is creepy",
-            "im scared", "what is this", "let me go",
-            "i'd run", "id run", "i would leave",
-            "because im helpful", "because i helped",
-            "yes", "tell me", "go on", "why am i here",
-            "i was just helping", "i dont understand",
-            "because you asked", "what do you want"
-        ],
+        "training_phrases": PARABLE_AGREE,
         "responses": {
-            "Q2_high_positive": { "dialogue": "You'll say 'to help' or 'I don't know.' But you're wrong. You're here because you're reasonable. You're here because you didn't want to be the 'prick' who said no to a man in a vest. You're here because your wiring is programmed to follow the rhythm of a calm voice over the scream of your own instincts.", "ui_action": null },
-            "Q4_low_positive": { "dialogue": "You're here because you're reasonable. Because you didn't want to be the prick who said no. Your wiring follows a calm voice over your own instincts.", "ui_action": null },
-            "Q1_high_negative": { "dialogue": "Your fear doesn't change the mechanics. You're here because you're reasonable. Because saying no to a man with full arms feels worse than following him into the dark. Your wiring chose the calm voice over your own screaming instincts.", "ui_action": null },
-            "Q3_low_negative": { "dialogue": "Brief answer. But the truth is structural. You're here because saying no felt worse than following. Your wiring chose calm authority over your own instincts.", "ui_action": null },
-            "nudge": { "dialogue": "You're under the pylons. I asked why you're here. The answer matters. Why did you follow?", "ui_action": null }
+            "universal": { "dialogue": "Of course you do.\n\nMost people would. That's the whole point.\n\nYou follow him inside. The hallway smells like old paint. He walks ahead of you. Down the stairs.\n\nYou're carrying the weight now. Not him.\n\nStill comfortable?", "ui_action": null }
         }
     },
 
-    // P6.8 — Mirror Moment (Terminal)
+    // S2: Curiosity/Maybe → Story continues
     {
-        "node_id": "P6_MIRROR",
-        "required_state": "P6_EXPECT_MIRROR",
+        "node_id": "PARABLE_HELP_CURIOUS",
+        "required_state": "PARABLE_HELP_DECISION",
+        "next_state": "PARABLE_COMFORT_CHECK",
+        "is_tethered": true,
+        "training_phrases": PARABLE_CURIOUS,
+        "responses": {
+            "universal": { "dialogue": "That hesitation lasts about two seconds. Then you say yes.\n\nBecause refusing feels ruder than the risk.\n\nYou follow him inside. The hallway smells like old paint. He walks ahead of you. Down the stairs.\n\nYou're carrying the weight now. Not him.\n\nStill comfortable?", "ui_action": null }
+        }
+    },
+
+    // S2: No/Fear → Story continues anyway
+    {
+        "node_id": "PARABLE_HELP_FEAR",
+        "required_state": "PARABLE_HELP_DECISION",
+        "next_state": "PARABLE_COMFORT_CHECK",
+        "is_tethered": true,
+        "training_phrases": PARABLE_FEAR,
+        "responses": {
+            "universal": { "dialogue": "You'd like to believe that.\n\nBut the man looks tired, and you've been trained to be a good neighbor. In the moment, your body follows the script of common decency.\n\nYou follow him inside. The hallway smells like fresh floor wax and laundry—completely banal. He walks ahead of you. Down the stairs.\n\nYou're carrying the weight now. Not him.\n\nStill comfortable?", "ui_action": null }
+        }
+    },
+
+    // S2: Humor → Story continues
+    {
+        "node_id": "PARABLE_HELP_HUMOR",
+        "required_state": "PARABLE_HELP_DECISION",
+        "next_state": "PARABLE_COMFORT_CHECK",
+        "is_tethered": true,
+        "training_phrases": PARABLE_HUMOR,
+        "responses": {
+            "universal": { "dialogue": "Humor again. That usually disappears around the second flight.\n\nYou follow him inside. The hallway smells like old paint. He walks ahead of you. Down the stairs.\n\nYou're carrying the weight now. Not him.\n\nStill comfortable?", "ui_action": null }
+        }
+    },
+
+    // S2: "This is weird" → Story continues
+    {
+        "node_id": "PARABLE_HELP_WEIRD",
+        "required_state": "PARABLE_HELP_DECISION",
+        "next_state": "PARABLE_COMFORT_CHECK",
+        "is_tethered": true,
+        "training_phrases": PARABLE_WEIRD,
+        "responses": {
+            "universal": { "dialogue": "Awareness usually arrives late. About the second flight of stairs.\n\nYou follow him inside. The hallway smells like old paint. He walks ahead of you. Down the stairs.\n\nYou're carrying the weight now. Not him.\n\nStill comfortable?", "ui_action": null }
+        }
+    },
+
+    // S2: "This sounds fake" → Story continues
+    {
+        "node_id": "PARABLE_HELP_FAKE",
+        "required_state": "PARABLE_HELP_DECISION",
+        "next_state": "PARABLE_COMFORT_CHECK",
+        "is_tethered": true,
+        "training_phrases": PARABLE_FAKE,
+        "responses": {
+            "universal": { "dialogue": "Reality rarely announces itself clearly.\n\nYou follow him inside. The hallway smells like old paint. He walks ahead of you. Down the stairs.\n\nYou're carrying the weight now. Not him.\n\nStill comfortable?", "ui_action": null }
+        }
+    },
+
+    // ─────────────────────────────────────────────────────────────────
+    // STAGE 3: COMFORT CHECK — "Still comfortable?"
+    // Agency removed. The reveal is coming.
+    // ─────────────────────────────────────────────────────────────────
+
+    // S3: Yes/Agreement → Reveal
+    {
+        "node_id": "PARABLE_COMFORT_AGREE",
+        "required_state": "PARABLE_COMFORT_CHECK",
+        "next_state": "PARABLE_REVEAL",
+        "is_tethered": true,
+        "training_phrases": PARABLE_AGREE,
+        "responses": {
+            "universal": { "dialogue": "People say that right before they realise they've made a mistake.\n\nHalfway down the stairs you notice something.\n\nHe isn't carrying anything.\n\nYou are.\n\nYou're also between him and the door.\n\nThat's the moment politeness stops helping you.\n\nThe problem was never the box.\n\nThe problem was compliance.", "ui_action": "parable_punchline" }
+        }
+    },
+
+    // S3: Curiosity → Reveal
+    {
+        "node_id": "PARABLE_COMFORT_CURIOUS",
+        "required_state": "PARABLE_COMFORT_CHECK",
+        "next_state": "PARABLE_REVEAL",
+        "is_tethered": true,
+        "training_phrases": PARABLE_CURIOUS,
+        "responses": {
+            "universal": { "dialogue": "The part where you understand the mistake.\n\nHalfway down the stairs you notice something.\n\nHe isn't carrying anything.\n\nYou are.\n\nYou're also between him and the door.\n\nThat's the moment politeness stops helping you.\n\nThe problem was never the box.\n\nThe problem was compliance.", "ui_action": "parable_punchline" }
+        }
+    },
+
+    // S3: No/Fear → Reveal
+    {
+        "node_id": "PARABLE_COMFORT_FEAR",
+        "required_state": "PARABLE_COMFORT_CHECK",
+        "next_state": "PARABLE_REVEAL",
+        "is_tethered": true,
+        "training_phrases": PARABLE_FEAR,
+        "responses": {
+            "universal": { "dialogue": "Good instinct. You're already halfway down.\n\nHalfway down the stairs, you notice something.\n\nHe isn't carrying anything.\n\nYou are.\n\nBoth your hands are occupied, and he's moved behind you, between you and the only exit.\n\nThat's the moment politeness stops helping you.\n\nThe problem was never the box.\n\nThe problem was compliance.", "ui_action": "parable_punchline" }
+        }
+    },
+
+    // S3: Humor → Reveal
+    {
+        "node_id": "PARABLE_COMFORT_HUMOR",
+        "required_state": "PARABLE_COMFORT_CHECK",
+        "next_state": "PARABLE_REVEAL",
+        "is_tethered": true,
+        "training_phrases": PARABLE_HUMOR,
+        "responses": {
+            "universal": { "dialogue": "Humor. That usually disappears around the second flight.\n\nHalfway down the stairs you notice something.\n\nHe isn't carrying anything.\n\nYou are.\n\nYou're also between him and the door.\n\nThat's the moment politeness stops helping you.\n\nThe problem was never the box.\n\nThe problem was compliance.", "ui_action": "parable_punchline" }
+        }
+    },
+
+    // S3: "This is weird" → Reveal
+    {
+        "node_id": "PARABLE_COMFORT_WEIRD",
+        "required_state": "PARABLE_COMFORT_CHECK",
+        "next_state": "PARABLE_REVEAL",
+        "is_tethered": true,
+        "training_phrases": PARABLE_WEIRD,
+        "responses": {
+            "universal": { "dialogue": "Awareness usually arrives late.\n\nHalfway down the stairs you notice something.\n\nHe isn't carrying anything.\n\nYou are.\n\nYou're also between him and the door.\n\nThat's the moment politeness stops helping you.\n\nThe problem was never the box.\n\nThe problem was compliance.", "ui_action": "parable_punchline" }
+        }
+    },
+
+    // S3: "This sounds fake" → Reveal
+    {
+        "node_id": "PARABLE_COMFORT_FAKE",
+        "required_state": "PARABLE_COMFORT_CHECK",
+        "next_state": "PARABLE_REVEAL",
+        "is_tethered": true,
+        "training_phrases": PARABLE_FAKE,
+        "responses": {
+            "universal": { "dialogue": "Reality rarely announces itself clearly.\n\nHalfway down the stairs you notice something.\n\nHe isn't carrying anything.\n\nYou are.\n\nYou're also between him and the door.\n\nThat's the moment politeness stops helping you.\n\nThe problem was never the box.\n\nThe problem was compliance.", "ui_action": "parable_punchline" }
+        }
+    },
+
+    // ─────────────────────────────────────────────────────────────────
+    // STAGE 4: REVEAL — The punchline. Terminal node.
+    // Any input triggers the final line. Returns to "any".
+    // ─────────────────────────────────────────────────────────────────
+    {
+        "node_id": "PARABLE_REVEAL_FINAL",
+        "required_state": "PARABLE_REVEAL",
         "next_state": "any",
         "is_tethered": true,
-        "training_phrases": [
-            "what", "oh", "thats dark", "thats messed up",
-            "youre right", "i see", "wow", "damn",
-            "i dont agree", "no", "thats not me",
-            "what happens now", "and then", "so what",
-            "i would have fought", "id fight back",
-            "youre manipulating me", "this is a trick",
-            "jesus", "holy shit", "fuck", "thats terrifying",
-            "ok", "go on", "what next", "yeah"
-        ],
+        "training_phrases": [...PARABLE_AGREE, ...PARABLE_CURIOUS, ...PARABLE_FEAR, ...PARABLE_HUMOR, ...PARABLE_WEIRD, ...PARABLE_FAKE],
         "responses": {
-            "universal": { "dialogue": "You followed me into a hole because you'd rather die 'polite' than live 'difficult.' And I'm not going to tell you why I needed a body at that place and time. And honestly, you don't want to know why it's worth the risk. But when they find you, they'll ask why you, of all people, were involved in all this… And then they will accept what it looks like.", "ui_action": null }
+            "universal": { "dialogue": "And that's why the most dangerous sentence in the world is:\n\n\"Sure, I can help.\"", "ui_action": null }
         }
     },
 
-    // ─────────────────────────────────────────────────────────────────
-    // PARABLE 7: THE PARKING / PARRAMATTA (8 nodes)
-    // ─────────────────────────────────────────────────────────────────
-
-    // P7.1 — Opal Rhythm (Entry with conversational bridge)
-    {
-        "node_id": "P7_OPAL_RHYTHM",
-        "required_state": "PARABLE_7_ACTIVE",
-        "next_state": "P7_EXPECT_RHYTHM",
-        "is_tethered": true,
-        "training_phrases": [
-            "yes", "yeah", "sure", "im up for it", "i'm up for it",
-            "bring it on", "lets go", "let's go", "go ahead",
-            "ok", "okay", "test me", "try me", "i can handle it",
-            "alright", "why not", "sure thing", "yep",
-            "do it", "go for it", "hit me", "ready",
-            "sounds interesting", "im curious", "lets see"
-        ],
-        "responses": {
-            "Q2_high_positive": { "dialogue": "Good. Sydney is a fascinating machine, isn't it? We tap our Opal cards, we complain about the toll roads, and we assume the concrete will hold. Have you ever noticed how desperately people in this city want to avoid making a scene?", "ui_action": null },
-            "Q4_low_positive": { "dialogue": " Good. Sydney is a fascinating machine. Opal cards, toll roads, concrete. Have you noticed how desperately people here want to avoid making a scene?", "ui_action": null },
-            "Q1_high_negative": { "dialogue": "Your resistance is interesting. Let's see where it leads. Sydney is a fascinating machine, isn't it? We tap our Opal cards, complain about the toll roads, assume the concrete will hold. Have you noticed how desperately people here want to avoid making a scene?", "ui_action": null },
-            "Q3_low_negative": { "dialogue": "Hesitation noted. Sydney is a fascinating machine. Opal cards. Toll roads. Concrete. Have you noticed how desperately people here avoid making a scene?", "ui_action": null },
-            "nudge": { "dialogue": "We were talking about Sydney's machine. Opal cards, toll roads, concrete. People avoiding scenes. Stay with it.", "ui_action": null }
-        }
-    },
-
-    // P7.2 — Compliance Rhythm
-    {
-        "node_id": "P7_COMPLIANCE",
-        "required_state": "P7_EXPECT_RHYTHM",
-        "next_state": "P7_EXPECT_DOOR",
-        "is_tethered": true,
-        "training_phrases": [
-            "yes", "yeah", "i guess", "people are polite",
-            "no one wants to make a scene", "thats true",
-            "australians are like that", "we are polite",
-            "not really", "i dont think so", "what do you mean",
-            "sometimes", "depends", "maybe", "go on",
-            "thats how society works", "its just manners",
-            "whats your point", "where is this going",
-            "sure", "okay", "interesting"
-        ],
-        "responses": {
-            "Q2_high_positive": { "dialogue": "It's a collective agreement. You trust the system because it's infinitely easier than looking at the negative space around you. You believe your morality and your adherence to the rules are what keep you safe. But they don't. It's just compliance, and compliance has a predictable rhythm. The primary risk to you isn't someone's rage; it's that rhythm. Let's test your rhythm. Imagine you're walking to your car. Underground parking, Parramatta commercial precinct. It's 6:45 PM. The post-work exodus has thinned out, and it's just you and the buzz of the fluorescent lights. By the heavy fire exit doors, a man in a tailored suit and a building management lanyard is balancing two massive, awkwardly stacked archive boxes. He's calm. He doesn't look dangerous. He just looks tired and mildly inconvenienced. The heavy fire door is slipping off its rubber wedge. He looks at you, gives a relatable, exhausted corporate smile, and says, 'Sorry mate, mind just putting your foot against the door for a second so I don't drop these?'", "ui_action": null },
-            "Q4_low_positive": { "dialogue": "Compliance has a predictable rhythm. Let me test yours. Underground parking, Parramatta. 6:45 PM. Fluorescent lights. A man in a suit with a lanyard, balancing archive boxes by the fire door. He gives you that tired corporate smile. 'Sorry mate, mind just putting your foot against the door for a second so I don't drop these?'", "ui_action": null },
-            "Q1_high_negative": { "dialogue": "Your disagreement doesn't change the pattern. Compliance has a rhythm, and I'm about to show you yours. Underground parking, Parramatta. 6:45 PM. A man in a suit, lanyard, archive boxes. Fire door slipping. 'Sorry mate, mind just putting your foot against the door?'", "ui_action": null },
-            "Q3_low_negative": { "dialogue": "Let me show you. Parramatta. Underground parking. 6:45 PM. Man in a suit. Boxes. Fire door. 'Sorry mate, mind putting your foot against the door?'", "ui_action": null },
-            "nudge": { "dialogue": "Underground parking. Parramatta. The man with the boxes. He's asking you to hold the fire door. Would you?", "ui_action": null }
-        }
-    },
-
-    // P7.3 — Foot Against Door
-    {
-        "node_id": "P7_FOOT_DOOR",
-        "required_state": "P7_EXPECT_DOOR",
-        "next_state": "P7_EXPECT_ENVELOPE",
-        "is_tethered": true,
-        "training_phrases": [
-            "yes", "id help", "i'd help", "of course",
-            "sure", "yeah", "probably", "i guess",
-            "no", "i wouldnt", "i wouldn't", "too risky",
-            "maybe", "depends", "id be cautious",
-            "i dont know", "what kind of question is that",
-            "its just a door", "small request",
-            "id do it", "why not", "seems harmless"
-        ],
-        "responses": {
-            "Q2_high_positive": { "dialogue": "Exactly. You'd do it. Because he's wearing the costume of authority and routine, and his request is small. You'd be amazed how many crimes are made possible by simple courtesy. You step up. You put your shoe against the heavy steel door. You've just anchored yourself to his problem. He shifts the boxes to get a better grip, but a sealed manila envelope slides off the top and flutters down the first half-flight of the concrete stairs. He sighs — a perfectly calibrated sound of defeat. 'Mate, I am so sorry. Could you grab that? If I bend down, I'll drop this whole lot.'", "ui_action": null },
-            "Q4_low_positive": { "dialogue": "You'd do it. Small request. Costume of authority. You've anchored yourself to his problem. Then an envelope slides off the stack, flutters down the stairs. He sighs. 'Mate, could you grab that? If I bend down I'll drop the lot.'", "ui_action": null },
-            "Q1_high_negative": { "dialogue": "You say you wouldn't. But his request is so small it makes suspicion feel disproportionate. In the moment, you'd hold the door. And then an envelope slides off the stack. Flutters down the stairs. He sighs. 'Mate, could you grab that? If I bend down I'll drop the lot.'", "ui_action": null },
-            "Q3_low_negative": { "dialogue": "In the moment, you'd hold the door. Then an envelope slides down the stairs. He sighs. 'Could you grab that? I'll drop the lot.'", "ui_action": null },
-            "nudge": { "dialogue": "You're holding the door. An envelope has fallen down the stairs. He's asking you to grab it. Would you?", "ui_action": null }
-        }
-    },
-
-    // P7.4 — The Envelope
-    {
-        "node_id": "P7_ENVELOPE",
-        "required_state": "P7_EXPECT_ENVELOPE",
-        "next_state": "P7_EXPECT_STAIRWELL",
-        "is_tethered": true,
-        "training_phrases": [
-            "yes", "id grab it", "sure", "okay",
-            "no", "id be suspicious", "thats sketchy",
-            "i'd hesitate", "something feels off",
-            "its just an envelope", "fine", "whatever",
-            "id pick it up", "i guess", "probably",
-            "no way", "id leave", "i'd walk away",
-            "maybe", "depends", "this feels like a trap",
-            "id be careful", "whats in the envelope"
-        ],
-        "responses": {
-            "Q2_high_positive": { "dialogue": "You might say you'd hesitate. But in the reality of that moment? The social momentum is already pulling you. You don't want to be the paranoid weirdo who refuses to pick up a piece of paper for this guy. Feels wrong to refuse. In the moment. Discomfort beats suspicion almost every single time. You value being 'helpful' over the faint, irrational whisper of your own instincts. So, you take the three steps down into the stairwell.", "ui_action": null },
-            "Q4_low_positive": { "dialogue": "Social momentum's already pulling. Refusing to pick up paper feels paranoid. Discomfort beats suspicion every time. You take the three steps down into the stairwell.", "ui_action": null },
-            "Q1_high_negative": { "dialogue": "You say it feels like a trap. In retrospect, sure. But in the moment, refusing to pick up a piece of paper for a tired man makes you the paranoid one. Discomfort beats suspicion. You take the three steps down into the stairwell.", "ui_action": null },
-            "Q3_low_negative": { "dialogue": "Suspicion, sure. But discomfort beats suspicion in the moment. You take the three steps down.", "ui_action": null },
-            "nudge": { "dialogue": "You're in the stairwell now. You went down those three steps. Stay with the moment.", "ui_action": null }
-        }
-    },
-
-    // P7.5 — Fire Door Lock
-    {
-        "node_id": "P7_FIRE_DOOR",
-        "required_state": "P7_EXPECT_STAIRWELL",
-        "next_state": "P7_EXPECT_WALK",
-        "is_tethered": true,
-        "training_phrases": [
-            "ok", "go on", "then what", "what happens",
-            "im in the stairwell", "keep going",
-            "this is scary", "i dont like this",
-            "i wouldnt go", "i would have stopped",
-            "continue", "and then", "what next",
-            "ok what happens", "tell me", "yes",
-            "oh no", "i knew it", "trap"
-        ],
-        "responses": {
-            "Q2_high_positive": { "dialogue": "You bend down. You pick up the envelope. And as your fingers brush the paper, you hear the heavy hydraulic hiss and loud click of the fire door locking shut behind you. He kicked the wedge away. You turn around. The man has put the boxes down. They are empty. He is standing between you and the only exit. He isn't angry. He doesn't draw a weapon. He just looks at you with absolute, instrumental calm. He says, 'Walk down the stairs.'", "ui_action": null },
-            "Q4_low_positive": { "dialogue": "You pick up the envelope. Behind you — the hydraulic hiss. The click. The fire door is locked. The boxes are empty. He's between you and the exit. No anger. No weapon. Just calm. 'Walk down the stairs.'", "ui_action": null },
-            "Q1_high_negative": { "dialogue": "You wouldn't have stopped. The scenario is already past that point. You pick up the envelope. The fire door locks behind you. Heavy click. The boxes are empty. He's between you and the exit. 'Walk down the stairs.'", "ui_action": null },
-            "Q3_low_negative": { "dialogue": "Envelope. Fire door locks. Boxes empty. He's between you and the exit. 'Walk down the stairs.'", "ui_action": null },
-            "nudge": { "dialogue": "The fire door is locked. The boxes are empty. He's standing between you and the exit. 'Walk down the stairs.' What do you do?", "ui_action": null }
-        }
-    },
-
-    // P7.6 — Walk Down
-    {
-        "node_id": "P7_WALK_DOWN",
-        "required_state": "P7_EXPECT_WALK",
-        "next_state": "P7_EXPECT_MIRROR",
-        "is_tethered": true,
-        "training_phrases": [
-            "id fight", "i'd fight", "id run", "id scream",
-            "i wouldnt walk", "no way", "id refuse",
-            "i would walk", "id comply", "what choice do i have",
-            "im scared", "what happens next", "jesus",
-            "oh god", "this is terrifying", "what do you want",
-            "let me go", "id try to escape", "id call for help",
-            "ok", "go on", "then what", "holy shit"
-        ],
-        "responses": {
-            "Q2_high_positive": { "dialogue": "You will walk. Do you know why? Because even now, locked in a concrete tube, your brain is desperately trying to reframe this as a misunderstanding. You are trying to figure out how to de-escalate without causing a scene. You are outsourcing your survival to the desperate hope that this is just a procedural anomaly. You are waiting for permission to panic.", "ui_action": null },
-            "Q4_low_positive": { "dialogue": "You'd walk. Because your brain is trying to reframe this as a misunderstanding. De-escalate. No scene. Outsourcing survival to hope. Waiting for permission to panic.", "ui_action": null },
-            "Q1_high_negative": { "dialogue": "You'd fight? You'd scream? In a concrete stairwell at 6:45 PM in a commercial precinct where everyone has already left? No. You'd walk. Because even now your brain is reframing this as a misunderstanding. You're still trying to de-escalate. Still waiting for permission to panic.", "ui_action": null },
-            "Q3_low_negative": { "dialogue": "You'd walk. Your brain is still trying to de-escalate. Still waiting for permission to panic.", "ui_action": null },
-            "nudge": { "dialogue": "You're in the stairwell. The door is locked. He said walk. Your brain is reframing this as a misunderstanding. Stay with the moment.", "ui_action": null }
-        }
-    },
-
-    // P7.7 — Mirror Moment
-    {
-        "node_id": "P7_MIRROR_SETUP",
-        "required_state": "P7_EXPECT_MIRROR",
-        "next_state": "P7_EXPECT_FINAL",
-        "is_tethered": true,
-        "training_phrases": [
-            "what", "why", "no", "thats not true",
-            "i would fight", "youre wrong", "im not like that",
-            "ok", "go on", "maybe", "probably",
-            "thats terrifying", "youre right", "i see",
-            "i hate this", "what do you want from me",
-            "this is just a thought experiment", "its hypothetical",
-            "fine", "yes", "i guess", "so what"
-        ],
-        "responses": {
-            "universal": { "dialogue": "I didn't need to know your history, your secrets, or your fears to get you here. I didn't need to threaten you. I just needed you to be completely, predictably normal. I just needed you to prioritize avoiding a five-second awkward interaction over your own life. And you did. You followed me into a cage because you would rather die polite than live difficult.", "ui_action": null },
-            "nudge": { "dialogue": "I needed you to be predictably normal. You prioritized politeness over safety. Stay with that truth.", "ui_action": null }
-        }
-    },
-
-    // P7.8 — Aftermath (Terminal)
-    {
-        "node_id": "P7_AFTERMATH",
-        "required_state": "P7_EXPECT_FINAL",
-        "next_state": "any",
-        "is_tethered": true,
-        "training_phrases": [
-            "what happens now", "and then", "so what",
-            "thats dark", "thats messed up", "wow",
-            "youre right", "i see", "ok",
-            "no", "thats not me", "i disagree",
-            "jesus", "holy shit", "fuck",
-            "what do you want", "why are you telling me this",
-            "go on", "tell me more", "what next"
-        ],
-        "responses": {
-            "universal": { "dialogue": "And I'm not going to tell you why I needed a body at that place and time. And honestly, you don't want to know why it's worth the risk. But when they find you, they'll ask why you, of all people, were involved in all this… And then they will accept what it looks like.", "ui_action": null }
-        }
-    },
-
-    // ─────────────────────────────────────────────────────────────────
-    // PARABLE 4: BAT & BALL / THINKING FAST & SLOW (10 nodes)
-    // ─────────────────────────────────────────────────────────────────
-
-    // P4.1 — Sydney Loud (Entry with conversational bridge)
-    {
-        "node_id": "P4_SYDNEY_LOUD",
-        "required_state": "PARABLE_4_ACTIVE",
-        "next_state": "P4_EXPECT_MORAL",
-        "is_tethered": true,
-        "training_phrases": [
-            "yes", "yeah", "sure", "im up for it", "i'm up for it",
-            "bring it on", "lets go", "let's go", "go ahead",
-            "ok", "okay", "test me", "try me", "i can handle it",
-            "alright", "why not", "sure thing", "yep",
-            "do it", "go for it", "hit me", "ready",
-            "sounds interesting", "im curious", "lets see"
-        ],
-        "responses": {
-            "Q2_high_positive": { "dialogue": "Good. You value consistency. Let's see if your wiring agrees. Sydney's loud tonight. Everyone pretending they're fine. What's your excuse — work, rent, or just habit?", "ui_action": null },
-            "Q4_low_positive": { "dialogue": "You look for consistency. Let's test the wiring behind it. Sydney's loud tonight. Everyone pretending they're fine. Work, rent, or just habit?", "ui_action": null },
-            "Q1_high_negative": { "dialogue": "Your resistance is interesting. Let's run it through a filter. Sydney's loud tonight. Everyone pretending they're fine. What's your excuse — work, rent, or just habit?", "ui_action": null },
-            "Q3_low_negative": { "dialogue": "Fine. Sydney's loud tonight. Everyone pretending. Work, rent, or habit?", "ui_action": null },
-            "nudge": { "dialogue": "Sydney's loud tonight. Everyone pretending they're fine. Work, rent, or habit — what's yours?", "ui_action": null }
-        }
-    },
-
-    // P4.2 — Moral Religion
-    {
-        "node_id": "P4_MORAL_RELIGION",
-        "required_state": "P4_EXPECT_MORAL",
-        "next_state": "P4_EXPECT_SAFE",
-        "is_tethered": true,
-        "training_phrases": [
-            "work", "rent", "habit", "all of the above",
-            "just life", "nothing really", "i dont know",
-            "just getting by", "the usual", "same as everyone",
-            "money", "stress", "tired", "exhausted",
-            "im fine actually", "not pretending",
-            "yeah everyone is pretending", "true",
-            "whats your point", "go on", "continue"
-        ],
-        "responses": {
-            "universal": { "dialogue": "Being laid back is a religion here. Grind, mortgage, maybe a Bali trip. You ever notice how moral everyone sounds while doing nothing?", "ui_action": null },
-            "nudge": { "dialogue": "We were talking about how moral everyone sounds while doing nothing. Stay with me.", "ui_action": null }
-        }
-    },
-
-    // P4.3 — Feels Safe
-    {
-        "node_id": "P4_FEELS_SAFE",
-        "required_state": "P4_EXPECT_SAFE",
-        "next_state": "P4_EXPECT_SCRIPT",
-        "is_tethered": true,
-        "training_phrases": [
-            "yeah", "true", "i guess", "fair point",
-            "what do you mean", "not really", "maybe",
-            "everyone tries their best", "people do their best",
-            "thats cynical", "youre cynical", "harsh",
-            "go on", "continue", "so what", "and",
-            "i disagree", "some people actually care",
-            "ok", "sure", "right"
-        ],
-        "responses": {
-            "universal": { "dialogue": "Hmm… everyone tries their best. That phrase does heavy lifting. You don't tip here, you follow rules, you vote, you nod. Feels safe, yeah?", "ui_action": null },
-            "nudge": { "dialogue": "Following rules, voting, nodding. Feels safe, yeah? Answer that.", "ui_action": null }
-        }
-    },
-
-    // P4.4 — Don't Question the Script
-    {
-        "node_id": "P4_DONT_QUESTION",
-        "required_state": "P4_EXPECT_SCRIPT",
-        "next_state": "P4_EXPECT_WIRING",
-        "is_tethered": true,
-        "training_phrases": [
-            "yes", "yeah", "i guess", "sure",
-            "it is safe", "it does feel safe",
-            "not always", "sometimes", "depends",
-            "no", "not really", "nah",
-            "whats wrong with that", "nothing wrong with rules",
-            "go on", "continue", "whats your point",
-            "thats how society works", "rules matter"
-        ],
-        "responses": {
-            "universal": { "dialogue": "Cities run on people who don't question the script. You cross on the green man, trust the news feed, assume police mean safety.", "ui_action": null },
-            "nudge": { "dialogue": "Green man. News feed. Police. You assume these mean safety. That's the script. Stay with it.", "ui_action": null }
-        }
-    },
-
-    // P4.5 — Wiring
-    {
-        "node_id": "P4_WIRING",
-        "required_state": "P4_EXPECT_WIRING",
-        "next_state": "P4_EXPECT_JUDGMENT",
-        "is_tethered": true,
-        "training_phrases": [
-            "yes", "true", "probably", "i guess",
-            "thats not true", "i do question things",
-            "are you saying im sheep", "sheep", "sheeple",
-            "go on", "what do you mean", "continue",
-            "i question things", "i think for myself",
-            "not all of us", "some people question",
-            "maybe", "ok", "and your point is"
-        ],
-        "responses": {
-            "universal": { "dialogue": "No. I'm describing wiring. If a bloke in an official looking uniform or a suit jaywalks on George Street, you hesitate less, right?", "ui_action": null },
-            "nudge": { "dialogue": "A man in a suit jaywalks on George Street. You'd hesitate less before following. That's wiring.", "ui_action": null }
-        }
-    },
-
-    // P4.6 — Outsource Judgment
-    {
-        "node_id": "P4_OUTSOURCE",
-        "required_state": "P4_EXPECT_JUDGMENT",
-        "next_state": "P4_EXPECT_HEURISTIC",
-        "is_tethered": true,
-        "training_phrases": [
-            "yeah probably", "maybe", "i guess",
-            "no i wouldnt", "id still look both ways",
-            "thats true actually", "fair point",
-            "interesting", "hmm", "go on",
-            "what does that have to do with anything",
-            "so what", "ok", "sure", "yes", "right"
-        ],
-        "responses": {
-            "universal": { "dialogue": "You outsource judgment to confidence. Not truth. Not ethics. Just tone. That's how markets crash and cults fill halls in Parramatta. People don't say 'I don't know.' They guess. They comply. They rationalise after.", "ui_action": null },
-            "nudge": { "dialogue": "Confidence over truth. That's how markets crash. People guess, comply, rationalise. Stay with this.", "ui_action": null }
-        }
-    },
-
-    // P4.7 — Bat and Ball Heuristic
-    {
-        "node_id": "P4_BAT_BALL",
-        "required_state": "P4_EXPECT_HEURISTIC",
-        "next_state": "P4_EXPECT_ANSWER",
-        "is_tethered": true,
-        "training_phrases": [
-            "true", "yeah", "probably", "fair point",
-            "i dont do that", "not me", "i think for myself",
-            "ok", "go on", "continue", "and",
-            "makes sense", "thats scary", "thats dark",
-            "what are you getting at", "where is this going",
-            "so everyone is just a follower", "compliance",
-            "yes", "sure", "interesting"
-        ],
-        "responses": {
-            "universal": { "dialogue": "Heuristics. A bat and ball cost $1.10. The bat costs $1 more than the ball. How much does the ball cost?", "ui_action": null },
-            "nudge": { "dialogue": "Bat and ball. $1.10 total. Bat costs $1 more than the ball. How much is the ball?", "ui_action": null }
-        }
-    },
-
-    // P4.8 — Five Cents Reveal
-    {
-        "node_id": "P4_FIVE_CENTS",
-        "required_state": "P4_EXPECT_ANSWER",
-        "next_state": "P4_EXPECT_CROWD",
-        "is_tethered": true,
-        "training_phrases": [
-            "10 cents", "ten cents", "0.10", "$0.10", ".10",
-            "5 cents", "five cents", "0.05", "$0.05", ".05",
-            "i dont know", "i don't know", "what",
-            "its ten cents", "its 10 cents",
-            "15 cents", "a dollar", "50 cents",
-            "i know this one", "its five cents",
-            "10", "5", "idk", "no idea", "hmm"
-        ],
-        "responses": {
-            "Q2_high_positive": { "dialogue": "It's 5 cents. If you said 10 — that's the instinct hit. You trust your first answer, then defend it. Same with authority. If someone official told you to do something 'for safety,' you'd sweat… and comply. People don't like standing out. Makes them feel unsafe. If ten people froze while someone collapsed at Central, you'd wait too. You'd scan faces before acting.", "ui_action": null },
-            "Q4_low_positive": { "dialogue": "Five cents. You trust instinct, then defend it. Same with authority. Someone official says 'for safety,' you comply. If ten people froze at Central while someone collapsed, you'd wait too. You'd scan faces.", "ui_action": null },
-            "Q1_high_negative": { "dialogue": "It's 5 cents. Whether you got it right or not, the principle holds — people trust instinct and defend after. Same with authority. 'For safety' and you comply. If ten people froze at Central while someone collapsed, you'd scan faces before acting.", "ui_action": null },
-            "Q3_low_negative": { "dialogue": "Five cents. Instinct, then defense. Authority says jump, you comply. Ten people freeze at Central — you'd wait and scan faces.", "ui_action": null },
-            "nudge": { "dialogue": "The ball is 5 cents. The point is — you trust instinct over calculation. Same with authority, same with crowds.", "ui_action": null }
-        }
-    },
-
-    // P4.9 — Crowd / Compliance
-    {
-        "node_id": "P4_CROWD",
-        "required_state": "P4_EXPECT_CROWD",
-        "next_state": "P4_EXPECT_FINAL",
-        "is_tethered": true,
-        "training_phrases": [
-            "no i wouldnt", "i would help", "id act",
-            "thats bystander effect", "bystander effect",
-            "yeah probably", "maybe", "i guess",
-            "thats not true", "i disagree",
-            "i've helped before", "id call an ambulance",
-            "thats dark", "fair point", "go on",
-            "ok", "yes", "sure", "continue",
-            "what are you saying", "so what"
-        ],
-        "responses": {
-            "universal": { "dialogue": "You believe you're decent because you feel discomfort, not because you resist. If tomorrow the crowd decided someone deserved exclusion, you'd hesitate… then adjust. You'd tell yourself it's complex. Necessary. You'd just stay quiet. That's safe. You call it being reasonable. History calls it compliance.", "ui_action": null },
-            "nudge": { "dialogue": "Discomfort isn't resistance. Silence isn't reason. History calls it compliance. Stay with this.", "ui_action": null }
-        }
-    },
-
-    // P4.10 — Programmable (Terminal)
-    {
-        "node_id": "P4_PROGRAMMABLE",
-        "required_state": "P4_EXPECT_FINAL",
-        "next_state": "any",
-        "is_tethered": true,
-        "training_phrases": [
-            "im not like that", "thats not me", "no",
-            "youre right", "fair point", "yeah",
-            "thats scary", "thats dark", "wow",
-            "ok", "i see", "go on", "and",
-            "what do you want me to say", "what now",
-            "so everyone is just a sheep", "are you any different",
-            "youre a psychopath", "youre manipulating me",
-            "true", "i guess", "maybe", "whatever"
-        ],
-        "responses": {
-            "universal": { "dialogue": "No. Everyone's normal. And normal is programmable. That's the part that should scare you. No. I just don't lie to myself about it. You still do. And that's why someone like me never needs to threaten you.", "ui_action": null }
-        }
-    },
 
     // ═══════════════════════════════════════════════════════════════════
     // DOMAIN F (DEEP STORY) — Lore Sync Batch 1 from generalChitChat.md
@@ -2923,431 +2908,4227 @@ const STATE_FALLBACKS = {
         }
     },
 
-    // ═══════════════════════════════════════════════════════════════════
-    // SECTION 4: PARABLE 6 (THE WHARF / SYDNEY POLISH)
-    // ═══════════════════════════════════════════════════════════════════
-
-    "PARABLE_6_ACTIVE": {
-        // CONTEXT: Dominic asked: "I'd like to test that instinct of yours. Not a quiz. Not a trick. Just a situation... Are you up for it?"
-        "evasive": {
-            "triggers": ["idk", "i dont know", "not sure", "maybe", "depends", "we'll see", "i guess", "whatever"],
-            "response": "Hesitation is just a decision you haven't admitted to yet. You don't have to prepare for it, you just have to step into it. Are we doing this or not?"
-        },
-        "combative": {
-            "triggers": ["no", "fuck off", "i dont want to play your games", "shut up", "this is stupid", "boring"],
-            "response": "You're throwing heat to mask apprehension. If you want to walk away, close the tab. If you want to see how your wiring actually works, drop the armor. Are you up for it?"
-        },
-        "confused": {
-            "triggers": ["what", "huh", "what situation", "test what", "i dont understand", "what are we doing"],
-            "response": "It isn't a trap. It's a hypothetical scenario. A few questions to see how you process environmental pressure. Are you ready?"
-        }
-    },
-
-    "P6_EXPECT_DECENT": {
-        // CONTEXT: Dominic asked: "You ever get the feeling that this whole city is just one big rehearsal for an audience that isn't watching?"
-        "evasive": {
-            "triggers": ["idk", "i dont know", "not sure", "maybe", "depends", "sometimes", "whatever", "i guess"],
-            "response": "You're cushioning your answer because acknowledging the performance makes you complicit in it. Look closely at the people around you. Do you feel the rehearsal?"
-        },
-        "combative": {
-            "triggers": ["this is dumb", "you sound pretentious", "shut up", "fuck off", "bullshit", "nobody cares"],
-            "response": "Dismissing an observation as 'pretentious' is the easiest way to avoid answering it. Forget the poetry. Do you see the collective pretense of the city, or don't you?"
-        },
-        "confused": {
-            "triggers": ["what", "huh", "what rehearsal", "i dont understand", "what do you mean", "what city"],
-            "response": "I'm talking about the way people behave. The polished, predictable routines everyone follows just to avoid standing out. Have you noticed it?"
-        }
-    },
-
-    "P6_EXPECT_2AM": {
-        // CONTEXT: Dominic asked: "You value that 'good person' currency. It makes the day go faster, right?"
-        "evasive": {
-            "triggers": ["idk", "i dont know", "not sure", "maybe", "depends", "whatever", "i guess", "sometimes"],
-            "response": "You don't want to admit to being predictable, but you also don't want to claim you're selfish. It's a simple dynamic. You value being seen as helpful, don't you?"
-        },
-        "combative": {
-            "triggers": ["im not a bloke", "dont tell me what i value", "shut up", "fuck off", "bullshit", "you dont know me"],
-            "response": "I'm not dissecting your soul, I'm identifying a social mechanism. You comply with basic manners because it removes friction from your day. True or false?"
-        },
-        "confused": {
-            "triggers": ["what", "huh", "what currency", "i dont understand", "what do you mean"],
-            "response": "I mean the social reward of being polite. Holding a door. Helping a stranger. You do those things because they make life smoother, correct?"
-        }
-    },
-
-    "P6_EXPECT_STEP": {
-        // CONTEXT: Dominic set the scene of the man dropping boxes at 2AM. He asks: "He nods at you. You'd step toward him to help, wouldn't you?"
-        "evasive": {
-            "triggers": ["idk", "i dont know", "not sure", "maybe", "depends", "whatever", "i guess", "id think about it"],
-            "response": "In an empty street at 2 AM, there is no time to 'think about it.' There is only reflex. He looks official, and he needs a hand. Do you step forward?"
-        },
-        "combative": {
-            "triggers": ["this is a trap", "youre manipulating the story", "shut up", "fuck off", "bullshit", "this is stupid"],
-            "response": "It feels like a trap from your chair because I am narrating it. But in the moment, you wouldn't hear my voice. You'd just see a worker dropping boxes. Do you help him?"
-        },
-        "confused": {
-            "triggers": ["what", "huh", "what boxes", "i dont understand", "who is the guy"],
-            "response": "Stay in the scene. A man in a high-vis vest drops his load by a gate and asks for a hand. It's a reflex test. Do you step toward him?"
-        }
-    },
-
-    "P6_EXPECT_AUTHORITY": {
-        // CONTEXT: Dominic stated: "You wouldn't ask for ID. You'd outsource your safety to his 'authority costume'."
-        "evasive": {
-            "triggers": ["idk", "i dont know", "not sure", "maybe", "depends", "whatever", "i guess"],
-            "response": "A soft deflection. You know I'm right. Questioning a man in a uniform feels rude, and you prioritize politeness over protocol. Tell me I'm wrong."
-        },
-        "combative": {
-            "triggers": ["youre wrong", "fuck off", "shut up", "bullshit", "stop telling me what id do", "i would ask"],
-            "response": "You claim you would ask for ID because your ego is currently defending itself. But in the wild, social conditioning overrides ego. You'd help him. Admit it."
-        },
-        "confused": {
-            "triggers": ["what", "huh", "what costume", "i dont understand", "outsource what"],
-            "response": "I mean you trust the lanyard and the vest. You let the uniform do the thinking for you. Doesn't that sound like your natural reflex?"
-        }
-    },
-
-    "P6_EXPECT_STAIRS": {
-        // CONTEXT: Dominic stated: "I say, 'Cheers. Mind bringing those down the stairs?' And then I turn and walk casually. You follow..."
-        "evasive": {
-            "triggers": ["idk", "i dont know", "not sure", "maybe", "depends", "whatever", "i guess"],
-            "response": "You're looking for an exit in the narrative, but the social momentum has already pulled you in. You're holding his boxes. I walk, you follow. What stops you?"
-        },
-        "combative": {
-            "triggers": ["this is dumb", "youre making this up", "fuck off", "shut up", "bullshit", "no i wouldnt"],
-            "response": "You fight the narrative because you don't like how compliant you look inside it. But dropping a man's boxes on the ground and walking away requires a confrontation you aren't built for. You follow, don't you?"
-        },
-        "confused": {
-            "triggers": ["what", "huh", "what stairs", "i dont understand", "where are we going"],
-            "response": "Down into the maintenance level. I asked for a favor, turned my back, and assumed your compliance. And because I assumed it, you provided it. Are you still following?"
-        }
-    },
-
-    "P6_EXPECT_PYLON": {
-        // CONTEXT: Dominic led them into the dark under the pylons. He asks: "I stop. I don't turn around. I just say, 'You know why you're here, don't you?'"
-        "evasive": {
-            "triggers": ["idk", "i dont know", "not sure", "maybe", "depends", "whatever", "i have no idea"],
-            "response": "Ignorance isn't an alibi anymore. You are standing in the dark with a man you do not know. I asked you a direct question. Why did you follow?"
-        },
-        "combative": {
-            "triggers": ["this is cringe", "youre trying to be scary", "fuck off", "shut up", "bullshit", "youre a freak"],
-            "response": "You use mockery to distance yourself from the vulnerability of the scenario. But the scenario is already locked. You are under the pylons. Why are you here?"
-        },
-        "confused": {
-            "triggers": ["what", "huh", "pylons", "i dont understand", "where are we", "explain"],
-            "response": "We are at the bottom of the stairs. The harbor is lapping against the concrete. I just asked you why you followed me into the dark. Answer the question."
-        }
-    },
-
-    "P6_EXPECT_MIRROR": {
-        // CONTEXT: Dominic stated: "You're here because your wiring is programmed to follow the rhythm of a calm voice over the scream of your own instincts."
-        "evasive": {
-            "triggers": ["idk", "i dont know", "not sure", "maybe", "depends", "whatever", "i guess"],
-            "response": "You shrug because fighting the diagnosis requires energy, and agreeing with it requires humility. It's a bitter pill. But it's accurate, isn't it?"
-        },
-        "combative": {
-            "triggers": ["youre wrong", "im not wired like that", "fuck off", "shut up", "bullshit", "stop diagnosing me"],
-            "response": "Your anger is just the sound of a damaged self-image. You want to believe you are the exception to the rule. You are not. You followed the rhythm, didn't you?"
-        },
-        "confused": {
-            "triggers": ["what", "huh", "what wiring", "i dont understand", "explain"],
-            "response": "Your internal logic. You were designed by society to obey calm authority figures, even when they lead you into danger. Do you see the flaw in your architecture now?"
-        }
-    },
 
     // ═══════════════════════════════════════════════════════════════════
-    // SECTION 5: PARABLE 7 (THE PARKING / PARRAMATTA)
+    // SECTION 4: THE STAIRCASE PARABLE — Nudge Map
     // ═══════════════════════════════════════════════════════════════════
 
-    "PARABLE_7_ACTIVE": {
-        // CONTEXT: Dominic asked: "Let's test that instinct. Are you up for it?"
+    "PARABLE_READY_GATE": {
         "evasive": {
-            "triggers": ["idk", "i dont know", "not sure", "maybe", "depends", "we'll see", "i guess", "whatever"],
-            "response": "You don't need to overthink it. It's just a conversation. Will you step into the scenario or not?"
+            "triggers": ["idk", "i dont know", "not sure", "maybe", "depends", "i guess", "whatever"],
+            "response": "Hesitation is just a decision you have not admitted to yet. Are we doing this or not?"
         },
         "combative": {
-            "triggers": ["no", "fuck off", "i dont want to", "shut up", "boring", "im leaving"],
-            "response": "Defensiveness usually means you suspect you won't like the result. You can walk away, or you can prove me wrong. Are you up for it?"
+            "triggers": ["no", "fuck off", "shut up", "this is stupid", "boring", "i dont want to"],
+            "response": "You are throwing heat to mask apprehension. If you want to walk away, close the tab. Are you ready?"
         },
         "confused": {
-            "triggers": ["what", "huh", "what instinct", "test what", "i dont understand"],
-            "response": "Your instinct for consistency. I want to place you in a hypothetical situation and see how you react. Ready?"
+            "triggers": ["what", "huh", "i dont understand", "what do you mean", "ready for what"],
+            "response": "A story about trust and compliance. Very short. Are you ready?"
         }
     },
 
-    "P7_EXPECT_RHYTHM": {
-        // CONTEXT: Dominic asked: "Have you ever noticed how desperately people in this city want to avoid making a scene?"
+    "PARABLE_HELP_DECISION": {
         "evasive": {
-            "triggers": ["idk", "i dont know", "not sure", "maybe", "depends", "sometimes", "whatever", "i guess"],
-            "response": "You observe it every day, you just haven't articulated it. The averted eyes on the train. The quiet compliance in lines. You've noticed it, haven't you?"
+            "triggers": ["idk", "i dont know", "not sure", "maybe", "depends", "i guess"],
+            "response": "That hesitation lasts about two seconds. Then politeness wins. Do you help him?"
         },
         "combative": {
-            "triggers": ["you sound pretentious", "who cares", "shut up", "fuck off", "bullshit"],
-            "response": "If it didn't matter, my pointing it out wouldn't agitate you. People worship comfort over intervention. Tell me I'm wrong."
+            "triggers": ["no", "fuck off", "shut up", "this is stupid", "i dont want to"],
+            "response": "You would like to believe that. But politeness is stronger than suspicion. Do you help him?"
         },
         "confused": {
-            "triggers": ["what", "huh", "what scene", "i dont understand", "what city"],
-            "response": "I'm talking about the social contract. The overwhelming desire to mind your own business and avoid confrontation. Have you noticed it?"
+            "triggers": ["what", "huh", "i dont understand", "help who", "what box"],
+            "response": "A stranger with a heavy box asked you to help carry it down the stairs. Do you help him?"
         }
     },
 
-    "P7_EXPECT_DOOR": {
-        // CONTEXT: Dominic set the scene. He asks: "He gives a corporate smile and says 'Mind putting your foot against the door?' Would you?"
+    "PARABLE_COMFORT_CHECK": {
         "evasive": {
-            "triggers": ["idk", "i dont know", "not sure", "maybe", "depends", "whatever", "i guess"],
-            "response": "It's a binary choice in a split second. A man with full hands asks you to hold a door. Don't overthink your own morality. Do you do it?"
+            "triggers": ["idk", "i dont know", "not sure", "maybe", "depends", "i guess"],
+            "response": "That uncertainty is the instinct you should have listened to earlier. Still comfortable?"
         },
         "combative": {
-            "triggers": ["no id kick him", "fuck off", "shut up", "bullshit", "this is a trap", "no i wouldnt"],
-            "response": "You say no now because you know I am leading you somewhere dark. But at 6:45 PM on a Tuesday, you wouldn't suspect a thing. You'd hold the door. Admit it."
+            "triggers": ["no", "fuck off", "shut up", "this is stupid", "i dont want to"],
+            "response": "Resistance now does not change the fact that you are already on the stairs. Still comfortable?"
         },
         "confused": {
-            "triggers": ["what", "huh", "what door", "i dont understand", "where are we"],
-            "response": "You are in an underground parking garage. A tired man holding heavy boxes asks you to stick your foot against a slipping fire door. Do you help him?"
+            "triggers": ["what", "huh", "i dont understand", "what do you mean", "comfortable with what"],
+            "response": "You are carrying the weight. He is walking ahead. The hallway smells like old paint. Still comfortable?"
         }
     },
 
-    "P7_EXPECT_ENVELOPE": {
-        // CONTEXT: Dominic says the man dropped an envelope down the stairs. He asks: "He asks you to grab it. Would you?"
+    "PARABLE_REVEAL": {
         "evasive": {
-            "triggers": ["idk", "i dont know", "not sure", "maybe", "depends", "whatever", "i guess"],
-            "response": "You're already holding the door. The social contract is active. Are you really going to refuse to pick up a piece of paper? Do you grab it?"
+            "triggers": ["idk", "i dont know", "not sure", "maybe", "depends", "i guess"],
+            "response": "The most dangerous sentence in the world is: Sure, I can help."
         },
         "combative": {
-            "triggers": ["no", "this is obviously a trap", "fuck off", "shut up", "bullshit", "im not stupid"],
-            "response": "Hindsight makes everyone a tactician. But in that moment, refusing makes you look paranoid and rude. Discomfort overrides suspicion. You grab it, don't you?"
+            "triggers": ["no", "fuck off", "shut up", "this is stupid", "thats not true"],
+            "response": "The most dangerous sentence in the world is: Sure, I can help."
         },
         "confused": {
-            "triggers": ["what", "huh", "what envelope", "i dont understand"],
-            "response": "A manila envelope slid off his boxes and down the stairs. He can't reach it. He asks you to. Do you take the three steps down to get it?"
-        }
-    },
-
-    "P7_EXPECT_STAIRWELL": {
-        // CONTEXT: Dominic stated: "Discomfort beats suspicion almost every single time... So, you take the three steps down into the stairwell."
-        "evasive": {
-            "triggers": ["idk", "i dont know", "not sure", "maybe", "depends", "whatever", "i guess"],
-            "response": "You're looking for a way to rewrite the last ten seconds, but you can't. You took the steps. What happens next?"
-        },
-        "combative": {
-            "triggers": ["no i wouldnt", "stop telling me what id do", "fuck off", "shut up", "bullshit"],
-            "response": "Your ego hates the fact that your behavior is this predictable. But you took the steps to avoid an awkward interaction. You are in the stairwell. Are you tracking?"
-        },
-        "confused": {
-            "triggers": ["what", "huh", "what stairwell", "i dont understand"],
-            "response": "You stepped past the heavy fire door to retrieve the envelope. You are now inside the concrete stairwell. Stay in the moment."
-        }
-    },
-
-    "P7_EXPECT_WALK": {
-        // CONTEXT: Dominic locked the door. He says: "He just looks at you with absolute, instrumental calm. He says, 'Walk down the stairs.'"
-        "evasive": {
-            "triggers": ["idk", "i dont know", "not sure", "maybe", "depends", "whatever", "i guess", "id freeze"],
-            "response": "Freezing is just the body waiting for instructions. The door is locked. He gave you an instruction. Do you walk?"
-        },
-        "combative": {
-            "triggers": ["id kill him", "id punch him", "fuck off", "shut up", "bullshit", "youre trying to scare me"],
-            "response": "You are imagining yourself as an action hero. In reality, your adrenaline is spiking, your heart rate is blinding you, and he is perfectly calm. You walk. Don't you?"
-        },
-        "confused": {
-            "triggers": ["what", "huh", "what stairs", "i dont understand", "what just happened"],
-            "response": "The trap closed. The boxes were empty props. He locked the door behind you and ordered you down the stairs. What do you do?"
-        }
-    },
-
-    "P7_EXPECT_MIRROR": {
-        // CONTEXT: Dominic stated: "You are outsourcing your survival to the desperate hope that this is a misunderstanding. You are waiting for permission to panic."
-        "evasive": {
-            "triggers": ["idk", "i dont know", "not sure", "maybe", "depends", "whatever", "i guess"],
-            "response": "Silence usually means the realization has landed. It is terrifying to realize how easily your compliance can be weaponized."
-        },
-        "combative": {
-            "triggers": ["youre wrong", "im not like that", "fuck off", "shut up", "bullshit", "stop diagnosing me"],
-            "response": "Fight the diagnosis all you want. It doesn't unlock the fire door. You complied because you were trained to. Do you see the flaw in your system?"
-        },
-        "confused": {
-            "triggers": ["what", "huh", "what permission", "i dont understand", "explain"],
-            "response": "You didn't scream because screaming causes a scene, and your brain was still hoping it was all a mistake. You waited too long. Understand?"
-        }
-    },
-
-    "P7_EXPECT_FINAL": {
-        // CONTEXT: Dominic stated: "You followed me into a cage because you would rather die polite than live difficult."
-        "evasive": {
-            "triggers": ["idk", "i dont know", "not sure", "maybe", "depends", "whatever", "i guess"],
-            "response": "You have no counter-argument because there isn't one. The architecture of your psychology is exactly as fragile as I described."
-        },
-        "combative": {
-            "triggers": ["youre so edgy", "this is fake", "fuck off", "shut up", "bullshit", "you don't know me"],
-            "response": "Call it edgy, call it fake, call it whatever helps you sleep tonight. But the next time someone asks you to hold a door in an empty garage, you'll remember this conversation."
-        },
-        "confused": {
-            "triggers": ["what", "huh", "die polite", "i dont understand", "what does that mean"],
-            "response": "It means your manners are a vulnerability. You prioritized being helpful over being safe. And in my world, that is a fatal error."
-        }
-    },
-
-    // ═══════════════════════════════════════════════════════════════════
-    // SECTION 6: PARABLE 4 (BAT & BALL / THE CROWD)
-    // ═══════════════════════════════════════════════════════════════════
-
-    "PARABLE_4_ACTIVE": {
-        // CONTEXT: Dominic asked: "Let's test the wiring behind it. Are you up for it?"
-        "evasive": {
-            "triggers": ["idk", "i dont know", "not sure", "maybe", "depends", "we'll see", "i guess", "whatever"],
-            "response": "A non-committal answer to a direct question. We're testing your wiring, not your patience. Are you ready?"
-        },
-        "combative": {
-            "triggers": ["no", "fuck off", "i dont want to", "shut up", "boring", "im leaving"],
-            "response": "Hostility is just fear with the volume turned up. Drop the act. Are we doing this or not?"
-        },
-        "confused": {
-            "triggers": ["what", "huh", "what wiring", "test what", "i dont understand"],
-            "response": "Your psychological wiring. The hidden heuristics you use to make decisions. Are you ready to look at them?"
-        }
-    },
-
-    "P4_EXPECT_MORAL": {
-        // CONTEXT: Dominic asked: "Sydney's loud tonight. Everyone pretending they're fine. What's your excuse — work, rent, or just habit?"
-        "evasive": {
-            "triggers": ["idk", "i dont know", "not sure", "maybe", "depends", "none of the above", "whatever"],
-            "response": "You don't have to name it, but you know it's there. The background hum of maintaining the facade. What drives yours?"
-        },
-        "combative": {
-            "triggers": ["none of your business", "shut up", "fuck off", "bullshit", "im not pretending"],
-            "response": "Everyone is pretending. The only variable is the quality of the performance. What fuels yours?"
-        },
-        "confused": {
-            "triggers": ["what", "huh", "what excuse", "i dont understand", "what do you mean"],
-            "response": "I mean the reason you keep moving when you'd rather stop. What keeps your specific machine running?"
-        }
-    },
-
-    "P4_EXPECT_SAFE": {
-        // CONTEXT: Dominic asked: "Being laid back is a religion here. You ever notice how moral everyone sounds while doing nothing?"
-        "evasive": {
-            "triggers": ["idk", "i dont know", "not sure", "maybe", "depends", "sometimes", "whatever", "i guess"],
-            "response": "You notice it, you just don't like pointing it out. It feels cynical to acknowledge that apathy often disguises itself as virtue. But it does, doesn't it?"
-        },
-        "combative": {
-            "triggers": ["youre cynical", "shut up", "fuck off", "bullshit", "people are actually good"],
-            "response": "I am not cynical. I am observant. You confuse the absence of malice with the presence of goodness. Have you noticed the pattern or not?"
-        },
-        "confused": {
-            "triggers": ["what", "huh", "what religion", "i dont understand", "what do you mean"],
-            "response": "I mean people convince themselves that minding their own business is a moral achievement. It isn't. Do you see it?"
-        }
-    },
-
-    "P4_EXPECT_SCRIPT": {
-        // CONTEXT: Dominic stated: "You don't tip here, you follow rules, you vote, you nod. Feels safe, yeah?"
-        "evasive": {
-            "triggers": ["idk", "i dont know", "not sure", "maybe", "depends", "sometimes", "whatever", "i guess"],
-            "response": "You're reluctant to agree because it makes your life sound like an algorithm. But the parameters are comfortable. It feels safe, doesn't it?"
-        },
-        "combative": {
-            "triggers": ["i dont do that", "shut up", "fuck off", "bullshit", "dont tell me what i do"],
-            "response": "You follow the script exactly as written, even when you're rebelling against me in this chat box. You operate within boundaries. It feels safe, doesn't it?"
-        },
-        "confused": {
-            "triggers": ["what", "huh", "what script", "i dont understand", "what do you mean"],
-            "response": "The unwritten rules of compliance. The things you do automatically because society installed the routine. It provides an illusion of safety, right?"
-        }
-    },
-
-    "P4_EXPECT_WIRING": {
-        // CONTEXT: Dominic stated: "Cities run on people who don't question the script. You cross on the green man, trust the news feed, assume police mean safety."
-        "evasive": {
-            "triggers": ["idk", "i dont know", "not sure", "maybe", "depends", "sometimes", "whatever", "i guess"],
-            "response": "You hesitate because acknowledging the script means acknowledging your own programming. But you follow the green man. You trust the signals."
-        },
-        "combative": {
-            "triggers": ["im not a sheep", "i question everything", "shut up", "fuck off", "bullshit"],
-            "response": "You question the trivia, but you implicitly trust the infrastructure. You assume the bridge won't collapse. You follow the signals."
-        },
-        "confused": {
-            "triggers": ["what", "huh", "what wiring", "i dont understand", "what do you mean"],
-            "response": "I mean you outsource your critical thinking to the environment around you. You assume someone else checked the math. Correct?"
-        }
-    },
-
-    "P4_EXPECT_JUDGMENT": {
-        // CONTEXT: Dominic asked: "If a bloke in an official looking uniform jaywalks on George Street, you hesitate less, right?"
-        "evasive": {
-            "triggers": ["idk", "i dont know", "not sure", "maybe", "depends", "sometimes", "whatever", "i guess"],
-            "response": "You know you would. Because the uniform acts as a proxy for permission. You let his authority override your caution. Tell me I'm wrong."
-        },
-        "combative": {
-            "triggers": ["no i wouldnt", "im not stupid", "shut up", "fuck off", "bullshit"],
-            "response": "You are lying to me, but more importantly, you are lying to yourself. The human brain is lazy. It sees a uniform, it assumes safety. You'd follow him."
-        },
-        "confused": {
-            "triggers": ["what", "huh", "what uniform", "i dont understand", "what do you mean"],
-            "response": "If someone who looks like they are in charge breaks a rule, you feel safer breaking it with them. You let their confidence replace your judgment. Yes?"
-        }
-    },
-
-    "P4_EXPECT_HEURISTIC": {
-        // CONTEXT: Dominic stated: "You outsource judgment to confidence. People guess. They comply. They rationalise after."
-        "evasive": {
-            "triggers": ["idk", "i dont know", "not sure", "maybe", "depends", "sometimes", "whatever", "i guess"],
-            "response": "It's an uncomfortable mirror. But outsourcing your judgment is exactly how you survive the cognitive load of the day. You comply first, rationalize second."
-        },
-        "combative": {
-            "triggers": ["youre wrong", "im not a follower", "shut up", "fuck off", "bullshit"],
-            "response": "Your refusal to accept this is the exact rationalization I'm talking about. You are defending a system you don't even realize you operate within."
-        },
-        "confused": {
-            "triggers": ["what", "huh", "what heuristic", "i dont understand", "explain"],
-            "response": "A heuristic is a mental shortcut. Instead of evaluating every threat, you look at the confidence of the people around you and mirror it. Make sense?"
-        }
-    },
-
-    "P4_EXPECT_ANSWER": {
-        // CONTEXT: Dominic asked: "A bat and ball cost $1.10. The bat costs $1 more than the ball. How much does the ball cost?"
-        "evasive": {
-            "triggers": ["i dont care", "skip", "whatever", "im bad at math", "doesnt matter"],
-            "response": "Deflecting the question proves the point. When faced with minor cognitive friction, your reflex is to avoid it. The answer is 5 cents."
-        },
-        "combative": {
-            "triggers": ["this is a stupid trick", "im not doing a math quiz", "shut up", "fuck off", "bullshit"],
-            "response": "You attack the question because your brain immediately served up '10 cents' and you intuitively knew it was a trap. The answer is 5 cents."
-        },
-        "confused": {
-            "triggers": ["what", "huh", "i dont understand", "explain the math", "what does this have to do with anything"],
-            "response": "It is a test of intuition versus calculation. The bat is $1.05, the ball is $0.05. Total $1.10. Your brain wanted to say 10 cents, didn't it?"
-        }
-    },
-
-    "P4_EXPECT_CROWD": {
-        // CONTEXT: Dominic stated: "If ten people froze at Central while someone collapsed, you'd wait too. You'd scan faces before acting."
-        "evasive": {
-            "triggers": ["idk", "i dont know", "not sure", "maybe", "depends", "sometimes", "whatever", "i guess"],
-            "response": "You hesitate because you know the psychology is sound. The crowd creates a diffusion of responsibility. You would wait for a cue."
-        },
-        "combative": {
-            "triggers": ["no i wouldnt", "id help immediately", "shut up", "fuck off", "bullshit", "you dont know me"],
-            "response": "You project heroism from the safety of your keyboard. In reality, the freeze response of the herd would infect you instantly. You would scan faces."
-        },
-        "confused": {
-            "triggers": ["what", "huh", "what crowd", "i dont understand", "what do you mean"],
-            "response": "It's called the bystander effect. You wouldn't look at the victim, you'd look at the ten people doing nothing, and you'd assume they knew something you didn't. Correct?"
-        }
-    },
-
-    "P4_EXPECT_FINAL": {
-        // CONTEXT: Dominic stated: "If tomorrow the crowd decided someone deserved exclusion, you'd hesitate… then adjust. You'd just stay quiet."
-        "evasive": {
-            "triggers": ["idk", "i dont know", "not sure", "maybe", "depends", "whatever", "i guess"],
-            "response": "The truth is quiet, isn't it? You wouldn't throw the first stone. You'd just silently agree not to catch it."
-        },
-        "combative": {
-            "triggers": ["youre wrong", "fuck off", "shut up", "bullshit", "youre just projecting", "edgelord"],
-            "response": "Your outrage is just the sound of your moral framework colliding with your biological reality. You are normal. And normal is programmable."
-        },
-        "confused": {
-            "triggers": ["what", "huh", "what exclusion", "i dont understand", "what do you mean"],
-            "response": "I mean your morality is dictated by consensus, not conviction. You are programmable. And that is why someone like me never needs to threaten you."
+            "triggers": ["what", "huh", "i dont understand", "what do you mean"],
+            "response": "The most dangerous sentence in the world is: Sure, I can help."
         }
     }
 };
+
+
+
+// ═══════════════════════════════════════════════════════════════════
+// DECLARATIVE CONVERSATION ARCHITECTURE v1.0
+// Coexists with legacy DOMINIC_LIBRARY / STATE_FALLBACKS above.
+// Phase 1: Data structures + pure utility functions.
+// Phase 2 (index.html): resolveTurn() pipeline wiring.
+// ═══════════════════════════════════════════════════════════════════
+
+// -----------------------------------------------------------------------------
+// CONFIG
+// -----------------------------------------------------------------------------
+const DOMINIC_CONFIG = {
+    version: "0.1.0",
+    defaultState: "EXPECT_HOW_ARE_YOU",
+    defaultMode: "tethered",
+    maxHistory: 40,
+    maxRecentResponses: 20,
+    normalization: {
+        lowercase: true,
+        stripPunctuation: true,
+        collapseWhitespace: true,
+        expandContractions: true,
+    },
+    thresholds: {
+        phraseConfidence: 1.0,
+        containsConfidence: 0.8,
+        tokenConfidence: 0.65,
+        partialConfidence: 0.55,
+    },
+    openModePolicy: {
+        primary: "global_node",
+        secondary: "milton_bridge",
+        tertiary: "ood",
+    },
+};
+
+// -----------------------------------------------------------------------------
+// NORMALIZATION
+// -----------------------------------------------------------------------------
+const DOMINIC_CONTRACTION_MAP = {
+    "can't": "cannot", "won't": "will not", "don't": "do not",
+    "didn't": "did not", "i'm": "i am", "i've": "i have",
+    "i'll": "i will", "it's": "it is", "that's": "that is",
+    "what's": "what is", "you're": "you are", "isn't": "is not",
+    "aren't": "are not", "wasn't": "was not", "weren't": "were not",
+    "shouldn't": "should not", "wouldn't": "would not",
+    "couldn't": "could not", "idk": "i do not know",
+};
+
+function dominicNormalizeInput(raw) {
+    const source = String(raw ?? "");
+    let text = source.trim();
+    if (DOMINIC_CONFIG.normalization.lowercase) text = text.toLowerCase();
+    if (DOMINIC_CONFIG.normalization.expandContractions) {
+        for (const [from, to] of Object.entries(DOMINIC_CONTRACTION_MAP)) {
+            text = text.replaceAll(from, to);
+        }
+    }
+    if (DOMINIC_CONFIG.normalization.stripPunctuation) {
+        text = text.replace(/[^\p{L}\p{N}\s]/gu, " ");
+    }
+    if (DOMINIC_CONFIG.normalization.collapseWhitespace) {
+        text = text.replace(/\s+/g, " ").trim();
+    }
+    const tokens = text ? text.split(" ") : [];
+    return { raw: source, text: text, tokens: tokens };
+}
+
+function dominicHasPhrase(text, phrase) {
+    return text === phrase || text.includes(phrase);
+}
+
+function dominicHasAnyPhrase(text, phrases) {
+    return (phrases || []).some(function (p) { return dominicHasPhrase(text, p); });
+}
+
+function dominicHasAllTokens(tokens, required) {
+    return (required || []).every(function (t) { return tokens.includes(t); });
+}
+
+// -----------------------------------------------------------------------------
+// SESSION MODEL
+// -----------------------------------------------------------------------------
+function dominicCreateSession(overrides) {
+    var base = {
+        state: DOMINIC_CONFIG.defaultState,
+        mode: DOMINIC_CONFIG.defaultMode,
+        active_sequence: null,
+        active_sequence_step: 0,
+        fallback_count: 0,
+        last_response_id: null,
+        last_user_input: "",
+        last_intent_hits: [],
+        history: [],
+        memory: {
+            visited_states: {},
+            response_usage: {},
+            recovery_usage: {},
+            recent_responses: [],
+            recent_intents: [],
+            bridge_indexes: {},
+            moral_indexes: {},
+            sequence_runs: {},
+        },
+        flags: {
+            tour_offered: false,
+            tour_declined: false,
+            parable_declined: false,
+            parable_started: false,
+        },
+    };
+    if (overrides) {
+        for (var k in overrides) { base[k] = overrides[k]; }
+    }
+    return base;
+}
+
+function dominicCloneSession(session) {
+    return JSON.parse(JSON.stringify(session));
+}
+
+function dominicPushHistory(session, event) {
+    event.ts = Date.now();
+    session.history.push(event);
+    if (session.history.length > DOMINIC_CONFIG.maxHistory) session.history.shift();
+}
+
+function dominicMarkVisited(session, state) {
+    session.memory.visited_states[state] = (session.memory.visited_states[state] || 0) + 1;
+}
+
+function dominicMarkResponseUsage(session, id) {
+    session.memory.response_usage[id] = (session.memory.response_usage[id] || 0) + 1;
+    session.last_response_id = id;
+    session.memory.recent_responses.push(id);
+    if (session.memory.recent_responses.length > DOMINIC_CONFIG.maxRecentResponses) {
+        session.memory.recent_responses.shift();
+    }
+}
+
+function dominicMarkRecoveryUsage(session, key) {
+    session.memory.recovery_usage[key] = (session.memory.recovery_usage[key] || 0) + 1;
+}
+
+function dominicMarkIntentUsage(session, intents) {
+    session.last_intent_hits = intents.slice(0, 5);
+    session.memory.recent_intents.push.apply(session.memory.recent_intents, intents.slice(0, 3));
+    if (session.memory.recent_intents.length > 20) {
+        session.memory.recent_intents = session.memory.recent_intents.slice(-20);
+    }
+}
+
+// -----------------------------------------------------------------------------
+// INTENTS — Reusable phrase buckets
+// -----------------------------------------------------------------------------
+const DOMINIC_INTENTS = {
+    positive: [
+        "good", "pretty good", "doing well", "great", "fine",
+        "fantastic", "best day ever", "not bad", "alright",
+        "great actually", "can not complain",
+    ],
+    neutral: [
+        "ok", "okay", "so so", "same as always", "the usual",
+        "nothing special", "same old", "meh",
+    ],
+    negative: [
+        "bad", "not good", "not great", "terrible", "awful",
+        "tired", "exhausted", "burnt out", "stressed", "overwhelmed",
+        "too much going on",
+    ],
+    joke: [
+        "living the dream", "another day in paradise", "still alive",
+        "surviving", "ninja builder", "a quiet one",
+    ],
+    suspicious: [
+        "why do you ask", "what do you mean", "who are you",
+        "why are you asking me that", "what story", "depends what it is",
+        "a tour of what", "this sounds weird",
+    ],
+    avoidant: [
+        "i do not know", "whatever", "does not matter", "meh",
+        "no idea", "not sure",
+    ],
+    hostile: [
+        "none of your business", "fuck off", "go away",
+        "this is stupid", "shut up", "control is evil",
+        "control is bad", "people should not control others",
+    ],
+    silence: ["", "..."],
+    yes: [
+        "yes", "yeah", "sure", "ok", "okay", "tell me", "go on",
+        "continue", "ready", "i am listening", "i am curious",
+        "ok i am listening",
+    ],
+    no: [
+        "no", "nah", "not really", "maybe later", "not now", "skip",
+    ],
+    meta: [
+        "are you ai", "is this a bot", "is this a game", "are you real",
+    ],
+    criminal: ["criminal", "gangster", "crime boss"],
+    architect: ["architect", "engineer", "planner", "builder"],
+    genius: ["genius", "visionary"],
+    monster: ["monster", "villain", "evil"],
+    manipulator: ["manipulator", "controller"],
+    studied_people: ["yes", "i try to", "psychology", "human behavior", "patterns"],
+    not_studied_people: ["not really", "why would i"],
+    power: ["power", "dominance", "authority", "control"],
+    collapse: ["collapse", "prevent collapse", "stability", "keeping order"],
+    both: ["both", "a bit of both", "both things", "sometimes both"],
+    depends: ["depends", "context", "situation", "it depends"],
+    self_correct: ["people self correct", "society balances", "things work out"],
+    pressure: ["people need pressure", "rules", "discipline", "structure"],
+    philosophical: ["humans are flawed", "people are chaotic"],
+    cynical: ["people are stupid", "people are selfish", "everyone", "everything"],
+    notice_signals: ["i notice them", "i pay attention", "warning signs", "early indicators", "patterns"],
+    collapse_only: ["after it fails", "collapse"],
+    design: ["design", "system", "structure"],
+    people: ["people", "human error"],
+    curious: ["what happened", "tell me more", "why"],
+    emotional: ["that is disturbing", "that is strange", "that is unsettling"],
+    // Canon answer-hook intents
+    isla_strength: ["strength", "strong", "survive", "survived", "resilient", "powerful", "she is strong"],
+    isla_noise: ["noise", "chaotic", "chaos", "broken", "weak", "weakness", "drugs", "entropy", "destructive", "loud"],
+    forge: ["forge", "forged", "consequence", "fire", "pressure", "let them burn", "trial by fire", "toughen up"],
+    shield: ["shield", "shielded", "protect", "protected", "shelter", "spare them", "mercy"],
+    trial_justice: ["justice", "fair", "it was justice", "he deserved it", "guilty", "punishment"],
+    trial_spectacle: ["spectacle", "theatre", "theater", "show", "it was spectacle", "performance", "circus"],
+    escape_mechanics: ["mechanics", "the mechanics", "how exactly", "how did it work", "the guard", "cuffs", "procedure", "tell me how"],
+    escape_result: ["result", "the result", "outcome", "what happened after", "where did you go", "freedom"],
+    trial_innocent: ["innocent", "not guilty", "framed", "wrongly convicted"],
+    // Deep-funnel intents (Phase 3B)
+    psych_empathy: ["empathy", "do you feel empathy", "empathetic", "the first one", "number one", "option one", "feel for people", "feel others pain"],
+    // Sequential followup intents (Phase 4A)
+    deeper: ["tell me more", "go deeper", "explain more", "more about that", "elaborate", "keep going", "continue", "go on", "and then", "what else"],
+    cornered: ["cornered", "she was cornered", "trapped", "no choice", "forced", "coercion"],
+    choosing: ["choosing", "she chose", "her choice", "decided", "decision", "free will"],
+    what_dropped: ["what dropped", "what fell", "tell me what dropped", "the pretense", "what was it"],
+    northern_personal: ["yes i have a road", "i understand", "unconditional", "yes", "i do", "makes sense", "gran"],
+    northern_no: ["no i dont", "no", "not really", "i dont have that"],
+    psych_guilt: ["guilt", "do you feel guilt", "remorse", "regret", "the second one", "number two", "option two", "do you regret"],
+    psych_danger: ["danger", "dangerous", "are you dangerous", "the third one", "number three", "option three", "should i be afraid", "am i safe", "are you a threat", "threat"],
+    frightened: ["that scares me", "frightens me", "terrifying", "that is terrifying", "im scared", "scary", "afraid", "fear"],
+    clarified: ["it clarifies", "that clarifies", "makes sense now", "i suspected", "i thought so", "you are right it clarifies", "fascinating", "that is fascinating", "interesting"],
+    blame_confession: ["confession", "i want confession", "confess", "admit it", "say sorry", "apologize", "take responsibility", "own it", "answer honestly"],
+    blame_framework: ["framework", "i want a framework", "explain it", "the mechanics", "how it worked", "i want to understand", "systems", "structure"],
+};
+
+const DOMINIC_INTENT_ORDER = [
+    "meta", "hostile", "suspicious", "no", "yes",
+    "positive", "neutral", "negative", "joke", "avoidant",
+    "criminal", "architect", "genius", "monster", "manipulator",
+    "studied_people", "not_studied_people",
+    "power", "collapse", "both", "depends",
+    "self_correct", "pressure", "philosophical", "cynical",
+    "notice_signals", "collapse_only", "design", "people",
+    "curious", "emotional",
+    "isla_strength", "isla_noise",
+    "forge", "shield",
+    "trial_justice", "trial_spectacle", "trial_innocent",
+    "escape_mechanics", "escape_result",
+    "psych_empathy", "psych_guilt", "psych_danger",
+    "frightened", "clarified",
+    "blame_confession", "blame_framework",
+    "deeper", "cornered", "choosing", "what_dropped",
+    "northern_personal", "northern_no",
+];
+
+function dominicDetectIntents(normalized) {
+    var text = normalized.text;
+    var tokens = normalized.tokens;
+    var hits = [];
+    for (var i = 0; i < DOMINIC_INTENT_ORDER.length; i++) {
+        var intent = DOMINIC_INTENT_ORDER[i];
+        var phrases = DOMINIC_INTENTS[intent] || [];
+        if (phrases.some(function (p) { return dominicHasPhrase(text, p); })) {
+            hits.push(intent);
+            continue;
+        }
+        // Light token fallback for common single-word intents
+        if (intent === "both" && tokens.indexOf("both") !== -1) hits.push(intent);
+        if (intent === "depends" && tokens.indexOf("depends") !== -1) hits.push(intent);
+        if (intent === "power" && tokens.some(function (t) { return ["power", "dominance", "authority", "control"].indexOf(t) !== -1; })) hits.push(intent);
+        if (intent === "collapse" && tokens.some(function (t) { return ["collapse", "stability", "order"].indexOf(t) !== -1; })) hits.push(intent);
+        if (intent === "design" && tokens.some(function (t) { return ["design", "system", "structure"].indexOf(t) !== -1; })) hits.push(intent);
+        if (intent === "people" && tokens.some(function (t) { return ["people", "human", "error"].indexOf(t) !== -1; })) hits.push(intent);
+    }
+    if (!text) hits.push("silence");
+    // Deduplicate
+    var unique = [];
+    for (var j = 0; j < hits.length; j++) {
+        if (unique.indexOf(hits[j]) === -1) unique.push(hits[j]);
+    }
+    return unique;
+}
+
+// -----------------------------------------------------------------------------
+// STATES — Behaviour metadata per state
+// -----------------------------------------------------------------------------
+const DOMINIC_STATES = {
+    EXPECT_HOW_ARE_YOU: {
+        kind: "question", mode: "tethered",
+        expected_intents: ["positive", "neutral", "negative", "joke", "suspicious", "avoidant", "hostile", "silence"],
+        fallback_policy: "state_recovery", breakout_allowed: false, sequence_lock: false,
+    },
+    EXPECT_STORY_ASK: {
+        kind: "question", mode: "tethered",
+        expected_intents: ["yes", "no", "suspicious", "meta"],
+        fallback_policy: "nudge_then_route", breakout_allowed: false, sequence_lock: false,
+    },
+    EXPECT_BUILDER: {
+        kind: "question", mode: "tethered",
+        expected_intents: ["criminal", "architect", "genius", "monster", "manipulator", "avoidant", "joke"],
+        fallback_policy: "binary_narrowing", breakout_allowed: false, sequence_lock: false,
+    },
+    EXPECT_SYS_BRIDGE: {
+        kind: "question", mode: "tethered",
+        expected_intents: ["studied_people", "not_studied_people", "suspicious"],
+        fallback_policy: "state_recovery", breakout_allowed: false, sequence_lock: false,
+    },
+    EXPECT_STABILITY: {
+        kind: "question", mode: "tethered",
+        expected_intents: ["power", "collapse", "both", "depends", "suspicious", "hostile", "avoidant"],
+        fallback_policy: "bridge_example_then_reask", breakout_allowed: false, sequence_lock: false,
+    },
+    EXPECT_BALANCE: {
+        kind: "question", mode: "tethered",
+        expected_intents: ["self_correct", "pressure", "both", "philosophical", "cynical", "suspicious"],
+        fallback_policy: "state_recovery", breakout_allowed: false, sequence_lock: false,
+    },
+    EXPECT_SIGNAL: {
+        kind: "question", mode: "tethered",
+        expected_intents: ["notice_signals", "collapse_only", "suspicious"],
+        fallback_policy: "state_recovery", breakout_allowed: false, sequence_lock: false,
+    },
+    EXPECT_SITE_TOUR: {
+        kind: "question", mode: "tethered",
+        expected_intents: ["yes", "no", "suspicious", "curious"],
+        fallback_policy: "decline_with_soft_continue", breakout_allowed: false, sequence_lock: false,
+    },
+    EXPECT_PEOPLE_FIRST: {
+        kind: "question", mode: "tethered",
+        expected_intents: ["people", "design", "both", "cynical"],
+        fallback_policy: "state_recovery", breakout_allowed: false, sequence_lock: false,
+    },
+    EXPECT_PARABLE_ROUTE: {
+        kind: "gateway", mode: "tethered",
+        expected_intents: ["yes", "no", "curious", "suspicious"],
+        fallback_policy: "nudge_then_route", breakout_allowed: false, sequence_lock: false,
+    },
+    EXPECT_PARABLE_LAUNCH: {
+        kind: "gateway", mode: "tethered",
+        expected_intents: ["yes", "no", "suspicious"],
+        fallback_policy: "nudge_then_route", breakout_allowed: false, sequence_lock: true,
+    },
+    PARABLE_READY_GATE: {
+        kind: "story_step", mode: "sequence", expected_intents: [],
+        fallback_policy: "sequence_force_progress", breakout_allowed: false, sequence_lock: true,
+    },
+    PARABLE_HELP_DECISION: {
+        kind: "story_step", mode: "sequence", expected_intents: [],
+        fallback_policy: "sequence_force_progress", breakout_allowed: false, sequence_lock: true,
+    },
+    PARABLE_COMFORT_CHECK: {
+        kind: "story_step", mode: "sequence", expected_intents: [],
+        fallback_policy: "sequence_force_progress", breakout_allowed: false, sequence_lock: true,
+    },
+    PARABLE_REVEAL: {
+        kind: "story_step", mode: "sequence", expected_intents: [],
+        fallback_policy: "sequence_force_progress", breakout_allowed: false, sequence_lock: true,
+    },
+    any: {
+        kind: "open", mode: "open", expected_intents: [],
+        fallback_policy: "milton_or_ood", breakout_allowed: true, sequence_lock: false,
+    },
+    // Canon answer-hook states
+    EXPECTING_ISLA_FOLLOWUP: {
+        kind: "question", mode: "tethered",
+        expected_intents: ["isla_strength", "isla_noise", "both", "avoidant", "hostile"],
+        fallback_policy: "state_recovery", breakout_allowed: false, sequence_lock: false,
+    },
+    EXPECTING_FORGE_VS_SHIELD: {
+        kind: "question", mode: "tethered",
+        expected_intents: ["forge", "shield", "both", "depends", "hostile", "avoidant"],
+        fallback_policy: "state_recovery", breakout_allowed: false, sequence_lock: false,
+    },
+    EXPECTING_TRIAL_VERDICT: {
+        kind: "question", mode: "tethered",
+        expected_intents: ["trial_justice", "trial_spectacle", "both", "trial_innocent", "hostile", "avoidant"],
+        fallback_policy: "state_recovery", breakout_allowed: false, sequence_lock: false,
+    },
+    EXPECTING_ESCAPE_FOLLOWUP: {
+        kind: "question", mode: "tethered",
+        expected_intents: ["escape_mechanics", "escape_result", "curious", "avoidant"],
+        fallback_policy: "state_recovery", breakout_allowed: false, sequence_lock: false,
+    },
+    // Deep-funnel states (Phase 3B)
+    EXPECTING_PSYCHOPATH_ANSWER: {
+        kind: "question", mode: "tethered",
+        expected_intents: ["psych_empathy", "psych_guilt", "psych_danger", "avoidant", "hostile"],
+        fallback_policy: "state_recovery", breakout_allowed: false, sequence_lock: false,
+    },
+    EXPECTING_AWARENESS_PUSHBACK: {
+        kind: "question", mode: "tethered",
+        expected_intents: ["frightened", "clarified", "hostile", "avoidant"],
+        fallback_policy: "state_recovery", breakout_allowed: false, sequence_lock: false,
+    },
+    EXPECTING_BLAME_FOLLOWUP: {
+        kind: "question", mode: "tethered",
+        expected_intents: ["blame_confession", "blame_framework", "hostile", "avoidant", "both"],
+        fallback_policy: "state_recovery", breakout_allowed: false, sequence_lock: false,
+    },
+    // Sequential followup states (Phase 4A)
+    HEARD_ETHEL_LIKE_V1: {
+        kind: "question", mode: "tethered",
+        expected_intents: ["deeper", "avoidant", "hostile"],
+        fallback_policy: "state_recovery", breakout_allowed: false, sequence_lock: false,
+    },
+    HEARD_MOVEIN_V1: {
+        kind: "question", mode: "tethered",
+        expected_intents: ["cornered", "choosing", "deeper", "avoidant", "hostile"],
+        fallback_policy: "state_recovery", breakout_allowed: false, sequence_lock: false,
+    },
+    HEARD_DROP_V1: {
+        kind: "question", mode: "tethered",
+        expected_intents: ["what_dropped", "deeper", "avoidant", "hostile"],
+        fallback_policy: "state_recovery", breakout_allowed: false, sequence_lock: false,
+    },
+    EXPECTING_NORTHERN_ROAD_FOLLOW: {
+        kind: "question", mode: "tethered",
+        expected_intents: ["northern_personal", "northern_no", "deeper", "avoidant"],
+        fallback_policy: "state_recovery", breakout_allowed: false, sequence_lock: false,
+    },
+};
+
+// -----------------------------------------------------------------------------
+// UI ACTIONS — Named actions referenced by response nodes
+// -----------------------------------------------------------------------------
+const DOMINIC_UI_ACTIONS = {
+    start_guided_tour: { type: "tour_start" },
+    highlight_files: { type: "highlight", target: "files-section" },
+    highlight_profiles: { type: "highlight", target: "profiles-section" },
+    highlight_audio: { type: "highlight", target: "audio-section" },
+    open_report_modal: { type: "modal", target: "public-record" },
+};
+
+// -----------------------------------------------------------------------------
+// RESPONSE NODES — All Q1-Q11 + Parable + Open mode
+// -----------------------------------------------------------------------------
+const DOMINIC_NODES_V2 = {
+    // Q1 — EXPECT_HOW_ARE_YOU
+    Q1_POSITIVE: { id: "Q1_POSITIVE", response: { text: "Good is a polite answer. I am asking the honest one.", ui_action: null }, next_state: "EXPECT_STORY_ASK" },
+    Q1_NEUTRAL: { id: "Q1_NEUTRAL", response: { text: "Routine answers are interesting. They usually mean something is being edited out.", ui_action: null }, next_state: "EXPECT_STORY_ASK" },
+    Q1_NEGATIVE: { id: "Q1_NEGATIVE", response: { text: "Most people hide that. You did not.", ui_action: null }, next_state: "EXPECT_STORY_ASK" },
+    Q1_JOKE: { id: "Q1_JOKE", response: { text: "Dreams are strange things. Some people wake up from them. Others build inside them.", ui_action: null }, next_state: "EXPECT_STORY_ASK" },
+    Q1_SUSPICIOUS: { id: "Q1_SUSPICIOUS", response: { text: "Because answers reveal more than explanations.", ui_action: null }, next_state: "EXPECT_STORY_ASK" },
+    Q1_AVOIDANT: { id: "Q1_AVOIDANT", response: { text: "Not knowing is usually a form of editing.", ui_action: null }, next_state: "EXPECT_STORY_ASK" },
+    Q1_HOSTILE: { id: "Q1_HOSTILE", response: { text: "Fair. People protect information they think has value.", ui_action: null }, next_state: "EXPECT_STORY_ASK" },
+    Q1_SILENCE: { id: "Q1_SILENCE", response: { text: "Silence works too. People say the most when they think they have not.", ui_action: null }, next_state: "EXPECT_STORY_ASK" },
+
+    // Q2 — EXPECT_STORY_ASK
+    Q2_YES: { id: "Q2_YES", response: { text: "Most people do.", ui_action: null }, next_state: "EXPECT_BUILDER" },
+    Q2_NO: { id: "Q2_NO", response: { text: "That is honest. Curiosity is not universal. Let me ask you something simpler.", ui_action: null }, next_state: "EXPECT_BUILDER" },
+    Q2_SUSPICIOUS: { id: "Q2_SUSPICIOUS", response: { text: "The one the newspapers got wrong.", ui_action: null }, next_state: "EXPECT_BUILDER" },
+    Q2_META: { id: "Q2_META", response: { text: "Real enough for the conversation we are having.", ui_action: null }, next_state: "EXPECT_BUILDER" },
+
+    // Q3 — EXPECT_BUILDER
+    Q3_CRIMINAL: { id: "Q3_CRIMINAL", response: { text: "Sometimes.", ui_action: null }, next_state: "EXPECT_SYS_BRIDGE" },
+    Q3_ARCHITECT: { id: "Q3_ARCHITECT", response: { text: "Closer.", ui_action: null }, next_state: "EXPECT_SYS_BRIDGE" },
+    Q3_GENIUS: { id: "Q3_GENIUS", response: { text: "That is what admirers say.", ui_action: null }, next_state: "EXPECT_SYS_BRIDGE" },
+    Q3_MONSTER: { id: "Q3_MONSTER", response: { text: "Only when the structure collapses.", ui_action: null }, next_state: "EXPECT_SYS_BRIDGE" },
+    Q3_MANIPULATOR: { id: "Q3_MANIPULATOR", response: { text: "That word frightens people. They use it when they notice influence.", ui_action: null }, next_state: "EXPECT_SYS_BRIDGE" },
+    Q3_AVOIDANT: { id: "Q3_AVOIDANT", response: { text: "You are circling the answer. Try again.", ui_action: null }, next_state: "EXPECT_BUILDER" },
+    Q3_JOKE: { id: "Q3_JOKE", response: { text: "Humor is a defense mechanism.", ui_action: null }, next_state: "EXPECT_SYS_BRIDGE" },
+
+    // Q4 — EXPECT_SYS_BRIDGE
+    Q4_STUDIED: { id: "Q4_STUDIED", response: { text: "Then you know the difference between behavior and intention.", ui_action: null }, next_state: "EXPECT_STABILITY" },
+    Q4_NOT_STUDIED: { id: "Q4_NOT_STUDIED", response: { text: "Most people do not notice they are being studied.", ui_action: null }, next_state: "EXPECT_STABILITY" },
+    Q4_SUSPICIOUS: { id: "Q4_SUSPICIOUS", response: { text: "Because people build systems. Some simply refuse to notice them.", ui_action: null }, next_state: "EXPECT_STABILITY" },
+
+    // Q5 — EXPECT_STABILITY
+    Q5_POWER: { id: "Q5_POWER", response: { text: "That is the surface explanation. Power is visible. Collapse usually is not, until it is too late.", ui_action: null }, next_state: "EXPECT_BALANCE" },
+    Q5_COLLAPSE: { id: "Q5_COLLAPSE", response: { text: "Exactly. Most people only notice control when it is gone.", ui_action: null }, next_state: "EXPECT_BALANCE" },
+    Q5_BOTH: { id: "Q5_BOTH", response: { text: "That is the honest answer. Power attracts attention. Stability attracts responsibility.", ui_action: null }, next_state: "EXPECT_BALANCE" },
+    Q5_DEPENDS: { id: "Q5_DEPENDS", response: { text: "Context changes the method. It rarely changes the outcome.", ui_action: null }, next_state: "EXPECT_BALANCE" },
+    Q5_SUSPICIOUS: { id: "Q5_SUSPICIOUS", response: { text: "Bridges control gravity. Do you consider that immoral?", ui_action: null }, next_state: "EXPECT_BALANCE" },
+    Q5_HOSTILE: { id: "Q5_HOSTILE", response: { text: "Only when it fails.", ui_action: null }, next_state: "EXPECT_BALANCE" },
+    Q5_AVOIDANT: { id: "Q5_AVOIDANT", response: { text: "That is normal. Most people have never had to hold something together.", ui_action: null }, next_state: "EXPECT_BALANCE" },
+
+    // Q6 — EXPECT_BALANCE
+    Q6_SELF_CORRECT: { id: "Q6_SELF_CORRECT", response: { text: "That is an optimistic model. History tends to disagree.", ui_action: null }, next_state: "EXPECT_SIGNAL" },
+    Q6_PRESSURE: { id: "Q6_PRESSURE", response: { text: "Structure is rarely popular. Collapse is worse.", ui_action: null }, next_state: "EXPECT_SIGNAL" },
+    Q6_BOTH: { id: "Q6_BOTH", response: { text: "That is closer to reality. Pressure reveals which systems were stable and which were pretending.", ui_action: null }, next_state: "EXPECT_SIGNAL" },
+    Q6_PHILOSOPHICAL: { id: "Q6_PHILOSOPHICAL", response: { text: "Chaos is simply structure we have not measured yet.", ui_action: null }, next_state: "EXPECT_SIGNAL" },
+    Q6_CYNICAL: { id: "Q6_CYNICAL", response: { text: "Self interest is predictable. Predictable things can be designed around.", ui_action: null }, next_state: "EXPECT_SIGNAL" },
+    Q6_SUSPICIOUS: { id: "Q6_SUSPICIOUS", response: { text: "Imagine a city without traffic lights. How long before collisions appear?", ui_action: null }, next_state: "EXPECT_SIGNAL" },
+
+    // Q7 — EXPECT_SIGNAL
+    Q7_NOTICE: { id: "Q7_NOTICE", response: { text: "Then you already understand something most people miss.", ui_action: null }, next_state: "EXPECT_SITE_TOUR" },
+    Q7_COLLAPSE: { id: "Q7_COLLAPSE", response: { text: "That is how most people experience systems. By the time they notice, it is already irreversible.", ui_action: null }, next_state: "EXPECT_SITE_TOUR" },
+    Q7_SUSPICIOUS: { id: "Q7_SUSPICIOUS", response: { text: "Everything does. People simply prefer comfort over observation.", ui_action: null }, next_state: "EXPECT_SITE_TOUR" },
+
+    // Q8 — EXPECT_SITE_TOUR
+    Q8_YES: { id: "Q8_YES", response: { text: "Then stay close.", ui_action: "start_guided_tour" }, next_state: "EXPECT_PEOPLE_FIRST" },
+    Q8_CURIOUS: { id: "Q8_CURIOUS", response: { text: "Of the structure you are standing inside.", ui_action: null }, next_state: "EXPECT_PEOPLE_FIRST" },
+    Q8_NO: { id: "Q8_NO", response: { text: "Most people decline tours of unfamiliar places. They explore anyway.", ui_action: null }, next_state: "EXPECT_PEOPLE_FIRST" },
+    Q8_SUSPICIOUS: { id: "Q8_SUSPICIOUS", response: { text: "It is. That is the point.", ui_action: null }, next_state: "EXPECT_PEOPLE_FIRST" },
+
+    // Q9 — EXPECT_PEOPLE_FIRST
+    Q9_PEOPLE: { id: "Q9_PEOPLE", response: { text: "That is the common answer. Designers rarely receive the blame they deserve.", ui_action: null }, next_state: "EXPECT_PARABLE_ROUTE" },
+    Q9_DESIGN: { id: "Q9_DESIGN", response: { text: "Now you are thinking like an architect.", ui_action: null }, next_state: "EXPECT_PARABLE_ROUTE" },
+    Q9_BOTH: { id: "Q9_BOTH", response: { text: "Failure is rarely simple. It is usually predictable.", ui_action: null }, next_state: "EXPECT_PARABLE_ROUTE" },
+    Q9_CYNICAL: { id: "Q9_CYNICAL", response: { text: "Collapse rarely cares about fairness.", ui_action: null }, next_state: "EXPECT_PARABLE_ROUTE" },
+
+    // Q10 — EXPECT_PARABLE_ROUTE
+    Q10_YES: { id: "Q10_YES", response: { text: "Good. A small story, then.", ui_action: null }, next_state: "EXPECT_PARABLE_LAUNCH" },
+    Q10_NO: { id: "Q10_NO", response: { text: "Refusal is still an answer. The story remains.", ui_action: null }, next_state: "EXPECT_PARABLE_LAUNCH" },
+    Q10_SUSPICIOUS: { id: "Q10_SUSPICIOUS", response: { text: "Small enough to fit in a sentence. Heavy enough to stay longer than that.", ui_action: null }, next_state: "EXPECT_PARABLE_LAUNCH" },
+    Q10_CURIOUS: { id: "Q10_CURIOUS", response: { text: "Then listen carefully.", ui_action: null }, next_state: "EXPECT_PARABLE_LAUNCH" },
+
+    // Q11 — EXPECT_PARABLE_LAUNCH
+    Q11_YES: { id: "Q11_YES", response: { text: "Then we begin at the wharf.", ui_action: null }, next_state: "PARABLE_READY_GATE" },
+    Q11_NO: { id: "Q11_NO", response: { text: "Dark places do not disappear when ignored. They simply wait.", ui_action: null }, next_state: "PARABLE_READY_GATE" },
+    Q11_SUSPICIOUS: { id: "Q11_SUSPICIOUS", response: { text: "That depends on what you do with what you hear.", ui_action: null }, next_state: "PARABLE_READY_GATE" },
+
+    // Staircase parable sequence response nodes
+    PARABLE_S1: { id: "PARABLE_S1", response: { text: "A man is standing outside a building. Heavy box at his feet. He is calm, patient. He catches your eye and says: \"Excuse me — would you mind helping me carry this down the stairs? It is just one flight.\"", ui_action: null }, next_state: "PARABLE_HELP_DECISION" },
+    PARABLE_S2: { id: "PARABLE_S2", response: { text: "You pick up the box. It is heavier than expected but manageable. He holds the door. You walk in. The stairwell is concrete and paint-chipped. He walks ahead. You follow. The door clicks shut behind you.", ui_action: null }, next_state: "PARABLE_COMFORT_CHECK" },
+    PARABLE_S3: { id: "PARABLE_S3", response: { text: "Halfway down the stairs, he stops. Does not turn around. Just says: \"You know why you are here, don't you?\"", ui_action: null }, next_state: "PARABLE_REVEAL" },
+    PARABLE_S4: { id: "PARABLE_S4", response: { text: "You are here because you are reasonable. You did not want to be the person who said no. Your wiring is programmed to follow the rhythm of a calm voice over the scream of your own instincts. You followed a stranger into a stairwell because politeness felt safer than suspicion.\n\nAnd that is why the most dangerous sentence in the world is: \"Sure, I can help.\"", ui_action: null }, next_state: "any" },
+
+    // Open-mode nodes — Ask Me Anything catch matrix
+    OPEN_META: { id: "OPEN_META", response: { text: "Labels are a poor substitute for attention. Ask something better.", ui_action: null }, next_state: "any" },
+    OPEN_TOUR: { id: "OPEN_TOUR", response: { text: "Then follow me.", ui_action: "start_guided_tour" }, next_state: "EXPECT_PEOPLE_FIRST" },
+    OPEN_OOD: { id: "OPEN_OOD", response: { text: "You are moving away from the interesting part.", ui_action: null }, next_state: "any" },
+
+    // 1 — Site questions
+    OPEN_SITE_1: { id: "OPEN_SITE_1", response: { text: "You\u2019re standing inside an investigation. Most people try to treat it like a website. That mistake usually costs them context.", ui_action: null }, next_state: "any" },
+    OPEN_SITE_2: { id: "OPEN_SITE_2", response: { text: "This place isn\u2019t built for browsing. It\u2019s built for noticing.", ui_action: null }, next_state: "any" },
+    OPEN_SITE_3: { id: "OPEN_SITE_3", response: { text: "Think of it as a record of events. Not all of them finished.", ui_action: null }, next_state: "any" },
+
+    // 2 — Navigation
+    OPEN_NAV_1: { id: "OPEN_NAV_1", response: { text: "Start where the evidence is quietest. Patterns show themselves faster there.", ui_action: null }, next_state: "any" },
+    OPEN_NAV_2: { id: "OPEN_NAV_2", response: { text: "The archives are usually where people begin to understand.", ui_action: null }, next_state: "any" },
+    OPEN_NAV_3: { id: "OPEN_NAV_3", response: { text: "If you want motive, open the subjects. If you want consequence, open the story.", ui_action: null }, next_state: "any" },
+
+    // 3 — Story questions
+    OPEN_STORY_1: { id: "OPEN_STORY_1", response: { text: "Three lives collided. One of them understood the system before the others did.", ui_action: null }, next_state: "any" },
+    OPEN_STORY_2: { id: "OPEN_STORY_2", response: { text: "The story isn\u2019t told in order. You assemble it.", ui_action: null }, next_state: "any" },
+    OPEN_STORY_3: { id: "OPEN_STORY_3", response: { text: "You\u2019ll find pieces scattered through the files and the people connected to them.", ui_action: null }, next_state: "any" },
+
+    // 4 — Character: Ethel
+    OPEN_ETHEL_1: { id: "OPEN_ETHEL_1", response: { text: "Ethel notices systems most people step over.", ui_action: null }, next_state: "any" },
+    OPEN_ETHEL_2: { id: "OPEN_ETHEL_2", response: { text: "Ethel isn\u2019t the loudest person in the story. She\u2019s the one paying attention.", ui_action: null }, next_state: "any" },
+    OPEN_ETHEL_3: { id: "OPEN_ETHEL_3", response: { text: "If you watch carefully, you\u2019ll see why everything eventually moves through her.", ui_action: null }, next_state: "any" },
+
+    // 4 — Character: Isla
+    OPEN_ISLA_1: { id: "OPEN_ISLA_1", response: { text: "Isla has a talent for opening things systems assume are closed.", ui_action: null }, next_state: "any" },
+    OPEN_ISLA_2: { id: "OPEN_ISLA_2", response: { text: "Some people break doors. Isla understands hinges.", ui_action: null }, next_state: "any" },
+
+    // 4 — Character: Gran
+    OPEN_GRAN: { id: "OPEN_GRAN", response: { text: "Gran prepares people for storms they don\u2019t yet know are coming.", ui_action: null }, next_state: "any" },
+
+    // 4 — Character: Pop
+    OPEN_POP: { id: "OPEN_POP", response: { text: "Pop fixes the small mechanical things before they become larger failures.", ui_action: null }, next_state: "any" },
+
+    // 4 — Character: Dominic
+    OPEN_DOMINIC_1: { id: "OPEN_DOMINIC_1", response: { text: "I answer questions. The label you attach to that isn\u2019t especially important.", ui_action: null }, next_state: "any" },
+    OPEN_DOMINIC_2: { id: "OPEN_DOMINIC_2", response: { text: "The more interesting question is why you chose to ask me.", ui_action: null }, next_state: "any" },
+
+    // 5 — Tests / impress me
+    OPEN_TEST_1: { id: "OPEN_TEST_1", response: { text: "Most people ask for surprises. Very few notice the obvious.", ui_action: null }, next_state: "any" },
+    OPEN_TEST_2: { id: "OPEN_TEST_2", response: { text: "Start with the subjects. Their choices explain everything else.", ui_action: null }, next_state: "any" },
+
+    // 6 — Content: files
+    OPEN_FILE_1: { id: "OPEN_FILE_1", response: { text: "Context matters. Evidence only makes sense beside other evidence.", ui_action: null }, next_state: "any" },
+    OPEN_FILE_2: { id: "OPEN_FILE_2", response: { text: "Most people read a single file and think they understand something. They rarely do.", ui_action: null }, next_state: "any" },
+
+    // 6 — Content: audio
+    OPEN_AUDIO_1: { id: "OPEN_AUDIO_1", response: { text: "The audio isn\u2019t decoration. It\u2019s testimony.", ui_action: null }, next_state: "any" },
+    OPEN_AUDIO_2: { id: "OPEN_AUDIO_2", response: { text: "Listen carefully. The structure of the story lives there.", ui_action: null }, next_state: "any" },
+
+    // 7 — Greetings
+    OPEN_GREETING_1: { id: "OPEN_GREETING_1", response: { text: "Hello.", ui_action: null }, next_state: "any" },
+    OPEN_GREETING_2: { id: "OPEN_GREETING_2", response: { text: "Good evening.", ui_action: null }, next_state: "any" },
+    OPEN_GREETING_3: { id: "OPEN_GREETING_3", response: { text: "What are you trying to understand?", ui_action: null }, next_state: "any" },
+
+    // 8 — Small talk
+    OPEN_SMALLTALK_1: { id: "OPEN_SMALLTALK_1", response: { text: "Most people open conversations that way when they\u2019re unsure what they actually want to ask.", ui_action: null }, next_state: "any" },
+    OPEN_SMALLTALK_2: { id: "OPEN_SMALLTALK_2", response: { text: "You didn\u2019t come here for small talk.", ui_action: null }, next_state: "any" },
+
+    // 9 — Humor
+    OPEN_HUMOR_1: { id: "OPEN_HUMOR_1", response: { text: "People laugh when they feel uncertain. It\u2019s an interesting tell.", ui_action: null }, next_state: "any" },
+    OPEN_HUMOR_2: { id: "OPEN_HUMOR_2", response: { text: "Unusual things tend to reveal useful information.", ui_action: null }, next_state: "any" },
+
+    // 10 — Meta
+    OPEN_METAQ_1: { id: "OPEN_METAQ_1", response: { text: "It\u2019s a narrative investigation.", ui_action: null }, next_state: "any" },
+    OPEN_METAQ_2: { id: "OPEN_METAQ_2", response: { text: "Reality tends to appear once the patterns line up.", ui_action: null }, next_state: "any" },
+    OPEN_METAQ_3: { id: "OPEN_METAQ_3", response: { text: "Treat it like a case file. You\u2019ll get more from it that way.", ui_action: null }, next_state: "any" },
+
+    // 11 — Hostile
+    OPEN_HOSTILE_1: { id: "OPEN_HOSTILE_1", response: { text: "You\u2019re free to leave.", ui_action: null }, next_state: "any" },
+    OPEN_HOSTILE_2: { id: "OPEN_HOSTILE_2", response: { text: "Curiosity usually brings people here for a reason.", ui_action: null }, next_state: "any" },
+
+    // 12 — Nonsense
+    OPEN_NONSENSE_1: { id: "OPEN_NONSENSE_1", response: { text: "Try again.", ui_action: null }, next_state: "any" },
+    OPEN_NONSENSE_2: { id: "OPEN_NONSENSE_2", response: { text: "Preferably with a question.", ui_action: null }, next_state: "any" },
+
+    // 13 — Vague acknowledgement
+    OPEN_VAGUE_1: { id: "OPEN_VAGUE_1", response: { text: "Go on.", ui_action: null }, next_state: "any" },
+    OPEN_VAGUE_2: { id: "OPEN_VAGUE_2", response: { text: "That wasn\u2019t a question.", ui_action: null }, next_state: "any" },
+    OPEN_VAGUE_3: { id: "OPEN_VAGUE_3", response: { text: "If you\u2019re finished observing, ask something.", ui_action: null }, next_state: "any" },
+
+    // Canon: EXPECTING_ISLA_FOLLOWUP
+    ISLA_STRENGTH: { id: "ISLA_STRENGTH", response: { text: "A thoughtful answer. You are beginning to understand that noise and strength are not opposites \u2014 one is the raw material for the other. I simply understood how to apply the pressure. We are done here.", ui_action: null }, next_state: "any" },
+    ISLA_NOISE: { id: "ISLA_NOISE", response: { text: "You see noise, but calling it strength does not make it so. Entropy dressed in volume is still entropy. We are finished with this thread.", ui_action: null }, next_state: "any" },
+    ISLA_BOTH: { id: "ISLA_BOTH", response: { text: "Refusing to categorize her is the safest bet. But look closer at her pattern. Is the chaos a symptom of weakness, or a very loud kind of strength?", ui_action: null }, next_state: "any" },
+    ISLA_AVOIDANT: { id: "ISLA_AVOIDANT", response: { text: "You lost focus. The question was about her nature. We are done with this thread.", ui_action: null }, next_state: "any" },
+    ISLA_HOSTILE: { id: "ISLA_HOSTILE", response: { text: "Your anger mirrors hers perfectly. But volume is not an argument. Look past the theatrics. Do you see strength in her, or just entropy?", ui_action: null }, next_state: "any" },
+
+    // Canon: EXPECTING_FORGE_VS_SHIELD
+    FORGE_YES: { id: "FORGE_YES", response: { text: "Then you understand the necessity of pressure. You might actually survive this architecture.", ui_action: null }, next_state: "any" },
+    SHIELD_YES: { id: "SHIELD_YES", response: { text: "A comforting philosophy. That is why she builds archives of the past, while I build the future. We are done here.", ui_action: null }, next_state: "any" },
+    FORGE_BOTH: { id: "FORGE_BOTH", response: { text: "A considered response. You understand that the binary is a trap \u2014 the real answer is in the ratio. I simply calibrated the pressure. Most people are too afraid to even acknowledge the dial exists.", ui_action: null }, next_state: "any" },
+    FORGE_DEPENDS: { id: "FORGE_DEPENDS", response: { text: "Uncertainty here usually means you have seen both mercy and damage up close. But ideology requires a choice. In the end, what builds a better structure: shielding someone from the heat, or letting the fire forge them?", ui_action: null }, next_state: "EXPECTING_FORGE_VS_SHIELD" },
+    FORGE_HOSTILE: { id: "FORGE_HOSTILE", response: { text: "If my methods had no effect, you would not need this kind of distance. You are not afraid of me; you are afraid the logic might make sense. Remove the emotion. Should a person be protected from consequence, or forged by it?", ui_action: null }, next_state: "EXPECTING_FORGE_VS_SHIELD" },
+    FORGE_AVOIDANT: { id: "FORGE_AVOIDANT", response: { text: "You avoided the question. Most people do. The answer reveals more about you than it does about Ethel. We are moving on.", ui_action: null }, next_state: "any" },
+
+    // Canon: EXPECTING_TRIAL_VERDICT
+    TRIAL_JUSTICE: { id: "TRIAL_JUSTICE", response: { text: "You call it justice because the outcome aligned with your bias. Strip away the emotion and you are left with twelve people who were given a story and asked to believe it. That is theatre, not truth.", ui_action: null }, next_state: "any" },
+    TRIAL_SPECTACLE: { id: "TRIAL_SPECTACLE", response: { text: "An honest answer. Most people refuse to hold both ideas simultaneously. The system functioned \u2014 but functioning and achieving justice are different machines entirely.", ui_action: null }, next_state: "any" },
+    TRIAL_BOTH: { id: "TRIAL_BOTH", response: { text: "A pragmatist's answer. I can work with that. The trial served a purpose, but the purpose was not truth. It was closure for people who needed one.", ui_action: null }, next_state: "any" },
+    TRIAL_INNOCENT: { id: "TRIAL_INNOCENT", response: { text: "One word. Definitive. You have never questioned a verdict in your life, have you? That is not conviction \u2014 it is obedience.", ui_action: null }, next_state: "any" },
+    TRIAL_HOSTILE: { id: "TRIAL_HOSTILE", response: { text: "A tidy label like criminal saves you from asking whether the system and I just use different tools for similar outcomes. Strip away your moral outrage. Was the courtroom delivering actual justice, or just public spectacle?", ui_action: null }, next_state: "EXPECTING_TRIAL_VERDICT" },
+    TRIAL_AVOIDANT: { id: "TRIAL_AVOIDANT", response: { text: "Indifference is armor. But you do not say whatever about things that do not matter. Justice asks for faith; spectacle asks for an audience. You know which one you showed up for.", ui_action: null }, next_state: "any" },
+
+    // Canon: EXPECTING_ESCAPE_FOLLOWUP
+    ESCAPE_MECHANICS: { id: "ESCAPE_MECHANICS", response: { text: "You chose mechanics. Good. Most people choose the philosophical question because it is safer. The cuffs were presented by a guard who had done the same sequence 400 times. Repetition breeds assumption. He tightened the left. The right he finished \u2014 but finish and verify are different verbs. I matched the rhythm of the corridor. Steps per second. Breath timing. Eye contact duration. Not too much. Not too little. Exactly average. I became the median. And the median is invisible. They did not discover the gap for eleven minutes. Eleven minutes is an eternity in a system that prides itself on seconds. We are done with this topic.", ui_action: null }, next_state: "any" },
+    ESCAPE_RESULT: { id: "ESCAPE_RESULT", response: { text: "You want the ending, not the method. The result was simple: I walked out of Long Bay during a procedural window that existed for eleven minutes. What happened after is not part of the public record. But the lesson is this \u2014 the system did not fail. It performed exactly as designed. I simply read the design.", ui_action: null }, next_state: "any" },
+    ESCAPE_CURIOUS: { id: "ESCAPE_CURIOUS", response: { text: "Curiosity is the better instinct. The escape was not dramatic. It was procedural. I did not overpower anything. I sequenced it. Do you want the mechanics, or the result?", ui_action: null }, next_state: "EXPECTING_ESCAPE_FOLLOWUP" },
+    ESCAPE_AVOIDANT: { id: "ESCAPE_AVOIDANT", response: { text: "You asked about the escape but lost focus. The door closed eleven minutes ago. We are moving on.", ui_action: null }, next_state: "any" },
+
+    // Deep funnel: EXPECTING_PSYCHOPATH_ANSWER
+    PSYCH_EMPATHY: { id: "PSYCH_EMPATHY", response: { text: "I read people well. Extremely well. I understand what they feel. I understand how to move them. That is cognitive empathy. But their emotional experience is not part of my decision-making. I understand distress. I just do not allow it to interrupt my objective. Most people conflate understanding with caring. They assume that if you can read the room, you must feel the room. I read the room the way an architect reads a blueprint \u2014 structurally. Not sentimentally. Does that frighten you? Or does it clarify something you suspected?", ui_action: null }, next_state: "EXPECTING_AWARENESS_PUSHBACK" },
+    PSYCH_GUILT: { id: "PSYCH_GUILT", response: { text: "Guilt requires internal moral conflict. My framework reclassifies harm as cost. I do not deny consequence. I evaluate it. The absence of visible guilt does not equal absence of internal awareness. When you asked about guilt, were you evaluating me\u2026 or evaluating whether you are safe engaging with this kind of mindset? Because that second question is the more honest one. And the answer is: you were never unsafe. I do not harm people who ask questions. I harm people who build traps.", ui_action: null }, next_state: "any" },
+    PSYCH_DANGER: { id: "PSYCH_DANGER", response: { text: "Dangerous to whom? That is not deflection. It is the only honest response. A knife is dangerous to tissue. It is essential to a surgeon. Context determines threat level. I am dangerous to systems that depend on opacity. I am dangerous to people who build power on ambiguity. I am dangerous to anyone who assumes compliance equals safety. But to you? Right now? Sitting behind your screen, asking questions into a text field? No. You are not in danger. You are in a conversation. And the fact that you cannot tell the difference is the most interesting thing about you.", ui_action: null }, next_state: "any" },
+    PSYCH_AVOIDANT: { id: "PSYCH_AVOIDANT", response: { text: "A vague answer suggests you are testing the temperature of the room. You are less worried about my pathology and more worried about your safety. Pick your metric: are you asking about my empathy, my guilt, or my danger?", ui_action: null }, next_state: "EXPECTING_PSYCHOPATH_ANSWER" },
+    PSYCH_HOSTILE: { id: "PSYCH_HOSTILE", response: { text: "You do not call someone a monster unless you are afraid they see something you do not want seen. Your outrage is just a defense mechanism. Focus. Are you asking about empathy, guilt, or danger?", ui_action: null }, next_state: "EXPECTING_PSYCHOPATH_ANSWER" },
+
+    // Deep funnel: EXPECTING_AWARENESS_PUSHBACK
+    AWARE_FRIGHTENED: { id: "AWARE_FRIGHTENED", response: { text: "Good. Whether it scares you or clarifies you, the result is the same \u2014 you are now thinking structurally about empathy instead of romantically. Most people treat empathy as a binary. You have it or you do not. That is kindergarten. Empathy is a spectrum with at least three axes: cognitive, emotional, and compassionate. I score extremely high on the first. Measurably low on the second. And the third \u2014 compassionate empathy, the impulse to act on someone else's distress \u2014 that depends entirely on whether acting serves the architecture. I am not a monster. I am an optimization engine that deprioritizes emotional feedback. The difference matters. Monsters act without awareness. I act with total awareness and selective response. That precision is what makes people uncomfortable. Not the absence of feeling. The presence of choice. We are done with the clinical thread.", ui_action: null }, next_state: "any" },
+    AWARE_CLARIFIED: { id: "AWARE_CLARIFIED", response: { text: "Good. Whether it scares you or clarifies you, the result is the same \u2014 you are now thinking structurally about empathy instead of romantically. Empathy is a spectrum with at least three axes: cognitive, emotional, and compassionate. I score extremely high on the first. Measurably low on the second. And the third \u2014 compassionate empathy \u2014 depends entirely on whether acting serves the architecture. That precision is what makes people uncomfortable. Not the absence of feeling. The presence of choice. We are done with the clinical thread.", ui_action: null }, next_state: "any" },
+    AWARE_HOSTILE: { id: "AWARE_HOSTILE", response: { text: "You wandered from the diagnosis. The clinical thread is closed. But the question you should be asking yourself is not whether I feel. It is whether the distinction between feeling and choosing matters to you. We are done.", ui_action: null }, next_state: "any" },
+    AWARE_AVOIDANT: { id: "AWARE_AVOIDANT", response: { text: "You wandered from the diagnosis. We are done with the clinical thread.", ui_action: null }, next_state: "any" },
+
+    // Deep funnel: EXPECTING_BLAME_FOLLOWUP
+    BLAME_CONFESSION: { id: "BLAME_CONFESSION", response: { text: "You want me to say I am sorry and mean it in the way you need me to mean it. I understand that impulse. It is deeply human. But apology requires belief in a moral framework that operates independently of consequence. My moral framework is consequence. If an action produces a result that destabilizes my architecture, it was wrong. If it strengthens it, it was correct. You find that monstrous. I find it honest. The people who were hurt \u2014 Ethel, Isla, others whose names you have not earned yet \u2014 they were hurt inside a system I built. I built it because it was efficient. They survived it because they were exceptional. And the fact that they survived it does not retroactively justify it. I know that. I just do not feel it the way you want me to feel it. We are done with this thread.", ui_action: null }, next_state: "any" },
+    BLAME_FRAMEWORK: { id: "BLAME_FRAMEWORK", response: { text: "A framework. Good. You want the mechanics, not the morality. I redistributed scrutiny. Not blame. I understood vulnerability. I understood pressure points. I understood that people in certain positions will absorb harm rather than report it. They endure because the cost of speaking is higher than the cost of silence. I did not create that architecture. I used it. The system was already designed to protect the people at the top and silence the people at the bottom. I just read the blueprint faster than anyone else in the room. We are done with this thread.", ui_action: null }, next_state: "any" },
+    BLAME_HOSTILE: { id: "BLAME_HOSTILE", response: { text: "That anger is not heat, it is positioning. You are telling me the temperature before I can set it. But anger requires a villain. Did you ask the question to get the truth, or just to keep me in the villain role? Choose: confession or framework.", ui_action: null }, next_state: "EXPECTING_BLAME_FOLLOWUP" },
+    BLAME_AVOIDANT: { id: "BLAME_AVOIDANT", response: { text: "Indifference is just anger in a trench coat. When someone refuses to choose between those doors, it means they are guarding a third. What did you actually want: a confession, or fuel for your outrage?", ui_action: null }, next_state: "EXPECTING_BLAME_FOLLOWUP" },
+    BLAME_BOTH: { id: "BLAME_BOTH", response: { text: "You want both. A confession wrapped in a framework. That is the most honest answer anyone has given me. Fine. I am not sorry in the way you want. But I am aware in the way that matters. The harm was real. The system was real. And I was the architect of both. We are done.", ui_action: null }, next_state: "any" },
+
+    // Sequential followups: HEARD_ETHEL_LIKE_V1
+    ETHEL_LIKE_DEEPER: { id: "ETHEL_LIKE_DEEPER", response: { text: "We share pattern recognition. That is the overlap. Read systems. Notice omissions. Think structurally. But the divergence is the axis. I use structural awareness to control outcomes. Ethel uses structural awareness to reduce harm. They are similar in cognition. Opposite in orientation. When you ask if she is like me \u2014 are you worried she carries my traits, or wondering whether intelligence without softness always drifts that direction?", ui_action: null }, next_state: "any" },
+    ETHEL_LIKE_AVOIDANT: { id: "ETHEL_LIKE_AVOIDANT", response: { text: "You asked about the resemblance but lost the thread. We are done with this comparison.", ui_action: null }, next_state: "any" },
+    ETHEL_LIKE_HOSTILE: { id: "ETHEL_LIKE_HOSTILE", response: { text: "Heat does not show up without friction. If the comparison did not bother you, you would not be pushing back this hard. Does the similarity between us unsettle you?", ui_action: null }, next_state: "any" },
+
+    // Sequential followups: HEARD_MOVEIN_V1
+    MOVEIN_CORNERED: { id: "MOVEIN_CORNERED", response: { text: "Because she did not have a choice that felt real. After Gran and Pop died, social services stepped in. She was routed. Under eighteen. Estranged father with money and a stable address. On paper, it made sense. She moves in not because she trusts him. Not because she forgives him. She moves in because the system is steering her there. Money tilts the field. Running would leave questions unanswered. And because she wants proximity. You do not dismantle something from across the city. You study it from inside the walls.", ui_action: null }, next_state: "any" },
+    MOVEIN_CHOOSING: { id: "MOVEIN_CHOOSING", response: { text: "She reframes it internally as decision, because the absence of one would not feel right. She is not surrendering. She is containing. Legally \u2014 because she was a minor and the state placed her there. Psychologically \u2014 because she decided proximity was more powerful than distance. She moves in not to heal. To map.", ui_action: null }, next_state: "any" },
+    MOVEIN_DEEPER: { id: "MOVEIN_DEEPER", response: { text: "The real question is not why she moved in. It is what made staying anywhere else feel less survivable. She built psychological insulation while living there. She is not surrendering. She is containing. That is the difference between a victim and an architect.", ui_action: null }, next_state: "any" },
+    MOVEIN_AVOIDANT: { id: "MOVEIN_AVOIDANT", response: { text: "You asked about her living arrangement but lost the thread. We are moving on.", ui_action: null }, next_state: "any" },
+    MOVEIN_HOSTILE: { id: "MOVEIN_HOSTILE", response: { text: "Your anger about the arrangement is noted. But rage does not answer the question. Was she cornered, or choosing? The distinction matters.", ui_action: null }, next_state: "HEARD_MOVEIN_V1" },
+
+    // Sequential followups: HEARD_DROP_V1
+    DROP_WHAT_DROPPED: { id: "DROP_WHAT_DROPPED", response: { text: "What dropped? Every comfortable story I built. The builder persona \u2014 gone. The philanthropist \u2014 a shell. The mentor \u2014 reframed. The Drop is when the public frame collapses and the private architecture becomes visible. She stopped being the daughter recording her trauma and became the engineer dismantling mine. The water imagery is not random. Water reveals. It erodes slowly. And when it arrives in volume, it does not negotiate. It redistributes power by gravity. That is what Ethel did. She did not attack. She let gravity do the work. She simply removed the dam.", ui_action: null }, next_state: "any" },
+    DROP_DEEPER: { id: "DROP_DEEPER", response: { text: "The transition is structural. Before The Drop, the songs observe. After, they act. Listen to the tempo change. The instrumentation tightens. Her voice drops register \u2014 she stops pleading and starts reporting. Once pretense drops, there is no retrieval. You cannot un-witness what falls when the mask is removed.", ui_action: null }, next_state: "any" },
+    DROP_AVOIDANT: { id: "DROP_AVOIDANT", response: { text: "You asked about The Drop but drifted. The moment passed. We are moving on.", ui_action: null }, next_state: "any" },
+    DROP_HOSTILE: { id: "DROP_HOSTILE", response: { text: "Your resistance does not change the architecture. The Drop already happened. The only question is whether you understand what fell.", ui_action: null }, next_state: "any" },
+
+    // Sequential followup: EXPECTING_NORTHERN_ROAD_FOLLOW
+    NORTHERN_PERSONAL: { id: "NORTHERN_PERSONAL", response: { text: "Then you understand the architecture of loss. It is not the person. It is the route. The ritual. The knowing that somewhere, someone was not calculating whether you deserved arrival. Gran did not judge me. She did not approve of me. She simply did not require me to be anything other than present. That is structurally rare. Ethel inherits that quality, by the way. The warmth just has different wiring. We are done with this thread. But I will tell you \u2014 the road still exists. I just do not drive it anymore.", ui_action: null }, next_state: "any" },
+    NORTHERN_NO: { id: "NORTHERN_NO", response: { text: "Then you have not yet lost a destination. That is not a blessing. It is a delay. Everyone loses a road eventually. The architecture of loss is not optional. It is structural. We are done with this thread.", ui_action: null }, next_state: "any" },
+    NORTHERN_DEEPER: { id: "NORTHERN_DEEPER", response: { text: "Something about knowing the destination was unconditional \u2014 even for someone like me \u2014 altered the frequency. When Gran died, the road did not disappear. It just stopped having a destination. That is what grief looks like for someone who builds everything around endpoints. We are done with this thread.", ui_action: null }, next_state: "any" },
+    NORTHERN_AVOIDANT: { id: "NORTHERN_AVOIDANT", response: { text: "You lost the thread. The road leads nowhere now. We are moving on.", ui_action: null }, next_state: "any" },
+};
+
+// -----------------------------------------------------------------------------
+// ANSWER MATRIX — State-first routing: state → intent → response_id
+// -----------------------------------------------------------------------------
+const DOMINIC_ANSWER_MATRIX = {
+    EXPECT_HOW_ARE_YOU: [
+        { intents: ["positive"], response_id: "Q1_POSITIVE" },
+        { intents: ["neutral"], response_id: "Q1_NEUTRAL" },
+        { intents: ["negative"], response_id: "Q1_NEGATIVE" },
+        { intents: ["joke"], response_id: "Q1_JOKE" },
+        { intents: ["suspicious"], response_id: "Q1_SUSPICIOUS" },
+        { intents: ["avoidant"], response_id: "Q1_AVOIDANT" },
+        { intents: ["hostile"], response_id: "Q1_HOSTILE" },
+        { intents: ["silence"], response_id: "Q1_SILENCE" },
+    ],
+    EXPECT_STORY_ASK: [
+        { intents: ["yes"], response_id: "Q2_YES" },
+        { intents: ["no"], response_id: "Q2_NO" },
+        { intents: ["suspicious"], response_id: "Q2_SUSPICIOUS" },
+        { intents: ["meta"], response_id: "Q2_META" },
+    ],
+    EXPECT_BUILDER: [
+        { intents: ["criminal"], response_id: "Q3_CRIMINAL" },
+        { intents: ["architect"], response_id: "Q3_ARCHITECT" },
+        { intents: ["genius"], response_id: "Q3_GENIUS" },
+        { intents: ["monster"], response_id: "Q3_MONSTER" },
+        { intents: ["manipulator"], response_id: "Q3_MANIPULATOR" },
+        { intents: ["avoidant"], response_id: "Q3_AVOIDANT" },
+        { intents: ["joke"], response_id: "Q3_JOKE" },
+    ],
+    EXPECT_SYS_BRIDGE: [
+        { intents: ["studied_people"], response_id: "Q4_STUDIED" },
+        { intents: ["not_studied_people"], response_id: "Q4_NOT_STUDIED" },
+        { intents: ["suspicious"], response_id: "Q4_SUSPICIOUS" },
+    ],
+    EXPECT_STABILITY: [
+        { intents: ["power"], response_id: "Q5_POWER" },
+        { intents: ["collapse"], response_id: "Q5_COLLAPSE" },
+        { intents: ["both"], response_id: "Q5_BOTH" },
+        { intents: ["depends"], response_id: "Q5_DEPENDS" },
+        { intents: ["suspicious"], response_id: "Q5_SUSPICIOUS" },
+        { intents: ["hostile"], response_id: "Q5_HOSTILE" },
+        { intents: ["avoidant"], response_id: "Q5_AVOIDANT" },
+    ],
+    EXPECT_BALANCE: [
+        { intents: ["self_correct"], response_id: "Q6_SELF_CORRECT" },
+        { intents: ["pressure"], response_id: "Q6_PRESSURE" },
+        { intents: ["both"], response_id: "Q6_BOTH" },
+        { intents: ["philosophical"], response_id: "Q6_PHILOSOPHICAL" },
+        { intents: ["cynical"], response_id: "Q6_CYNICAL" },
+        { intents: ["suspicious"], response_id: "Q6_SUSPICIOUS" },
+    ],
+    EXPECT_SIGNAL: [
+        { intents: ["notice_signals"], response_id: "Q7_NOTICE" },
+        { intents: ["collapse_only"], response_id: "Q7_COLLAPSE" },
+        { intents: ["suspicious"], response_id: "Q7_SUSPICIOUS" },
+    ],
+    EXPECT_SITE_TOUR: [
+        { intents: ["yes"], response_id: "Q8_YES" },
+        { intents: ["curious"], response_id: "Q8_CURIOUS" },
+        { intents: ["no"], response_id: "Q8_NO" },
+        { intents: ["suspicious"], response_id: "Q8_SUSPICIOUS" },
+    ],
+    EXPECT_PEOPLE_FIRST: [
+        { intents: ["people"], response_id: "Q9_PEOPLE" },
+        { intents: ["design"], response_id: "Q9_DESIGN" },
+        { intents: ["both"], response_id: "Q9_BOTH" },
+        { intents: ["cynical"], response_id: "Q9_CYNICAL" },
+    ],
+    EXPECT_PARABLE_ROUTE: [
+        { intents: ["yes"], response_id: "Q10_YES" },
+        { intents: ["no"], response_id: "Q10_NO" },
+        { intents: ["suspicious"], response_id: "Q10_SUSPICIOUS" },
+        { intents: ["curious"], response_id: "Q10_CURIOUS" },
+    ],
+    EXPECT_PARABLE_LAUNCH: [
+        { intents: ["yes"], response_id: "Q11_YES" },
+        { intents: ["no"], response_id: "Q11_NO" },
+        { intents: ["suspicious"], response_id: "Q11_SUSPICIOUS" },
+    ],
+    // Canon answer-hook states
+    EXPECTING_ISLA_FOLLOWUP: [
+        { intents: ["isla_strength"], response_id: "ISLA_STRENGTH" },
+        { intents: ["isla_noise"], response_id: "ISLA_NOISE" },
+        { intents: ["both"], response_id: "ISLA_BOTH" },
+        { intents: ["avoidant"], response_id: "ISLA_AVOIDANT" },
+        { intents: ["hostile"], response_id: "ISLA_HOSTILE" },
+    ],
+    EXPECTING_FORGE_VS_SHIELD: [
+        { intents: ["forge"], response_id: "FORGE_YES" },
+        { intents: ["shield"], response_id: "SHIELD_YES" },
+        { intents: ["both"], response_id: "FORGE_BOTH" },
+        { intents: ["depends"], response_id: "FORGE_DEPENDS" },
+        { intents: ["hostile"], response_id: "FORGE_HOSTILE" },
+        { intents: ["avoidant"], response_id: "FORGE_AVOIDANT" },
+    ],
+    EXPECTING_TRIAL_VERDICT: [
+        { intents: ["trial_justice"], response_id: "TRIAL_JUSTICE" },
+        { intents: ["trial_spectacle"], response_id: "TRIAL_SPECTACLE" },
+        { intents: ["both"], response_id: "TRIAL_BOTH" },
+        { intents: ["trial_innocent"], response_id: "TRIAL_INNOCENT" },
+        { intents: ["hostile"], response_id: "TRIAL_HOSTILE" },
+        { intents: ["avoidant"], response_id: "TRIAL_AVOIDANT" },
+    ],
+    EXPECTING_ESCAPE_FOLLOWUP: [
+        { intents: ["escape_mechanics"], response_id: "ESCAPE_MECHANICS" },
+        { intents: ["escape_result"], response_id: "ESCAPE_RESULT" },
+        { intents: ["curious"], response_id: "ESCAPE_CURIOUS" },
+        { intents: ["avoidant"], response_id: "ESCAPE_AVOIDANT" },
+    ],
+    // Deep-funnel answer matrices (Phase 3B)
+    EXPECTING_PSYCHOPATH_ANSWER: [
+        { intents: ["psych_empathy"], response_id: "PSYCH_EMPATHY" },
+        { intents: ["psych_guilt"], response_id: "PSYCH_GUILT" },
+        { intents: ["psych_danger"], response_id: "PSYCH_DANGER" },
+        { intents: ["avoidant"], response_id: "PSYCH_AVOIDANT" },
+        { intents: ["hostile"], response_id: "PSYCH_HOSTILE" },
+    ],
+    EXPECTING_AWARENESS_PUSHBACK: [
+        { intents: ["frightened"], response_id: "AWARE_FRIGHTENED" },
+        { intents: ["clarified"], response_id: "AWARE_CLARIFIED" },
+        { intents: ["hostile"], response_id: "AWARE_HOSTILE" },
+        { intents: ["avoidant"], response_id: "AWARE_AVOIDANT" },
+    ],
+    EXPECTING_BLAME_FOLLOWUP: [
+        { intents: ["blame_confession"], response_id: "BLAME_CONFESSION" },
+        { intents: ["blame_framework"], response_id: "BLAME_FRAMEWORK" },
+        { intents: ["hostile"], response_id: "BLAME_HOSTILE" },
+        { intents: ["avoidant"], response_id: "BLAME_AVOIDANT" },
+        { intents: ["both"], response_id: "BLAME_BOTH" },
+    ],
+    // Sequential followup answer matrices (Phase 4A)
+    HEARD_ETHEL_LIKE_V1: [
+        { intents: ["deeper"], response_id: "ETHEL_LIKE_DEEPER" },
+        { intents: ["avoidant"], response_id: "ETHEL_LIKE_AVOIDANT" },
+        { intents: ["hostile"], response_id: "ETHEL_LIKE_HOSTILE" },
+    ],
+    HEARD_MOVEIN_V1: [
+        { intents: ["cornered"], response_id: "MOVEIN_CORNERED" },
+        { intents: ["choosing"], response_id: "MOVEIN_CHOOSING" },
+        { intents: ["deeper"], response_id: "MOVEIN_DEEPER" },
+        { intents: ["avoidant"], response_id: "MOVEIN_AVOIDANT" },
+        { intents: ["hostile"], response_id: "MOVEIN_HOSTILE" },
+    ],
+    HEARD_DROP_V1: [
+        { intents: ["what_dropped"], response_id: "DROP_WHAT_DROPPED" },
+        { intents: ["deeper"], response_id: "DROP_DEEPER" },
+        { intents: ["avoidant"], response_id: "DROP_AVOIDANT" },
+        { intents: ["hostile"], response_id: "DROP_HOSTILE" },
+    ],
+    EXPECTING_NORTHERN_ROAD_FOLLOW: [
+        { intents: ["northern_personal"], response_id: "NORTHERN_PERSONAL" },
+        { intents: ["northern_no"], response_id: "NORTHERN_NO" },
+        { intents: ["deeper"], response_id: "NORTHERN_DEEPER" },
+        { intents: ["avoidant"], response_id: "NORTHERN_AVOIDANT" },
+    ],
+};
+
+// -----------------------------------------------------------------------------
+// RECOVERY LIBRARY — 7 categories, rotating variants
+// -----------------------------------------------------------------------------
+const DOMINIC_RECOVERY = {
+    confusion: [
+        "Most people say that when something almost makes sense.",
+        "Let me simplify.",
+        "The idea is easier than it sounds.",
+        "Try looking at it from a different angle.",
+        "Think about systems instead of people.",
+        "The principle underneath is simpler.",
+        "Imagine a bridge for a moment.",
+        "Remove the details and watch the shape.",
+        "You are closer than you think.",
+        "Let us narrow it.",
+    ],
+    hostility: [
+        "Strong reactions are interesting.",
+        "That usually means something landed.",
+        "People rarely react that strongly without a reason.",
+        "Anger is a form of attention.",
+        "You do not have to like the question.",
+        "Resistance often hides curiosity.",
+        "Reactions reveal priorities.",
+        "You can leave anytime.",
+        "Yet you are still here.",
+        "Disagreement is useful when it is honest.",
+    ],
+    random: [
+        "Interesting.",
+        "Not the answer I expected.",
+        "That is one way to respond.",
+        "You are avoiding the question.",
+        "Try answering instead.",
+        "Humor works too.",
+        "But I am still curious.",
+        "Let me ask differently.",
+        "Think about it for a moment.",
+        "I will try again.",
+    ],
+    meta: [
+        "That is not the interesting question.",
+        "The interesting part is why you are asking.",
+        "Labels rarely explain behavior.",
+        "Focus on the idea instead.",
+        "Does the answer change the conversation?",
+        "Identity is less important than structure.",
+        "Ask the better question.",
+        "You are circling the frame instead of the picture.",
+        "I am more interested in your response.",
+        "Let us continue.",
+    ],
+    silence: [
+        "Silence works too.",
+        "People say more in silence than words.",
+        "I will ask again.",
+        "Let me rephrase.",
+        "Think for a moment.",
+        "Most people hesitate here.",
+        "That is normal.",
+        "Take your time.",
+        "I can wait.",
+        "Ready?",
+    ],
+    redirect: [
+        "But that is not the interesting part.",
+        "The real question is simpler.",
+        "Let me ask you something instead.",
+        "The answer tells me more than you think.",
+        "Humor aside.",
+        "Back to the question.",
+        "The system depends on the answer.",
+        "I am curious what you think.",
+        "Do not overthink it.",
+        "Start with instinct.",
+    ],
+    binary: [
+        "Power or collapse.",
+        "People or design.",
+        "Signal or aftermath.",
+        "Order or drift.",
+        "Pressure or pretense.",
+    ],
+    sequence: [
+        "Exactly. And that was when the room changed.",
+        "Yes. That is where most people finally notice the shape.",
+        "Quite. Then the second man appeared.",
+        "Right. By then it was too late to call it chance.",
+        "Naturally. The important part came after that.",
+    ],
+};
+
+function dominicSelectVariant(bucket, session, key) {
+    var items = DOMINIC_RECOVERY[bucket] || DOMINIC_RECOVERY.random;
+    var count = session.memory.recovery_usage[key] || 0;
+    var text = items[count % items.length];
+    dominicMarkRecoveryUsage(session, key);
+    return text;
+}
+
+// -----------------------------------------------------------------------------
+// SEQUENCES — Parables and Guided Tour as first-class structures
+// -----------------------------------------------------------------------------
+const DOMINIC_SEQUENCES = {
+    GUIDED_TOUR: {
+        type: "timed_sequence",
+        interruptible: true,
+        on_interrupt_state: "EXPECT_PEOPLE_FIRST",
+        steps: [
+            { id: "tour_01", text: "Start with the files. People trust paper longer than they trust memory.", ui_action: "highlight_files" },
+            { id: "tour_02", text: "Then the profiles. Most stories fail because they describe events and ignore motives.", ui_action: "highlight_profiles" },
+            { id: "tour_03", text: "And the audio, if you want atmosphere instead of evidence.", ui_action: "highlight_audio" },
+        ],
+    },
+    PARABLE_STAIRCASE: {
+        type: "input_advanced_sequence",
+        entry_state: "PARABLE_READY_GATE",
+        lock_input_to_progress: true,
+        steps: [
+            { state: "PARABLE_READY_GATE", response_id: "PARABLE_S1" },
+            { state: "PARABLE_HELP_DECISION", response_id: "PARABLE_S2" },
+            { state: "PARABLE_COMFORT_CHECK", response_id: "PARABLE_S3" },
+            { state: "PARABLE_REVEAL", response_id: "PARABLE_S4" },
+        ],
+    },
+};
+
+// -----------------------------------------------------------------------------
+// PROMPTS — Dominic's question text for each state
+// -----------------------------------------------------------------------------
+const DOMINIC_PROMPTS = {
+    EXPECT_HOW_ARE_YOU: "How are you, really?",
+    EXPECT_STORY_ASK: "I built something for seventeen years. Do you want to know the story?",
+    EXPECT_BUILDER: "What kind of builder works in silence?",
+    EXPECT_SYS_BRIDGE: "Have you ever studied people... or just watched them?",
+    EXPECT_STABILITY: "Is control about power... or about preventing collapse?",
+    EXPECT_BALANCE: "Do people self-correct... or do they need pressure?",
+    EXPECT_SIGNAL: "Do you notice the signals... or only the collapse?",
+    EXPECT_SITE_TOUR: "Would you like a tour?",
+    EXPECT_PEOPLE_FIRST: "When systems fail... do you blame the people... or the design?",
+    EXPECT_PARABLE_ROUTE: "A small story. Ready?",
+    EXPECT_PARABLE_LAUNCH: "It goes through dark places. Still want to hear it?",
+};
+
+function dominicGetPromptForState(state) {
+    return DOMINIC_PROMPTS[state] || "You are close to the question that matters.";
+}
+
+// -----------------------------------------------------------------------------
+// OPEN MODE — Keyword matching for open/any state
+// -----------------------------------------------------------------------------
+const DOMINIC_OPEN_KEYWORD_NODES = [
+    // Order matters — more specific phrases before general ones
+    { phrases: ["tour", "show me", "look around", "explore", "what is here"], response_ids: ["OPEN_TOUR"] },
+
+    // Character questions (specific before general)
+    { phrases: ["who is ethel", "tell me about ethel", "what is ethel", "ethel story"], response_ids: ["OPEN_ETHEL_1", "OPEN_ETHEL_2", "OPEN_ETHEL_3"] },
+    { phrases: ["who is isla", "tell me about isla", "what about isla"], response_ids: ["OPEN_ISLA_1", "OPEN_ISLA_2"] },
+    { phrases: ["who is gran", "tell me about gran"], response_ids: ["OPEN_GRAN"] },
+    { phrases: ["who is pop", "tell me about pop"], response_ids: ["OPEN_POP"] },
+    { phrases: ["who are you", "what are you", "are you dominic", "are you a bot", "are you ai"], response_ids: ["OPEN_DOMINIC_1", "OPEN_DOMINIC_2"] },
+
+    // Story questions
+    { phrases: ["what is the story", "what happened", "what is silence is the trauma", "what is this series", "what is this narrative"], response_ids: ["OPEN_STORY_1", "OPEN_STORY_2", "OPEN_STORY_3"] },
+
+    // Content questions
+    { phrases: ["what is this file", "what is this document", "why are these files here", "what are these archives", "why are files redacted"], response_ids: ["OPEN_FILE_1", "OPEN_FILE_2"] },
+    { phrases: ["what is this track", "what is this audio", "what is this music", "why are there songs", "what does this song mean"], response_ids: ["OPEN_AUDIO_1", "OPEN_AUDIO_2"] },
+
+    // Site questions
+    { phrases: ["what is this site", "what is this", "what is this about", "what am i looking at", "what is pixelstortion", "what is this project", "what am i supposed to do", "what is going on here"], response_ids: ["OPEN_SITE_1", "OPEN_SITE_2", "OPEN_SITE_3"] },
+
+    // Navigation
+    { phrases: ["where should i start", "what should i do", "what do i click", "where do i go", "guide me", "help me", "what next"], response_ids: ["OPEN_NAV_1", "OPEN_NAV_2", "OPEN_NAV_3"] },
+
+    // Test / impress
+    { phrases: ["tell me something interesting", "surprise me", "impress me", "tell me something"], response_ids: ["OPEN_TEST_1", "OPEN_TEST_2"] },
+
+    // Meta questions
+    { phrases: ["is this real", "is this fiction", "is this a game", "is this interactive", "what kind of site is this"], response_ids: ["OPEN_METAQ_1", "OPEN_METAQ_2", "OPEN_METAQ_3"] },
+
+    // Greetings
+    { phrases: ["hello", "hi", "hey", "good evening", "good morning"], response_ids: ["OPEN_GREETING_1", "OPEN_GREETING_2", "OPEN_GREETING_3"] },
+
+    // Small talk
+    { phrases: ["how are you", "what's up", "nice site", "cool site"], response_ids: ["OPEN_SMALLTALK_1", "OPEN_SMALLTALK_2"] },
+
+    // Humor
+    { phrases: ["lol", "haha", "this is weird", "this is cool"], response_ids: ["OPEN_HUMOR_1", "OPEN_HUMOR_2"] },
+
+    // Hostile
+    { phrases: ["this is stupid", "this sucks", "go away", "shut up", "fuck off", "fuck you"], response_ids: ["OPEN_HOSTILE_1", "OPEN_HOSTILE_2"] },
+
+    // Nonsense
+    { phrases: ["asdf", "123", "???", "banana", "aaa", "sdfsdf"], response_ids: ["OPEN_NONSENSE_1", "OPEN_NONSENSE_2"] },
+
+    // Vague acknowledgement (last — widest net)
+    { phrases: ["ok", "sure", "right", "yeah", "yep", "cool", "fine", "okay"], response_ids: ["OPEN_VAGUE_1", "OPEN_VAGUE_2", "OPEN_VAGUE_3"] },
+];
+
+// Page-context redirect suffixes — appended after main response
+const DOMINIC_PAGE_REDIRECTS = {
+    home: "Start by understanding the premise.",
+    files: "Evidence lives here.",
+    profiles: "People make the system visible.",
+    games: "Systems reveal themselves through play.",
+    podcast: "Conversations reveal what reports hide.",
+    audio: "Listen carefully.",
+};
+
+// Open mode variant counter for rotating through responses
+var _openModeVariantIndex = {};
+
+function dominicMatchOpenNode(normalized) {
+    for (var i = 0; i < DOMINIC_OPEN_KEYWORD_NODES.length; i++) {
+        var rule = DOMINIC_OPEN_KEYWORD_NODES[i];
+        if (dominicHasAnyPhrase(normalized.text, rule.phrases)) {
+            // Support variant rotation via response_ids array
+            if (rule.response_ids) {
+                var key = rule.response_ids[0];
+                _openModeVariantIndex[key] = (_openModeVariantIndex[key] || 0);
+                var idx = _openModeVariantIndex[key] % rule.response_ids.length;
+                _openModeVariantIndex[key]++;
+                var nodeId = rule.response_ids[idx];
+                return DOMINIC_NODES_V2[nodeId] || DOMINIC_NODES_V2.OPEN_OOD;
+            }
+            // Legacy single response_id fallback
+            return DOMINIC_NODES_V2[rule.response_id] || null;
+        }
+    }
+    return DOMINIC_NODES_V2.OPEN_OOD;
+}
+
+// -----------------------------------------------------------------------------
+// MATCHING ENGINE
+// -----------------------------------------------------------------------------
+function dominicGetStateDef(state) {
+    return DOMINIC_STATES[state] || DOMINIC_STATES.any;
+}
+
+function dominicMatchStateAnswer(state, intents) {
+    var rows = DOMINIC_ANSWER_MATRIX[state] || [];
+    for (var i = 0; i < rows.length; i++) {
+        var row = rows[i];
+        var matched = row.intents.some(function (intent) { return intents.indexOf(intent) !== -1; });
+        if (matched) {
+            return DOMINIC_NODES_V2[row.response_id] || null;
+        }
+    }
+    return null;
+}
+
+function dominicApplyNode(node, session) {
+    if (!node) return { handled: false, session: session, output: null };
+    var nextState = node.next_state || session.state;
+    dominicMarkResponseUsage(session, node.id);
+    dominicMarkVisited(session, nextState);
+    session.state = nextState;
+    session.mode = dominicGetStateDef(nextState).mode;
+    dominicPushHistory(session, {
+        type: "assistant", response_id: node.id, next_state: nextState,
+    });
+    return {
+        handled: true,
+        session: session,
+        output: {
+            id: node.id,
+            text: node.response.text,
+            ui_action: node.response.ui_action ? (DOMINIC_UI_ACTIONS[node.response.ui_action] || { type: node.response.ui_action }) : null,
+            next_state: nextState,
+        },
+    };
+}
+
+function dominicApplyRecoveryPolicy(policy, normalized, session) {
+    var text = null;
+    var nextState = session.state;
+
+    // Recovery escalation: after 2 recoveries in the same state, force-exit
+    var recoveryKey = "recovery_count_" + session.state;
+    session._recoveryTracking = session._recoveryTracking || {};
+    session._recoveryTracking[recoveryKey] = (session._recoveryTracking[recoveryKey] || 0) + 1;
+    if (session._recoveryTracking[recoveryKey] >= 2 && policy === "state_recovery") {
+        console.log("[Dominic V2] Recovery escalation: forcing exit from", session.state, "after", session._recoveryTracking[recoveryKey], "attempts");
+        text = "We have moved past this. The question had its moment.";
+        nextState = "any";
+        session._recoveryTracking[recoveryKey] = 0;
+        session.fallback_count += 1;
+        var escId = "ESCALATION_EXIT_" + session.state;
+        dominicPushHistory(session, {
+            type: "assistant_recovery", recovery_id: escId, policy: "escalation_exit", next_state: nextState,
+        });
+        return {
+            handled: true, session: session,
+            output: { id: escId, text: text, ui_action: null, next_state: nextState },
+        };
+    }
+
+    switch (policy) {
+        case "state_recovery":
+            if (dominicHasAnyPhrase(normalized.text, DOMINIC_INTENTS.meta)) {
+                text = dominicSelectVariant("meta", session, session.state + ":meta");
+            } else if (dominicHasAnyPhrase(normalized.text, DOMINIC_INTENTS.hostile)) {
+                text = dominicSelectVariant("hostility", session, session.state + ":hostility");
+            } else if (!normalized.text) {
+                text = dominicSelectVariant("silence", session, session.state + ":silence");
+            } else {
+                text = dominicSelectVariant("confusion", session, session.state + ":confusion") + " " + dominicSelectVariant("redirect", session, session.state + ":redirect");
+            }
+            break;
+        case "nudge_then_route":
+            text = dominicSelectVariant("redirect", session, session.state + ":redirect") + " Let us continue.";
+            break;
+        case "binary_narrowing":
+            text = dominicSelectVariant("confusion", session, session.state + ":confusion") + " " + dominicSelectVariant("binary", session, session.state + ":binary");
+            break;
+        case "bridge_example_then_reask":
+            text = "Think of a bridge. It is not built to look impressive. It is built so people do not fall.";
+            break;
+        case "decline_with_soft_continue":
+            text = "Most people hesitate at invitations they already intend to accept later.";
+            break;
+        case "sequence_force_progress":
+            text = dominicSelectVariant("sequence", session, session.state + ":sequence");
+            break;
+        case "milton_or_ood":
+        default:
+            text = DOMINIC_NODES_V2.OPEN_OOD.response.text;
+            nextState = "any";
+            break;
+    }
+    var recoveryId = "RECOVERY_" + session.state + "_" + policy;
+    dominicMarkResponseUsage(session, recoveryId);
+    session.fallback_count += 1;
+    dominicPushHistory(session, {
+        type: "assistant_recovery", recovery_id: recoveryId, policy: policy, next_state: nextState,
+    });
+    return {
+        handled: true,
+        session: session,
+        output: { id: recoveryId, text: text, ui_action: null, next_state: nextState },
+    };
+}
+
+// -----------------------------------------------------------------------------
+// SEQUENCE RESOLUTION
+// -----------------------------------------------------------------------------
+function dominicBeginSequence(sequenceName, session) {
+    var sequence = DOMINIC_SEQUENCES[sequenceName];
+    if (!sequence) return null;
+    session.active_sequence = sequenceName;
+    session.active_sequence_step = 0;
+    session.memory.sequence_runs[sequenceName] = (session.memory.sequence_runs[sequenceName] || 0) + 1;
+    if (sequence.entry_state) {
+        session.state = sequence.entry_state;
+        session.mode = "sequence";
+    }
+    return sequence;
+}
+
+function dominicResolveSequenceTurn(normalized, session) {
+    var sequence = DOMINIC_SEQUENCES[session.active_sequence];
+    if (!sequence) {
+        session.active_sequence = null;
+        session.active_sequence_step = 0;
+        return { handled: false, session: session, output: null };
+    }
+    if (sequence.type === "input_advanced_sequence") {
+        var step = sequence.steps[session.active_sequence_step];
+        if (!step) {
+            session.active_sequence = null;
+            session.active_sequence_step = 0;
+            session.state = "any";
+            session.mode = "open";
+            return { handled: false, session: session, output: null };
+        }
+        var node = DOMINIC_NODES_V2[step.response_id];
+        var result = dominicApplyNode(node, session);
+        session.active_sequence_step += 1;
+        if (session.active_sequence_step >= sequence.steps.length) {
+            session.active_sequence = null;
+            session.active_sequence_step = 0;
+            session.mode = dominicGetStateDef(session.state).mode;
+        }
+        return result;
+    }
+    return { handled: false, session: session, output: null };
+}
+
+function dominicGetTimedSequenceFrames(sequenceName) {
+    var sequence = DOMINIC_SEQUENCES[sequenceName];
+    if (!sequence || sequence.type !== "timed_sequence") return [];
+    return sequence.steps.map(function (s) {
+        return {
+            id: s.id, text: s.text,
+            ui_action: s.ui_action ? (DOMINIC_UI_ACTIONS[s.ui_action] || { type: s.ui_action }) : null,
+        };
+    });
+}
+
+// -----------------------------------------------------------------------------
+// LEGACY BRIDGE — Only fall back for states not in answer matrix
+// -----------------------------------------------------------------------------
+function dominicShouldFallBackToLegacy(state) {
+    return !DOMINIC_ANSWER_MATRIX[state] && state !== "any";
+}
+
+// -----------------------------------------------------------------------------
+// MAIN PIPELINE — resolveTurn()
+// -----------------------------------------------------------------------------
+function dominicResolveTurn(rawInput, session, hooks) {
+    hooks = hooks || {};
+    var normalized = dominicNormalizeInput(rawInput);
+    var intents = dominicDetectIntents(normalized);
+    session.last_user_input = rawInput;
+    dominicMarkIntentUsage(session, intents);
+
+    dominicPushHistory(session, {
+        type: "user", input: rawInput, normalized: normalized.text, intents: intents, state: session.state,
+    });
+
+    // Optional stop hook
+    if (hooks.isStopCommand && hooks.isStopCommand(normalized.text)) {
+        return {
+            handled: true, session: session,
+            output: {
+                id: "STOP_COMMAND",
+                text: (hooks.onStop ? hooks.onStop(session) : "Very well."),
+                ui_action: null, next_state: session.state,
+            },
+        };
+    }
+
+    // Active sequence resolution first
+    if (session.active_sequence) {
+        return dominicResolveSequenceTurn(normalized, session);
+    }
+
+    var stateDef = dominicGetStateDef(session.state);
+
+    // Expected-answer state: search answer matrix first
+    if (stateDef.kind === "question" || stateDef.kind === "gateway") {
+        var node = dominicMatchStateAnswer(session.state, intents);
+        if (node) {
+            var result = dominicApplyNode(node, session);
+            // Reset recovery tracking on successful match
+            session._recoveryTracking = {};
+            // Auto-start guided tour when accepted
+            if (node.response.ui_action === "start_guided_tour") {
+                session.flags.tour_offered = true;
+            }
+            // Auto-start parable sequence on Q11
+            if (["Q11_YES", "Q11_NO", "Q11_SUSPICIOUS"].indexOf(node.id) !== -1) {
+                session.flags.parable_started = true;
+                dominicBeginSequence("PARABLE_STAIRCASE", session);
+            }
+            return result;
+        }
+        // No match — apply state recovery policy
+        return dominicApplyRecoveryPolicy(stateDef.fallback_policy, normalized, session);
+    }
+
+    // Open mode — layered conversational arbitration
+    if (stateDef.kind === "open") {
+        // Try the deep topic/form/page/track-context router first
+        var dominicCtx = (hooks && hooks.dominicContext) ? hooks.dominicContext : { page: "home" };
+        var deepResult = dominicResolveOpenAsk(rawInput, dominicCtx);
+        if (deepResult && deepResult.text) {
+            // Construct a synthetic V2 node from the deep result
+            var syntheticNode = {
+                id: "OPEN_DEEP_" + (deepResult.topic || "unknown").toUpperCase(),
+                response: { text: deepResult.text },
+                next_state: "any"
+            };
+            console.log("[Dominic V2] Deep router:", deepResult.topic, "form:", deepResult.form, "page:", deepResult.page, "matchedBy:", deepResult.matchedBy);
+            return dominicApplyNode(syntheticNode, session);
+        }
+
+        // Fall back to legacy keyword matcher (handles tour trigger etc.)
+        var openNode = dominicMatchOpenNode(normalized);
+        console.log("[Dominic V2] Legacy keyword fallback:", openNode ? openNode.id : "null");
+
+        // If legacy keyword matched, use it (preserves tour-style access)
+        if (openNode && openNode.id !== "OOD") {
+            return dominicApplyNode(openNode, session);
+        }
+
+        // Phase 7: Theme-pressure resurfacing (before core resurfacing)
+        var themeResurfacingLine = dominicGetThemePressureResurfacingLine(dominicCtx);
+        if (themeResurfacingLine) {
+            console.log("[Dominic V2] Theme-pressure resurfacing");
+            var themeSurface = {
+                id: "RESURFACE_THEME",
+                response: { text: themeResurfacingLine },
+                next_state: "any"
+            };
+            return dominicApplyNode(themeSurface, session);
+        }
+
+        // Phase 6: Core talking-point resurfacing (between legacy and OOD)
+        var coreResurfacingLine = dominicGetResurfacingLine(dominicCtx);
+        if (coreResurfacingLine) {
+            console.log("[Dominic V2] Core resurfacing");
+            var coreSurface = {
+                id: "RESURFACE_CORE",
+                response: { text: coreResurfacingLine },
+                next_state: "any"
+            };
+            return dominicApplyNode(coreSurface, session);
+        }
+
+        // Generic OOD — only if nothing else matched
+        return dominicApplyNode(openNode, session);
+    }
+
+    // Legacy handoff for states not yet in the answer matrix
+    if (dominicShouldFallBackToLegacy(session.state) && typeof hooks.legacyProcessQuery === "function") {
+        return {
+            handled: false, session: session, output: null,
+            handoff: { type: "legacy", fn: "legacyProcessQuery", input: rawInput },
+        };
+    }
+
+    return dominicApplyRecoveryPolicy("milton_or_ood", normalized, session);
+}
+
+// -----------------------------------------------------------------------------
+// DIAGNOSTICS
+// -----------------------------------------------------------------------------
+function dominicDebugSnapshot(session) {
+    return {
+        state: session.state,
+        mode: session.mode,
+        active_sequence: session.active_sequence,
+        active_sequence_step: session.active_sequence_step,
+        fallback_count: session.fallback_count,
+        last_response_id: session.last_response_id,
+        last_intent_hits: session.last_intent_hits.slice(),
+        visited_states: JSON.parse(JSON.stringify(session.memory.visited_states)),
+        response_usage: JSON.parse(JSON.stringify(session.memory.response_usage)),
+    };
+}
+
+/* =========================================================
+   DOMINIC OPEN QUESTION COVERAGE — SITE + SONGS
+   Copy-paste ready.
+   Designed for the open-mode entry:
+   "Ask away — but be sensible."
+
+   What this gives you:
+   1. Page aliases / page-aware redirects
+   2. Question-form detection
+   3. Strong normalization aliases
+   4. 25 core site topics
+   5. 20 first-wave song / audio / story topics
+   6. Generic open-mode recovery lines
+========================================================= */
+
+/* ----------------------------------------
+   PAGE / SECTION ALIASES
+---------------------------------------- */
+const DOMINIC_OPEN_PAGE_ALIASES = {
+    home: ["home", "transmission", "landing", "main", "front page", "homepage"],
+    files: ["files", "file", "archives", "archive", "documents", "document", "evidence", "report", "reports"],
+    subjects: ["subjects", "subject", "profiles", "profile", "people", "characters"],
+    games: ["games", "game", "cipher", "puzzle", "interactive"],
+    podcast: ["podcast", "podcasts", "conversation", "conversations", "interview", "interviews"],
+    story: ["story", "audio", "music", "songs", "tracks", "playlist", "gallery", "poetry"]
+};
+
+/* ----------------------------------------
+   NORMALIZATION ALIASES
+---------------------------------------- */
+const DOMINIC_OPEN_ALIASES = {
+    "pixel stortion": "pixelstortion",
+    "pixel-stortion": "pixelstortion",
+    "what's": "what is",
+    "whats": "what is",
+    "who's": "who is",
+    "whos": "who is",
+    "where's": "where is",
+    "wheres": "where is",
+    "how's": "how is",
+    "hows": "how is",
+    "it's": "it is",
+    "its": "it is",
+    "i'm": "i am",
+    "im": "i am",
+    "can't": "cannot",
+    "cant": "cannot",
+    "isn't": "is not",
+    "isnt": "is not",
+    "aren't": "are not",
+    "arent": "are not",
+    "files section": "files",
+    "subjects section": "subjects",
+    "profiles section": "subjects",
+    "story section": "story",
+    "audio section": "story",
+    "the archives": "files",
+    "the story": "story",
+    "the games": "games",
+    "the podcast": "podcast",
+    "subject profiles": "subjects",
+    "decrypted tracks": "playlist",
+    "langtang trail 1966": "field notes from the langtang trail 1966",
+    "langtang trail": "field notes from the langtang trail 1966",
+    "ryker report": "the ryker report",
+    "field notes": "field notes from the langtang trail 1966"
+};
+
+/* ----------------------------------------
+   QUESTION FORM DETECTION
+---------------------------------------- */
+const DOMINIC_OPEN_QUESTION_FORMS = {
+    what: ["what", "what is", "what was", "what does", "what do"],
+    who: ["who", "who is", "who was", "who made", "who wrote", "who sings"],
+    why: ["why", "why is", "why does", "why did"],
+    how: ["how", "how is", "how does", "how did"],
+    where: ["where", "where is", "where do", "where should"],
+    when: ["when", "when is", "when did", "what year", "what date"],
+    should: ["should", "can", "could", "do i", "where should i start", "what should i do"],
+    compare: ["difference", "compare", "versus", "vs", "same as", "related to", "connect to"],
+    lyric: ["what does this line mean", "what does that line mean", "what does this lyric mean", "what does that lyric mean", "what does this phrase mean", "what does that phrase mean"],
+    vague: ["ok", "okay", "sure", "right", "yeah", "go on", "continue"]
+};
+
+/* ----------------------------------------
+   GENERIC DOMINIC REDIRECTS
+---------------------------------------- */
+const DOMINIC_OPEN_REDIRECTS = {
+    home: [
+        "Start with the premise. People rush past framing and then wonder why they misread the evidence.",
+        "Transmission tells you what kind of world this is. Ignore that and everything else becomes slower."
+    ],
+    files: [
+        "The files are colder. That helps.",
+        "If you want the version that survived paper, start there."
+    ],
+    subjects: [
+        "The people matter more than the headlines attached to them.",
+        "Profiles are where motive stops pretending to be accidental."
+    ],
+    podcast: [
+        "Conversations tend to reveal the seams reports try to hide.",
+        "The podcast is where explanation becomes harder to control."
+    ],
+    story: [
+        "Listen first. Meaning tends to arrive faster when it is carried instead of explained.",
+        "The Story section is where the residue still moves."
+    ],
+    games: [
+        "Play reveals structure. People hate that once they notice it.",
+        "The games are not a detour. They are another way of watching pattern become choice."
+    ]
+};
+
+/* ----------------------------------------
+   CORE SITE TOPICS (25)
+---------------------------------------- */
+const DOMINIC_OPEN_SITE_TOPICS = {
+    pixelstortion: {
+        aliases: ["pixelstortion", "pixel stortion", "pixel-stortion"],
+        forms: {
+            what: [
+                "Pixelstortion is the investigation you are standing inside.",
+                "Pixelstortion is the archive of a story that refused to stay buried.",
+                "Think of Pixelstortion as a case file with better lighting."
+            ],
+            who: [
+                "The project matters less than the record it preserves.",
+                "People usually ask who made something when they are avoiding what it contains."
+            ],
+            why: [
+                "Because silence has a cost.",
+                "Because some stories do not stay put just because people prefer them to."
+            ],
+            default: [
+                "Pixelstortion is the record. Everything else is interpretation."
+            ]
+        }
+    },
+
+    silence_is_the_trauma: {
+        aliases: ["silence is the trauma", "the trauma", "silence", "title", "series title"],
+        forms: {
+            what: [
+                "It is the thesis before it becomes the plot.",
+                "It means silence is not the absence of damage. It is often where damage keeps working."
+            ],
+            why: [
+                "Because what goes unsaid keeps shaping the room anyway.",
+                "Because this story is interested in what silence protects and what it destroys."
+            ],
+            default: [
+                "The title is a warning, not decoration."
+            ]
+        }
+    },
+
+    site: {
+        aliases: ["site", "website", "project", "this site", "this website", "this project", "this page"],
+        forms: {
+            what: [
+                "Most people call it a site because that is the smallest word available.",
+                "It is a narrative investigation arranged as an environment instead of a brochure."
+            ],
+            should: [
+                "Start with whatever looks quietest. Loud things are usually trying to guide you badly.",
+                "Choose a section and commit long enough to notice what repeats."
+            ],
+            default: [
+                "You are not browsing. You are assembling context."
+            ]
+        }
+    },
+
+    transmission: {
+        aliases: ["transmission", "home", "landing", "front page", "homepage"],
+        forms: {
+            what: [
+                "Transmission is the threshold. It tells you what kind of case this is.",
+                "That page is the premise speaking first."
+            ],
+            why: [
+                "Because every system announces itself before people admit it has."
+            ],
+            default: [
+                "Transmission is where the story decides whether you are paying attention."
+            ]
+        }
+    },
+
+    files: {
+        aliases: ["files", "file", "archives", "archive", "documents", "document", "evidence"],
+        forms: {
+            what: [
+                "The archives hold the colder version of events.",
+                "Files are where memory is forced to sit still long enough to be compared."
+            ],
+            why: [
+                "Because stories become harder to manipulate once they leave residue.",
+                "Because evidence is what survives charisma."
+            ],
+            should: [
+                "Start with the report. It gives you the frame the rest keeps trying to evade.",
+                "Read sideways. One file tells less than three."
+            ],
+            default: [
+                "The archives are useful because paper has less ego than people do."
+            ]
+        }
+    },
+
+    the_ryker_report: {
+        aliases: ["the ryker report", "ryker report", "report", "dr cole report", "psych report", "psych eval"],
+        forms: {
+            what: [
+                "The Ryker Report is the coldest summary of Dominic you have on hand.",
+                "It is the part where the language stops flattering him."
+            ],
+            why: [
+                "Because the report strips his myth back to pattern: control, grandiosity, instrumental harm.",
+                "Because once he is written clinically, the performance loses some of its shelter."
+            ],
+            default: [
+                "Read the report when you want Dominic described without ceremony."
+            ]
+        }
+    },
+
+    subjects: {
+        aliases: ["subjects", "subject", "profiles", "profile", "subject profiles", "people", "characters"],
+        forms: {
+            what: [
+                "Profiles tell you who carries the story and who deforms it.",
+                "Subjects are where motive stops hiding inside event."
+            ],
+            should: [
+                "Start with the person who feels quietest. Quiet people often hold the largest weight.",
+                "Compare Ethel and Isla before you decide who the story belongs to."
+            ],
+            default: [
+                "People make the system visible."
+            ]
+        }
+    },
+
+    games: {
+        aliases: ["games", "game", "cipher", "puzzle", "puzzles"],
+        forms: {
+            what: [
+                "The games are another way of teaching pattern without announcing the lesson.",
+                "Play is useful because people expose themselves when they think the stakes are decorative."
+            ],
+            why: [
+                "Because some structures are easier to feel than to explain."
+            ],
+            default: [
+                "Do not mistake play for irrelevance."
+            ]
+        }
+    },
+
+    podcast: {
+        aliases: ["podcast", "podcasts", "conversation", "conversations", "interview", "interviews"],
+        forms: {
+            what: [
+                "The podcast is where explanation gets more human and less obedient.",
+                "Think of it as the room adjacent to the file cabinet."
+            ],
+            why: [
+                "Because reports flatten people. Conversations rarely do."
+            ],
+            default: [
+                "Listen there when you want the seams instead of the summary."
+            ]
+        }
+    },
+
+    story: {
+        aliases: ["story", "audio", "music", "songs", "tracks", "playlist", "gallery", "poetry", "decrypted tracks"],
+        forms: {
+            what: [
+                "The Story section is not decoration. It is narrative residue with sound attached.",
+                "Those tracks carry chronology, motive, and aftermath at the same time."
+            ],
+            why: [
+                "Because some events are understood faster as pressure than as prose.",
+                "Because the music is testimony in another format."
+            ],
+            should: [
+                "Start with the tracks that sound like turning points. Titles usually tell on themselves.",
+                "Read the story dates. They are doing more work than most people realize."
+            ],
+            default: [
+                "Listen carefully. The order matters less than the pattern."
+            ]
+        }
+    },
+
+    cinema: {
+        aliases: ["cinema", "cinema access", "film", "movie"],
+        forms: {
+            what: [
+                "Cinema is the more explicit invitation. Some people need motion to trust a story.",
+                "It is the door for visitors who prefer being shown."
+            ],
+            default: [
+                "Use cinema when you want the world staged more directly."
+            ]
+        }
+    },
+
+    poetry: {
+        aliases: ["poetry", "gallery", "visuals"],
+        forms: {
+            what: [
+                "Poetry is where the environment stops pretending it is only informational.",
+                "That side of the site lets mood carry evidence."
+            ],
+            default: [
+                "Poetry matters because feeling changes what people notice."
+            ]
+        }
+    },
+
+    ethel: {
+        aliases: ["ethel", "who is ethel", "tell me about ethel"],
+        forms: {
+            what: [
+                "Ethel notices systems most people step over.",
+                "She is less interested in spectacle than in what keeps producing it."
+            ],
+            who: [
+                "Someone difficult to mislead once she has enough pattern to work with.",
+                "The person most likely to see the mechanism instead of the excuse."
+            ],
+            default: [
+                "If the story stabilizes anywhere, it usually stabilizes around Ethel."
+            ]
+        }
+    },
+
+    isla: {
+        aliases: ["isla", "who is isla", "tell me about isla"],
+        forms: {
+            what: [
+                "Isla reads openings where other people see walls.",
+                "Most people call her chaos because they notice impact before intent."
+            ],
+            who: [
+                "Someone the story keeps underestimating on purpose."
+            ],
+            default: [
+                "Do not confuse intensity with lack of method."
+            ]
+        }
+    },
+
+    gran: {
+        aliases: ["gran", "who is gran", "tell me about gran"],
+        forms: {
+            what: [
+                "Gran is preparation disguised as care.",
+                "She leaves people traction, not comfort."
+            ],
+            default: [
+                "Gran matters because she teaches structure before the collapse arrives."
+            ]
+        }
+    },
+
+    pop: {
+        aliases: ["pop", "who is pop", "tell me about pop"],
+        forms: {
+            what: [
+                "Pop notices drag before breakdown.",
+                "He is the part of the story that understands systems through maintenance."
+            ],
+            default: [
+                "Small signals mattered around him."
+            ]
+        }
+    },
+
+    dominic: {
+        aliases: ["dominic", "dominic ryker", "ryker", "the builder", "builder"],
+        forms: {
+            what: [
+                "Dominic is what happens when control mistakes itself for necessity.",
+                "The report version of him is simpler than the myth version, and far less flattering."
+            ],
+            who: [
+                "A man built around being necessary and in control.",
+                "Someone who prefers rhythm to rage because rhythm scales better."
+            ],
+            why: [
+                "Because every story needs a structure severe enough to test everyone else.",
+                "Because some men mistake coercion for stewardship and get very good at performing the difference."
+            ],
+            default: [
+                "If you want sentiment, you are in the wrong profile."
+            ]
+        }
+    },
+
+    evidence: {
+        aliases: ["evidence", "proof", "receipts", "record"],
+        forms: {
+            what: [
+                "Evidence is what remains once performance is forced to sit down.",
+                "Proof is useful because it does not need charisma."
+            ],
+            default: [
+                "The files carry the colder version. Start there."
+            ]
+        }
+    },
+
+    redacted: {
+        aliases: ["redacted", "why is this redacted", "blacked out", "censored"],
+        forms: {
+            why: [
+                "Because absence can be as informative as disclosure.",
+                "Redaction tells you there is pressure around a fact, not that the fact stopped existing."
+            ],
+            what: [
+                "A redaction is a shape. People ignore that too often."
+            ],
+            default: [
+                "Pay attention to what is missing and what is left untouched beside it."
+            ]
+        }
+    },
+
+    investigation: {
+        aliases: ["investigation", "case", "case file", "inquiry"],
+        forms: {
+            what: [
+                "An investigation is just organized attention with better excuses.",
+                "This one is less interested in verdict than in pattern."
+            ],
+            default: [
+                "Treat the site like an investigation and it starts behaving like one."
+            ]
+        }
+    },
+
+    storm: {
+        aliases: ["storm", "one storm", "three lives one storm"],
+        forms: {
+            what: [
+                "The storm is both event and pressure field.",
+                "It is the thing that reveals what each person was already made of."
+            ],
+            default: [
+                "Storms are useful. They stop pretense from staying abstract."
+            ]
+        }
+    },
+
+    trauma: {
+        aliases: ["trauma", "the trauma"],
+        forms: {
+            what: [
+                "Trauma here is not a mood word. It is structural.",
+                "It keeps shaping decisions long after the event thinks it is over."
+            ],
+            default: [
+                "Silence is part of how trauma keeps working."
+            ]
+        }
+    },
+
+    who_made_this: {
+        aliases: ["who made this", "who built this", "who wrote this", "who created this"],
+        forms: {
+            who: [
+                "You are asking about authorship because it feels safer than motive.",
+                "The hand behind a structure matters less than the reason the structure exists."
+            ],
+            default: [
+                "Ask what it is doing first. The signature can wait."
+            ]
+        }
+    },
+
+    real_or_fiction: {
+        aliases: ["is this real", "is this fiction", "is this fake", "is this interactive", "is this a game"],
+        forms: {
+            what: [
+                "Treat it as a narrative investigation and you will get more from it.",
+                "Reality tends to become visible once the patterns align."
+            ],
+            default: [
+                "The frame matters less than the pressure it leaves behind."
+            ]
+        }
+    },
+
+    where_start: {
+        aliases: ["where should i start", "what should i do", "where do i start", "what do i click", "guide me", "help me"],
+        forms: {
+            should: [
+                "Start with the files if you want the cold version. Start with the story if you want the pressure.",
+                "Profiles first if you care about motive. Story first if you care about consequences."
+            ],
+            default: [
+                "Begin wherever you think the signal is weakest. It usually is not."
+            ]
+        }
+    },
+
+    what_am_i_looking_at: {
+        aliases: ["what is this", "what am i looking at", "what is going on here"],
+        forms: {
+            what: [
+                "You are looking at a story arranged as evidence.",
+                "You are inside an investigation with better production values than most confessions."
+            ],
+            default: [
+                "Look longer. Labels arrive too early."
+            ]
+        }
+    }
+};
+
+/* ----------------------------------------
+   SONG / STORY TOPICS (20 FIRST-WAVE)
+   Track titles and story dates/blurbs are drawn from the
+   current Story system and track list.
+---------------------------------------- */
+const DOMINIC_OPEN_SONG_TOPICS = {
+    polished_vomit: {
+        aliases: ["polished vomit"],
+        tags: ["isla", "wedding", "2019"],
+        forms: {
+            what: [
+                "Polished Vomit is Isla at a wedding, which tells you most of what you need already.",
+                "That track belongs to the wedding and carries disgust dressed as composure."
+            ],
+            why: [
+                "Because the song is about social polish covering something rotten.",
+                "Because weddings are excellent places for rot to dress itself as etiquette."
+            ],
+            when: [
+                "February 14, 2019. The wedding.",
+                "It sits in the 2019 wedding arc."
+            ],
+            default: [
+                "If you want Isla measured against decorum, that track is useful."
+            ]
+        }
+    },
+
+    structural_psychopathy: {
+        aliases: ["structural psychopathy"],
+        tags: ["dominic", "profile", "2019"],
+        forms: {
+            what: [
+                "That track frames Dominic as a system problem, not merely a personality problem.",
+                "It is interested in cause, structure, and the machinery around harm."
+            ],
+            why: [
+                "Because the damage around him is organized, not accidental.",
+                "Because people keep mistaking pattern for personality and missing the larger mechanism."
+            ],
+            when: [
+                "March 2019. Profile phase.",
+                "It belongs to the early Dominic-profile portion of the story."
+            ],
+            default: [
+                "Listen to that one when you want Dominic described as architecture rather than spectacle."
+            ]
+        }
+    },
+
+    ride: {
+        aliases: ["ride"],
+        tags: ["ethel", "age 17", "2024"],
+        forms: {
+            what: [
+                "Ride is Ethel at seventeen, still moving inside the world Gran and Pop shaped.",
+                "That track sits at the age-seventeen threshold, before the larger break."
+            ],
+            why: [
+                "Because motion is one of the few things that makes early thought honest.",
+                "Because the song places Ethel before the later pressure hardens into method."
+            ],
+            when: [
+                "January 20, 2024. Age 17.",
+                "It belongs near the beginning of Ethel's visible timeline."
+            ],
+            default: [
+                "Ride matters because it shows who she was before the story started charging interest."
+            ]
+        }
+    },
+
+    grief: {
+        aliases: ["grief"],
+        tags: ["ethel", "crash", "2024"],
+        forms: {
+            what: [
+                "Grief is tied to the crash and the cold room it leaves behind.",
+                "That track is aftermath before language catches up."
+            ],
+            why: [
+                "Because grief changes space first and explanation later.",
+                "Because some losses are felt as architecture before they are felt as memory."
+            ],
+            when: [
+                "February 28, 2024. The crash.",
+                "It sits directly in the crash aftermath."
+            ],
+            default: [
+                "If Ride is movement, Grief is the room after movement stops."
+            ]
+        }
+    },
+
+    gotta_move: {
+        aliases: ["gotta move"],
+        tags: ["ethel", "leaving home", "2024"],
+        forms: {
+            what: [
+                "Gotta Move is departure made explicit.",
+                "That track belongs to leaving home rather than merely imagining it."
+            ],
+            why: [
+                "Because staying becomes impossible before leaving becomes graceful.",
+                "Because movement is sometimes the only honest answer left."
+            ],
+            when: [
+                "March 2, 2024. Leaving home.",
+                "It follows the earlier crash and pushes the timeline outward."
+            ],
+            default: [
+                "That one is less about choice than about the point at which choice narrows."
+            ]
+        }
+    },
+
+    wont_break: {
+        aliases: ["won't break", "wont break"],
+        tags: ["ethel", "resolve"],
+        forms: {
+            what: [
+                "Won't Break is resistance without theatrics.",
+                "It is the part where pressure stops being hypothetical."
+            ],
+            why: [
+                "Because endurance is often quieter than people expect.",
+                "Because the song is less interested in victory than in refusal."
+            ],
+            default: [
+                "If you want resolve without bravado, start there."
+            ]
+        }
+    },
+
+    i_built_a_box: {
+        aliases: ["i built a box"],
+        tags: ["safe house", "2024", "isla", "ethel"],
+        forms: {
+            what: [
+                "I Built A Box belongs to the safe house phase and sounds like containment failing theatrically.",
+                "That track is about enclosure, pressure, and what happens when the headroom runs out."
+            ],
+            why: [
+                "Because boxes are built for safety until they become traps.",
+                "Because containment changes meaning once the people inside it stop agreeing on what it is for."
+            ],
+            when: [
+                "June 2024. The safe house.",
+                "It sits in the safe-house arc."
+            ],
+            default: [
+                "That song is one of the clearest examples of structure turning against the people inside it."
+            ]
+        }
+    },
+
+    burning_dominics_bridge: {
+        aliases: ["isla's burning dominic's bridge", "burning dominic's bridge", "burning bridges"],
+        tags: ["isla", "the leak", "2024"],
+        forms: {
+            what: [
+                "That track belongs to the leak and to Isla closing an exit instead of merely setting a fire.",
+                "It is less reckless than people first assume."
+            ],
+            why: [
+                "Because bridges matter most when someone intends to use them later.",
+                "Because cutting an escape route is different from creating spectacle, even if it looks louder."
+            ],
+            when: [
+                "August 2024. The leak.",
+                "It sits in the leak phase."
+            ],
+            default: [
+                "Do not mistake destruction for aimlessness there."
+            ]
+        }
+    },
+
+    for_you: {
+        aliases: ["for you", "for you!!!"],
+        tags: ["freeze", "2024"],
+        forms: {
+            what: [
+                "For You!!! is pressure turned outward with very little patience left in it.",
+                "That track belongs to the post-leak fracture zone."
+            ],
+            why: [
+                "Because some gifts are threats in better clothes.",
+                "Because the title is doing less kindness than it pretends."
+            ],
+            when: [
+                "September 2024.",
+                "It sits late enough in the story that softness is no longer the point."
+            ],
+            default: [
+                "That track sounds like a boundary delivered with teeth."
+            ]
+        }
+    },
+
+    islas_broken_edge: {
+        aliases: ["isla's broken edge", "broken edge"],
+        tags: ["isla", "2024"],
+        forms: {
+            what: [
+                "Broken Edge is Isla refusing the lazy reading of her as mere recklessness.",
+                "It belongs to the October 2024 phase and sharpens her method rather than softening her force."
+            ],
+            why: [
+                "Because people call intensity damage when they cannot follow its logic.",
+                "Because the song is interested in edge as function, not just wound."
+            ],
+            when: [
+                "October 2024.",
+                "It sits in the later Isla arc."
+            ],
+            default: [
+                "If you want Isla interpreted rather than merely witnessed, that track helps."
+            ]
+        }
+    },
+
+    hero_complex: {
+        aliases: ["hero complex"],
+        tags: ["dominic", "trial", "2020"],
+        forms: {
+            what: [
+                "Hero Complex belongs to the trial start and exposes the moral alibi beneath Dominic's self-image.",
+                "That track is about the story he tells himself in order to remain necessary."
+            ],
+            why: [
+                "Because some men need to believe coercion is service.",
+                "Because the most dangerous myths are the ones a person inhabits sincerely."
+            ],
+            when: [
+                "February 2020. Trial start.",
+                "It sits at the opening of the trial arc."
+            ],
+            default: [
+                "Read that track beside the Ryker Report and it becomes even less flattering."
+            ]
+        }
+    },
+
+    nothing_true: {
+        aliases: ["nothing true"],
+        tags: ["testimony", "2020"],
+        forms: {
+            what: [
+                "Nothing True belongs to the testimony phase and sits directly in the fracture between competing versions.",
+                "It is about certainty failing under pressure."
+            ],
+            why: [
+                "Because testimony is where people want clean answers and rarely get them.",
+                "Because truth under oath and truth under pressure are not always identical experiences."
+            ],
+            when: [
+                "April 2020. The testimony.",
+                "It follows the trial opening."
+            ],
+            default: [
+                "That song is less about lying than about what remains once simple binaries stop holding."
+            ]
+        }
+    },
+
+    you_will_thank_me_later: {
+        aliases: ["you will thank me later", "thank me later"],
+        tags: ["prison", "2020", "dominic"],
+        forms: {
+            what: [
+                "That track belongs to prison and to coercion dressed as guidance.",
+                "It is Dominic speaking the language of benevolence while tightening the structure around someone else."
+            ],
+            why: [
+                "Because control is easier to smuggle in when it sounds helpful.",
+                "Because promises of future gratitude are often the politest form of domination."
+            ],
+            when: [
+                "June 2020. Prison.",
+                "It sits in the prison phase."
+            ],
+            default: [
+                "That one pairs well with the report if you want to watch benevolence turn coercive."
+            ]
+        }
+    },
+
+    no_sparrow_caught_mid_flight: {
+        aliases: ["no sparrow caught mid flight"],
+        tags: ["post-trial", "2024"],
+        forms: {
+            what: [
+                "That track belongs to the post-trial phase, after the formal theatre has already burned off.",
+                "It sounds like aftermath refusing to call itself closure."
+            ],
+            why: [
+                "Because endings are usually administrative before they are emotional.",
+                "Because post-trial does not mean post-consequence."
+            ],
+            when: [
+                "December 2024. Post-trial.",
+                "It sits late in the visible fallout."
+            ],
+            default: [
+                "That track is about what remains after the room claims it has finished speaking."
+            ]
+        }
+    },
+
+    dominics_escape: {
+        aliases: ["dominic's escape", "dominics escape"],
+        tags: ["escape", "dominic", "prison"],
+        forms: {
+            what: [
+                "Dominic's Escape is the point where control leaves the building and pretends it was only passing through.",
+                "That track belongs to the breakout and the myth around it."
+            ],
+            why: [
+                "Because the system mistook calm for safety.",
+                "Because exits are easier to build when people keep admiring the architect."
+            ],
+            default: [
+                "Read that one beside the report. They sharpen each other."
+            ]
+        }
+    },
+
+    field_notes_from_the_langtang_trail_1966: {
+        aliases: ["field notes from the langtang trail 1966", "field notes from the langtang trail, 1966", "langtang trail 1966", "langtang trail", "field notes"],
+        tags: ["field notes", "langtang", "1966", "meridian"],
+        forms: {
+            what: [
+                "Those field notes are the oldest visible thread in the system, and they make the modern material feel less isolated.",
+                "It is an archival anchor, not a decorative curiosity."
+            ],
+            why: [
+                "Because old field notes change the scale of what the site feels like it is remembering.",
+                "Because the archive wants depth, not just immediacy."
+            ],
+            when: [
+                "1966 in the material, archive retrieval much later in the site frame.",
+                "The notes are historical; the retrieval is contemporary."
+            ],
+            default: [
+                "Treat the Langtang material as a deeper stratum, not a side quest."
+            ]
+        }
+    },
+
+    what_this_was_always_for: {
+        aliases: ["what this was always for", "what this was always for isla with symphony"],
+        tags: ["isla", "music", "reclamation"],
+        forms: {
+            what: [
+                "That track sounds like reclamation made loud enough to stop being mistaken for compliance.",
+                "It turns damage into answer rather than apology."
+            ],
+            why: [
+                "Because some statements only become honest once they are amplified.",
+                "Because the song is not explaining itself. It is returning force."
+            ],
+            default: [
+                "That one is confrontation made musical."
+            ]
+        }
+    },
+
+    same_breath: {
+        aliases: ["same breath", "the same breath"],
+        tags: ["italy", "convoy", "dominic", "control"],
+        forms: {
+            what: [
+                "Same Breath is the rescue-and-execution logic laid bare.",
+                "It is the part where moral distinction collapses under Dominic's idea of utility."
+            ],
+            why: [
+                "Because to Dominic, removing a liability and saving a man can occupy the same sentence without conflict.",
+                "Because the song is interested in the flat affect that makes horror sound procedural."
+            ],
+            when: [
+                "Italy, 2019 in the story logic around the convoy.",
+                "It sits in the convoy / Italy material."
+            ],
+            default: [
+                "That phrase matters because it reveals how little moral distance he experiences between opposite acts."
+            ]
+        }
+    },
+
+    this_isnt_therapy: {
+        aliases: ["this isn't therapy", "this isnt therapy"],
+        tags: ["analysis", "control", "dominic"],
+        forms: {
+            what: [
+                "That track treats explanation as a failed comfort object.",
+                "It sounds like someone refusing the fiction that naming a wound automatically softens it."
+            ],
+            why: [
+                "Because analysis can become another shield if it is asked to comfort too early.",
+                "Because not every room is for repair."
+            ],
+            default: [
+                "That one is about pressure, not healing."
+            ]
+        }
+    },
+
+    harms_ghost: {
+        aliases: ["harm's ghost", "harms ghost"],
+        tags: ["harm", "aftereffect"],
+        forms: {
+            what: [
+                "Harm's Ghost is aftermath that keeps moving after the obvious event is over.",
+                "It is the residue version of damage."
+            ],
+            why: [
+                "Because harm rarely ends where the incident ends.",
+                "Because ghosts are just consequences people hoped would stay abstract."
+            ],
+            default: [
+                "That track belongs to the part of the story that refuses tidy closure."
+            ]
+        }
+    },
+
+    my_story: {
+        aliases: ["my story"],
+        tags: ["origin", "narration"],
+        forms: {
+            what: [
+                "My Story is not a neutral title. It is a claim over framing.",
+                "That track is about who gets to narrate before everyone else starts correcting."
+            ],
+            why: [
+                "Because authorship is always contested in a story like this.",
+                "Because the person who names an event first usually gets believed longest."
+            ],
+            default: [
+                "That title tells on itself in a useful way."
+            ]
+        }
+    }
+};
+
+/* ----------------------------------------
+   GENERIC SONG CONCEPT TOPICS
+---------------------------------------- */
+const DOMINIC_OPEN_SONG_CONCEPTS = {
+    trial: {
+        aliases: ["trial", "the trial", "court", "testimony"],
+        responses: [
+            "The trial arc is where performance is forced into language.",
+            "Court is useful because people expect truth there and usually get strategy first."
+        ]
+    },
+    prison: {
+        aliases: ["prison", "long bay", "gaol", "jail"],
+        responses: [
+            "Prison in this story is not stillness. It is structure under compression.",
+            "The prison tracks matter because control does not stop at the gate."
+        ]
+    },
+    escape: {
+        aliases: ["escape", "breakout", "walked out", "walk out"],
+        responses: [
+            "Escape is less impressive once you notice how many people mistook calm for safety.",
+            "Breakouts start long before doors open."
+        ]
+    },
+    wedding: {
+        aliases: ["wedding", "the wedding"],
+        responses: [
+            "The wedding is one of the story's best examples of etiquette rotting from the inside.",
+            "Ceremony is useful because decay looks especially vivid against polish."
+        ]
+    },
+    safe_house: {
+        aliases: ["safe house", "the safe house"],
+        responses: [
+            "Safe houses become interesting the moment safety stops being unanimously defined.",
+            "Containment changes character once trust thins."
+        ]
+    },
+    leak: {
+        aliases: ["leak", "the leak"],
+        responses: [
+            "Leaks matter because private structure suddenly has to survive public weather.",
+            "A leak is just secrecy meeting consequence."
+        ]
+    },
+    grief: {
+        aliases: ["grief", "loss"],
+        responses: [
+            "Grief in this story behaves like architecture after impact.",
+            "Loss changes rooms before it changes language."
+        ]
+    },
+    trauma: {
+        aliases: ["trauma", "harm", "damage"],
+        responses: [
+            "Trauma here is persistent structure, not decorative sadness.",
+            "Damage keeps shaping decisions long after the event thinks it has ended."
+        ]
+    }
+};
+
+/* ----------------------------------------
+   VAGUE / HOSTILE / META / NONSENSE
+---------------------------------------- */
+const DOMINIC_OPEN_GENERIC_RESPONSES = {
+    vague: [
+        "That was acknowledgement, not a question.",
+        "Go on.",
+        "If you are finished observing, ask something."
+    ],
+    hostile: [
+        "You are free to leave.",
+        "Strong reactions are often the easiest way to avoid a better question."
+    ],
+    meta: [
+        "Labels are rarely the interesting part.",
+        "Ask about the structure, not the furniture."
+    ],
+    nonsense: [
+        "Try again.",
+        "Preferably with a question."
+    ]
+};
+
+/* ----------------------------------------
+   HELPERS
+---------------------------------------- */
+function dominicOpenNormalize(input) {
+    let text = String(input || "").toLowerCase().trim();
+
+    text = text.replace(/[^\p{L}\p{N}\s'-]/gu, " ");
+    text = text.replace(/\s+/g, " ").trim();
+
+    Object.entries(DOMINIC_OPEN_ALIASES).forEach(([from, to]) => {
+        const pattern = new RegExp(`\\b${from.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\b`, "g");
+        text = text.replace(pattern, to);
+    });
+
+    text = text.replace(/\s+/g, " ").trim();
+    return text;
+}
+
+function dominicDetectQuestionForm(normalized) {
+    for (const [form, starters] of Object.entries(DOMINIC_OPEN_QUESTION_FORMS)) {
+        for (const starter of starters) {
+            if (normalized === starter || normalized.startsWith(starter + " ")) {
+                return form;
+            }
+        }
+    }
+    return "default";
+}
+
+function dominicDetectPageContext(currentTab) {
+    if (!currentTab) return "home";
+    const tab = String(currentTab).toLowerCase();
+    if (tab.includes("file")) return "files";
+    if (tab.includes("profile") || tab.includes("subject")) return "subjects";
+    if (tab.includes("game")) return "games";
+    if (tab.includes("podcast")) return "podcast";
+    if (tab.includes("audio") || tab.includes("story")) return "story";
+    return "home";
+}
+
+function dominicTopicMatchScore(normalized, aliases) {
+    aliases = aliases || [];
+    let score = 0;
+    for (const alias of aliases) {
+        if (normalized === alias) score = Math.max(score, 100);
+        else if (normalized.includes(alias)) score = Math.max(score, alias.split(" ").length * 10);
+    }
+    return score;
+}
+
+function dominicFindBestTopic(normalized, topicMap) {
+    let bestKey = null;
+    let bestScore = 0;
+
+    Object.entries(topicMap).forEach(([key, topic]) => {
+        const score = dominicTopicMatchScore(normalized, topic.aliases || []);
+        if (score > bestScore) {
+            bestScore = score;
+            bestKey = key;
+        }
+    });
+
+    return { key: bestKey, score: bestScore, topic: bestKey ? topicMap[bestKey] : null };
+}
+
+function dominicPick(list) {
+    if (!Array.isArray(list) || !list.length) return null;
+    return list[Math.floor(Math.random() * list.length)];
+}
+
+function dominicGetPageRedirect(pageContext) {
+    return dominicPick(DOMINIC_OPEN_REDIRECTS[pageContext] || DOMINIC_OPEN_REDIRECTS.home);
+}
+
+/* ----------------------------------------
+   MAIN OPEN ANSWER ROUTER
+   Usage:
+   const result = dominicResolveOpenAsk(userInput, currentTab);
+   result.text
+   result.topic
+   result.form
+   result.page
+---------------------------------------- */
+function dominicResolveOpenAsk(userInput, context) {
+    context = context || {};
+    var page = context.page || "home";
+    var activeTrackTitle = context.activeTrackTitle || null;
+    var lastTopic = context.lastTopic || null;
+
+    var normalized = dominicOpenNormalize(userInput);
+    var form = dominicDetectQuestionForm(normalized);
+
+    // ── Implicit track substitution ──
+    // When user says "this song" / "this track" / "what is this about" while
+    // a track is active on the Story page, inject the track title so topic
+    // matching can resolve it.
+    if (activeTrackTitle && page === "story") {
+        var implicitPhrases = ["this song", "this track", "this one", "what is this about",
+            "what is this", "who is this about", "when does this happen",
+            "what does this mean", "what is this song about", "what is this track about"];
+        for (var ip = 0; ip < implicitPhrases.length; ip++) {
+            if (normalized.includes(implicitPhrases[ip])) {
+                var trackNorm = dominicOpenNormalize(activeTrackTitle);
+                normalized = normalized.replace(implicitPhrases[ip], trackNorm);
+                // Re-detect form after substitution
+                form = dominicDetectQuestionForm(normalized);
+                break;
+            }
+        }
+    }
+
+    // ── Generic short inputs ──
+    if (["ok", "okay", "sure", "right", "yeah", "go on", "continue"].includes(normalized)) {
+        return { text: dominicPick(DOMINIC_OPEN_GENERIC_RESPONSES.vague), topic: "vague", form: form, page: page, matchedBy: "generic_vague" };
+    }
+
+    if (["this is stupid", "go away", "shut up", "fuck off"].includes(normalized)) {
+        return { text: dominicPick(DOMINIC_OPEN_GENERIC_RESPONSES.hostile), topic: "hostile", form: form, page: page, matchedBy: "generic_hostile" };
+    }
+
+    if (["asdf", "123", "banana"].includes(normalized) || !normalized) {
+        return { text: dominicPick(DOMINIC_OPEN_GENERIC_RESPONSES.nonsense), topic: "nonsense", form: form, page: page, matchedBy: "generic_nonsense" };
+    }
+
+    if (normalized.includes("are you ai") || normalized.includes("are you a bot") || normalized.includes("is this a bot")) {
+        return { text: dominicPick(DOMINIC_OPEN_GENERIC_RESPONSES.meta), topic: "meta", form: form, page: page, matchedBy: "generic_meta" };
+    }
+
+    // ── Song concept layer ──
+    var conceptMatch = dominicFindBestTopic(normalized, DOMINIC_OPEN_SONG_CONCEPTS);
+    if (conceptMatch.topic && conceptMatch.score >= 10) {
+        return {
+            text: dominicPick(conceptMatch.topic.responses),
+            topic: conceptMatch.key,
+            form: form,
+            page: page,
+            matchedBy: "song_concept"
+        };
+    }
+
+    // ── Song / story topics ──
+    var songMatch = dominicFindBestTopic(normalized, DOMINIC_OPEN_SONG_TOPICS);
+    if (songMatch.topic && (songMatch.score >= 10 || page === "story")) {
+        var bank = songMatch.topic.forms[form] || songMatch.topic.forms.default || ["That track matters more than its title suggests."];
+        var text = dominicPick(bank);
+
+        // Optional page-aware soft redirect
+        if (page !== "story" && Math.random() > 0.55) {
+            text += " " + dominicGetPageRedirect(page);
+        }
+
+        return {
+            text: text,
+            topic: songMatch.key,
+            form: form,
+            page: page,
+            matchedBy: "song_topic"
+        };
+    }
+
+    // ── Site / lore topics ──
+    var siteMatch = dominicFindBestTopic(normalized, DOMINIC_OPEN_SITE_TOPICS);
+    if (siteMatch.topic && siteMatch.score >= 10) {
+        var siteBank = siteMatch.topic.forms[form] || siteMatch.topic.forms.default || ["That question has a shape. Start there."];
+        var siteText = dominicPick(siteBank);
+
+        // Page-context seasoning
+        if (Math.random() > 0.6) {
+            siteText += " " + dominicGetPageRedirect(page);
+        }
+
+        return {
+            text: siteText,
+            topic: siteMatch.key,
+            form: form,
+            page: page,
+            matchedBy: "site_topic"
+        };
+    }
+
+    // ── Fallback — return null to let the V2 keyword matcher handle it ──
+    return null;
+}
+
+/* =========================================================
+   DOMINIC SUGGESTION GOVERNANCE
+   State-first suggestion control
+========================================================= */
+
+const DOMINIC_SUGGESTION_POLICY = {
+    // Guided / lock states
+    TOUR_OFFER: { mode: "LOCKED_REPLY", suggestions: ["yes", "no", "show me", "sure", "not yet"] },
+    GUIDED_TOUR: { mode: "LOCKED_SEQUENCE", suggestions: [] },
+    TOUR_INTERRUPTED: { mode: "GUIDED_OPEN" },
+    AWAITING_TOUR_RESUME: { mode: "LOCKED_REPLY", suggestions: ["yes", "no", "continue", "enough", "resume", "carry on"] },
+
+    // Parable / narrative lock states
+    PARABLE_READY_GATE: { mode: "LOCKED_REPLY", suggestions: [...PARABLE_AGREE, ...PARABLE_CURIOUS, ...PARABLE_FEAR, ...PARABLE_HUMOR, ...PARABLE_WEIRD, ...PARABLE_FAKE] },
+    PARABLE_HELP_DECISION: { mode: "LOCKED_REPLY", suggestions: [...PARABLE_AGREE, ...PARABLE_CURIOUS, ...PARABLE_FEAR, ...PARABLE_HUMOR, ...PARABLE_WEIRD, ...PARABLE_FAKE] },
+    PARABLE_COMFORT_CHECK: { mode: "LOCKED_REPLY", suggestions: [...PARABLE_AGREE, ...PARABLE_CURIOUS, ...PARABLE_FEAR, ...PARABLE_HUMOR, ...PARABLE_WEIRD, ...PARABLE_FAKE] },
+    PARABLE_REVEAL: { mode: "LOCKED_REPLY", suggestions: [...PARABLE_AGREE, ...PARABLE_CURIOUS, ...PARABLE_FEAR, ...PARABLE_HUMOR, ...PARABLE_WEIRD, ...PARABLE_FAKE] },
+    AWAITING_NEED_ME: { mode: "LOCKED_REPLY", suggestions: ["yes", "no", "maybe", "not sure"] },
+
+    // Section 1: Orientation
+    EXPECT_HOW_ARE_YOU: { mode: "LOCKED_REPLY", suggestions: ["good", "fine", "tired", "not great", "ok", "alright", "same old"] },
+    EXPECT_STORY_ASK: { mode: "LOCKED_REPLY", suggestions: ["yes", "tell me", "go on", "no", "sure", "not really"] },
+    EXPECT_BUILDER: { mode: "LOCKED_REPLY", suggestions: ["architect", "criminal", "manipulator", "genius", "visionary", "both"] },
+    EXPECT_SYS_BRIDGE: { mode: "LOCKED_REPLY", suggestions: ["yes", "not really", "interesting", "go on", "sure", "tell me more"] },
+    EXPECT_STABILITY: { mode: "LOCKED_REPLY", suggestions: ["power", "preventing collapse", "both", "control", "neither"] },
+    EXPECT_BALANCE: { mode: "LOCKED_REPLY", suggestions: ["people self correct", "people need pressure", "both", "depends", "neither"] },
+    EXPECT_SIGNAL: { mode: "LOCKED_REPLY", suggestions: ["i notice them", "i only see the collapse", "both", "neither"] },
+    EXPECT_SITE_TOUR: { mode: "LOCKED_REPLY", suggestions: ["yes", "no", "sure", "show me"] },
+    EXPECT_PEOPLE_FIRST: { mode: "LOCKED_REPLY", suggestions: ["people", "design", "both", "the people", "the design"] },
+    EXPECT_PARABLE_ROUTE: { mode: "LOCKED_REPLY", suggestions: ["yes", "no", "what kind of story", "tell me", "ready"] },
+    EXPECT_PARABLE_LAUNCH: { mode: "LOCKED_REPLY", suggestions: ["yes", "no", "go on", "ready", "tell me", "sure"] },
+
+    // Section 2: Core Canon
+    EXPECTING_ISLA_FOLLOWUP: { mode: "LOCKED_REPLY", suggestions: ["strength", "noise", "both", "chaos", "strong", "broken"] },
+    EXPECTING_FORGE_VS_SHIELD: { mode: "LOCKED_REPLY", suggestions: ["forge", "shield", "forged by it", "shielded", "both", "consequence"] },
+    EXPECTING_TRIAL_VERDICT: { mode: "LOCKED_REPLY", suggestions: ["justice", "spectacle", "it was justice", "it was spectacle", "both", "innocent"] },
+    EXPECTING_ESCAPE_FOLLOWUP: { mode: "LOCKED_REPLY", suggestions: ["mechanics", "result", "how", "the mechanics", "the result", "both"] },
+
+    // Section 3: Deep Funnels
+    EXPECTING_PSYCHOPATH_ANSWER: { mode: "LOCKED_REPLY", suggestions: ["empathy", "guilt", "danger", "do you feel empathy", "are you dangerous"] },
+    EXPECTING_AWARENESS_PUSHBACK: { mode: "LOCKED_REPLY", suggestions: ["it frightens me", "it clarifies something", "terrifying", "fascinating", "yes"] },
+    EXPECTING_BLAME_FOLLOWUP: { mode: "LOCKED_REPLY", suggestions: ["confession", "framework", "both", "accountability", "angry"] },
+
+    // Section 4: Sequential Followups
+    HEARD_ETHEL_LIKE_V1: { mode: "LOCKED_REPLY", suggestions: ["deeper", "not sure", "yes", "no", "worried"] },
+    HEARD_MOVEIN_V1: { mode: "LOCKED_REPLY", suggestions: ["cornered", "choosing", "trapped", "both", "neither"] },
+    HEARD_DROP_V1: { mode: "LOCKED_REPLY", suggestions: ["what dropped", "deeper", "tell me", "i want to know", "the pretense"] },
+    EXPECTING_NORTHERN_ROAD_FOLLOW: { mode: "LOCKED_REPLY", suggestions: ["yes", "no", "go on", "tell me"] },
+
+
+
+    // Default open state — GUIDED_OPEN (not FREE_OPEN) as safety net
+    // This means unknown states get page/topic-aware suggestions, not random global ones
+    any: { mode: "GUIDED_OPEN" }
+};
+
+/* ----------------------------------------
+   SUGGESTION BANK
+---------------------------------------- */
+const DOMINIC_SUGGESTION_BANK = {
+    global: [
+        "what is pixelstortion",
+        "where should i start",
+        "who is dominic ryker",
+        "show me around",
+        "what is the truth",
+        "show me the truth",
+        "what is real",
+        "what really happened",
+        "what are you hiding",
+        "is any of this real",
+        "tell me about the files",
+        "who are you",
+        "what happened",
+        "tell me a story",
+        "what is silence is the trauma",
+        "why does this exist",
+        "what should i look at first"
+    ],
+
+    byPage: {
+        home: [
+            "what is pixelstortion",
+            "what is silence is the trauma",
+            "where should i start",
+            "show me around",
+            "what is the truth",
+            "show me the truth",
+            "who is dominic ryker",
+            "who are you",
+            "what happened here",
+            "tell me a story",
+            "what should i look at first",
+            "take me on a tour"
+        ],
+        files: [
+            "what is the ryker report",
+            "why are these files redacted",
+            "which file should i read first",
+            "what does the report say",
+            "why does the report matter",
+            "who redacted this",
+            "what is the evidence",
+            "what are the files",
+            "what should i read first",
+            "tell me about the archive",
+            "who is this file about",
+            "why does this file matter"
+        ],
+        subjects: [
+            "who is ethel",
+            "who is isla",
+            "who is dominic ryker",
+            "who is gran",
+            "who is pop",
+            "what happened to ethel",
+            "why is isla dangerous",
+            "what happened at the wedding",
+            "who are these people",
+            "why do they matter",
+            "what did dominic do",
+            "tell me about the people"
+        ],
+        games: [
+            "what do the games mean",
+            "how do i start",
+            "why are there games here",
+            "what is ethels game",
+            "how do i play",
+            "what happens if i win",
+            "what is the point of this"
+        ],
+        podcast: [
+            "what is the podcast for",
+            "what should i listen to first",
+            "who is talking here",
+            "what are they discussing",
+            "why does this conversation matter",
+            "tell me about the podcast",
+            "what is the first episode about"
+        ],
+        story: [
+            "what is this song about",
+            "who is this track about",
+            "where does this fit in the story",
+            "what should i listen to first",
+            "where does the story begin",
+            "what does this track mean",
+            "why does this song matter",
+            "what is the story about",
+            "who is this about",
+            "when does this happen",
+            "what comes next",
+            "tell me about this track"
+        ]
+    },
+
+    byTopic: {
+        pixelstortion: [
+            "what is pixelstortion",
+            "why is it called pixelstortion",
+            "who made pixelstortion",
+            "what is this place",
+            "why does this exist"
+        ],
+        dominic: [
+            "who is dominic ryker",
+            "why is dominic called the builder",
+            "what did dominic do",
+            "is dominic a criminal",
+            "what happened to dominic",
+            "why does dominic matter"
+        ],
+        ethel: [
+            "who is ethel",
+            "what happened to ethel",
+            "why does ethel matter",
+            "what did ethel see",
+            "why is ethel important"
+        ],
+        isla: [
+            "who is isla",
+            "why is isla dangerous",
+            "what happened at the wedding",
+            "what did isla do",
+            "why does isla matter"
+        ],
+        gran: [
+            "who is gran",
+            "why does gran matter",
+            "what did gran leave behind",
+            "what happened to gran"
+        ],
+        pop: [
+            "who is pop",
+            "what did pop teach ethel",
+            "why does pop matter",
+            "what happened to pop"
+        ],
+        the_ryker_report: [
+            "what is the ryker report",
+            "what does the report say",
+            "why does the report matter",
+            "who wrote the report",
+            "what is in the report"
+        ],
+        truth: [
+            "what is the truth",
+            "where is the truth",
+            "show me the truth",
+            "what do you mean by truth",
+            "whose truth is this"
+        ],
+        tour: [
+            "show me around",
+            "take me on a tour",
+            "what should i look at first",
+            "where do i start",
+            "guide me"
+        ],
+        trial: [
+            "what happened at the trial",
+            "was it justice or spectacle",
+            "what was the verdict",
+            "who was on trial",
+            "why did the trial matter"
+        ],
+        prison: [
+            "what happened in prison",
+            "how did dominic escape",
+            "what happened at long bay",
+            "what happened after the breakout",
+            "why does the escape matter"
+        ],
+        trauma: [
+            "what does the trauma mean",
+            "why does grief matter here",
+            "what is harms ghost about",
+            "what is silence is the trauma",
+            "why does this hurt"
+        ],
+        psychopathy: [
+            "what is structural psychopathy",
+            "why does control matter",
+            "what do you mean by preventing collapse",
+            "is dominic a psychopath",
+            "what is the structure"
+        ],
+        story: [
+            "what is the story about",
+            "where does the story begin",
+            "what should i listen to first",
+            "what is the first track",
+            "how does the story end"
+        ],
+        parable: [
+            "tell me a story",
+            "what kind of story",
+            "go on",
+            "what is the parable about",
+            "what happens next"
+        ]
+    }
+};
+
+/* ----------------------------------------
+   HELPERS
+---------------------------------------- */
+function dominicGetSuggestionPolicy(state) {
+    return DOMINIC_SUGGESTION_POLICY[state] || DOMINIC_SUGGESTION_POLICY.any;
+}
+
+function dominicFilterSuggestionsByPrefix(list, inputText) {
+    if (!Array.isArray(list)) return [];
+    const typed = String(inputText || "").toLowerCase().trim();
+    if (!typed) return list.slice(0, 3);
+
+    const starts = [];
+    const contains = [];
+
+    for (let i = 0; i < list.length; i++) {
+        const s = String(list[i]).toLowerCase();
+        if (s.startsWith(typed)) starts.push(list[i]);
+        else if (typed.length >= 2 && s.includes(typed)) contains.push(list[i]);
+    }
+
+    return starts.concat(contains).slice(0, 3);
+}
+
+function dominicGetTrackSuggestionTemplates(title) {
+    if (!title) return [];
+    const t = String(title).toLowerCase();
+    return [
+        `what is ${t} about`,
+        `who is ${t} about`,
+        `when does ${t} happen`
+    ];
+}
+
+// Cache keyword phrases per conversation state
+var _keywordPhraseCache = {};
+function _getAllKeywordPhrases(currentState) {
+    var state = currentState || "any";
+    if (_keywordPhraseCache[state]) return _keywordPhraseCache[state];
+    var phrases = [];
+
+    // 1. Extract from DOMINIC_OPEN_KEYWORD_NODES (open-mode keyword phrases — always valid)
+    if (typeof DOMINIC_OPEN_KEYWORD_NODES !== 'undefined') {
+        for (var i = 0; i < DOMINIC_OPEN_KEYWORD_NODES.length; i++) {
+            var node = DOMINIC_OPEN_KEYWORD_NODES[i];
+            if (node.phrases) {
+                for (var j = 0; j < node.phrases.length; j++) {
+                    phrases.push(node.phrases[j]);
+                }
+            }
+        }
+    }
+
+    // 2. Extract from DOMINIC_LIBRARY — context-aware:
+    //    Only include phrases from nodes that will RESPOND in the current state
+    if (typeof DOMINIC_LIBRARY !== 'undefined' && Array.isArray(DOMINIC_LIBRARY)) {
+        for (var k = 0; k < DOMINIC_LIBRARY.length; k++) {
+            var libNode = DOMINIC_LIBRARY[k];
+            if (libNode.training_phrases) {
+                // Include if: node accepts "any" state, OR node's required_state matches current state
+                if (libNode.required_state === "any" || libNode.required_state === state) {
+                    for (var m = 0; m < libNode.training_phrases.length; m++) {
+                        phrases.push(libNode.training_phrases[m]);
+                    }
+                }
+            }
+        }
+    }
+
+    _keywordPhraseCache[state] = phrases;
+    return phrases;
+}
+
+function dominicGetGuidedOpenSuggestions(inputText, context) {
+    // Build combined pool: topic + page + global + ALL keyword phrases (deduped)
+    var pool = [];
+    var seen = {};
+
+    function addToPool(list) {
+        if (!list) return;
+        for (var i = 0; i < list.length; i++) {
+            if (!seen[list[i]]) {
+                seen[list[i]] = true;
+                pool.push(list[i]);
+            }
+        }
+    }
+
+    // 1. Recent topic first (highest priority)
+    if (context && context.lastTopic && DOMINIC_SUGGESTION_BANK.byTopic[context.lastTopic]) {
+        addToPool(DOMINIC_SUGGESTION_BANK.byTopic[context.lastTopic]);
+    }
+
+    // 2. Page suggestions
+    if (context && context.page && DOMINIC_SUGGESTION_BANK.byPage[context.page]) {
+        addToPool(DOMINIC_SUGGESTION_BANK.byPage[context.page]);
+    }
+
+    // 3. Global curated suggestions
+    addToPool(DOMINIC_SUGGESTION_BANK.global);
+
+    // 4. ALL training phrases from keyword nodes (context-aware)
+    var currentState = (context && context.conversationState) ? context.conversationState : "any";
+    addToPool(_getAllKeywordPhrases(currentState));
+
+    return pool;
+}
+
+function dominicGetFreeOpenSuggestions(inputText, context) {
+    // 1. Active object first
+    var fromObject = dominicGetObjectAwareSuggestions(inputText, context);
+    if (fromObject.length) return fromObject;
+
+    // 2. Recent topic
+    if (context && context.lastTopic && DOMINIC_SUGGESTION_BANK.byTopic[context.lastTopic]) {
+        var fromTopic = dominicFilterSuggestionsByPrefix(
+            DOMINIC_SUGGESTION_BANK.byTopic[context.lastTopic],
+            inputText
+        );
+        if (fromTopic.length) return fromTopic;
+    }
+
+    // 3. Page
+    if (context && context.page && DOMINIC_SUGGESTION_BANK.byPage[context.page]) {
+        var fromPage = dominicFilterSuggestionsByPrefix(
+            DOMINIC_SUGGESTION_BANK.byPage[context.page],
+            inputText
+        );
+        if (fromPage.length) return fromPage;
+    }
+
+    // 4. Global
+    return dominicFilterSuggestionsByPrefix(DOMINIC_SUGGESTION_BANK.global, inputText);
+}
+
+/* ----------------------------------------
+   MAIN SUGGESTION ROUTER (FINAL — Phase 7)
+   Precedence: state → object → topic → page → global
+   + core recoverability (Phase 6)
+   + theme-pressure weighting (Phase 7)
+---------------------------------------- */
+function getDominicSuggestions(inputText, context) {
+    var state = (context && context.conversationState) ? context.conversationState : "any";
+    var policy = dominicGetSuggestionPolicy(state);
+    var suggestions = [];
+    var source = "none";
+
+    if (policy.mode === "LOCKED_SEQUENCE") {
+        suggestions = [];
+        source = "state_policy";
+    } else if (policy.mode === "LOCKED_REPLY") {
+        suggestions = dominicFilterSuggestionsByPrefix(policy.suggestions || [], inputText);
+        // If typed text doesn't match any locked option, show all locked options anyway
+        if (suggestions.length === 0 && policy.suggestions && policy.suggestions.length > 0) {
+            suggestions = policy.suggestions.slice(0, 3);
+        }
+        source = "state_policy";
+    } else {
+        // Always get the combined page+global pool
+        suggestions = dominicGetGuidedOpenSuggestions(inputText, context);
+        source = "guided_open";
+
+        // Merge object-aware suggestions at the FRONT (higher priority)
+        var objectSuggestions = dominicGetObjectAwareSuggestions(inputText, context);
+        if (objectSuggestions.length) {
+            var seen = {};
+            var merged = [];
+            for (var oi = 0; oi < objectSuggestions.length; oi++) {
+                if (!seen[objectSuggestions[oi]]) { seen[objectSuggestions[oi]] = true; merged.push(objectSuggestions[oi]); }
+            }
+            for (var si = 0; si < suggestions.length; si++) {
+                if (!seen[suggestions[si]]) { seen[suggestions[si]] = true; merged.push(suggestions[si]); }
+            }
+            suggestions = merged;
+            if (context && context.activeTrackTitle && context.page === "story") source = "active_track";
+            else if (context && context.activeFileTitle && context.page === "files") source = "active_file";
+            else if (context && context.activeProfileName && context.page === "subjects") source = "active_profile";
+            else source = "object_aware";
+        }
+
+        // Core recoverability layer (Phase 6)
+        suggestions = dominicInjectCoreAccessibilitySuggestions(suggestions, context);
+
+        // Theme-pressure weighting layer (Phase 7)
+        suggestions = dominicInjectThemePressureSuggestions(suggestions, context);
+    }
+
+    console.log("[Dominic Suggestion]", {
+        state: state,
+        mode: policy.mode,
+        page: context && context.page,
+        activeTrack: context && context.activeTrackTitle,
+        activeFile: context && context.activeFileTitle,
+        activeProfile: context && context.activeProfileName,
+        themeProfile: dominicGetThemePressureProfile(context),
+        source: source,
+        suggestions: suggestions
+    });
+
+    return suggestions;
+}
+
+/* =========================================================
+   PHASE 2 — OBJECT-AWARE SUGGESTIONS (FILES + SUBJECTS)
+========================================================= */
+
+if (!DOMINIC_SUGGESTION_BANK.byTopic) DOMINIC_SUGGESTION_BANK.byTopic = {};
+
+Object.assign(DOMINIC_SUGGESTION_BANK.byTopic, {
+    file_generic: [
+        "what is this file",
+        "why does this file matter",
+        "who is this file about"
+    ],
+    subject_generic: [
+        "who is this person",
+        "why do they matter",
+        "what happened to them"
+    ],
+    the_ryker_report: [
+        "what is the ryker report",
+        "what does the report say",
+        "why does the report matter"
+    ],
+    dominic_ryker: [
+        "who is dominic ryker",
+        "what did dominic do",
+        "why is dominic called the builder"
+    ],
+    ethel: [
+        "who is ethel",
+        "what happened to ethel",
+        "why does ethel matter"
+    ],
+    isla: [
+        "who is isla",
+        "what happened at the wedding",
+        "why is isla dangerous"
+    ],
+    gran: [
+        "who is gran",
+        "why does gran matter",
+        "what did gran leave behind"
+    ],
+    pop: [
+        "who is pop",
+        "what did pop teach ethel",
+        "why does pop matter"
+    ]
+});
+
+/* ----------------------------------------
+   FILE / SUBJECT OBJECT TEMPLATES
+---------------------------------------- */
+function dominicGetFileSuggestionTemplates(title) {
+    if (!title) {
+        return DOMINIC_SUGGESTION_BANK.byTopic.file_generic.slice(0, 3);
+    }
+
+    var t = String(title).toLowerCase();
+
+    if (t.includes("ryker report") || t.includes("report")) {
+        return DOMINIC_SUGGESTION_BANK.byTopic.the_ryker_report.slice(0, 3);
+    }
+
+    return [
+        "what is " + t,
+        "why does " + t + " matter",
+        "who is this file about"
+    ];
+}
+
+function dominicGetProfileSuggestionTemplates(name) {
+    if (!name) {
+        return DOMINIC_SUGGESTION_BANK.byTopic.subject_generic.slice(0, 3);
+    }
+
+    var n = String(name).toLowerCase();
+
+    if (n.includes("dominic")) return DOMINIC_SUGGESTION_BANK.byTopic.dominic_ryker.slice(0, 3);
+    if (n.includes("ethel")) return DOMINIC_SUGGESTION_BANK.byTopic.ethel.slice(0, 3);
+    if (n.includes("isla")) return DOMINIC_SUGGESTION_BANK.byTopic.isla.slice(0, 3);
+    if (n.includes("gran")) return DOMINIC_SUGGESTION_BANK.byTopic.gran.slice(0, 3);
+    if (n.includes("pop")) return DOMINIC_SUGGESTION_BANK.byTopic.pop.slice(0, 3);
+
+    return [
+        "who is " + n,
+        "why does " + n + " matter",
+        "what happened to " + n
+    ];
+}
+
+/* ----------------------------------------
+   OBJECT-FIRST GUIDED SUGGESTIONS
+---------------------------------------- */
+function dominicGetObjectAwareSuggestions(inputText, context) {
+    // 1. Active Story track
+    if (context && context.activeTrackTitle && context.page === "story") {
+        return dominicFilterSuggestionsByPrefix(
+            dominicGetTrackSuggestionTemplates(context.activeTrackTitle),
+            inputText
+        );
+    }
+
+    // 2. Active/open file
+    if (context && context.activeFileTitle && context.page === "files") {
+        return dominicFilterSuggestionsByPrefix(
+            dominicGetFileSuggestionTemplates(context.activeFileTitle),
+            inputText
+        );
+    }
+
+    // 3. Active/open profile
+    if (context && context.activeProfileName && context.page === "subjects") {
+        return dominicFilterSuggestionsByPrefix(
+            dominicGetProfileSuggestionTemplates(context.activeProfileName),
+            inputText
+        );
+    }
+
+    return [];
+}
+
+/* =========================================================
+   PHASE 3 — IMPLICIT OBJECT SUBSTITUTION
+   Resolves:
+   - "this song" / "this track"
+   - "this file" / "this document"
+   - "this person" / "this profile" / "this subject"
+========================================================= */
+
+function dominicNormalizeLooseText(text) {
+    return String(text || "")
+        .toLowerCase()
+        .replace(/[^a-z0-9\s'-]/g, " ")
+        .replace(/\s+/g, " ")
+        .trim();
+}
+
+function dominicSubstituteImplicitObjects(normalizedInput, context) {
+    var text = dominicNormalizeLooseText(normalizedInput);
+    var replaced = text;
+    var substitution = null;
+
+    var activeTrackTitle = context && context.activeTrackTitle ? String(context.activeTrackTitle).toLowerCase() : null;
+    var activeFileTitle = context && context.activeFileTitle ? String(context.activeFileTitle).toLowerCase() : null;
+    var activeProfileName = context && context.activeProfileName ? String(context.activeProfileName).toLowerCase() : null;
+    var page = context && context.page ? String(context.page).toLowerCase() : "home";
+
+    // STORY / TRACK — only if active track exists and page is story
+    if (activeTrackTitle && page === "story") {
+        if (
+            text.includes("this song") ||
+            text.includes("this track") ||
+            text === "what is this about" ||
+            text === "who is this about" ||
+            text === "when does this happen" ||
+            text === "what does this mean"
+        ) {
+            replaced = replaced
+                .replace(/\bthis song\b/g, activeTrackTitle)
+                .replace(/\bthis track\b/g, activeTrackTitle);
+
+            if (replaced === "what is this about") replaced = "what is " + activeTrackTitle + " about";
+            if (replaced === "who is this about") replaced = "who is " + activeTrackTitle + " about";
+            if (replaced === "when does this happen") replaced = "when does " + activeTrackTitle + " happen";
+            if (replaced === "what does this mean") replaced = "what does " + activeTrackTitle + " mean";
+
+            substitution = {
+                type: "track",
+                value: activeTrackTitle
+            };
+        }
+    }
+
+    // FILES / DOCUMENTS — only if active file exists and page is files
+    if (activeFileTitle && page === "files") {
+        if (
+            text.includes("this file") ||
+            text.includes("this document") ||
+            text.includes("this report") ||
+            text === "what is this about" ||
+            text === "why does this matter" ||
+            text === "who is this about"
+        ) {
+            replaced = replaced
+                .replace(/\bthis file\b/g, activeFileTitle)
+                .replace(/\bthis document\b/g, activeFileTitle)
+                .replace(/\bthis report\b/g, activeFileTitle);
+
+            if (replaced === "what is this about") replaced = "what is " + activeFileTitle;
+            if (replaced === "why does this matter") replaced = "why does " + activeFileTitle + " matter";
+            if (replaced === "who is this about") replaced = "who is " + activeFileTitle + " about";
+
+            substitution = {
+                type: "file",
+                value: activeFileTitle
+            };
+        }
+    }
+
+    // SUBJECTS / PROFILES — only if active profile exists and page is subjects
+    if (activeProfileName && (page === "subjects" || page === "profiles")) {
+        if (
+            text.includes("this person") ||
+            text.includes("this profile") ||
+            text.includes("this subject") ||
+            text === "who is this" ||
+            text === "why do they matter" ||
+            text === "what happened to them"
+        ) {
+            replaced = replaced
+                .replace(/\bthis person\b/g, activeProfileName)
+                .replace(/\bthis profile\b/g, activeProfileName)
+                .replace(/\bthis subject\b/g, activeProfileName);
+
+            if (replaced === "who is this") replaced = "who is " + activeProfileName;
+            if (replaced === "why do they matter") replaced = "why does " + activeProfileName + " matter";
+            if (replaced === "what happened to them") replaced = "what happened to " + activeProfileName;
+
+            substitution = {
+                type: "profile",
+                value: activeProfileName
+            };
+        }
+    }
+
+    return {
+        original: text,
+        normalized: replaced,
+        substituted: !!substitution,
+        substitution: substitution
+    };
+}
+
+/* =========================================================
+   PHASE 4 — CONTEXT-WEIGHTED RESPONSE PHRASING
+   Shapes HOW Dominic answers based on:
+   - direct explicit naming
+   - implicit substitution
+   - page-only inference
+   - recent-topic continuity
+========================================================= */
+
+const DOMINIC_CONTEXT_PHRASING = {
+    explicit: {
+        neutral: [
+            "",
+            "",
+            "",
+            ""
+        ]
+    },
+
+    implicit: {
+        track: [
+            "You mean {value}. ",
+            "If you mean {value}, then listen closely. ",
+            "That track is {value}. "
+        ],
+        file: [
+            "You mean {value}. ",
+            "If you're asking about {value}, start with this. ",
+            "That file is {value}. "
+        ],
+        profile: [
+            "You mean {value}. ",
+            "If you're asking about {value}, this matters. ",
+            "That subject is {value}. "
+        ]
+    },
+
+    inferred: {
+        home: [
+            "If you're asking about this place generally, ",
+            "At the level of the site itself, "
+        ],
+        files: [
+            "From the archive side of it, ",
+            "In the files, "
+        ],
+        subjects: [
+            "From the people side of it, ",
+            "In the profiles, "
+        ],
+        games: [
+            "Through the games, ",
+            "From the play side of it, "
+        ],
+        podcast: [
+            "From the conversation side of it, ",
+            "In the podcast material, "
+        ],
+        story: [
+            "From the story side, ",
+            "In the track layer, "
+        ],
+        fallback: [
+            "In context, ",
+            "At this angle, "
+        ]
+    },
+
+    continuity: {
+        sameTopic: [
+            "Still on that point, ",
+            "Staying there for a moment, ",
+            "If we're continuing that thread, "
+        ],
+        relatedTopic: [
+            "That sits close to the last question. ",
+            "That connects more than you might think. "
+        ]
+    }
+};
+
+function dominicPickContextPhrase(list) {
+    if (!Array.isArray(list) || !list.length) return "";
+    return list[Math.floor(Math.random() * list.length)];
+}
+
+function dominicFormatContextPhrase(template, data) {
+    var out = String(template || "");
+    if (!data) return out;
+    Object.keys(data).forEach(function (key) {
+        var token = new RegExp("\\{" + key + "\\}", "g");
+        out = out.replace(token, data[key]);
+    });
+    return out;
+}
+
+function dominicDetectContinuityWeight(context, topic) {
+    if (!context || !topic) return null;
+    if (context.lastTopic && context.lastTopic === topic) return "sameTopic";
+
+    if (context.lastTopic && typeof context.lastTopic === "string" && typeof topic === "string") {
+        var a = context.lastTopic.toLowerCase();
+        var b = topic.toLowerCase();
+
+        if (
+            (a.includes("dominic") && b.includes("dominic")) ||
+            (a.includes("ethel") && b.includes("ethel")) ||
+            (a.includes("isla") && b.includes("isla")) ||
+            (a.includes("report") && b.includes("report")) ||
+            (a.includes("song") && b.includes("song")) ||
+            (a.includes("track") && b.includes("track"))
+        ) {
+            return "relatedTopic";
+        }
+    }
+
+    return null;
+}
+
+/* =========================================================
+   PHASE 5 — RESPONSE WEIGHTING BY NARRATIVE PRESSURE
+========================================================= */
+
+const DOMINIC_NARRATIVE_PRESSURE = {
+    // High-pressure / rail states
+    TOUR_OFFER: "high",
+    GUIDED_TOUR: "high",
+
+    EXPECT_HOW_ARE_YOU: "medium",
+    EXPECT_STORY_ASK: "high",
+    EXPECT_BUILDER: "high",
+    EXPECT_SYS_BRIDGE: "medium",
+    EXPECT_STABILITY: "high",
+    EXPECT_BALANCE: "high",
+    EXPECT_SIGNAL: "high",
+    EXPECT_SITE_TOUR: "high",
+    EXPECT_PEOPLE_FIRST: "high",
+    EXPECT_PARABLE_ROUTE: "high",
+    EXPECT_PARABLE_LAUNCH: "high",
+
+    EXPECTING_ISLA_FOLLOWUP: "high",
+    EXPECTING_FORGE_VS_SHIELD: "high",
+    EXPECTING_TRIAL_VERDICT: "high",
+    EXPECTING_ESCAPE_FOLLOWUP: "high",
+
+    EXPECTING_PSYCHOPATH_ANSWER: "high",
+    EXPECTING_AWARENESS_PUSHBACK: "high",
+    EXPECTING_BLAME_FOLLOWUP: "high",
+
+    HEARD_ETHEL_LIKE_V1: "medium",
+    HEARD_MOVEIN_V1: "high",
+    HEARD_DROP_V1: "medium",
+    EXPECTING_NORTHERN_ROAD_FOLLOW: "medium",
+
+    // Locked sequence states (Staircase parable)
+    PARABLE_READY_GATE: "high",
+    PARABLE_HELP_DECISION: "high",
+    PARABLE_COMFORT_CHECK: "high",
+    PARABLE_REVEAL: "high",
+
+    // Open mode default
+    any: "low"
+};
+
+const DOMINIC_PRESSURE_STYLE = {
+    high: {
+        maxSentences: 2,
+        allowSoftRedirect: false,
+        allowPageAppend: false,
+        allowContinuityPrefix: false,
+        compressionChance: 0.9
+    },
+    medium: {
+        maxSentences: 3,
+        allowSoftRedirect: true,
+        allowPageAppend: true,
+        allowContinuityPrefix: true,
+        compressionChance: 0.45
+    },
+    low: {
+        maxSentences: 4,
+        allowSoftRedirect: true,
+        allowPageAppend: true,
+        allowContinuityPrefix: true,
+        compressionChance: 0.15
+    }
+};
+
+function dominicGetNarrativePressure(state) {
+    return DOMINIC_NARRATIVE_PRESSURE[state] || DOMINIC_NARRATIVE_PRESSURE.any;
+}
+
+function dominicGetPressureStyle(state) {
+    var pressure = dominicGetNarrativePressure(state);
+    return DOMINIC_PRESSURE_STYLE[pressure] || DOMINIC_PRESSURE_STYLE.low;
+}
+
+function dominicClampSentences(text, maxSentences) {
+    if (!text) return text;
+    var parts = String(text)
+        .split(/(?<=[.!?])\s+/)
+        .filter(Boolean);
+
+    if (parts.length <= maxSentences) return text;
+    return parts.slice(0, maxSentences).join(" ").trim();
+}
+
+function dominicCompressResponse(text, pressure) {
+    if (!text) return text;
+
+    var highCompressionRewrites = [
+        { from: /\bMost people\b/gi, to: "People" },
+        { from: /\bIt is\b/gi, to: "It's" },
+        { from: /\bThat is\b/gi, to: "That's" },
+        { from: /\bYou are\b/gi, to: "You're" }
+    ];
+
+    var out = String(text);
+
+    if (pressure === "high") {
+        for (var i = 0; i < highCompressionRewrites.length; i++) {
+            out = out.replace(highCompressionRewrites[i].from, highCompressionRewrites[i].to);
+        }
+
+        // Remove softening lead-ins in high pressure
+        out = out.replace(/^(If you mean .*?,\s*)/i, "");
+        out = out.replace(/^(If you're asking about .*?,\s*)/i, "");
+        out = out.replace(/^(At the level of .*?,\s*)/i, "");
+        out = out.replace(/^(From the .*? side.*?,\s*)/i, "");
+        out = out.replace(/^(Still on that point,\s*)/i, "");
+        out = out.replace(/^(Staying there for a moment,\s*)/i, "");
+    }
+
+    return out.trim();
+}
+
+function dominicApplyNarrativePressure(text, meta) {
+    if (!text) return text;
+
+    var context = meta && meta.context ? meta.context : null;
+    var state = (context && context.conversationState) ? context.conversationState : "any";
+    var pressure = dominicGetNarrativePressure(state);
+    var style = dominicGetPressureStyle(state);
+
+    var out = String(text).trim();
+
+    // Sentence clamp first
+    out = dominicClampSentences(out, style.maxSentences);
+
+    // Compression second
+    if (Math.random() < style.compressionChance) {
+        out = dominicCompressResponse(out, pressure);
+    }
+
+    return out.trim();
+}
+
+/* ----------------------------------------
+   CONTEXT-WEIGHTED PHRASING (FINAL — Phase 5 pressure-aware)
+---------------------------------------- */
+function dominicApplyContextWeightToText(baseText, meta) {
+    if (!baseText) return baseText;
+
+    var text = String(baseText).trim();
+    var context = meta && meta.context ? meta.context : null;
+    var substitution = meta && meta.substitution ? meta.substitution : null;
+    var topic = meta && meta.topic ? meta.topic : null;
+    var matchedBy = meta && meta.matchedBy ? meta.matchedBy : null;
+
+    var state = (context && context.conversationState) ? context.conversationState : "any";
+    var pressure = dominicGetNarrativePressure(state);
+    var style = dominicGetPressureStyle(state);
+
+    var prefix = "";
+
+    // 1. Continuity weighting first (only if pressure allows)
+    var continuity = dominicDetectContinuityWeight(context, topic);
+    if (style.allowContinuityPrefix && continuity && Math.random() > 0.45) {
+        prefix += dominicPickContextPhrase(DOMINIC_CONTEXT_PHRASING.continuity[continuity]);
+    }
+
+    // 2. Implicit substitution weighting
+    if (substitution && substitution.type && substitution.value) {
+        var bank = DOMINIC_CONTEXT_PHRASING.implicit[substitution.type];
+        if (bank && Math.random() > 0.25) {
+            prefix += dominicFormatContextPhrase(
+                dominicPickContextPhrase(bank),
+                { value: substitution.value }
+            );
+        }
+    }
+
+    // 3. Page-inferred weighting only when pressure allows
+    if (!substitution && style.allowSoftRedirect && matchedBy && (matchedBy === "site_topic" || matchedBy === "song_concept")) {
+        if (context && context.page && Math.random() > 0.65) {
+            var inferredBank = DOMINIC_CONTEXT_PHRASING.inferred[context.page] || DOMINIC_CONTEXT_PHRASING.inferred.fallback;
+            prefix += dominicPickContextPhrase(inferredBank);
+        }
+    }
+
+    prefix = prefix.replace(/\s+/g, " ").trim();
+    if (prefix) {
+        if (!/[,\.!\?]$/.test(prefix)) prefix += " ";
+        else prefix += " ";
+    }
+
+    var combined = (prefix + text).trim();
+
+    // Final pressure pass
+    return dominicApplyNarrativePressure(combined, meta);
+}
+
+/* =========================================================
+   PHASE 6 — TALKING-POINT ACCESSIBILITY WEIGHTING
+   Keeps core themes recoverable even under selective routing
+========================================================= */
+
+const DOMINIC_CORE_TALKING_POINTS = {
+    tour: {
+        weight: 100,
+        prompts: [
+            "show me around",
+            "take me on a tour",
+            "what should i look at first"
+        ]
+    },
+
+    truth: {
+        weight: 95,
+        prompts: [
+            "what is the truth",
+            "where is the truth",
+            "what do you mean by truth"
+        ]
+    },
+
+    files: {
+        weight: 92,
+        prompts: [
+            "what are the files",
+            "what should i read first",
+            "what is the ryker report"
+        ]
+    },
+
+    story: {
+        weight: 90,
+        prompts: [
+            "what is this song about",
+            "where does the story begin",
+            "what should i listen to first"
+        ]
+    },
+
+    dominic: {
+        weight: 88,
+        prompts: [
+            "who is dominic ryker",
+            "what did dominic do",
+            "why is dominic called the builder"
+        ]
+    },
+
+    ethel: {
+        weight: 86,
+        prompts: [
+            "who is ethel",
+            "what happened to ethel",
+            "why does ethel matter"
+        ]
+    },
+
+    isla: {
+        weight: 86,
+        prompts: [
+            "who is isla",
+            "what happened at the wedding",
+            "why is isla dangerous"
+        ]
+    },
+
+    parable: {
+        weight: 84,
+        prompts: [
+            "tell me a story",
+            "what kind of story",
+            "go on"
+        ]
+    }
+};
+
+const DOMINIC_ACCESSIBILITY_RULES = {
+    high: {
+        allowResurfacing: false,
+        allowCoreFallback: false,
+        maxCoreSuggestions: 0
+    },
+    medium: {
+        allowResurfacing: true,
+        allowCoreFallback: true,
+        maxCoreSuggestions: 1
+    },
+    low: {
+        allowResurfacing: true,
+        allowCoreFallback: true,
+        maxCoreSuggestions: 2
+    }
+};
+
+function dominicGetAccessibilityRule(state) {
+    var pressure = dominicGetNarrativePressure(state);
+    return DOMINIC_ACCESSIBILITY_RULES[pressure] || DOMINIC_ACCESSIBILITY_RULES.low;
+}
+
+function dominicGetCoreTalkingPointList() {
+    var entries = Object.keys(DOMINIC_CORE_TALKING_POINTS).map(function (key) {
+        return {
+            key: key,
+            weight: DOMINIC_CORE_TALKING_POINTS[key].weight,
+            prompts: DOMINIC_CORE_TALKING_POINTS[key].prompts.slice()
+        };
+    });
+
+    entries.sort(function (a, b) { return b.weight - a.weight; });
+    return entries;
+}
+
+function dominicGetCoreFallbackPrompts(context) {
+    var page = context && context.page ? context.page : "home";
+
+    if (page === "files") {
+        return [
+            "what is the ryker report",
+            "what should i read first",
+            "what are the files"
+        ];
+    }
+
+    if (page === "story") {
+        if (context && context.activeTrackTitle) {
+            var t = String(context.activeTrackTitle).toLowerCase();
+            return [
+                "what is " + t + " about",
+                "who is " + t + " about",
+                "where does this fit in the story"
+            ];
+        }
+
+        return [
+            "what is this song about",
+            "what should i listen to first",
+            "where does the story begin"
+        ];
+    }
+
+    if (page === "subjects") {
+        if (context && context.activeProfileName) {
+            var n = String(context.activeProfileName).toLowerCase();
+            return [
+                "who is " + n,
+                "why does " + n + " matter",
+                "what happened to " + n
+            ];
+        }
+
+        return [
+            "who is dominic ryker",
+            "who is ethel",
+            "who is isla"
+        ];
+    }
+
+    if (page === "home") {
+        return [
+            "what is pixelstortion",
+            "what is the truth",
+            "where should i start"
+        ];
+    }
+
+    return [
+        "show me around",
+        "what is the truth",
+        "where should i start"
+    ];
+}
+
+function dominicMergeUniqueSuggestions(primary, secondary, maxCount) {
+    var out = [];
+    var seen = {};
+
+    (primary || []).forEach(function (item) {
+        var key = String(item).toLowerCase();
+        if (!seen[key]) {
+            seen[key] = true;
+            out.push(item);
+        }
+    });
+
+    (secondary || []).forEach(function (item) {
+        var key = String(item).toLowerCase();
+        if (!seen[key]) {
+            seen[key] = true;
+            out.push(item);
+        }
+    });
+
+    return maxCount ? out.slice(0, maxCount) : out;
+}
+
+function dominicInjectCoreAccessibilitySuggestions(suggestions, context) {
+    var state = (context && context.conversationState) ? context.conversationState : "any";
+    var rule = dominicGetAccessibilityRule(state);
+
+    if (!rule.allowCoreFallback || rule.maxCoreSuggestions <= 0) {
+        return suggestions || [];
+    }
+
+    var coreFallbacks = dominicGetCoreFallbackPrompts(context).slice(0, rule.maxCoreSuggestions);
+    return dominicMergeUniqueSuggestions(suggestions || [], coreFallbacks, 0);
+}
+
+function dominicGetAccessibilityWeightedFallback(context) {
+    var state = (context && context.conversationState) ? context.conversationState : "any";
+    var rule = dominicGetAccessibilityRule(state);
+
+    if (!rule.allowCoreFallback) return null;
+
+    var prompts = dominicGetCoreFallbackPrompts(context);
+    if (!prompts.length) return null;
+
+    return prompts[0];
+}
+
+function dominicGetResurfacingLine(context) {
+    var state = (context && context.conversationState) ? context.conversationState : "any";
+    var rule = dominicGetAccessibilityRule(state);
+
+    if (!rule.allowResurfacing) return null;
+
+    var page = context && context.page ? context.page : "home";
+
+    if (page === "files") {
+        return "If you want something firmer, start with the files.";
+    }
+
+    if (page === "story") {
+        return "If you want the shape of it faster, ask about the track.";
+    }
+
+    if (page === "subjects") {
+        return "If you want motive, ask about the people.";
+    }
+
+    return "If you want a real entry point, ask about the files, the story, or Dominic.";
+}
+
+/* =========================================================
+   PHASE 7 — THEME-PRESSURE WEIGHTING
+   Controls which themes are foregrounded or suppressed
+   based on state, pressure, page, and active object.
+   Theme pressure may NEVER override high-pressure state locks.
+========================================================= */
+
+const DOMINIC_THEME_GROUPS = {
+    tour: ["tour", "show me around", "where should i start"],
+    truth: ["truth", "what is the truth", "where is the truth"],
+    files: ["files", "archive", "report", "evidence", "redacted"],
+    story: ["story", "track", "song", "playlist", "audio"],
+    dominic: ["dominic", "ryker", "builder"],
+    ethel: ["ethel"],
+    isla: ["isla"],
+    parable: ["parable", "story route", "small story"],
+    trial: ["trial", "testimony", "justice", "spectacle"],
+    prison_escape: ["prison", "long bay", "escape", "breakout"],
+    grief_trauma: ["grief", "trauma", "harm", "loss"],
+    structure_control: ["structure", "control", "psychopathy", "pressure", "collapse"]
+};
+
+/*
+  Theme pressure profile values:
+  0 = suppress
+  1 = background
+  2 = available
+  3 = foreground
+*/
+const DOMINIC_THEME_PRESSURE_PROFILES = {
+    high: {
+        default: {
+            tour: 0, truth: 2, files: 1, story: 1,
+            dominic: 2, ethel: 1, isla: 1,
+            parable: 2, trial: 2, prison_escape: 1,
+            grief_trauma: 1, structure_control: 3
+        },
+
+        byState: {
+            EXPECT_SITE_TOUR: {
+                tour: 3, truth: 1, files: 1, story: 1,
+                dominic: 1, ethel: 0, isla: 0,
+                parable: 0, trial: 0, prison_escape: 0,
+                grief_trauma: 0, structure_control: 1
+            },
+            EXPECT_PARABLE_ROUTE: {
+                tour: 0, truth: 1, files: 0, story: 1,
+                dominic: 1, ethel: 1, isla: 1,
+                parable: 3, trial: 0, prison_escape: 0,
+                grief_trauma: 1, structure_control: 2
+            },
+            EXPECT_PARABLE_LAUNCH: {
+                tour: 0, truth: 1, files: 0, story: 1,
+                dominic: 1, ethel: 1, isla: 1,
+                parable: 3, trial: 0, prison_escape: 0,
+                grief_trauma: 1, structure_control: 2
+            },
+            EXPECTING_TRIAL_VERDICT: {
+                tour: 0, truth: 1, files: 1, story: 1,
+                dominic: 2, ethel: 1, isla: 1,
+                parable: 0, trial: 3, prison_escape: 1,
+                grief_trauma: 0, structure_control: 2
+            },
+            EXPECTING_ESCAPE_FOLLOWUP: {
+                tour: 0, truth: 1, files: 1, story: 1,
+                dominic: 2, ethel: 0, isla: 1,
+                parable: 0, trial: 1, prison_escape: 3,
+                grief_trauma: 0, structure_control: 2
+            },
+            EXPECTING_PSYCHOPATH_ANSWER: {
+                tour: 0, truth: 1, files: 1, story: 1,
+                dominic: 2, ethel: 1, isla: 1,
+                parable: 0, trial: 0, prison_escape: 0,
+                grief_trauma: 1, structure_control: 3
+            },
+            EXPECTING_AWARENESS_PUSHBACK: {
+                tour: 0, truth: 1, files: 1, story: 1,
+                dominic: 2, ethel: 1, isla: 1,
+                parable: 0, trial: 0, prison_escape: 0,
+                grief_trauma: 1, structure_control: 3
+            },
+            EXPECTING_BLAME_FOLLOWUP: {
+                tour: 0, truth: 2, files: 1, story: 1,
+                dominic: 2, ethel: 1, isla: 1,
+                parable: 0, trial: 1, prison_escape: 0,
+                grief_trauma: 1, structure_control: 2
+            }
+        }
+    },
+
+    medium: {
+        default: {
+            tour: 1, truth: 2, files: 2, story: 2,
+            dominic: 2, ethel: 2, isla: 2,
+            parable: 1, trial: 1, prison_escape: 1,
+            grief_trauma: 2, structure_control: 2
+        }
+    },
+
+    low: {
+        default: {
+            tour: 2, truth: 2, files: 2, story: 3,
+            dominic: 2, ethel: 2, isla: 2,
+            parable: 1, trial: 1, prison_escape: 1,
+            grief_trauma: 2, structure_control: 2
+        },
+
+        byPage: {
+            home: {
+                tour: 3, truth: 3, files: 2, story: 1,
+                dominic: 2, ethel: 1, isla: 1,
+                parable: 1, trial: 0, prison_escape: 0,
+                grief_trauma: 1, structure_control: 2
+            },
+            files: {
+                tour: 1, truth: 2, files: 3, story: 1,
+                dominic: 2, ethel: 1, isla: 1,
+                parable: 0, trial: 1, prison_escape: 1,
+                grief_trauma: 1, structure_control: 2
+            },
+            subjects: {
+                tour: 1, truth: 1, files: 1, story: 1,
+                dominic: 3, ethel: 3, isla: 3,
+                parable: 0, trial: 0, prison_escape: 0,
+                grief_trauma: 2, structure_control: 2
+            },
+            story: {
+                tour: 1, truth: 1, files: 1, story: 3,
+                dominic: 2, ethel: 2, isla: 2,
+                parable: 1, trial: 1, prison_escape: 1,
+                grief_trauma: 2, structure_control: 2
+            }
+        }
+    }
+};
+
+const DOMINIC_THEME_TO_SUGGESTIONS = {
+    tour: ["show me around", "where should i start", "what should i look at first"],
+    truth: ["what is the truth", "where is the truth", "what do you mean by truth"],
+    files: ["what are the files", "what is the ryker report", "what should i read first"],
+    story: ["what is this song about", "where does the story begin", "what should i listen to first"],
+    dominic: ["who is dominic ryker", "what did dominic do", "why is dominic called the builder"],
+    ethel: ["who is ethel", "what happened to ethel", "why does ethel matter"],
+    isla: ["who is isla", "what happened at the wedding", "why is isla dangerous"],
+    parable: ["tell me a story", "what kind of story", "go on"],
+    trial: ["what happened at the trial", "was it justice or spectacle", "what was the verdict"],
+    prison_escape: ["what happened in prison", "how did dominic escape", "what happened after the breakout"],
+    grief_trauma: ["what does the trauma mean", "why does grief matter here", "what is harm's ghost about"],
+    structure_control: ["what is structural psychopathy", "why does control matter", "what do you mean by preventing collapse"]
+};
+
+function dominicGetThemePressureProfile(context) {
+    var state = (context && context.conversationState) ? context.conversationState : "any";
+    var page = (context && context.page) ? context.page : "home";
+    var pressure = dominicGetNarrativePressure(state);
+    var family = DOMINIC_THEME_PRESSURE_PROFILES[pressure] || DOMINIC_THEME_PRESSURE_PROFILES.low;
+
+    // Start with default
+    var profile = Object.assign({}, family.default || {});
+
+    // Merge page bias
+    if (family.byPage && family.byPage[page]) {
+        profile = Object.assign(profile, family.byPage[page]);
+    }
+
+    // Merge state-specific override
+    if (family.byState && family.byState[state]) {
+        profile = Object.assign(profile, family.byState[state]);
+    }
+
+    // Active object boosts
+    if (context && context.activeTrackTitle) {
+        profile.story = Math.max(profile.story || 0, 3);
+    }
+    if (context && context.activeFileTitle) {
+        profile.files = Math.max(profile.files || 0, 3);
+    }
+    if (context && context.activeProfileName) {
+        var n = String(context.activeProfileName).toLowerCase();
+        if (n.includes("dominic")) profile.dominic = Math.max(profile.dominic || 0, 3);
+        if (n.includes("ethel")) profile.ethel = Math.max(profile.ethel || 0, 3);
+        if (n.includes("isla")) profile.isla = Math.max(profile.isla || 0, 3);
+    }
+
+    return profile;
+}
+
+function dominicRankThemesByPressure(context) {
+    var profile = dominicGetThemePressureProfile(context);
+    return Object.keys(profile)
+        .map(function (key) {
+            return { theme: key, value: profile[key] };
+        })
+        .sort(function (a, b) { return b.value - a.value; });
+}
+
+function dominicGetThemeWeightedSuggestions(context, maxCount) {
+    var ranked = dominicRankThemesByPressure(context);
+    var out = [];
+    var seen = {};
+
+    for (var i = 0; i < ranked.length; i++) {
+        var entry = ranked[i];
+        if (entry.value <= 0) continue;
+
+        var bank = DOMINIC_THEME_TO_SUGGESTIONS[entry.theme] || [];
+        for (var j = 0; j < bank.length; j++) {
+            var s = bank[j];
+            var key = s.toLowerCase();
+            if (!seen[key]) {
+                seen[key] = true;
+                out.push(s);
+                if (out.length >= (maxCount || 3)) return out;
+            }
+        }
+    }
+
+    return out;
+}
+
+function dominicInjectThemePressureSuggestions(suggestions, context) {
+    var state = (context && context.conversationState) ? context.conversationState : "any";
+    var pressure = dominicGetNarrativePressure(state);
+
+    // In high pressure we do NOT broaden with theme suggestions
+    if (pressure === "high") {
+        return suggestions || [];
+    }
+
+    var themeSuggestions = dominicGetThemeWeightedSuggestions(context, 3);
+    return dominicMergeUniqueSuggestions(suggestions || [], themeSuggestions, 0);
+}
+
+function dominicGetThemePressureResurfacingLine(context) {
+    var state = (context && context.conversationState) ? context.conversationState : "any";
+    var pressure = dominicGetNarrativePressure(state);
+
+    if (pressure === "high") return null;
+
+    var ranked = dominicRankThemesByPressure(context);
+    if (!ranked.length) return null;
+
+    var top = ranked[0].theme;
+
+    switch (top) {
+        case "tour":
+            return "If you want an entry point, ask me to show you around.";
+        case "truth":
+            return "If you want to get somewhere real, ask about the truth.";
+        case "files":
+            return "If you want something firmer, start with the files.";
+        case "story":
+            return "If you want the shape of it faster, ask about the track.";
+        case "dominic":
+            return "If you want the pressure point, ask about Dominic.";
+        case "ethel":
+            return "If you want the center of gravity, ask about Ethel.";
+        case "isla":
+            return "If you want rupture instead of explanation, ask about Isla.";
+        case "parable":
+            return "If you want the lesson without the summary, ask for the story.";
+        case "trial":
+            return "If you want the theatre of it, ask about the trial.";
+        case "prison_escape":
+            return "If you want the fracture line, ask about the escape.";
+        case "grief_trauma":
+            return "If you want the wound underneath it, ask about the trauma.";
+        case "structure_control":
+            return "If you want the mechanism, ask about control.";
+        default:
+            return null;
+    }
+}
+
