@@ -1373,7 +1373,7 @@ const DOMINIC_LIBRARY = [
     // DOMAIN F: DEEP STORY — Thematic / Conceptual
     // ═══════════════════════════════════════════════════════════════════
 
-    // F20 — THE DROP (V1 → sets state for V2)
+    // F20 — THE DROP 1 (Song-specific)
     {
         "node_id": "STORY_THE_DROP",
         "required_state": "any",
@@ -1383,10 +1383,14 @@ const DOMINIC_LIBRARY = [
             "the drop meaning", "the drop explained",
             "what does the drop refer to", "the drop event",
             "what happened at the drop", "drop in the story",
-            "the drop significance", "explain the drop"
+            "the drop significance", "explain the drop",
+            "what is the drop 1 about", "tell me about the drop 1",
+            "the drop 1 meaning", "the drop 1 explained",
+            "what is drop 1", "drop 1", "the drop 1",
+            "what does the drop 1 mean", "explain the drop 1"
         ],
         "responses": {
-            "universal": { "dialogue": "'The Drop' is the moment consequences arrive. Not in a courtroom. Not in a headline. Inside. The moment Ethel stops narrating what happened to her and starts narrating what she chose to do about it. In the album, it's the turning point. Before 'The Drop,' the songs observe. After, they act. Listen to the transition. The tempo changes. The instrumentation tightens. Ethel's voice drops register — she stops pleading and starts reporting. That's the structural event. The metaphor isn't subtle. Water drops. Power drops. Pretense drops. The mask drops. And once it drops, there is no retrieval. You cannot un-witness what falls when pretense is removed. Ethel understood this before I did, which is… unusual. Do you want to know what dropped? Or do you already sense it?", "ui_action": null }
+            "universal": { "dialogue": "Most listeners hear a fearless teenager jumping off a cliff. What the song actually describes is this: A girl discovering that truth and appearance are not the same structure. And once you see that difference\u2026 You can start bending it. That\u2019s the moment my daughter became who she is. Not a rebel. Not a hero. Something more dangerous to systems like mine. Someone who tests the frame before anyone else notices it exists.", "ui_action": null }
         }
     },
 
@@ -1405,6 +1409,22 @@ const DOMINIC_LIBRARY = [
         "responses": {
             "universal": { "dialogue": "What dropped? Every comfortable story I built. The 'builder' persona — gone. The philanthropist — a shell. The mentor — reframed. The Drop is when the public frame collapses and the private architecture becomes visible. In narrative terms, it's when Ethel moves from witness to architect. She stops being the daughter recording her trauma and becomes the engineer dismantling mine. You hear it in 'Hero. Killer!' — the double accusation that refuses binary. In 'Nothing True' — testimony as precision instrument. The water imagery isn't random. Water reveals. It erodes slowly. And when it arrives in volume, it doesn't negotiate. It redistributes power by gravity. That's what Ethel did. She didn't attack. She let gravity do the work. She simply removed the dam.", "ui_action": null },
             "fallback": { "dialogue": "You asked about The Drop but drifted. The moment passed. We are moving on.", "ui_action": null }
+        }
+    },
+
+    // F20d — THE DROP 2 (Song-specific)
+    {
+        "node_id": "STORY_THE_DROP_2",
+        "required_state": "any",
+        "next_state": "any",
+        "training_phrases": [
+            "what is the drop 2 about", "tell me about the drop 2",
+            "the drop 2 meaning", "the drop 2 explained",
+            "what is drop 2", "drop 2", "the drop 2",
+            "what does the drop 2 mean", "explain the drop 2"
+        ],
+        "responses": {
+            "universal": { "dialogue": "Most people debate truth.  My daughter runs an experiment. The dive is the earliest version of that instinct. A fifteen-year-old demonstration of the same rule she follows later. People trust perspective more than reality. So she changes the perspective. And I\u2019m curious about one small thing. When you first heard  \u2018The Drop\u2019  did you notice the experiment immediately\u2026 or did it take a moment before you realized she wasn\u2019t singing about the fall at all?", "ui_action": null }
         }
     },
 

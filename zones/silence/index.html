@@ -2818,6 +2818,19 @@
                 }
             }
             // FILES / SUBJECTS with no engagement and panel not open: do nothing (passive)
+
+            // Swap Dominic's idle prompt based on current section
+            if (cp && cp.classList.contains('open')) {
+                var _ta = document.getElementById('dominic-typewriter');
+                if (_ta) {
+                    var _txt = _ta.textContent;
+                    if (tabId === 'audio' && _txt.includes('Ask away')) {
+                        _ta.innerHTML = 'Ask \u2014 \u2018What\u2019s this song about?\u2019 and I\u2019ll tell you the truth.';
+                    } else if (tabId !== 'audio' && _txt.includes('this song about')) {
+                        _ta.innerHTML = 'Ask away \u2014 but be sensible.';
+                    }
+                }
+            }
         }
 
         function toggleMobileMenu() {
@@ -4310,7 +4323,8 @@
                                 actionBar.innerHTML = '';
                                 inputArea.style.display = 'flex';
                                 currentConversationState = 'any';
-                                typeOutDominic('Ask away \u2014 but be sensible.', null);
+                                var _audioSec = document.getElementById('audio-section');
+                                typeOutDominic(_audioSec && !_audioSec.classList.contains('hidden') ? 'Ask \u2014 \u2018What\'s this song about?\u2019 and I\'ll tell you the truth.' : 'Ask away \u2014 but be sensible.', null);
                                 dInput.focus();
                             }
                         },
@@ -4884,7 +4898,7 @@
                     typeOutDominic('Silence is lubricant, not a cage. I didn\'t break the contract; I fulfilled it.', null);
                     break;
                 case 'audio':
-                    typeOutDominic('This is where my daughter speaks. The silence between her words is where the truth hides.', null);
+                    typeOutDominic('Most listeners hear a fearless teenager jumping off a cliff. What the song actually describes is this: A girl discovering that truth and appearance are not the same structure. And once you see that difference… You can start bending it. That\'s the moment my daughter became who she is. Not a rebel. Not a hero. Something more dangerous to systems like mine. Someone who tests the frame before anyone else notices it exists.', null);
                     break;
                 default:
                     typeOutDominic('You\'re looking at the surface. The architecture is underneath. Pick a section.', null);
@@ -5620,7 +5634,8 @@
                 inputArea.style.display = 'flex';
 
                 if (yesPhrases.some(p => normalizedText === p)) {
-                    typeOutDominic('Ask away \u2014 but be sensible.', null);
+                    var _audioSec2 = document.getElementById('audio-section');
+                    typeOutDominic(_audioSec2 && !_audioSec2.classList.contains('hidden') ? 'Ask \u2014 \u2018What\'s this song about?\u2019 and I\'ll tell you the truth.' : 'Ask away \u2014 but be sensible.', null);
                     dInput.focus();
                     return;
                 }
