@@ -1468,7 +1468,7 @@ const DOMINIC_LIBRARY = [
         "required_state": "any",
         "next_state": "EXPECTING_NORTHERN_ROAD_FOLLOW",
         "training_phrases": [
-            "what is northern road", "northern road story",
+            "what is northern road", "what is northern road about", "northern road story",
             "gran and the road", "the road to gran's house",
             "driving to gran", "northern road meaning",
             "what happened on the road", "road trip story",
