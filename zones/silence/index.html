@@ -6124,7 +6124,12 @@
                         const punchline = "And that\u2019s why the most dangerous sentence in the world is:\n\n\"Sure, I can help.\"";
                         currentConversationState = 'any';
                         window.lastDominicText = punchline;
-                        typeOutDominic(punchline, null);
+                        typeOutDominic(punchline, null, function () {
+                            // Hibernate 4 seconds after punchline finishes typing
+                            setTimeout(function () {
+                                setDominicPresence('hibernate');
+                            }, 4000);
+                        });
                     }, 4000);
                 });
                 return;
