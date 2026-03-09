@@ -5289,7 +5289,7 @@
 
                 // Dominic's commentary while Poetry is open
                 tourDelay(() => {
-                    typeOutDominic('The story.\n\nThe world doesn\'t work the way Ethel and Isla think it does.\n\nYou need people like me.\n\nYou\'ll see.', null);
+                    typeOutDominic('The story people prefer isn\'t the one the world runs on. Ethel and Isla still think it is. They\'ll learn otherwise. Systems don\'t hold themselves up out of kindness. Someone has to keep the structure standing. That\'s where men like me come in.', null);
                 }, 3000);
 
                 // Close Poetry panel and advance to FILES
@@ -5932,6 +5932,7 @@
             if (!matchedNode && !isInStory && typeof dominicMatchOpenNode === 'function' && typeof dominicNormalizeInput === 'function') {
                 var _kwNorm = dominicNormalizeInput(text);
                 var _kwNode = dominicMatchOpenNode(_kwNorm);
+                console.log("[Dominic Step7] keyword bridge:", { input: text, normalized: _kwNorm.text, nodeId: _kwNode ? _kwNode.id : 'null', hasResponse: _kwNode && _kwNode.response ? true : false, hasText: _kwNode && _kwNode.response && _kwNode.response.text ? true : false });
                 if (_kwNode && _kwNode.id !== 'OPEN_OOD' && _kwNode.response && _kwNode.response.text) {
                     window.lastDominicText = _kwNode.response.text;
                     typeOutDominic(_kwNode.response.text, _kwNode.response.ui_action || null);
@@ -6135,10 +6136,21 @@
                 return;
             }
             // Anti-repeat guard for legacy output
-            if (preventRepeatResponse(responseText, currentConversationState)) {
+            // Only active in funnel/story states where looping matters.
+            // In open/any state, different questions legitimately resolve to the same answer.
+            if (currentConversationState !== 'any' && preventRepeatResponse(responseText, currentConversationState)) {
                 const fallbackOptions = OOD_LIBRARY[quadrant] || OOD_LIBRARY['Q4_low_positive'];
                 responseText = fallbackOptions[Math.floor(Math.random() * fallbackOptions.length)];
                 console.log('[Dominic Legacy] Anti-repeat triggered, using alternate');
+            }
+            // PARABLE PUNCHLINE: Auto-hibernate after the final line
+            if (matchedNode && matchedNode.node_id === 'PARABLE_REVEAL_FINAL') {
+                typeOutDominic(responseText, uiAction, function () {
+                    setTimeout(function () {
+                        setDominicPresence('hibernate');
+                    }, 4000);
+                });
+                return;
             }
             typeOutDominic(responseText, uiAction);
         }

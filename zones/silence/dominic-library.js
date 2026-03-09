@@ -980,7 +980,7 @@ const DOMINIC_LIBRARY = [
             "Q1_high_negative": { "dialogue": "You are frustrated because the architecture does not orient itself to your expectations. That is by design. This is not a customer service terminal  -  this is a controlled environment. Click on the text in the left panel. Each click reveals a different variable in my system. The right panel leads to the opposition narrative.", "ui_action": null },
             "Q2_high_positive": { "dialogue": "A reasonable request for orientation. The left panel  -  SILENCE  -  is the trauma archive. Click the text to cycle through the variables. The right panel  -  MATAALA  -  is the counter-narrative. The ENTER buttons take you deeper. I suggest you start with the left.", "ui_action": null },
             "Q3_low_negative": { "dialogue": "Lost? Good. Disorientation is the first stage of learning. Click the text on the left panel. Start there.", "ui_action": null },
-            "Q4_low_positive": { "dialogue": "Left panel: click the text to explore the archive. Right panel: the opposition. ENTER buttons go deeper. You are exactly where you need to be.", "ui_action": null }
+            "Q4_low_positive": { "dialogue": "Files are Archives. Hidden truths you can ask me about. Subjects... That's me and my Daughters. Ethel and Isla. Isla is my step Daughter. Then there are some Games, A podcast and finally the entire story. One giant 'Melody of Normality' as Isla says. ", "ui_action": null }
         }
     },
 
