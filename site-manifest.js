@@ -106,12 +106,12 @@ const PIXEL_MANIFEST = {
         EthelRykers_Philosophy: {
             name: "Ethel Ryker's Philosophy",
             cover: '/library/Podcasts/SilenceIsTheTrauma/CoverImages/EthelRykers_Philosophy.jpg',
-            audio: '/library/Podcasts/SilenceIsTheTrauma/EthelRykers_Philosophy.mp3'
+            audio: 'https://pub-111e813bd5634cd8a9ecdd3d5c2a0916.r2.dev/podcasts/EthelRykers_Philosophy.mp3'
         },
         EthelRykers_TheRykerCase: {
             name: "The Ryker Case - In Full",
             cover: '/library/Podcasts/SilenceIsTheTrauma/CoverImages/EthelRykers_TheRykerCase.jpg',
-            audio: '/library/Podcasts/SilenceIsTheTrauma/EthelRykers_TheRykerCase.mp3'
+            audio: 'https://pub-111e813bd5634cd8a9ecdd3d5c2a0916.r2.dev/podcasts/EthelRykers_TheRykerCase.mp3'
         }
     },
 
