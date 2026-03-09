@@ -5028,6 +5028,11 @@
 
                 card.addEventListener('mouseenter', enterHandler);
                 card.addEventListener('mouseleave', leaveHandler);
+                // Mobile: touchstart triggers enter, auto-restore after 6s
+                card.addEventListener('touchstart', function (e) {
+                    enterHandler();
+                    setTimeout(leaveHandler, 6000);
+                }, { passive: true });
                 commentaryHoverHandlers.push({ card, enter: enterHandler, leave: leaveHandler });
             });
         }
@@ -5163,6 +5168,11 @@
 
                     card.addEventListener('mouseenter', enterHandler);
                     card.addEventListener('mouseleave', leaveHandler);
+                    // Mobile: touchstart triggers enter, auto-restore after 6s
+                    card.addEventListener('touchstart', function (e) {
+                        enterHandler();
+                        setTimeout(leaveHandler, 6000);
+                    }, { passive: true });
                     fileHoverHandlers.push({ card, enter: enterHandler, leave: leaveHandler });
                 });
             }
@@ -5273,6 +5283,11 @@
 
                     card.addEventListener('mouseenter', enterHandler);
                     card.addEventListener('mouseleave', leaveHandler);
+                    // Mobile: touchstart triggers enter, auto-restore after 6s
+                    card.addEventListener('touchstart', function (e) {
+                        enterHandler();
+                        setTimeout(leaveHandler, 6000);
+                    }, { passive: true });
                     profileHoverHandlers.push({ card, enter: enterHandler, leave: leaveHandler });
                 });
             }
