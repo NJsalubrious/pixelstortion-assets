@@ -871,23 +871,6 @@
             currentTrackIdx = idx;
             const track = currentTracks[idx];
 
-            // DESTROY and REBUILD player each time (matches ethel_gallery pattern - works on Edge mobile)
-            if (player && player.destroy) {
-                player.destroy();
-                player = null;
-            }
-
-            // Reset the container with a fresh div
-            const container = document.getElementById('video-frame');
-            let playerDiv = document.getElementById('youtube-player');
-            if (!playerDiv) {
-                playerDiv = document.createElement('div');
-                playerDiv.id = 'youtube-player';
-                playerDiv.className = 'w-full h-full absolute inset-0';
-                container.insertBefore(playerDiv, container.firstChild);
-            }
-            playerDiv.innerHTML = '<div id="yt-player-frame"></div>';
-
             // Build video options
             const videoOptions = { videoId: track.id };
             if (track.start !== undefined && track.start !== null) {
@@ -897,37 +880,51 @@
                 videoOptions.endSeconds = track.end;
             }
 
-            // Create fresh player
-            player = new YT.Player('yt-player-frame', {
-                height: '100%',
-                width: '100%',
-                playerVars: {
-                    'autoplay': 0,
-                    'controls': 1,
-                    'origin': window.location.origin,
-                    'rel': 0,
-                    'modestbranding': 1,
-                    'iv_load_policy': 3,
-                    'playsinline': 1
-                },
-                events: {
-                    'onReady': (event) => {
-                        // Patch iframe for Edge
-                        const iframe = event.target.getIframe();
-                        if (iframe) {
-                            iframe.setAttribute('allow', 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share');
-                            iframe.setAttribute('referrerpolicy', 'origin');
-                        }
-                        // On desktop auto-play, on mobile just cue
-                        if (window.innerWidth > 768) {
-                            player.loadVideoById(videoOptions);
-                        } else {
-                            player.cueVideoById(videoOptions);
-                        }
-                    },
-                    'onStateChange': onPlayerStateChange
+            // PERSISTENT PLAYER: Create once, reuse via loadVideoById
+            if (!player) {
+                // First time: create the player
+                const container = document.getElementById('video-frame');
+                let playerDiv = document.getElementById('youtube-player');
+                if (!playerDiv) {
+                    playerDiv = document.createElement('div');
+                    playerDiv.id = 'youtube-player';
+                    playerDiv.className = 'w-full h-full absolute inset-0';
+                    container.insertBefore(playerDiv, container.firstChild);
                 }
-            });
+                playerDiv.innerHTML = '<div id="yt-player-frame"></div>';
+
+                player = new YT.Player('yt-player-frame', {
+                    host: 'https://www.youtube-nocookie.com',
+                    height: '100%',
+                    width: '100%',
+                    videoId: track.id,
+                    playerVars: {
+                        'autoplay': 0,
+                        'controls': 1,
+                        'origin': window.location.origin,
+                        'rel': 0,
+                        'modestbranding': 1,
+                        'iv_load_policy': 3,
+                        'playsinline': 1
+                    },
+                    events: {
+                        'onReady': (event) => {
+                            // Patch iframe for Edge
+                            const iframe = event.target.getIframe();
+                            if (iframe) {
+                                iframe.setAttribute('allow', 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share');
+                                iframe.setAttribute('referrerpolicy', 'origin');
+                            }
+                            // Play on user gesture (establishUplink was clicked)
+                            event.target.playVideo();
+                        },
+                        'onStateChange': onPlayerStateChange
+                    }
+                });
+            } else {
+                // Player already exists: just swap the video
+                player.loadVideoById(videoOptions);
+            }
 
             const title = track.title.toUpperCase();
             document.getElementById('current-title').innerText = title;
@@ -1150,6 +1147,48 @@
 
         // Update progress bar every second
         setInterval(updateProgress, 1000);
+
+        // === TAB VISIBILITY HANDLER ===
+        // Mute when tab is hidden to prevent background throttle-pausing.
+        // Unmute when tab becomes visible again.
+        let wasPlayingBeforeHidden = false;
+        document.addEventListener('visibilitychange', () => {
+            if (!player || typeof player.isMuted !== 'function') return;
+            if (document.hidden) {
+                // Tab hidden: mute to exempt from background pause restriction
+                wasPlayingBeforeHidden = isPlaying;
+                if (isPlaying && !player.isMuted()) {
+                    player.mute();
+                }
+            } else {
+                // Tab visible: unmute
+                if (wasPlayingBeforeHidden && player.isMuted()) {
+                    player.unMute();
+                }
+            }
+        });
+
+        // === MUTATION OBSERVER: Auto-dismiss "Are you still watching?" ===
+        // YouTube spawns a yt-confirm-dialog-renderer when it wants to pause.
+        // This observer detects it and programmatically clicks the confirm button.
+        const ytDialogObserver = new MutationObserver((mutations) => {
+            for (const mutation of mutations) {
+                for (const node of mutation.addedNodes) {
+                    if (node.nodeType !== 1) continue;
+                    // Look for the confirm dialog
+                    const dialog = node.querySelector?.('yt-confirm-dialog-renderer') ||
+                        (node.tagName === 'YT-CONFIRM-DIALOG-RENDERER' ? node : null);
+                    if (dialog) {
+                        const confirmBtn = dialog.querySelector('#confirm-button a, #confirm-button button, .yt-confirm-dialog-renderer #confirm-button');
+                        if (confirmBtn) {
+                            confirmBtn.click();
+                            console.log('[PIXELSTORTION] Auto-dismissed YouTube still-watching prompt');
+                        }
+                    }
+                }
+            }
+        });
+        ytDialogObserver.observe(document.body, { childList: true, subtree: true });
     </script>
 </body>
 
