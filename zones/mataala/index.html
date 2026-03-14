@@ -3370,12 +3370,12 @@
                 <div
                     class="bg-black/40 backdrop-blur-md rounded-none border border-[#3d2b1f] overflow-hidden flex flex-col md:flex-row h-[600px] shadow-2xl">
                     <!-- Playlist -->
-                    <div class="w-full md:w-1/3 border-r border-[#3d2b1f] overflow-y-auto bg-[#0f0a08]/80">
+                    <div class="w-full md:w-1/3 border-r border-[#3d2b1f] bg-[#0f0a08]/80 flex flex-col">
                         <div class="p-4 bg-[#1a120e] border-b border-[#3d2b1f] sticky top-0 z-10">
                             <h3 class="text-xs font-cinzel text-[#d2b48c] uppercase tracking-widest">MATAALA RHYTHMS
                             </h3>
                         </div>
-                        <div id="playlist-container" class="divide-y divide-[#3d2b1f]/50">
+                        <div id="playlist-container" class="flex-1 overflow-y-auto divide-y divide-[#3d2b1f]/50">
                             <div id="track-1"
                                 class="p-4 border-b border-[#3d2b1f] hover:bg-[#2f1f15] cursor-pointer transition-colors flex justify-between items-center group track-active"
                                 onclick="selectTrack(1)">
@@ -4175,7 +4175,7 @@
         // --- YouTube API ---
         function onYouTubeIframeAPIReady() {
             ytPlayer = new YT.Player('youtube-player', {
-                host: 'https://www.youtube-nocookie.com',
+                host: 'https://www.youtube.com',
                 videoId: 'BaEDmidh2fg',
                 height: '100%',
                 width: '100%',
@@ -4221,6 +4221,7 @@
             const visualizer = document.getElementById('visualizer-container');
 
             if (event.data === YT.PlayerState.PLAYING) {
+                if (uplinkTimeout) clearTimeout(uplinkTimeout); // Success! Clear the error timer
                 status.innerText = 'STORM UNSEEN';
                 playBtn.innerHTML = '<span class="material-symbols-outlined text-4xl">pause</span>';
                 document.querySelector('.w-full.md\\:w-2\\/3').classList.add('playing');
@@ -4371,9 +4372,60 @@
     `).join('');
         }
 
+        let uplinkTimeout = null;
+
+        function startUplinkMonitor(videoId) {
+            if (uplinkTimeout) clearTimeout(uplinkTimeout);
+
+            uplinkTimeout = setTimeout(() => {
+                let isActuallyPlaying = false;
+                if (ytPlayer && typeof ytPlayer.getPlayerState === 'function') {
+                    isActuallyPlaying = (ytPlayer.getPlayerState() === 1);
+                }
+
+                if (!isActuallyPlaying) {
+                    showUplinkError(videoId);
+                }
+            }, 4500);
+        }
+
+        function showUplinkError(videoId) {
+            // Target the center visual display area for Mataala
+            const container = document.querySelector('.w-full.md\\:w-2\\/3.flex.flex-col.relative.bg-black.group');
+            if (!container || document.getElementById('uplink-error-overlay')) return;
+
+            const errorOverlay = document.createElement('div');
+            errorOverlay.id = 'uplink-error-overlay';
+            errorOverlay.className = 'absolute inset-0 z-[70] flex flex-col items-center justify-center bg-[#0a0f05]/95 backdrop-blur-md text-center p-6 border border-[var(--ember-color-1)]/30';
+            errorOverlay.innerHTML = `
+                <span class="material-symbols-outlined text-[var(--ember-color-1)] text-6xl mb-4 animate-pulse">warning</span>
+                <h2 class="text-2xl font-bold text-[var(--ember-color-1)] font-cinzel tracking-widest mb-4 uppercase">PLAYBACK BLOCKED</h2>
+
+                <div class="text-center p-4 mb-6 max-w-md">
+                    <p class="text-[#d2b48c] font-lato text-sm leading-relaxed">
+                        Your VPN or browser privacy settings are interfering with playback. Try disabling your VPN or adjusting your tracking protection settings.
+                    </p>
+                </div>
+
+                <div class="flex flex-col items-center gap-6">
+                    <button onclick="document.getElementById('uplink-error-overlay').remove(); togglePlay(); startUplinkMonitor('${videoId}');" class="border border-[var(--ember-color-1)] text-[var(--ember-color-1)] px-8 py-3 font-cinzel font-bold text-sm hover:bg-[var(--ember-color-1)] hover:text-black transition-all uppercase tracking-widest">
+                        [ RETRY ]
+                    </button>
+                    <a href="https://www.youtube.com/watch?v=${videoId}" target="_blank" class="text-[#886644] hover:text-[var(--ember-color-2)] font-lato text-xs flex items-center gap-2 transition-colors">
+                        <span class="material-symbols-outlined text-sm">open_in_new</span> WATCH DIRECTLY ON YOUTUBE
+                    </a>
+                </div>
+            `;
+            container.appendChild(errorOverlay);
+        }
+
         function selectTrack(id) {
             currentTrackId = id;
             const track = tracks.find(t => t.id === id);
+
+            // Clear any existing error overlay
+            const existingError = document.getElementById('uplink-error-overlay');
+            if (existingError) existingError.remove();
 
             // UI
             document.getElementById('current-track-title').innerText = track.title;
@@ -4400,6 +4452,7 @@
             // Load YouTube video
             if (ytPlayer && ytPlayer.loadVideoById) {
                 ytPlayer.loadVideoById(track.videoId);
+                startUplinkMonitor(track.videoId);
             }
         }
 
