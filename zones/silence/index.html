@@ -2512,7 +2512,7 @@
         // YouTube Player Setup
         function onYouTubeIframeAPIReady() {
             ytPlayer = new YT.Player('youtube-player', {
-                host: 'https://www.youtube-nocookie.com',
+                host: 'https://www.youtube.com',
                 videoId: 'YKQk4G_XJ1w',
                 playerVars: {
                     'autoplay': 0,
@@ -2578,6 +2578,26 @@
             const visualizer = document.getElementById('visualizer-container');
 
             if (event.data === YT.PlayerState.PLAYING) {
+                // SUCCESS! Clear the error monitor
+                if (uplinkTimeout) clearTimeout(uplinkTimeout);
+
+                const track = tracks.find(t => t.id === currentTrackId);
+
+                // If it's a gallery track, start the synchronized images NOW
+                if (track && track.showVideo !== true) {
+                    const folderKey = `track_${currentTrackId.toString().padStart(2, '0')}`;
+                    if (galleryMap[folderKey] && galleryMap[folderKey].length > 0) {
+                        startGallery(galleryMap[folderKey]);
+                    } else {
+                        const dummyList = [];
+                        for (let i = 1; i <= (track.imageCount || 3); i++) {
+                            const num = i < 10 ? '0' + i : i;
+                            dummyList.push(`${track.galleryPath || ''}${num}.jpg`);
+                        }
+                        startGallery(dummyList);
+                    }
+                }
+
                 status.innerText = 'STREAMING';
                 playBtn.innerHTML = '<span class="material-symbols-outlined text-3xl">pause</span>';
                 visualizer.style.opacity = '1';
@@ -2587,11 +2607,14 @@
                 playBtn.innerHTML = '<span class="material-symbols-outlined text-3xl">play_arrow</span>';
                 visualizer.style.opacity = '0.3';
                 isPlaying = false;
+                // Pause gallery
+                if (galleryInterval) clearInterval(galleryInterval);
             } else if (event.data === YT.PlayerState.ENDED) {
                 status.innerText = 'TRACK ENDED';
                 playBtn.innerHTML = '<span class="material-symbols-outlined text-3xl">play_arrow</span>';
                 visualizer.style.opacity = '0';
                 isPlaying = false;
+                if (galleryInterval) clearInterval(galleryInterval);
 
                 // Auto-advance to next track
                 const nextId = currentTrackId + 1;
@@ -2603,6 +2626,53 @@
                     status.innerText = "PLAYLIST ENDED";
                 }
             }
+        }
+
+        let uplinkTimeout = null;
+
+        function startUplinkMonitor(videoId) {
+            if (uplinkTimeout) clearTimeout(uplinkTimeout);
+
+            uplinkTimeout = setTimeout(() => {
+                let isActuallyPlaying = false;
+                if (ytPlayer && typeof ytPlayer.getPlayerState === 'function') {
+                    isActuallyPlaying = (ytPlayer.getPlayerState() === 1);
+                }
+
+                if (!isActuallyPlaying) {
+                    showUplinkError(videoId);
+                }
+            }, 4500);
+        }
+
+        function showUplinkError(videoId) {
+            // Target the center visual display area for Silence
+            const container = document.querySelector('.w-full.md\\:w-2\\/3.flex.flex-col.relative.bg-black');
+            if (!container || document.getElementById('uplink-error-overlay')) return;
+
+            const errorOverlay = document.createElement('div');
+            errorOverlay.id = 'uplink-error-overlay';
+            errorOverlay.className = 'absolute inset-0 z-[70] flex flex-col items-center justify-center bg-black/95 backdrop-blur-md text-center p-6 border border-[#00ff41]/30';
+            errorOverlay.innerHTML = `
+                <span class="material-symbols-outlined text-[#00ff41] text-6xl mb-4 animate-pulse">warning</span>
+                <h2 class="text-2xl font-bold text-[#00ff41] font-mono-custom tracking-widest mb-4 uppercase">PLAYBACK BLOCKED</h2>
+
+                <div class="text-center p-4 mb-6 max-w-md">
+                    <p class="text-gray-300 font-mono-custom text-xs md:text-sm leading-relaxed">
+                        Your VPN or browser privacy settings are interfering with playback. Try disabling your VPN or adjusting your tracking protection settings.
+                    </p>
+                </div>
+
+                <div class="flex flex-col items-center gap-6">
+                    <button onclick="document.getElementById('uplink-error-overlay').remove(); togglePlay(); startUplinkMonitor('${videoId}');" class="border border-[#00ff41] text-[#00ff41] px-8 py-3 font-mono-custom font-bold text-sm hover:bg-[#00ff41] hover:text-black transition-all uppercase tracking-widest">
+                        [ RETRY ]
+                    </button>
+                    <a href="https://www.youtube.com/watch?v=${videoId}" target="_blank" class="text-gray-500 hover:text-[#00ff41] font-mono-custom text-xs flex items-center gap-2 transition-colors">
+                        <span class="material-symbols-outlined text-sm">open_in_new</span> WATCH DIRECTLY ON YOUTUBE
+                    </a>
+                </div>
+            `;
+            container.appendChild(errorOverlay);
         }
 
         // State
@@ -2744,7 +2814,10 @@
 
             // Play YouTube Video (only if protocol panel is NOT open)
             if (ytPlayer && ytPlayer.loadVideoById && track.videoId) {
-                // If protocol panel is open, just cue the video (don't auto-play)
+                // Remove any previous error overlays
+                const existingError = document.getElementById('uplink-error-overlay');
+                if (existingError) existingError.remove();
+
                 if (protocolPanelOpen) {
                     ytPlayer.cueVideoById({
                         videoId: track.videoId,
@@ -2757,28 +2830,22 @@
                         videoId: track.videoId,
                         suggestedQuality: 'hd720'
                     });
+                    // START THE VPN DETECTOR
+                    startUplinkMonitor(track.videoId);
                 }
                 activePlayerType = 'youtube';
 
 
                 // --- CHECK: SHOW VIDEO OR SHOW GALLERY? ---
+                const ytIframe = document.getElementById('youtube-player');
                 if (track.showVideo === true) {
                     // VIDEO MODE: Bring player to front, hide gallery
-                    if (ytIframe) ytIframe.style.zIndex = "20"; // Above gallery (z-index 0) but below controls (z-index 20+)
+                    if (ytIframe) ytIframe.style.zIndex = "20";
                     console.log("Video Mode Active: Gallery disabled");
                 } else {
-                    // GALLERY MODE: Keep player hidden, start slides
-                    const folderKey = `track_${id.toString().padStart(2, '0')}`;
-                    if (galleryMap[folderKey] && galleryMap[folderKey].length > 0) {
-                        startGallery(galleryMap[folderKey]);
-                    } else {
-                        const dummyList = [];
-                        for (let i = 1; i <= (track.imageCount || 3); i++) {
-                            const num = i < 10 ? '0' + i : i;
-                            dummyList.push(`${track.galleryPath || ''}${num}.jpg`);
-                        }
-                        startGallery(dummyList);
-                    }
+                    // GALLERY MODE: Keep player hidden.
+                    // DO NOT startGallery() here. We wait for onPlayerStateChange.
+                    if (ytIframe) ytIframe.style.zIndex = "-1";
                 }
             }
         }
