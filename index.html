@@ -26,6 +26,15 @@
         content="An immersive original music crime series blending psychological thriller, music, and interactive storytelling. Choose your reality." />
     <meta name="twitter:image" content="https://www.pixelstortion.com/PIXELSTORTION.jpg" />
 
+    <!-- Google Analytics 4 -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-34H8LS884F"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+        gtag('config', 'G-34H8LS884F');
+    </script>
+
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1079,7 +1088,7 @@
 
                 <div class="mt-6">
                     <a href="#" class="btn-tech"
-                        onclick="event.stopPropagation(); window.top.location.href = PIXEL_MANIFEST.SILENCE; return false;">
+                        onclick="event.stopPropagation(); gtag('event', 'enter_zone', { 'zone_name': 'silence' }); window.top.location.href = PIXEL_MANIFEST.SILENCE; return false;">
                         ENTER
                     </a>
                 </div>
