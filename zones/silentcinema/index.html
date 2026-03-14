@@ -1008,7 +1008,7 @@
                         showUplinkError();
                     }
                 }
-            }, 4500);
+            }, 3000);
         }
 
         function showUplinkError() {
@@ -1029,11 +1029,7 @@
                     Your VPN or browser privacy settings are interfering with playback. Try disabling your VPN or adjusting your tracking protection settings.
                 </p>
                 <div class="flex flex-col gap-3 items-center">
-                    <button onclick="document.getElementById('uplink-error-overlay').remove(); if(player) player.playVideo(); startUplinkMonitor();" class="border border-[#00ff41] text-[#00ff41] px-6 py-2 font-mono-custom text-xs hover:bg-[#00ff41] hover:text-black transition-all uppercase tracking-widest">
-                        [ RETRY ]
-                    </button>
-                    <a href="${youtubeUrl}" target="_blank" rel="noopener noreferrer" class="text-gray-500 font-mono-custom text-[10px] tracking-widest hover:text-white transition-colors flex items-center gap-2 mt-2">
-                        <span class="material-symbols-outlined text-sm">open_in_new</span>
+                    <a href="${youtubeUrl}" target="_blank" rel="noopener noreferrer" class="border border-[#00ff41] text-[#00ff41] px-6 py-3 font-mono-custom text-sm tracking-widest hover:bg-[#00ff41] hover:text-black transition-all uppercase flex items-center gap-2">
                         WATCH DIRECTLY ON YOUTUBE
                     </a>
                 </div>
