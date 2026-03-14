@@ -726,6 +726,53 @@
             }
         }
 
+        // --- UPLINK MONITOR (Hard Lore Gate) ---
+        let uplinkTimeout = null;
+
+        function startUplinkMonitor(videoId) {
+            if (uplinkTimeout) clearTimeout(uplinkTimeout);
+
+            uplinkTimeout = setTimeout(() => {
+                let isActuallyPlaying = false;
+                if (jukebox.player && typeof jukebox.player.getPlayerState === 'function') {
+                    isActuallyPlaying = (jukebox.player.getPlayerState() === 1);
+                }
+
+                if (!isActuallyPlaying) {
+                    showUplinkError(videoId);
+                }
+            }, 4500);
+        }
+
+        function showUplinkError(videoId) {
+            if (document.getElementById('uplink-error-overlay')) return;
+
+            const errorOverlay = document.createElement('div');
+            errorOverlay.id = 'uplink-error-overlay';
+            errorOverlay.className = 'fixed inset-0 z-[200] flex flex-col items-center justify-center bg-black/95 backdrop-blur-md text-center p-6 pointer-events-auto';
+            errorOverlay.innerHTML = `
+                <span class="material-symbols-outlined text-[var(--neon-green)] text-7xl mb-6" style="font-variation-settings: 'FILL' 1;">warning</span>
+                <h2 class="text-3xl font-bold text-[var(--neon-green)] font-mono-custom tracking-widest mb-6 uppercase glitch-text" data-text="PLAYBACK BLOCKED">PLAYBACK BLOCKED</h2>
+                
+                <div class="text-center mb-10 max-w-lg">
+                    <p class="text-gray-300 font-mono-custom text-sm md:text-base leading-relaxed">
+                        Your VPN or browser privacy settings are interfering<br class="hidden md:block">
+                        with playback. Try disabling your VPN or adjusting<br class="hidden md:block">
+                        your tracking protection settings.
+                    </p>
+                </div>
+
+                <button onclick="document.getElementById('uplink-error-overlay').remove(); jukebox.togglePlay(); startUplinkMonitor('${videoId}');" class="border border-[var(--neon-green)] text-[var(--neon-green)] px-10 py-3 font-mono-custom text-sm hover:bg-[var(--neon-green)] hover:text-black transition-all uppercase tracking-widest mb-8">
+                    [ RETRY ]
+                </button>
+
+                <a href="https://www.youtube.com/watch?v=${videoId}" target="_blank" class="text-gray-500 hover:text-gray-300 font-mono-custom text-xs flex items-center justify-center gap-2 transition-colors uppercase">
+                    <span class="material-symbols-outlined text-sm">open_in_new</span> WATCH DIRECTLY ON YOUTUBE
+                </a>
+            `;
+            document.body.appendChild(errorOverlay);
+        }
+
         // --- JUKEBOX CONTROLLER ---
         class Jukebox {
             constructor() {
@@ -750,6 +797,10 @@
             }
 
             loadTrack(index) {
+                // Clear any existing uplink error overlay
+                const existingError = document.getElementById('uplink-error-overlay');
+                if (existingError) existingError.remove();
+
                 this.currentTrackIndex = index;
                 const track = SONG_ARCHIVE[index];
 
@@ -775,6 +826,7 @@
                 // Load Video
                 if (this.player && this.player.loadVideoById) {
                     this.player.loadVideoById(track.videoId);
+                    startUplinkMonitor(track.videoId);
                 }
             }
 
@@ -818,6 +870,7 @@
                 const playIcon = document.getElementById('play-icon');
 
                 if (event.data === YT.PlayerState.PLAYING) {
+                    if (uplinkTimeout) clearTimeout(uplinkTimeout);
                     this.isPlaying = true;
                     try {
                         const track = SONG_ARCHIVE[this.currentTrackIndex];
@@ -995,10 +1048,14 @@
             jukebox.player = new YT.Player('player', {
                 height: '100%',
                 width: '100%',
+                host: 'https://www.youtube.com', // RESTORES ALGORITHMIC TRUST
                 playerVars: {
                     'playsinline': 1,
                     'controls': 0,
-                    'disablekb': 1
+                    'disablekb': 1,
+                    'origin': window.location.origin,
+                    'rel': 0,
+                    'modestbranding': 1
                 },
                 events: {
                     'onReady': onPlayerReady,
