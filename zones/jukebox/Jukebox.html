@@ -751,22 +751,19 @@
             errorOverlay.id = 'uplink-error-overlay';
             errorOverlay.className = 'fixed inset-0 z-[200] flex flex-col items-center justify-center bg-black/95 backdrop-blur-md text-center p-6 pointer-events-auto';
             errorOverlay.innerHTML = `
-                <span class="material-symbols-outlined text-[var(--neon-green)] text-7xl mb-6" style="font-variation-settings: 'FILL' 1;">wifi_off</span>
-                <h2 class="text-3xl font-bold text-[var(--neon-green)] font-mono-custom tracking-widest mb-6 uppercase glitch-text" data-text="SIGNAL INTERCEPTED">SIGNAL INTERCEPTED</h2>
+                <span class="material-symbols-outlined text-[var(--neon-green)] text-7xl mb-6" style="font-variation-settings: 'FILL' 1;">warning</span>
+                <h2 class="text-3xl font-bold text-[var(--neon-green)] font-mono-custom tracking-widest mb-6 uppercase glitch-text" data-text="PLAYBACK BLOCKED">PLAYBACK BLOCKED</h2>
                 
                 <div class="text-center mb-10 max-w-lg">
-                    <p class="text-gray-400 font-mono-custom text-sm md:text-base leading-relaxed mb-4">
-                        TRANSMISSION BLOCKED BY EXTERNAL FILTER.<br>
-                        YOUR NETWORK IS REFUSING THE UPLINK.
-                    </p>
-                    <p class="text-gray-600 font-mono-custom text-xs leading-relaxed">
-                        VPN // AD-BLOCKER // TRACKING PROTECTION<br>
-                        DISABLE TO RESTORE SIGNAL — OR ACCESS DIRECTLY:
+                    <p class="text-gray-300 font-mono-custom text-sm md:text-base leading-relaxed">
+                        Your VPN or browser privacy settings are interfering<br class="hidden md:block">
+                        with playback. Try disabling your VPN or adjusting<br class="hidden md:block">
+                        your tracking protection settings.
                     </p>
                 </div>
 
                 <a href="https://www.youtube.com/watch?v=${videoId}" target="_blank" class="border border-[var(--neon-green)] text-[var(--neon-green)] px-10 py-3 font-mono-custom text-sm hover:bg-[var(--neon-green)] hover:text-black transition-all uppercase tracking-widest flex items-center justify-center gap-2">
-                    <span class="material-symbols-outlined text-sm">open_in_new</span> ACCESS TRANSMISSION
+                    <span class="material-symbols-outlined text-sm">open_in_new</span> WATCH DIRECTLY ON YOUTUBE
                 </a>
             `;
             document.body.appendChild(errorOverlay);
