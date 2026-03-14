@@ -907,25 +907,37 @@
             // Reset Tabs - Default to Lyrics
             switchTab('lyrics');
 
+            // Remove any previous error overlays before loading new track
+            const existingError = document.getElementById('uplink-error-overlay');
+            if (existingError) existingError.remove();
+
             // Embed YouTube using persistent IFrame API
             if (item.videoId) {
                 if (!window.ytPlayer) {
                     // First time initialization
                     videoContainer.innerHTML = '<div id="yt-player-frame"></div>';
                     window.ytPlayer = new YT.Player('yt-player-frame', {
-                        host: 'https://www.youtube-nocookie.com',
+                        host: 'https://www.youtube.com', // RESTORED ALGORITHMIC TRUST
                         width: '100%',
                         height: '100%',
                         videoId: item.videoId,
                         playerVars: {
-                            autoplay: 0, // Never use playerVars autoplay
+                            autoplay: 0,
                             modestbranding: 1,
                             rel: 0,
-                            origin: window.location.origin
+                            origin: window.location.origin,
+                            iv_load_policy: 3,
+                            playsinline: 1
                         },
                         events: {
                             'onReady': function (event) {
+                                const iframe = event.target.getIframe();
+                                if (iframe) {
+                                    iframe.setAttribute('allow', 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share');
+                                    iframe.setAttribute('referrerpolicy', 'origin');
+                                }
                                 event.target.playVideo(); // Play on user click
+                                startUplinkMonitor();     // Start the VPN timeout detector
                             },
                             'onStateChange': onPlayerStateChange
                         }
@@ -936,6 +948,7 @@
                         videoId: item.videoId,
                         suggestedQuality: 'hd720'
                     });
+                    startUplinkMonitor(); // Start detector for new track
                 }
             } else {
                 if (window.ytPlayer && typeof window.ytPlayer.pauseVideo === 'function') {
@@ -943,6 +956,7 @@
                 }
                 videoContainer.innerHTML = '<div class="w-full h-full flex items-center justify-center text-gray-500 font-tech">NO AUDIO SOURCE</div>';
                 window.ytPlayer = null; // Reset if they hit a track with no video
+                if (uplinkTimeout) clearTimeout(uplinkTimeout);
             }
 
             // Show
@@ -954,6 +968,7 @@
             if (window.ytPlayer && typeof window.ytPlayer.pauseVideo === 'function') {
                 window.ytPlayer.pauseVideo();
             }
+            if (uplinkTimeout) clearTimeout(uplinkTimeout); // Clear timer if they close early
         }
 
         function navigate(dir) {
@@ -963,13 +978,55 @@
             openReader(nextIndex);
         }
 
-        // YouTube player state change handler - auto-advance when song ends
+        // Global timeout variable for the detector
+        let uplinkTimeout = null;
+
+        // YouTube player state change handler
         function onPlayerStateChange(event) {
+            // YT.PlayerState.PLAYING === 1
+            if (event.data === 1) {
+                if (uplinkTimeout) clearTimeout(uplinkTimeout); // Success! Clear the error timer
+            }
             // YT.PlayerState.ENDED === 0
             if (event.data === 0) {
                 // Song finished, advance to next track
                 navigate(1);
             }
+        }
+
+        // --- VPN / BOT-WALL DETECTOR ---
+        function startUplinkMonitor() {
+            if (uplinkTimeout) clearTimeout(uplinkTimeout);
+
+            uplinkTimeout = setTimeout(() => {
+                if (window.ytPlayer && typeof window.ytPlayer.getPlayerState === 'function') {
+                    const state = window.ytPlayer.getPlayerState();
+                    // -1 is unstarted, 3 is buffering. If it's stuck here, it's likely blocked.
+                    if (state === -1 || state === 3) {
+                        showUplinkError();
+                    }
+                }
+            }, 4500);
+        }
+
+        function showUplinkError() {
+            const container = document.getElementById('video-container');
+            if (document.getElementById('uplink-error-overlay')) return;
+
+            const errorOverlay = document.createElement('div');
+            errorOverlay.id = 'uplink-error-overlay';
+            errorOverlay.className = 'absolute inset-0 z-[70] flex flex-col items-center justify-center bg-black/95 backdrop-blur-md text-center p-6';
+            errorOverlay.innerHTML = `
+                <span class="material-symbols-outlined text-[#00ff41] text-6xl mb-4 animate-pulse">warning</span>
+                <h2 class="text-xl md:text-2xl font-bold text-[#00ff41] font-tech tracking-widest mb-2 uppercase">UPLINK SEVERED</h2>
+                <p class="text-gray-400 font-tech text-xs md:text-sm max-w-md leading-relaxed mb-6">
+                    Host node rejected the connection. Encrypted tunnels (VPN) or aggressive tracking shields detected.
+                </p>
+                <button onclick="document.getElementById('uplink-error-overlay').remove(); if(window.ytPlayer) window.ytPlayer.playVideo(); startUplinkMonitor();" class="border border-[#00ff41] text-[#00ff41] px-6 py-2 font-tech text-xs hover:bg-[#00ff41] hover:text-black transition-all uppercase tracking-widest">
+                    [ RETRY TRANSMISSION ]
+                </button>
+            `;
+            container.appendChild(errorOverlay);
         }
 
         function switchTab(tabName) {
