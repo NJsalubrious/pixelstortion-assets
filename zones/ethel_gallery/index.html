@@ -1013,18 +1013,28 @@
             const container = document.getElementById('video-container');
             if (document.getElementById('uplink-error-overlay')) return;
 
+            // Get current video ID for the YouTube link
+            const currentVideoId = filteredData[currentIndex]?.videoId || '';
+            const youtubeUrl = currentVideoId ? `https://www.youtube.com/watch?v=${currentVideoId}` : 'https://www.youtube.com';
+
             const errorOverlay = document.createElement('div');
             errorOverlay.id = 'uplink-error-overlay';
             errorOverlay.className = 'absolute inset-0 z-[70] flex flex-col items-center justify-center bg-black/95 backdrop-blur-md text-center p-6';
             errorOverlay.innerHTML = `
                 <span class="material-symbols-outlined text-[#00ff41] text-6xl mb-4 animate-pulse">warning</span>
-                <h2 class="text-xl md:text-2xl font-bold text-[#00ff41] font-tech tracking-widest mb-2 uppercase">UPLINK SEVERED</h2>
+                <h2 class="text-xl md:text-2xl font-bold text-[#00ff41] font-tech tracking-widest mb-2 uppercase">PLAYBACK BLOCKED</h2>
                 <p class="text-gray-400 font-tech text-xs md:text-sm max-w-md leading-relaxed mb-6">
-                    Host node rejected the connection. Encrypted tunnels (VPN) or aggressive tracking shields detected.
+                    Your VPN or browser privacy settings are interfering with playback. Try disabling your VPN or adjusting your tracking protection settings.
                 </p>
-                <button onclick="document.getElementById('uplink-error-overlay').remove(); if(window.ytPlayer) window.ytPlayer.playVideo(); startUplinkMonitor();" class="border border-[#00ff41] text-[#00ff41] px-6 py-2 font-tech text-xs hover:bg-[#00ff41] hover:text-black transition-all uppercase tracking-widest">
-                    [ RETRY TRANSMISSION ]
-                </button>
+                <div class="flex flex-col gap-3 items-center">
+                    <button onclick="document.getElementById('uplink-error-overlay').remove(); if(window.ytPlayer) window.ytPlayer.playVideo(); startUplinkMonitor();" class="border border-[#00ff41] text-[#00ff41] px-6 py-2 font-tech text-xs hover:bg-[#00ff41] hover:text-black transition-all uppercase tracking-widest">
+                        [ RETRY ]
+                    </button>
+                    <a href="${youtubeUrl}" target="_blank" rel="noopener noreferrer" class="text-gray-500 font-tech text-[10px] tracking-widest hover:text-white transition-colors flex items-center gap-2 mt-2">
+                        <span class="material-symbols-outlined text-sm">open_in_new</span>
+                        WATCH DIRECTLY ON YOUTUBE
+                    </a>
+                </div>
             `;
             container.appendChild(errorOverlay);
         }
