@@ -2512,6 +2512,7 @@
         // YouTube Player Setup
         function onYouTubeIframeAPIReady() {
             ytPlayer = new YT.Player('youtube-player', {
+                host: 'https://www.youtube-nocookie.com',
                 playerVars: {
                     'autoplay': 0,
                     'controls': 0,
