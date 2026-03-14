@@ -3094,7 +3094,7 @@
         </div>
     </div>
 
-    <main class="pt-16 h-screen relative overflow-hidden">
+    <main class="pt-16 min-h-screen relative" id="main-content">
 
         <!-- HOME SECTION -->
         <section
@@ -4252,9 +4252,21 @@
             activeBtn.classList.remove('text-gray-400');
 
             // Enable page scroll for audio/songs section, lock for others
-            document.body.style.overflowY = (tabId === 'audio') ? 'auto' : 'hidden';
+            const mainEl = document.getElementById('main-content');
+            if (tabId === 'audio') {
+                document.body.style.overflowY = 'auto';
+                mainEl.style.overflow = 'visible';
+                mainEl.style.height = 'auto';
+                mainEl.style.minHeight = '100vh';
+            } else {
+                document.body.style.overflowY = 'hidden';
+                mainEl.style.overflow = 'hidden';
+                mainEl.style.height = '100vh';
+                mainEl.style.minHeight = '';
+            }
 
             document.getElementById('mobile-menu').classList.add('hidden');
+            window.scrollTo(0, 0);
         }
 
         function toggleMobileMenu() {
