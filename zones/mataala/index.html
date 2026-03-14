@@ -4251,6 +4251,9 @@
             activeBtn.classList.add('active-tab', 'text-[var(--ember-color-2)]');
             activeBtn.classList.remove('text-gray-400');
 
+            // Enable page scroll for audio/songs section, lock for others
+            document.body.style.overflowY = (tabId === 'audio') ? 'auto' : 'hidden';
+
             document.getElementById('mobile-menu').classList.add('hidden');
         }
 
