@@ -907,32 +907,42 @@
             // Reset Tabs - Default to Lyrics
             switchTab('lyrics');
 
-            // Embed YouTube using IFrame API for end detection
+            // Embed YouTube using persistent IFrame API
             if (item.videoId) {
-                // Destroy existing player if any
-                if (window.ytPlayer) {
-                    window.ytPlayer.destroy();
-                    window.ytPlayer = null;
+                if (!window.ytPlayer) {
+                    // First time initialization
+                    videoContainer.innerHTML = '<div id="yt-player-frame"></div>';
+                    window.ytPlayer = new YT.Player('yt-player-frame', {
+                        host: 'https://www.youtube-nocookie.com',
+                        width: '100%',
+                        height: '100%',
+                        videoId: item.videoId,
+                        playerVars: {
+                            autoplay: 0, // Never use playerVars autoplay
+                            modestbranding: 1,
+                            rel: 0,
+                            origin: window.location.origin
+                        },
+                        events: {
+                            'onReady': function (event) {
+                                event.target.playVideo(); // Play on user click
+                            },
+                            'onStateChange': onPlayerStateChange
+                        }
+                    });
+                } else {
+                    // Player already exists, just load new video and play
+                    window.ytPlayer.loadVideoById({
+                        videoId: item.videoId,
+                        suggestedQuality: 'hd720'
+                    });
                 }
-                videoContainer.innerHTML = '<div id="yt-player-frame"></div>';
-
-                // Create player using API
-                window.ytPlayer = new YT.Player('yt-player-frame', {
-                    width: '100%',
-                    height: '100%',
-                    videoId: item.videoId,
-                    playerVars: {
-                        autoplay: window.innerWidth > 768 ? 1 : 0,
-                        modestbranding: 1,
-                        rel: 0,
-                        origin: window.location.origin
-                    },
-                    events: {
-                        'onStateChange': onPlayerStateChange
-                    }
-                });
             } else {
+                if (window.ytPlayer && typeof window.ytPlayer.pauseVideo === 'function') {
+                    window.ytPlayer.pauseVideo();
+                }
                 videoContainer.innerHTML = '<div class="w-full h-full flex items-center justify-center text-gray-500 font-tech">NO AUDIO SOURCE</div>';
+                window.ytPlayer = null; // Reset if they hit a track with no video
             }
 
             // Show
@@ -941,7 +951,9 @@
 
         function closeReader() {
             modal.classList.add('hidden');
-            videoContainer.innerHTML = ''; // Stop Audio
+            if (window.ytPlayer && typeof window.ytPlayer.pauseVideo === 'function') {
+                window.ytPlayer.pauseVideo();
+            }
         }
 
         function navigate(dir) {
