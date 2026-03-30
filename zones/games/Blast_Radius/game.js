@@ -177,9 +177,23 @@ const OppressionEngine = {
 
         const empire = currentDisplayValue;
         
-        // The scale runs from $0 (100% health/Win) to $50B (0% health/Lose)
-        const ratio = Math.min(1, Math.max(0, empire / this.FATAL)); 
-        const healthPct = 100 - (ratio * 100);
+        // Scale: 
+        // 50B (FATAL) -> 0% Health
+        // 20B (BASELINE) -> 50% Health (Half full to start)
+        // 0B -> 100% Health
+        
+        let healthPct = 0;
+        if (empire >= this.BASELINE) {
+            const excess = empire - this.BASELINE;
+            const range = this.FATAL - this.BASELINE;
+            const ratio = Math.min(1, Math.max(0, excess / range));
+            healthPct = 50 - (ratio * 50);
+        } else {
+            const remaining = empire;
+            const range = this.BASELINE;
+            const ratio = Math.max(0, remaining / range);
+            healthPct = 100 - (ratio * 50);
+        }
 
         // Health bar update
         const fillEl = document.getElementById('health-bar-fill');
@@ -1922,19 +1936,78 @@ const UI = {
 // 11. PHASER 3 SETUP & MAIN INIT
 // ================================================================
 
+class PreloadScene extends Phaser.Scene {
+    constructor() {
+        super({ key: 'PreloadScene' });
+    }
+
+    preload() {
+        const width = this.cameras.main.width;
+        const height = this.cameras.main.height;
+
+        const progressBar = this.add.graphics();
+        const progressBox = this.add.graphics();
+        progressBox.fillStyle(0x222222, 0.8);
+        progressBox.fillRect(width / 2 - 160, height / 2 - 25, 320, 50);
+
+        const loadingText = this.make.text({
+            x: width / 2,
+            y: height / 2 - 50,
+            text: 'LOADING ASSETS...',
+            style: { font: '14px Orbitron', fill: '#00ff41' }
+        }).setOrigin(0.5, 0.5);
+
+        this.load.on('progress', (value) => {
+            progressBar.clear();
+            progressBar.fillStyle(0xff0055, 1);
+            progressBar.fillRect(width / 2 - 150, height / 2 - 15, 300 * value, 30);
+        });
+
+        this.load.on('complete', () => {
+            progressBar.destroy();
+            progressBox.destroy();
+            loadingText.destroy();
+            this.scene.start('ReelScene');
+        });
+
+        // Load all symbol textures into Phaser
+        Object.entries(MATH_CONFIG.symbols).forEach(([id, sym]) => {
+            this.load.image(`sym_${id}`, sym.image);
+        });
+        this.load.image('sym_burned', 'stills/burnsHouse_allThreeTurnMoneyBurning_loopForAll.png');
+
+        // Force browser to cache all videos via hidden DOM elements
+        const videoUrls = new Set([
+            MATH_CONFIG.blastRevealVideo,
+            MATH_CONFIG.phoneHitVideo,
+            MATH_CONFIG.prisonHitVideo,
+            MATH_CONFIG.freeSpinsBgVideo,
+            ...MATH_CONFIG.featureVideos,
+            ...MATH_CONFIG.prisonVideos
+        ]);
+        Object.values(MATH_CONFIG.symbols).forEach(sym => {
+            if (sym.video) videoUrls.add(sym.video);
+        });
+
+        const preloaderDiv = document.createElement('div');
+        preloaderDiv.style.display = 'none';
+        videoUrls.forEach(url => {
+            const v = document.createElement('video');
+            v.preload = 'auto';
+            v.muted = true;
+            v.src = url;
+            preloaderDiv.appendChild(v);
+        });
+        document.body.appendChild(preloaderDiv);
+    }
+}
+
 class ReelScene extends Phaser.Scene {
     constructor() {
         super({ key: 'ReelScene' });
     }
 
-    preload() {
-        // Load all symbol textures
-        Object.entries(MATH_CONFIG.symbols).forEach(([id, sym]) => {
-            this.load.image(`sym_${id}`, sym.image);
-        });
-        // Pre-load persistent burning replacement sprite
-        this.load.image('sym_burned', 'stills/burnsHouse_allThreeTurnMoneyBurning_loopForAll.png');
-    }
+    // Moving preload logic to PreloadScene
 
     create() {
         const reelWindow = document.getElementById('reel-window');
@@ -2077,6 +2150,7 @@ class ReelScene extends Phaser.Scene {
         // ===== INITIAL STATUS =====
         UI.setStatus('IDLE_WAITING_COMMAND');
         UI.updateMeterDisplay(controller.progressiveMeter.getDisplayValue());
+        OppressionEngine.update(controller.progressiveMeter.getDisplayValue());
         
         // ===== GAFF BINDINGS =====
         const gaffToggle = document.getElementById('gaff-toggle-btn');
@@ -2191,7 +2265,7 @@ class ReelScene extends Phaser.Scene {
         height: GRID_HEIGHT,
         parent: 'reel-window',
         backgroundColor: '#0a0a0a',
-        scene: [ReelScene],
+        scene: [PreloadScene, ReelScene],
         scale: {
             mode: Phaser.Scale.NONE,
             autoCenter: Phaser.Scale.NO_CENTER
