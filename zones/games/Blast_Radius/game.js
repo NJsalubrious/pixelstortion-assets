@@ -2016,6 +2016,29 @@ class PreloadScene extends Phaser.Scene {
             this.load.image(`sym_${id}`, sym.image);
         });
         this.load.image('sym_burned', 'stills/burnsHouse_allThreeTurnMoneyBurning_loopForAll.png');
+
+        // Safely queue all videos into Phaser's native loader
+        // This ensures they are cached without DDOSing the browser (respects concurrent limits)
+        // AND perfectly updates the green progress bar so the user knows it's loading
+        const videoUrls = new Set([
+            MATH_CONFIG.blastRevealVideo,
+            MATH_CONFIG.phoneHitVideo,
+            MATH_CONFIG.prisonHitVideo,
+            MATH_CONFIG.freeSpinsBgVideo,
+            ...(MATH_CONFIG.featureVideos || []),
+            ...(MATH_CONFIG.prisonVideos || [])
+        ]);
+        Object.values(MATH_CONFIG.symbols).forEach(sym => {
+            if (sym.video) videoUrls.add(sym.video);
+        });
+
+        let vId = 0;
+        videoUrls.forEach(url => {
+            if (url) {
+                // load.video(key, url, loadEvent, asBlob, noAudio)
+                this.load.video(`vid_cache_${vId++}`, url, 'loadeddata', false, true);
+            }
+        });
     }
 }
 
