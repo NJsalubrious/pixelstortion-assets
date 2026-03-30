@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BLAST RADIUS — Dominic's Downfall</title>
+    <meta name="description" content="Hack Dominic Ryker's criminal empire. Smart-Dumb Protocol active.">
+
+    <!-- Phaser 3 CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/phaser@3.80.1/dist/phaser.min.js"></script>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700;800&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <!-- ============================================================ -->
+    <!-- ANTI-SLOT CABINET — 4-ZONE PORTRAIT LAYOUT                   -->
+    <!-- ============================================================ -->
+    <div id="anti-slot-cabinet">
+
+        <!-- ======================================================== -->
+        <!-- ZONE 1: DOMINIC'S EMPIRE METRICS (Jackpot Ledgers)       -->
+        <!-- ======================================================== -->
+        <div id="jackpot-meters">
+            <div id="grand-meter" class="grand-meter" style="position: relative;">
+                <span id="dominic-empire-value" class="meter-value glitch-text" data-text="$20,000,000,000" data-current-value="2000" style="margin-top: -2px;">$20,000,000,000</span>
+                <span id="hidden-funds-label" style="display: none; font-size: 13px; color: #d4006a; letter-spacing: 3px; font-weight: 800; text-shadow: 0 0 10px rgba(212, 0, 106, 0.6); position: absolute; bottom: 6px;">HIDDEN ASSETS</span>
+            </div>
+        </div>
+
+        <!-- ======================================================== -->
+        <!-- ZONE 2: FEATURE VIDEO (BLAST_RADIUS intro → ISLA clips)  -->
+        <!-- ======================================================== -->
+        <div id="feature-video-container">
+            <!-- BLAST_RADIUS.png title card — fades on first spin -->
+            <img id="intro-title-image" src="stills/BLAST_RADIUS.png" alt="BLAST RADIUS" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 50;">
+            <video id="feature-video" muted playsinline preload="metadata" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 10;"></video>
+            <video id="feature-video-buffer" muted playsinline preload="metadata" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 5; opacity: 0;"></video>
+            
+            <!-- Gaff Button (Bottom Right Absolute) -->
+            <button id="gaff-toggle-btn" class="gaff-button">RULES</button>
+            
+            <!-- Pixelstortion Link (Top Left Absolute) -->
+            <a href="https://pixelstortion.com/zones/silence/" target="_blank" class="gaff-button" style="bottom: auto; right: auto; top: 12px; left: 12px; text-decoration: none; display: flex; align-items: center;">PIXELSTORTION.COM</a>
+            
+            <!-- Jailbreak Escape overlay -->
+            <div id="escape-notification" class="escape-notification" style="display: none;">
+                <h1 class="escape-neon">JAILBREAK SUCCESSFUL</h1>
+            </div>
+
+            <!-- Password hack overlay — lives inside feature zone, reels stay visible -->
+            <div id="password-hack-container">
+                <div class="hack-inner">
+                    <h1 class="hack-title">BRUTE_FORCE_INITIATED</h1>
+                    <div id="passcode-display" class="hack-passcode">_ _ _ _ _ _</div>
+                    <p id="hack-attempts-left" class="hack-attempts">ATTEMPTS REMAINING: 10</p>
+                    <p id="hack-damage-total" class="hack-damage"></p>
+                    <p id="bridge-burned-msg" class="bridge-burned">THIS IS WINNING — BRIDGE BURNED</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- ======================================================== -->
+        <!-- ZONE 3: REEL WINDOW (Phaser Canvas — 5×3 Masked Grid)    -->
+        <!-- ======================================================== -->
+        <div id="slot-grid-container">
+            <div id="reel-window">
+                <!-- Phaser 3 will inject its canvas here -->
+                <!-- Intro video overlay — fades on first spin -->
+                <div id="intro-video-overlay">
+                    <video id="intro-video" autoplay muted loop playsinline src="Videos/Isla_TextName_Roll.mp4"></video>
+                </div>
+            </div>
+            
+            <!-- Settings Modal Overlay -->
+            <div id="gaff-menu" class="gaff-modal" style="display: none;">
+                <div class="gaff-header">
+                    <button id="gaff-prev-btn" class="nav-btn" disabled>&larr;</button>
+                    <h2>⚙ RULES</h2>
+                    <button id="gaff-next-btn" class="nav-btn">&rarr;</button>
+                    <button id="gaff-close-btn">X</button>
+                </div>
+                <div class="gaff-body">
+                    
+                    <!-- PAGE 1: Controls -->
+                    <div class="gaff-page active" data-page="0" style="overflow-y:auto; overflow-x:hidden;">
+                        <div class="gaff-row">
+                            <label for="gaff-volatility">RNG VOLATILITY STRESS: <span id="lbl-volatility">NORMAL (1)</span></label>
+                            <input type="range" id="gaff-volatility" min="1" max="10" value="1">
+                        </div>
+                        <div class="gaff-row">
+                            <label for="gaff-prison-chance">DOMINIC PRISON CHANCE: <span id="lbl-prison">DYNAMIC ESCALATION</span></label>
+                            <input type="range" id="gaff-prison-chance" min="-1" max="100" value="-1">
+                            <small>-1 = Internal Progressive Math. 0-100 = Forced Probability.</small>
+                        </div>
+                        <div class="gaff-row">
+                            <label for="gaff-ethel-intel">ETHEL INTELLIGENCE: <span id="lbl-ethel">0% (BLIND)</span></label>
+                            <input type="range" id="gaff-ethel-intel" min="0" max="100" value="0">
+                            <small>Chance Ethel will dodge Isla's blast (re-rolls off the phone row).</small>
+                        </div>
+                        <div class="gaff-row">
+                            <label for="gaff-intercept-rate">DOMINIC INTERCEPT RATE: <span id="lbl-intercept">100%</span></label>
+                            <input type="range" id="gaff-intercept-rate" min="0" max="100" value="100">
+                            <small>Probability Dominic intercepts & steals 50% of your damage.</small>
+                        </div>
+                        <div class="gaff-row">
+                            <label>
+                                <input type="checkbox" id="gaff-narrative-lock"> 
+                                ENFORCE PRISON LOCK (NARRATIVE)
+                            </label>
+                            <ul class="gaff-checklist">
+                                <li id="req-blasts">❌ <span class="val">0</span>/2 Phone Blasts</li>
+                                <li id="req-intercepts">❌ <span class="val">0</span>/1 Negative Intercepts</li>
+                                <li id="req-burns">❌ <span class="val">0</span>/2 Money Burns</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- PAGE 2: Hierarchy & Base Hits -->
+                    <div class="gaff-page" data-page="1">
+                        <p class="paytable-text">ETHEL and ISLA deal the most damage. BRIDGE, BIKE, and HEART deal moderate damage. Hits are multipled by 6x.</p>
+                        <div style="display:flex; justify-content:center; gap:10px; margin-bottom:15px;">
+                            <div style="text-align:center;">
+                                <img src="stills/Ethel_pulse.png" alt="Ethel" style="height:70px; border:2px solid #ff0055; border-radius:4px;">
+                                <div style="color:#ff0055; font-size:12px; font-weight:bold; margin-top:4px;">ETHEL</div>
+                            </div>
+                            <div style="text-align:center;">
+                                <img src="stills/Isla_pulse.png" alt="Isla" style="height:70px; border:2px solid #e500ff; border-radius:4px;">
+                                <div style="color:#e500ff; font-size:12px; font-weight:bold; margin-top:4px;">ISLA</div>
+                            </div>
+                        </div>
+                        <div class="paytable-img-container">
+                            <img src="stills/BLAST_RADIUS.png" alt="Hierarchy">
+                        </div>
+                    </div>
+
+                    <!-- PAGE 3: Bracket Rules -->
+                    <div class="gaff-page" data-page="2">
+                        <p class="paytable-text">BRACKETS: When Ethel or Isla land on both sides of Dominic, he is sent to PRISON. When they bracket his house, the house BURNS.</p>
+                        <div class="paytable-img-container">
+                            <img src="stills/ethel_dominic_pulse.png" alt="Bracket Types">
+                        </div>
+                    </div>
+
+                    <!-- PAGE 4: Blast Radius -->
+                    <div class="gaff-page" data-page="3">
+                        <p class="paytable-text">BLAST RADIUS: When Isla's Phone lands, it damages itself and adjacent symbols. Positive and negative hits accumulate.</p>
+                        <div class="paytable-img-container">
+                            <img src="stills/blast_radius_PhoneReveal_A.png" alt="Blast Radius">
+                        </div>
+                    </div>
+
+                    <!-- PAGE 5: Prison & Escape -->
+                    <div class="gaff-page" data-page="4">
+                        <p class="paytable-text">PRISON: Dominic loses all visible assets ($1B hidden remains). All regular hits do only 5% damage representing prison resistance.</p>
+                        <div class="paytable-img-container">
+                            <img src="stills/dominic_prison_loop.png" alt="Prison Rules">
+                        </div>
+                    </div>
+
+                    <!-- PAGE 6: Smart/Dumb Hacks -->
+                    <div class="gaff-page" data-page="5">
+                        <p class="paytable-text">SMART/DUMB PROTOCOL: System occasionally intercepts spins, requiring a password crack to burn bridges and deal massive damage.</p>
+                        <div class="paytable-img-container">
+                            <img src="stills/isla_phone_pulse.png" alt="Hacks">
+                        </div>
+                    </div>
+
+                    <!-- PAGE 7: Math Core -->
+                    <div class="gaff-page" data-page="6">
+                        <div class="paytable-text" style="text-align: left; padding: 0 10px; flex: 1;">
+                            <strong style="color:cyan;">ENGINE MATH: PROGRESSIVE METERS</strong><br>
+                            The machine tracks an internal value starting at $2,000. For UI scaling, this is multiplied by 10M to hit the $20B starting visual. Contributions route 2.5% of "Dead Spin" values directly into the core pool.
+                            <br><br>
+                            <strong style="color:cyan;">ENGINE MATH: PAYOUT HIERARCHY</strong><br>
+                            All base engine payouts scale natively dynamically. Standard 6x scaled yields:<br>
+                            &bull; <strong>ETHEL:</strong> $120 / $360 / $1500 damage<br>
+                            &bull; <strong>ISLA:</strong> $60 / $180 / $600 damage<br>
+                            &bull; <strong>OTHERS:</strong> Linear scale off base rank
+                        </div>
+                    </div>
+
+                    <!-- PAGE 8: Math Escalation -->
+                    <div class="gaff-page" data-page="7">
+                        <div class="paytable-text" style="text-align: left; padding: 0 10px; flex: 1;">
+                            <strong style="color:cyan;">NARRATIVE ESCALATION RNG</strong><br>
+                            The game uses a dynamic scaling algorithm designed to prevent the empire from naturally reaching the $50B Fatal limit.<br><br>
+                            As Dominic breaches $23B, a background <span style="color:var(--neon-pink)">Intervention Roll</span> begins. The probability of the engine forcefully interrupting standard RNG cleanly maps to the danger threshold, maxing out at an 85% probability of an immediate, enforced Arrest Bracket sequence right before $50B.
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- ======================================================== -->
+        <!-- ZONE 4: COMMAND TERMINAL (Health Bar + Spin Button)       -->
+        <!-- ======================================================== -->
+        <div id="ui-deck">
+            <div class="damage-display">
+                <div id="health-bar-container">
+                    <div id="health-bar-fill"></div>
+                    <span id="health-bar-label">POWER DIFFERENTIAL</span>
+                </div>
+                <span id="system-status" class="damage-value"></span>
+            </div>
+            <button id="btn-spin" class="spin-button" aria-label="Spin the reels">
+                <img src="images/SPIN.png" alt="SPIN" class="deck-icon">
+            </button>
+        </div>
+
+    </div>
+
+    <!-- Custom WebGL particle canvas — MUST be outside #anti-slot-cabinet so CSS filters don't trap it -->
+    <canvas id="particle-canvas"></canvas>
+
+    <!-- Threat Pulse Overlay (blood-red flash when empire grows) -->
+    <div class="threat-pulse" id="threat-pulse"></div>
+    
+    <!-- Game Over Overlay -->
+    <div id="game-over-overlay">
+        <div class="game-over-inner">
+            <h1 class="game-over-title" id="game-over-title">YOU LOSE</h1>
+            <p class="game-over-subtitle" id="game-over-subtitle">STRUCTURE ISN'T A SUGGESTION</p>
+        </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- CRT SCANLINES OVERLAY                                        -->
+    <!-- ============================================================ -->
+    <div class="scanlines"></div>
+
+    <!-- Game Logic -->
+    <script src="particleSystem.js"></script>
+    <script src="game.js"></script>
+
+</body>
+</html>
