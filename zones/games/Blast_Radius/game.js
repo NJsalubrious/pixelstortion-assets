@@ -1386,6 +1386,7 @@ class AntiSlotController {
         this.isSpinning = false;
         this.windUpInterval = null;
         this.currentResult = null;
+        this.spinsInPrison = 0;
 
         // Sub-systems
         this.smartDumb = new SmartDumbProtocol();
@@ -1478,6 +1479,45 @@ class AntiSlotController {
         // Generate standard if no prison force fired
         if (!result) {
             result = this.math.virtualStrips.map(strip => Math.floor(Math.random() * strip.length));
+        }
+
+        // PREVENT PREMATURE JAILBREAKS (or any natural Jailbreak right after entering)
+        if (this.bracketHit.hasBeenArrested) {
+            this.spinsInPrison++;
+            const minSpins = NarrativeManager.isForced ? 15 : 6;
+            if (this.spinsInPrison < minSpins) {
+                // Scrub ANY [7, 2, 7] combination (Jailbreak Blast Radius)
+                let grid = this.evaluator.buildGrid(result);
+                for (let row = 0; row < this.math.rows; row++) {
+                    for (let col = 1; col < this.math.cols - 1; col++) {
+                        if (grid[col-1][row] === 7 && grid[col+1][row] === 7 && grid[col][row] === 2) {
+                            // Disrupt the bracket by moving the left phone up one slot
+                            result[col-1] = (result[col-1] + 1) % this.math.virtualStrips[col-1].length;
+                        }
+                    }
+                }
+            }
+        } else {
+            // Reset spins tracker when not in prison
+            this.spinsInPrison = 0;
+            
+            // ENFORCE NARRATIVE LOCK (Prevent ANY Natural Prison Arrest if conditions aren't met)
+            if (NarrativeManager.isForced && !NarrativeManager.canGoToPrison()) {
+                let grid = this.evaluator.buildGrid(result);
+                for (let row = 0; row < this.math.rows; row++) {
+                    for (let col = 1; col < this.math.cols - 1; col++) {
+                        const targetId = grid[col][row];
+                        if (targetId === 6) {
+                            const leftId = grid[col-1][row];
+                            const rightId = grid[col+1][row];
+                            // If bracketed by Ethel (2) or Isla (5), it's an arrest: disrupt it!
+                            if (leftId === rightId && (leftId === 2 || leftId === 5)) {
+                                result[col-1] = (result[col-1] + 1) % this.math.virtualStrips[col-1].length;
+                            }
+                        }
+                    }
+                }
+            }
         }
 
         // 2. ETHEL INTELLIGENCE (Dodge Blast)
@@ -1768,16 +1808,17 @@ class AntiSlotController {
                             ? (['Videos/prison_hit.mp4', 'Videos/prison_hit_2.mp4'][Math.floor(Math.random() * 2)])
                             : this.math.phoneHitVideo;
                         
-                        const origSrc = featureVid.src;
-                        const origLoop = featureVid.loop;
                         const shuffleHandler = featureVid._shuffleHandler;
                         
                         UI.playFeatureVideo(hitVidSrc, false, () => {
-                            UI.playFeatureVideo(origSrc, origLoop, shuffleHandler, true);
-                            setTimeout(() => {
-                                const newVid = document.getElementById('feature-video');
-                                if (newVid && shuffleHandler) newVid._shuffleHandler = shuffleHandler;
-                            }, 250);
+                            // Instead of restoring the old video (which might be an Isla Phone when we just transitioned to Prison),
+                            // force a shuffle so it pulls natively from the newly updated video pool.
+                            if (shuffleHandler) {
+                                shuffleHandler();
+                            } else {
+                                // Fallback if no shuffle exists
+                                UI.playFeatureVideo(this.math.featureVideos[0], true, null, true);
+                            }
                         }, true);
                     }
                 }
@@ -1975,30 +2016,6 @@ class PreloadScene extends Phaser.Scene {
             this.load.image(`sym_${id}`, sym.image);
         });
         this.load.image('sym_burned', 'stills/burnsHouse_allThreeTurnMoneyBurning_loopForAll.png');
-
-        // Force browser to cache all videos via hidden DOM elements
-        const videoUrls = new Set([
-            MATH_CONFIG.blastRevealVideo,
-            MATH_CONFIG.phoneHitVideo,
-            MATH_CONFIG.prisonHitVideo,
-            MATH_CONFIG.freeSpinsBgVideo,
-            ...MATH_CONFIG.featureVideos,
-            ...MATH_CONFIG.prisonVideos
-        ]);
-        Object.values(MATH_CONFIG.symbols).forEach(sym => {
-            if (sym.video) videoUrls.add(sym.video);
-        });
-
-        const preloaderDiv = document.createElement('div');
-        preloaderDiv.style.display = 'none';
-        videoUrls.forEach(url => {
-            const v = document.createElement('video');
-            v.preload = 'auto';
-            v.muted = true;
-            v.src = url;
-            preloaderDiv.appendChild(v);
-        });
-        document.body.appendChild(preloaderDiv);
     }
 }
 
