@@ -3769,6 +3769,12 @@
             const game = games.find(g => g.id === gameId);
             if (!game) return;
 
+            // External URLs (absolute) open in a new tab instead of the modal
+            if (game.url.startsWith('http')) {
+                window.open(game.url, '_blank');
+                return;
+            }
+
             const modal = document.getElementById('game-modal');
             const iframe = document.getElementById('game-modal-iframe');
             const modalContent = document.getElementById('game-modal-content');
