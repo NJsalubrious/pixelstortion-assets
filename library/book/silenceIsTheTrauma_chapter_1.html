@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Silence Is The Trauma — Chapter One: The Drop</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0a0908;
+            --text: #e8ddd0;
+            --accent: #c4763a;
+            --isla-accent: #c4763a;
+            --grain-opacity: 0.04;
+            --vignette-opacity: 0.7;
+            --vignette-color: 0,0,0;
+            --transition-speed: 2.5s;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            font-family: 'Crimson Pro', serif;
+            font-size: 1.25rem;
+            line-height: 1.85;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+            transition: background-color var(--transition-speed) ease, color var(--transition-speed) ease;
+        }
+
+        /* ═══════════════════════════════════════════
+           THEME STATES — Each terrain has its own world
+           ═══════════════════════════════════════════ */
+
+        body.theme-stage {
+            --bg: #0a0908;
+            --text: #e8ddd0;
+            --accent: #c4763a;
+            --grain-opacity: 0.04;
+            --vignette-opacity: 0.7;
+            --vignette-color: 0,0,0;
+        }
+
+        body.theme-red-earth {
+            --bg: #f0e6d3;
+            --text: #2a1f17;
+            --accent: #8c3b2e;
+            --grain-opacity: 0.025;
+            --vignette-opacity: 0.15;
+            --vignette-color: 100,50,20;
+        }
+
+        body.theme-canopy {
+            --bg: #080f08;
+            --text: #a8b898;
+            --accent: #3a6b3a;
+            --grain-opacity: 0.06;
+            --vignette-opacity: 0.5;
+            --vignette-color: 0,15,0;
+        }
+
+        body.theme-gorge {
+            --bg: #141210;
+            --text: #c0ad96;
+            --accent: #8c3b2e;
+            --grain-opacity: 0.05;
+            --vignette-opacity: 0.45;
+            --vignette-color: 0,0,0;
+        }
+
+        body.theme-void {
+            --bg: #000000;
+            --text: #e0e0e0;
+            --accent: #ffffff;
+            --grain-opacity: 0.015;
+            --vignette-opacity: 0.95;
+            --vignette-color: 0,0,0;
+            --transition-speed: 0.4s;
+        }
+
+        body.theme-surface {
+            --bg: #d8ecce;
+            --text: #1a2a14;
+            --accent: #3a7a3a;
+            --grain-opacity: 0.02;
+            --vignette-opacity: 0;
+            --vignette-color: 0,0,0;
+            --transition-speed: 0.3s;
+        }
+
+        body.theme-aftermath {
+            --bg: #d4c4a8;
+            --text: #2a2018;
+            --accent: #6b4a35;
+            --grain-opacity: 0.035;
+            --vignette-opacity: 0.18;
+            --vignette-color: 60,40,20;
+        }
+
+        /* ═══════════════════════════════════════════
+           LAYOUT
+           ═══════════════════════════════════════════ */
+
+        .container {
+            max-width: 660px;
+            margin: 0 auto;
+            padding: 10vh 24px 30vh 24px;
+            position: relative;
+            z-index: 10;
+        }
+
+        /* ═══════════════════════════════════════════
+           REVEAL ANIMATIONS — Reimagined per terrain
+           ═══════════════════════════════════════════ */
+
+        .beat {
+            opacity: 0;
+            margin-bottom: 1.8rem;
+            will-change: opacity, transform, filter;
+            transition: opacity 1.5s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                        transform 1.5s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                        filter 1.2s ease;
+        }
+
+        .beat.is-visible { opacity: 1; transform: none; filter: none; }
+
+        /* Stage: Isla slides from the left — she's interrupting */
+        .reveal-stage { transform: translateX(-25px); }
+
+        /* Red Earth: Heat shimmer — slight skew + desaturation */
+        .reveal-earth {
+            transform: translateY(20px) skewX(0.3deg);
+            filter: saturate(0.5);
+        }
+
+        /* Canopy: Moisture drop — falls from above, dim reveal */
+        .reveal-canopy {
+            transform: translateY(-18px);
+            filter: brightness(0.6);
+        }
+
+        /* Gorge: Stone stillness — opacity only, no movement */
+        .reveal-gorge { /* nothing — just opacity */ }
+
+        /* Void: Slow rise from the deep — breathing scale */
+        .reveal-void {
+            transform: scale(0.97);
+            transition-duration: 3s !important;
+        }
+
+        /* Surface: Sharp snap — the shock of air */
+        .reveal-surface { transition-duration: 0.25s !important; }
+
+        /* Aftermath: Gentle settle */
+        .reveal-aftermath { transform: translateY(12px); }
+
+        /* ═══════════════════════════════════════════
+           VOICE TYPOGRAPHY
+           ═══════════════════════════════════════════ */
+
+        .voice-ethel {
+            font-weight: 300;
+        }
+
+        .voice-isla {
+            font-family: 'Inter', sans-serif;
+            font-weight: 300;
+            font-style: italic;
+            font-size: 1.1rem;
+            line-height: 1.7;
+            border-left: 2px solid var(--accent);
+            padding-left: 1.2rem;
+            opacity: 0.92;
+            transition: border-color var(--transition-speed) ease;
+        }
+
+        .voice-isla-deadpan {
+            font-family: 'Inter', sans-serif;
+            font-weight: 500;
+            font-style: normal;
+            font-size: 1.1rem;
+            letter-spacing: 0.01em;
+            border-left: 2px solid var(--accent);
+            padding-left: 1.2rem;
+        }
+
+        .voice-dialogue {
+            font-weight: 400;
+            font-style: italic;
+            padding-left: 2rem;
+        }
+
+        .voice-impact {
+            font-weight: 600;
+            font-size: 1.4rem;
+            letter-spacing: -0.01em;
+            text-align: center;
+            line-height: 1.5;
+        }
+
+        .voice-whisper {
+            font-family: 'Inter', sans-serif;
+            font-weight: 300;
+            font-size: 1rem;
+            text-align: center;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            opacity: 0.7;
+        }
+
+        .part-header {
+            font-family: 'Inter', sans-serif;
+            font-weight: 300;
+            font-size: 0.85rem;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            margin-top: 25vh;
+            margin-bottom: 10vh;
+            text-align: center;
+            opacity: 0.35;
+        }
+
+        .chapter-title {
+            font-family: 'Inter', sans-serif;
+            font-weight: 300;
+            font-size: 0.7rem;
+            letter-spacing: 0.4em;
+            text-transform: uppercase;
+            text-align: center;
+            opacity: 0.25;
+            margin-bottom: 15vh;
+        }
+
+        /* ═══════════════════════════════════════════
+           PACING — Scroll gaps
+           ═══════════════════════════════════════════ */
+        .pause-xs     { margin-bottom: 6vh; }
+        .pause-small  { margin-bottom: 12vh; }
+        .pause-medium { margin-bottom: 25vh; }
+        .pause-large  { margin-bottom: 45vh; }
+        .pause-void   { margin-bottom: 70vh; }
+
+        /* ═══════════════════════════════════════════
+           ATMOSPHERIC OVERLAYS
+           ═══════════════════════════════════════════ */
+
+        .grain {
+            position: fixed; top: 0; left: 0;
+            width: 100vw; height: 100vh;
+            pointer-events: none; z-index: 50;
+            opacity: var(--grain-opacity);
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+            transition: opacity var(--transition-speed) ease;
+        }
+
+        .vignette {
+            position: fixed; top: 0; left: 0;
+            width: 100vw; height: 100vh;
+            pointer-events: none; z-index: 5;
+            background: radial-gradient(ellipse at center,
+                transparent 25%,
+                rgba(var(--vignette-color), var(--vignette-opacity)) 110%);
+            transition: background 3s ease;
+        }
+
+        #progress-bar {
+            position: fixed; top: 0; left: 0;
+            height: 2px;
+            background-color: var(--accent);
+            width: 0%; z-index: 100;
+            transition: width 0.1s, background-color var(--transition-speed) ease;
+            opacity: 0.5;
+        }
+
+        #particle-canvas {
+            position: fixed; top: 0; left: 0;
+            width: 100vw; height: 100vh;
+            pointer-events: none; z-index: 4;
+        }
+    </style>
+</head>
+<body class="theme-stage">
+    <div class="grain"></div>
+    <div class="vignette"></div>
+    <div id="progress-bar"></div>
+    <canvas id="particle-canvas"></canvas>
+
+    <div class="container" id="story-container"></div>
+
+    <script type="text/plain" id="raw-story">
+## STAGE
+[pause]
+[isla] So.
+[pause]
+[isla] hi.
+[pause-medium]
+[isla] I'm Isla. And before you ask — no. There's no content warning. If you need one you're already in the wrong room.
+[pause]
+[isla] I grew up on the upper north shore of Sydney. A father who was a judge. A mother who was gorgeous in the way that costs silence. Hedges taller than the fence line. The full brochure.
+[pause]
+[isla] None of it kept me safe but it photographs beautifully.
+[isla-deadpan] That's not where this starts. But it's why I'm the one holding the microphone and not someone calmer.
+[pause-medium]
+[isla] There's a girl in this book called Ethel.
+[pause]
+[isla] She's the reason it exists.
+[pause]
+[isla] She wrote most of it. I asked why she didn't just read it herself and she looked at me the way she looks at everyone, like I'd asked whether gravity had an opinion, and said: "because you're louder."
+[pause]
+[isla] Fair.
+[pause-medium]
+[isla] Ethel doesn't shout. Ethel doesn't need to. She walks into a room and people adjust. Not because she demands it. Because something about her — the stillness, the absence of performance, the way she doesn't need a single person in that room to like her — makes everyone quietly recalculate where they stand. She doesn't notice. She's never needed to.
+[pause]
+[isla] I walk into a room and someone dials triple zero.
+[pause]
+[isla] We balance out.
+[pause-medium]
+[isla] Her version of this reads like evidence. Mine reads like a fire. Somewhere in between is what actually took place on red dirt and wet stone and at a wedding reception on the north shore where the cutlery was real silver and the bride was my mother and the groom was a man you'll hear plenty about when I'm ready.
+[pause-medium]
+[isla] You'll meet that man.
+[pause]
+[isla] Not yet.
+[pause-medium]
+[isla] Right now it starts with a gate.
+## RED_EARTH
+[chapter] Chapter One: The Drop
+[header] I
+[ethel] The gate was open. It was always open.
+[ethel] Gran's property sat broad and quiet against the escarpment, six thousand acres of cleared country with the sandstone ranges heaped up behind it and the red dirt running flat to every compass point. The homestead, the sheds, the water tanks, the radio mast, and two hundred metres east along a gravel track that turned to slurry in the wet — the lab. From the air it looked like someone had built a small industrial campus in the middle of nowhere and then decided to live beside it, which is exactly what had happened.
+[ethel] The gate at the perimeter was heavy gauge steel and mesh and it had not been locked once in the decades Gran had occupied the compound. Her logic was unconditional. A gate you bolt announces that you're frightened of whatever's beyond it. Gran wasn't frightened of what was beyond it. She'd built what was behind it. Anything that wandered through could have a look and make up its own mind.
+[ethel] That was Gran. Elizabeth. A woman who invented her own shorthand for molecular bonds at nineteen because the standard notation couldn't keep pace with how fast her thoughts assembled. Who left school at sixteen, not for lack of ability but because ability, in a girl from the western suburbs in the early seventies, registered as insolence. Who taught herself organic chemistry from secondhand textbooks on the floor of a university bookshop that let her sit there because nobody had the energy to move her. Who rode the Langtang trail in Nepal at twenty-two with a man she loved sharply and briefly, a man whose physical stillness and quiet competence would resurface a generation later in his son stripped of its warmth. An anthropologist photographed them on that trail. Wrote in his field notes that they moved like locals. Wrote also, with the professional eye of someone trained to read the mechanics of human connection, that they were already separating. Different trajectories forming beneath the same set of boots.
+[ethel] She came back. Met Pop. Pop was nothing like the man from the trail. Pop was the kind of certainty that arrives with a shifting spanner in one hand and a sunrise behind it. He recognised what she was the afternoon he watched her take apart a bore water contractor's calculations on dissolved solids at a kitchen table, and four months later they married because the decision had already been made by forces neither of them thought needed naming.
+[ethel] Pop funded her first term. Gran funded the rest, partly through scholarships and partly through a water purification patent she lodged in her second year of study. By thirty she held a doctorate in chemistry. By thirty-five a second in physics. She stopped trying to explain herself to neighbours somewhere in between. She held patents in polymer decay, catalytic conversion, and industrial water treatment. The CSIRO sent people to inspect her lab. University departments sent postgraduates to observe her methods. Government contracts arrived and were fulfilled and the money accumulated and Gran treated it with the same indifference she treated everything that wasn't the problem directly in front of her face, which at any given moment could be a stalled chemical reaction or a seized water pump or the fact that for the fourth time this morning she had abandoned a mug of tea on a bench she was no longer anywhere near.
+[ethel] Ethel once read a biography of Richard Feynman and stopped halfway through because it felt like someone had described Gran with a different name and different genitals. The same playful restlessness. The same refusal to perform expertise. The same appetite for the physical world that made no distinction between a laboratory and a paddock. Gran didn't behave like a wealthy woman. She didn't behave like a scientist. She behaved like a person who happened to be both and couldn't imagine why either fact would alter how she drank her tea, which was usually cold by the time she remembered it existed.
+[ethel] That morning — November, deep into the buildup, the part of the year when the atmosphere in the tropical north stops being weather and starts being a condition — Pop had moved the bike before dawn. He did this without being asked. He rotated the tyres. Cleaned and tensioned the chain. Topped up the brake fluid. Positioned the machine beside the water tank, angled toward the fence line, ready. He did not mention it.
+[ethel] Ethel did not mention that he hadn't mentioned it. In that household the mechanics of care operated at frequencies below audible speech. Pop maintained things. Ethel used the things Pop maintained. The transaction was complete without a receipt and neither party felt a surplus syllable would improve it.
+[ethel] She latched the visor and rode through the open gate and the red dust took the noise of her engine before she made the first grid.
+[isla] I should tell you about the air.
+[isla] I know about atmospheres that accumulate without breaking. I grew up inside one. Mine was a house in Pymble where the hedges were higher than the neighbours could see over and the garden was manicured panic and the man at the head of the dinner table had a voice you obeyed on the first syllable. He asked how school was. You had to get the answer right. There were no second attempts.
+[pause]
+[isla] My atmosphere was different from Ethel's. Same physics. Different consequences.
+[pause-medium]
+[isla] That's all I'm going to say about that. For now.
+[isla-deadpan] You'll wish I'd kept it that way.
+[pause-medium]
+[ethel] The November buildup in the top end is not a season. It's a debt. The barometric pressure descends in fractions the body registers before the mind does, settling into the jaw, the sinuses, the joints. Humidity climbs until the distinction between the air and the skin it sits against becomes difficult to prove. Moisture condenses on steel surfaces too hot to hold it. Sweat forms on the collarbone and the inner crease of the elbow and stays, because the saturated atmosphere surrounding it has lost all interest in taking anything further. Every afternoon the sky manufactures towering purple-black cloud formations laced with visible electricity, each one promising a deluge that would settle everything, and then doesn't deliver. The bracing for the break becomes its own fatigue. Stock hands on neighbouring runs got into arguments that three weeks earlier they wouldn't have started. The cattle refused to move and stood under whatever shadow they could reach and would not budge until physics gave them a reason to.
+[ethel] Ethel's body made no such bargain with the conditions. She accepted the thermal weight on her arms and across the flat of her back and rode north along the fence line at the same clip she'd have ridden if it were June.
+[ethel] Ethel was like that. She met the actual conditions of the actual moment and declined to petition them for something different.
+[pause]
+[isla] That sentence is the entire book, by the way. You could stop here. Won't. But could.
+[isla-deadpan] You won't.
+[pause-medium]
+[isla] Fifteen kilometres out the country opened flat and treacherous. Mineral earth running to every edge, fractured by stands of desert bloodwood and the hostile architecture of spinifex tussock. Ghost gums punched up from the red at intervals, bone-white bark incandescent against the oxidised ground. The dust was fine particulate iron. It entered the weave of cloth, the linkages of machinery, the crevices of hands. It dyed everything it contacted. Ethel wore the residue permanently in the cuticles of her fingernails and the creases of her knuckles and the strands of her hair, which was red — a genetic copper so closely matched to the pigment of the soil it occupied that in flat light the distinction between the girl and the dirt beneath her disappeared.
+[isla] Three boys waited at the fork.
+[isla] Perched across their bikes in the wide-shouldered, boot-heavy manner of young men raised on stations where the working day began before sunrise and involved moving animals that could kill them across distances measured in days. Their fathers managed cattle over country that consumed entire horizons. These boys had been on horseback or on two-stroke engines since they were old enough to maintain a grip, and the physical authority that work deposited in their bodies was visible in how they held space — broadly, carelessly, with the unstudied confidence of creatures that had never been required to justify the square footage they occupied.
+[isla] Ethel stopped alongside them and left her motor running. She occupied almost no space at all.
+[isla] While this was happening I was nine hundred kilometres south wearing a dress that wasn't mine, sitting in the back row of my mother's wedding to a man whose name you'll hear when I'm ready. They put me in the back. Smart, really.
+[pause]
+[isla] I ate a bread roll I didn't want because eating gave me something to do with my hands that wasn't what my hands wanted to do.
+[pause]
+[isla] My mother looked beautiful. That was her whole skill set.
+[isla-deadpan] Different event. Same week. Ethel dealt with hers by saying nothing. I dealt with mine by making a noise that cleared two tables.
+[pause-medium]
+[dialogue] "Took your time," the eldest one called above his idling engine. Sixteen or near enough. A jaw already rehearsing the shape of the man who would inherit the property. Sunburn on sunburn across his cheekbones, a geological record of exposure. His name doesn't matter here. What matters is that he looked at Ethel the way all three of them looked at Ethel — with a species of wariness disguised as casual indifference that none of them could have named if pressed.
+[ethel] Ethel glanced north toward the ridge.
+[dialogue] "Five K from here. Nothing marked past the rim."
+[ethel] She didn't wait for consensus. The bike moved. Three engines gunned to follow. The dust column their departure raised hung in the heavy, motionless air and stayed there.
+[ethel] She'd found the gorge the previous year. An irregularity on a satellite image accessed from a lab terminal connected to a network she had no formal permission to use — a gap in the canopy density that corresponded to nothing on any published geological survey, contour lines compressing into an unreadable cluster. She'd ridden out alone, forced the bike through country that resisted the attempt, and arrived at something the maps had either overlooked or actively avoided.
+[ethel] She'd told nobody for twelve months. And then she'd told three boys who were not equipped for what she'd found.
+[header] II
+[impact] The ridge gave way and the world inverted.
+[ethel] What had been exposed — sky and oxide and an emptiness calibrated to make human depth perception abandon its post — hinged downward along a fracture in the substrate so sudden that the stomach registered the change before the eyes confirmed it. The track collapsed to a rut. Dense scrub merged above the handlebars. Tyres clattered across basalt plate and erupted root structures and the suspension hammered through its travel with every metre of descent. Ethel's front wheel caught an outcrop and the fork bottomed with a force that arrived in her wrists like a slap and she weighted the pegs and released the bars and let the rear wheel find its own line and did not brake.
+[ethel] Behind her the three riders fought the terrain differently. With muscle and volume and swearing that the bush absorbed without acknowledgement.
+[ethel] Then the temperature changed. Four degrees in ten metres. The red vanished beneath a blanket of black decomposition so old and so deep that its smell — fungal, pressurised, saturated with the chemical exhaust of plant matter recycling itself for geological time — arrived before the darkness did. They were inside rainforest. Strangler figs with root buttresses broader than the motorcycles. Hoop pine verticals rising into a midstory so woven with liana and fern that the canopy formed a solid green ceiling and the light beneath it was submarine and particulate and green.
+[ethel] Ethel's visor clouded instantly. She cracked it open and rode bare-faced into air so wet it banked against her skin. Fern fronds raked her forearms as the trace threaded between root systems and boulders jacketed in moss.
+[ethel] The conversation died. The boys' engines still beat but the human noise between them — the call and response that had carried them through the open country — ceased within the first hundred metres of canopy as though the forest had applied a volume limit they lacked the authority to contest. Condensation gathered on individual leaves and dropped to the understorey in measured intervals. A skink bolted. Then a single protracted shriek from high in the canopy — the territorial broadcast of a bird that had evolved to generate a sound indistinguishable from a terrified child — and the youngest rider's handlebars jerked before he corrected.
+[whisper] Nobody identified the sound. Nobody spoke.
+[pause]
+[isla] Ethel told me about that bird once. She gave me the Latin name and the frequency range and the evolutionary pressure that produced the call and I told her she'd murdered the romance of it and she looked at me the way she looks at anyone who uses the word romance as though it's meant to be a compliment.
+[ethel] The track swung close to a stand of heart-shaped leaves with a pale underside. Ethel adjusted her line a metre to the right without decelerating. The boy behind her followed the deviation by instinct. He would never learn that she'd steered him around weeks of agonising dermatitis from a plant whose silica needles delivered a neurotoxin that medical literature ranked alongside electrical burns. She would never volunteer the information.
+[ethel] That was Ethel's method. She didn't announce hazards. She adjusted trajectory. If you were attentive enough to follow you survived the adjustment. If you weren't she did not double back.
+[pause]
+[isla] I've been on that end of it since. It isn't cruelty. It's a refusal to co-sign your decision not to look where you're putting your feet. Took me a long time to learn the difference. Some people never do.
+[pause-medium]
+[isla] The gradient increased. Stone displaced dirt. Water sheeted across the exposed rock from somewhere uphill and the rear tyres lost and regained traction in continuous cycles. The forest increased in density until it felt less like terrain and more like resistance. And then, before they saw it, they felt it — coming up through the basalt and through the chassis of the machines and through the handlebars and into the metacarpal bones of eight hands. Not a sound. A frequency. The physical imprint of a massive column of water in sustained freefall, near enough now to make the bedrock hum.
+[isla] One more turn.
+[isla] The canopy parted.
+[isla] They killed their engines and got off and stood on wet stone and the roar of the waterfall replaced every other input like someone had pulled a curtain across the rest of the world.
+[header] III
+[isla] The earth had been removed.
+[isla] Not eroded. Not sculpted. Subtracted. A perpendicular deletion of terrain where the crust stopped and the void began. The gorge walls fell away in horizontal strata of iron-bearing sediment — amber, rust, a deep venous red — each band a chapter in a substrate narrative that had been composing itself for half a billion years. Every ledge and fissure supported life. Root systems hair-thin enough to grip a mineral seam narrower than a fingernail. Fern colonies. The parasitic cling of vine. High above them the waterfall departed its lip and fell through open air in a single cylindrical column that held its shape for the full drop before shattering against the basin below in a continuous static detonation of white spray and noise.
+[isla] From the ledge where they stood the basin appeared lethal. Rock formations punctured the agitated surface at ugly angles. Splintered timber bridged the gaps. The angles converged toward a verdict any eye could read without training: no depth, no margin, no way through.
+[isla] That was the trick of the vantage.
+[isla] Ethel had been higher. The year before. Alone. She'd climbed the gorge wall using a natural route she'd read from the stratigraphy — alternating hard and soft stone bands that formed an ascending sequence of handholds if you understood which layers accepted weight. From above, vertical above, the truth was different. The rock formations were nowhere near the fall line. Hydraulic forces had pressed them outward against the gorge walls, ten and fifteen metres clear of the column. The water below the lip was open and deep and dark. Space enough for a clean entry. Depth enough to survive one. The mathematics were generous if the person entering the water understood the constraints and the constraints were real.
+[isla] Ethel understood the constraints.
+[isla] The three boys spread themselves along the viewing ledge. One lobbed a fist-sized chunk of stone off the edge and they tracked its descent as it struck one wall and spun and struck another and vanished into the spray. The delay before the impact sound climbed back to them was long enough to revise the expression on all three faces. The youngest boy moved a half step backward. Pretended he hadn't.
+[isla] "Not a chance." The eldest spoke too loud for the distance between them. He looked at Ethel when he said it. She didn't look back. He wiped both palms down the front of his jeans and looked at her again.
+[isla] Ethel's eyes were on the lip of the falls. Weight on one hip. Nothing in her body asked to be read.
+[isla] "Can't even tell how far down that is from here." Attempting it again. A hairline crack in the composure.
+[isla] That was accurate. From their position the true depth was invisible.
+[isla] The second boy offered a story about a ringer north of Katherine who'd tried a comparable jump and shattered both legs. True or invented. The third cited his uncle's firm opinion that any entry into freshwater above ten metres was fatal. Ethel let that stand. The physics didn't support it but correction wasn't what she was here for.
+[isla] From where they stood the basin was impossible. Rock teeth across the fall line, depth crushed to nothing by the angle. She knew what it looked like from here. She also knew what it looked like from the lip — twenty metres up, directly above, where she'd stood alone twelve months ago and looked straight down into open water. Same gorge. Same stone. Same volume. Completely different truth. The only thing that changed between the two was where you put your feet when you looked.
+[isla] She'd been to both positions. She trusted the one she'd measured herself.
+[isla] She walked past them. Not through. Around. The way you navigate fixed objects on your way somewhere else.
+[isla] "Ethel."
+[isla] She was already at the wall.
+[isla] "Ethel, don't—"
+[isla] She was climbing. Hands finding the holds she'd committed to memory on a previous ascent. Root filaments threaded through the rock face. The cold lateral bleed of groundwater tracking across her knuckles. Fern and moss and the close organic weight of the gorge pressing in on her from every direction. The noise of the waterfall expanded as she gained height until it was no longer a sound but a medium — a sustained low-frequency envelope that entered through her feet and scaled her skeleton and settled in the bones of her inner ear and replaced cognition with vibration.
+[isla] She came out at the top.
+[isla] The lip was granite worn to the colour and smoothness of old bone. Moss colonised the low-velocity depressions where the current slowed. The spray was warm. It gathered on her arms and across her face and in the fibres of her hair. She gripped the wet stone with the soles of her bare feet and felt the rock vibrating beneath her — the resonance of the water departing the edge a body-width to her left, the entire shelf thrumming at a frequency that lodged in the small bones of the ear.
+[isla] Far below, three diminished figures occupied the observation ledge. She could not read their faces. They could not read hers. They could see only the outline of a girl on the edge of a twenty-metre drop whose body communicated nothing — no brace, no deep breath, no shoulder-check to verify the audience — the posture of someone standing at a counter waiting for paperwork to come back.
+[isla] She was not performing.
+[isla] That was the part none of them could reach. A performance they could have met — matched it or mocked it or clapped and moved on inside a week. But there was nothing to meet. She'd walked around them, climbed past them, and now stood above them at the edge of something they would not attempt, and the silence on the ledge below had changed weight. It pressed differently against the three of them than the silence before it had.
+[header] IV
+[isla] She went.
+[isla] Hips level. Arms flush. The moss released her soles and the granite dropped away and she was in the air.
+[isla] Two seconds.
+[isla] The gorge walls drove upward in vertical bands — red, green, rust, green — and the waterfall column smeared into a white acoustic wall beside her. Speed pressed into her face, her chest, the flat of her shins. Her chin drew in. Her toes aimed down. Her spine locked into a single line and the basin swung up to meet her.
+[isla] She hit the water.
+[isla] The surface sealed above her and the world switched off.
+[isla] Sound vanished. Light vanished. Cold hit her ribcage like a compression belt — the warm spray replaced in a single heartbeat by a darkness so total her eyes stopped trying. No gradual dimming. The green-white shimmer of the surface simply ceased and there was nothing beneath her but pressure and temperature and the faint vestibular thread of current telling her which way was down.
+[isla] Beneath the column the basin churned with a violence she could feel in her teeth. The falling water dragged air down with it — millions of bubbles stripping the density from the upper column until the water in that zone stopped behaving like water. It looked like liquid. It held nothing. A body here would not float. It would sink, and keep sinking, and the boys who had died in pools like this one had died because they thrashed — because the instinct to claw upward burned through their oxygen in ninety seconds while the hydraulic rotation pinned what was left to the undercut stone at the base.
+[isla] Ethel did not thrash.
+[isla] She released her body mass to the hydraulic rotation. Sealed what air she had behind closed glottis. Allowed the current to take her wherever its pattern intended. Down. Lateral. A tumbling rotational force that moved her through utter darkness with the blind indifference of a mechanical cycle operating on material it did not classify as alive. The current was a system. Systems follow patterns. Patterns complete themselves. Gran had taught her this when she was nine, standing at the kitchen sink, releasing drops of food colouring into a running tap and tracing the path of the dye with her finger — you let the current exhaust itself, then you move at a right angle to it, because energy in a closed system always disperses at the margin.
+[isla] It dispersed. Deep below the granite shelf, in water uncorrupted by the aerating violence above, her body discovered resistance. The transition was tactile. A thickening at the limbs. A shift in the pressure differential from descent to suspension. The darkness greyed at its margins and a dim green radiance filtered down through the turbulent layer overhead.
+[isla] One kick. Calibrated. An angular thrust that angled her body upward and right, clear of the undercuts, into the quieter water along the far margin of the basin where the rotation thinned and the trapped air cleared and the surface resolved itself overhead as a trembling membrane of fractured green.
+[isla] She broke through.
+[isla] Inhaled. The air returned — hot, brutal, sweet.
+[isla] She treaded water beside the woody root curtain of a fig tree that descended from the gorge wall into the basin. The water here drew from springs deep in the basalt — cold well beyond the ambient range, a thermal shock that constricted the small vessels in her face and forearms and registered as something close to pleasure. She cleared the wet weight of hair from her eyes.
+[isla] During the deepest circuit, in the clear water past the aeration zone, a freshwater crayfish had crossed her path. Blue. Vivid. Eggs clutched beneath the tail. It had moved through the beam of subaqueous light without hesitation, without expenditure, with the total frictionless competence of an animal filling the exact niche that evolution had designed it for.
+[isla] She looked across the basin.
+[isla] They were still on the ledge. Phones lowered. Not recording. Not exchanging words. Not moving. Standing in the fine drift of the mist with their faces turned toward the girl in the water, and something about the collective shape of them had changed. The broad-shouldered width that had accompanied them through the ride and the first minutes on the ledge had contracted. Shoulders drawn inward. Weight redistributed. An involuntary reduction of the perimeter each body was claiming.
+[isla] One glanced at his phone. At the footage. Stopped it. Pressed the screen flat against his thigh. The second rewound through his clip, looping the small figure detaching from the lip and accelerating and disappearing through a surface that closed behind her as though she'd never been — looping it the way you reread a sentence that won't resolve into meaning. The eldest exhaled a short syllable that sat in the register of a laugh but wasn't one. The kind of sound that exits a body sideways, looking for permission it hasn't been given. He locked his screen and put it away.
+[isla] Nobody captioned it.
+[isla] Ethel hauled herself out onto the rock shelf at the basin's margin and sat with her feet in the dark water and the iron pigment still ground into the whorls of her fingerprints and the crayfish somewhere below her carrying its clutch through the deep quiet, and her breathing settled inside forty seconds because it had not meaningfully accelerated.
+[isla] The clouds kept building. The barometric deficit had not resolved. Within a fortnight the monsoon would finally rupture the sky in a vertical event so dense it turned the dirt to impassable red slurry, filled this gorge to within metres of the rim, and collapsed the operational world to a radius of a hundred metres — the homestead, the lab, Gran muttering over a bench and neglecting another cup of tea, Pop servicing equipment that ran fine, and the radio school frequency stuttering through the static of a season intent, every year, on drowning them.
+[isla] That hadn't arrived yet. The sky was still banking its pressure.
+[isla] Ethel climbed to the ledge by the route she'd taken down. Walked past the three boys without adjusting her pace or her gaze or the rhythm of her respiration. They watched her work the riding gloves over her fingers — one at a time, deliberate — and kick the motor and ride back along the trace through the fern curtain and the mud, through the threshold where the green gave way and the red resumed and the sun landed on her shoulders.
+[isla] Gone.
+[isla] From where they stood the deception held. From below, the geometry still converged on impossibility. Rock formations across the descent line. Depth compressed to nil by the viewing angle. Their eyes told them it could not be done. The last two seconds told them it had been.
+[isla] These were boys with wire calluses and cracked ribs strapped in electrical tape and the particular smell of a saleyard at sunrise ground into their boot leather. They'd been thrown from horses and climbed back on before the swelling set. They'd loaded cattle that kicked hard enough to buckle a rail. Physical risk wasn't a concept to them. It was the texture of every morning they'd ever had.
+[isla] And she had passed through it the way she'd pass through a gate.
+[isla] None of them could have found language for what had shifted. What they'd brought to the gorge — a confident spatial knowledge of where they stood relative to one another and to this quiet, copper-haired girl from the old chemist's compound who appeared at the junction from time to time and never once asked permission for anything — had been recalibrated in under two seconds, and the recalibration was not reversible.
+[isla] They stood in the spray for a while. Nobody spoke. Then they pocketed their phones and walked back through the forest to their machines.
+[isla] The ride back was the wrong kind of quiet. Not the easy silence of tired boys covering ground. The kind where someone should be talking and isn't. They rode in a loose formation with too much gap between bikes, the engines performing the function that conversation would ordinarily serve. When the canopy broke and the red earth reappeared and the buildup heat hit them the eldest boy opened the throttle hard and pulled away and stayed away. The other two held back at a distance that was slightly too far to read as companionship. Nobody reduced the interval.
+[isla] Ethel held the rear. Same speed she'd held on the approach. Unchanged.
+[isla] The column of dust they'd raised hung in the barometric stillness behind them and would not come down.
+[pause-medium]
+## CODA
+[isla] That's the gate. Not the steel and mesh one Gran refused to lock. The other one. The one that four people rode through that morning and only one them came out the other side in the same shape she went in.
+[pause]
+[isla] Ethel would never put it like that. If you asked her whether what she did changed those three boys she'd give you the look — the one that makes you feel like your question was missing a load-bearing wall — and say she hadn't done anything to them. She'd adjusted her own position. What they did with that was their concern.
+[pause-medium]
+[isla] I would've told it differently. Louder. Messier. Probably would've set something on fire and called it art.
+[isla] But Ethel's the one who put it in writing.
+[pause]
+[isla] And I'm the one making you listen to it.
+[pause-medium]
+[isla] So. Here we are. Past the gate. What comes next is worse and better and much, much noisier and I'm not sorry about any of it.
+[pause]
+[isla] Particularly the noise.
+[pause-medium]
+[isla] One more thing.
+[pause]
+[isla] If you're from the north shore — if you grew up behind one of those hedges — you already know what kind of house I'm talking about. The ones where everything looks right from the street. Furnished silence. Landscaped denial.
+[isla-deadpan] The hedges are still that tall.
+[pause-medium]
+    </script>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const raw = document.getElementById('raw-story').textContent;
+        const container = document.getElementById('story-container');
+        const lines = raw.split('\n').filter(l => l.trim() !== '');
+
+        const themeMap = {
+            'STAGE': 'theme-stage',
+            'RED_EARTH': 'theme-red-earth',
+            'CANOPY': 'theme-canopy',
+            'GORGE': 'theme-gorge',
+            'VOID': 'theme-void',
+            'SURFACE': 'theme-surface',
+            'AFTERMATH': 'theme-aftermath',
+            'CODA': 'theme-stage'
+        };
+
+        const revealMap = {
+            'theme-stage': 'reveal-stage',
+            'theme-red-earth': 'reveal-earth',
+            'theme-canopy': 'reveal-canopy',
+            'theme-gorge': 'reveal-gorge',
+            'theme-void': 'reveal-void',
+            'theme-surface': 'reveal-surface',
+            'theme-aftermath': 'reveal-aftermath'
+        };
+
+        let currentTheme = 'theme-stage';
+        let html = '';
+
+        lines.forEach(line => {
+            // Section headers → theme triggers
+            if (line.startsWith('## ')) {
+                const key = line.replace('## ', '').trim();
+                if (themeMap[key]) currentTheme = themeMap[key];
+                return;
+            }
+
+            const reveal = revealMap[currentTheme] || '';
+
+            // Pauses
+            if (line.trim() === '[pause]') { html += '<div class="pause-small"></div>'; return; }
+            if (line.trim() === '[pause-medium]') { html += '<div class="pause-medium"></div>'; return; }
+            if (line.trim() === '[pause-large]') { html += '<div class="pause-large"></div>'; return; }
+            if (line.trim() === '[pause-void]') { html += '<div class="pause-void"></div>'; return; }
+
+            const m = line.match(/^\[(.*?)\]\s(.*)$/);
+            if (!m) return;
+
+            const tag = m[1];
+            const text = m[2];
+
+            // Map tags to CSS classes
+            const classMap = {
+                'ethel': 'voice-ethel',
+                'isla': 'voice-isla',
+                'isla-deadpan': 'voice-isla-deadpan',
+                'dialogue': 'voice-dialogue',
+                'impact': 'voice-impact',
+                'whisper': 'voice-whisper'
+            };
+
+            if (tag === 'header') {
+                html += `<div class="part-header beat ${reveal}" data-theme="${currentTheme}">${text}</div>`;
+            } else if (tag === 'chapter') {
+                html += `<div class="chapter-title beat ${reveal}" data-theme="${currentTheme}">${text}</div>`;
+            } else {
+                const voiceClass = classMap[tag] || 'voice-ethel';
+                // Isla asides within non-stage sections get stage reveal
+                const actualReveal = (tag === 'isla' || tag === 'isla-deadpan') ? 'reveal-stage' : reveal;
+                html += `<p class="beat ${voiceClass} ${actualReveal}" data-theme="${currentTheme}">${text}</p>`;
+            }
+        });
+
+        container.innerHTML = html;
+
+        // ── SCROLL REVEAL OBSERVER ──
+        const revealObserver = new IntersectionObserver(entries => {
+            entries.forEach(e => {
+                if (e.isIntersecting) e.target.classList.add('is-visible');
+            });
+        }, { rootMargin: '0px 0px -12% 0px', threshold: 0.05 });
+
+        document.querySelectorAll('.beat').forEach(b => revealObserver.observe(b));
+
+        // ── THEME TRANSITION OBSERVER ──
+        // Observe every beat and apply its theme when it crosses center
+        let lastTheme = 'theme-stage';
+        const themeObserver = new IntersectionObserver(entries => {
+            entries.forEach(e => {
+                if (e.isIntersecting) {
+                    const t = e.target.getAttribute('data-theme');
+                    if (t && t !== lastTheme) {
+                        document.body.classList.remove(
+                            'theme-stage','theme-red-earth','theme-canopy',
+                            'theme-gorge','theme-void','theme-surface','theme-aftermath'
+                        );
+                        document.body.classList.add(t);
+                        lastTheme = t;
+                        updateParticles(t);
+                    }
+                }
+            });
+        }, { rootMargin: '-45% 0px -45% 0px', threshold: 0 });
+
+        // Only observe first beat in each theme zone
+        let prevTheme = null;
+        document.querySelectorAll('.beat, .part-header, .chapter-title').forEach(el => {
+            const t = el.getAttribute('data-theme');
+            if (t !== prevTheme) {
+                themeObserver.observe(el);
+                prevTheme = t;
+            }
+        });
+
+        // ── PROGRESS BAR ──
+        window.addEventListener('scroll', () => {
+            const s = document.documentElement.scrollTop;
+            const h = document.documentElement.scrollHeight - window.innerHeight;
+            document.getElementById('progress-bar').style.width = ((s/h)*100) + '%';
+        });
+
+        // ── PARTICLE SYSTEM ──
+        const canvas = document.getElementById('particle-canvas');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+        let particleConfig = { count: 0, color: '200,150,100', speed: 0.3, dir: 'float', size: 1.5 };
+
+        function resize() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        resize();
+        window.addEventListener('resize', resize);
+
+        function updateParticles(theme) {
+            const configs = {
+                'theme-stage':     { count: 15, color: '196,118,58',  speed: 0.15, dir: 'float',  size: 1.2 },
+                'theme-red-earth': { count: 35, color: '180,90,50',   speed: 0.4,  dir: 'drift',  size: 1.5 },
+                'theme-canopy':    { count: 25, color: '180,200,170', speed: 0.5,  dir: 'fall',   size: 1.8 },
+                'theme-gorge':     { count: 0 },
+                'theme-void':      { count: 4,  color: '255,255,255', speed: 0.12, dir: 'rise',   size: 1.0 },
+                'theme-surface':   { count: 50, color: '255,255,255', speed: 2.0,  dir: 'burst',  size: 2.0 },
+                'theme-aftermath': { count: 12, color: '160,130,90',  speed: 0.25, dir: 'settle', size: 1.3 }
+            };
+            particleConfig = configs[theme] || configs['theme-stage'];
+            particles = [];
+            for (let i = 0; i < (particleConfig.count || 0); i++) {
+                particles.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height,
+                    vx: (Math.random() - 0.5) * particleConfig.speed,
+                    vy: (Math.random() - 0.5) * particleConfig.speed,
+                    opacity: Math.random() * 0.4 + 0.1,
+                    size: Math.random() * particleConfig.size + 0.5
+                });
+            }
+        }
+
+        function drawParticles() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const dir = particleConfig.dir;
+            particles.forEach(p => {
+                switch(dir) {
+                    case 'drift':  p.x += particleConfig.speed * 0.5; p.y += Math.sin(p.x*0.01)*0.3; break;
+                    case 'fall':   p.y += particleConfig.speed; p.x += Math.sin(p.y*0.02)*0.2; break;
+                    case 'rise':   p.y -= particleConfig.speed; break;
+                    case 'settle': p.y += particleConfig.speed * 0.3; break;
+                    case 'burst':  p.x += p.vx * 2; p.y += p.vy * 2; p.opacity *= 0.995; break;
+                    default:       p.x += Math.sin(Date.now()*0.0003 + p.y)*0.2; p.y += Math.cos(Date.now()*0.0002 + p.x)*0.15;
+                }
+                // Wrap
+                if (p.x > canvas.width + 10) p.x = -10;
+                if (p.x < -10) p.x = canvas.width + 10;
+                if (p.y > canvas.height + 10) p.y = -10;
+                if (p.y < -10) p.y = canvas.height + 10;
+
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(${particleConfig.color || '200,150,100'}, ${p.opacity})`;
+                ctx.fill();
+            });
+            requestAnimationFrame(drawParticles);
+        }
+
+        updateParticles('theme-stage');
+        drawParticles();
+
+        // Initial
+        setTimeout(() => window.dispatchEvent(new Event('scroll')), 100);
+    });
+    </script>
+</body>
+</html>
