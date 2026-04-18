@@ -4,13 +4,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>BLAST RADIUS — TOTAL COLLAPSE</title>
+    <title>BLAST RADIUS TOTAL COLLAPSE</title>
 
     <!-- Phaser 3 CDN -->
     <script src="https://cdn.jsdelivr.net/npm/phaser@3.80.1/dist/phaser.min.js"></script>
 
     <style>
-        /* ============ RESET & GLOBAL ============ */
+        /* RESET & GLOBAL */
         *,
         *::before,
         *::after {
@@ -188,12 +188,29 @@
         }
 
         @keyframes glitchHit {
-            0% { transform: translate(0) }
-            20% { transform: translate(-4px, 3px) }
-            40% { transform: translate(4px, -3px) }
-            60% { transform: translate(-3px, 3px) }
-            80% { transform: translate(3px, -3px) }
-            100% { transform: translate(0) }
+            0% {
+                transform: translate(0)
+            }
+
+            20% {
+                transform: translate(-4px, 3px)
+            }
+
+            40% {
+                transform: translate(4px, -3px)
+            }
+
+            60% {
+                transform: translate(-3px, 3px)
+            }
+
+            80% {
+                transform: translate(3px, -3px)
+            }
+
+            100% {
+                transform: translate(0)
+            }
         }
 
         .flash {
@@ -201,8 +218,13 @@
         }
 
         @keyframes screenFlash {
-            0% { background: rgba(255, 0, 85, 0.3); }
-            100% { background: transparent; }
+            0% {
+                background: rgba(255, 0, 85, 0.3);
+            }
+
+            100% {
+                background: transparent;
+            }
         }
     </style>
 </head>
@@ -237,9 +259,10 @@
     </div>
 
     <script>
-        // ================================================================
+
+
         // GLOBAL STATE & DOM
-        // ================================================================
+
         const STATE = {
             score: 20000000000,
             multiplier: 1.0,
@@ -276,12 +299,12 @@
             DOM.score.classList.add('glitch');
         }
 
-        // ================================================================
-        // PINBALL SCENE — 720w x 1280h
+
+        // PINBALL SCENE 720w x 1280h
         // All image positions from implementation_plan.md
         // Scale: 1.0 for all images (except ball at 0.70)
         // Rotation: 0 for all images at start
-        // ================================================================
+
         class PinballSimulation extends Phaser.Scene {
             constructor() {
                 super('PinballSimulation');
@@ -299,9 +322,9 @@
                 this.IMG = 'phone_1280_720/';
             }
 
-            // ============================================================
-            // PRELOAD — load all image assets
-            // ============================================================
+
+            // PRELOAD load all image assets
+
             preload() {
                 // Particle texture (generated)
                 let g = this.make.graphics({ x: 0, y: 0, add: false });
@@ -358,11 +381,11 @@
                 this.load.image('blast_glow3', P + 'Blast_ball_bright_glow_3.png');
                 this.load.image('blast_extra_glow3', P + 'Blast_ball_bright_extra_glow_3.png');
 
-                // Blast energy explosions (720x1280 — full screen)
+                // Blast energy explosion yahhoooo... (720x1280 full screen)
                 this.load.image('godrays_blast', P + 'god_rays_from_blast_ball.png');
                 this.load.image('lightning_blast', P + 'lighting_from_blast_ball.png');
 
-                // Ball (151x151 — displayed at 70% scale)
+                // Ball (151x151 displayed at 70% scale)
                 this.load.image('ball_base', P + 'Ball_drop_shadow.png');
                 this.load.image('ball_left', P + 'Ball_Left_Hit.png');
                 this.load.image('ball_right', P + 'Ball_Right_Hit.png');
@@ -375,9 +398,9 @@
                 this.load.image('background', P + 'background.png');
             }
 
-            // ============================================================
+
             // CREATE
-            // ============================================================
+
             create() {
                 this.matter.world.autoUpdate = false;
                 this.matter.world.setBounds(0, -500, this.W, this.H + 800, 300, true, true, false, false);
@@ -394,7 +417,7 @@
                 });
 
                 // ---- Build scene layers (bottom to top) ----
-                // Background at pos[360.0, 640.0] — AE layer 36
+                // Background at pos[360.0, 640.0] AE layer 36
                 this.add.image(360.0, 640.0, 'background').setDepth(0);
 
                 this.createLights();          // Depth 1-5, starts OFF
@@ -402,7 +425,7 @@
                 this.createIslaText();        // Depth 10
                 this.createStoppers();        // Depth 12-13
                 this.createTriangles();       // Depth 14-15
-                this.createDropTargetBars();  // Depth 16-17
+                this.createdropTargetBars();  // Depth 16-17
                 this.createTransportButton(); // Depth 18-19
                 this.createFlippers();        // Depth 20-25
                 this.createBottomGodrays();   // Depth 30, starts OFF
@@ -417,24 +440,24 @@
                 this.lastNudge = 0;
             }
 
-            // ============================================================
-            // LIGHTS — all default OFF (alpha 0), only flash on ball hit
+
+            // LIGHTS all default OFF (alpha 0), only flash on ball hit
             // Positions from AE file (exact sub-pixel)
-            // ============================================================
+
             createLights() {
-                // light_top — AE layer 32 at (353.0, 144.0) + layer 33 at (367.0, 144.0)
+                // light_top AE layer 32 at (353.0, 144.0) + layer 33 at (367.0, 144.0)
                 this.lightTop1 = this.add.image(353.0, 144.0, 'light_top')
                     .setAlpha(0).setDepth(1);
                 this.lightTop2 = this.add.image(367.0, 144.0, 'light_top')
                     .setAlpha(0).setDepth(1);
 
-                // light_side_top — AE layer 13 at (164.6, 434.6) + mirror
+                // light_side_top AE layer 13 at (164.6, 434.6) + mirror
                 this.lightSideTopL = this.add.image(164.6, 434.6, 'light_side_top')
                     .setAlpha(0).setDepth(2);
                 this.lightSideTopR = this.add.image(556.2, 434.6, 'light_side_top')
                     .setFlipX(true).setAlpha(0).setDepth(2);
 
-                // light_side_bottom — AE layers 34+35 at (556.2, 808.1) and (163.8, 808.1)
+                // light_side_bottom AE layers 34+35 at (556.2, 808.1) and (163.8, 808.1)
                 this.lightSideBotL = this.add.image(163.8, 808.1, 'light_side_bottom')
                     .setAlpha(0).setDepth(3);
                 this.lightSideBotR = this.add.image(556.2, 808.1, 'light_side_bottom')
@@ -447,16 +470,16 @@
                 const targets = Array.isArray(lightOrArray) ? lightOrArray : [lightOrArray];
                 this.tweens.add({
                     targets: targets,
-                    alpha: { from: 0.9, to: 0 },
+                    alpha: { from: 1, to: 0 },
                     duration: 300,
                     ease: 'Cubic.easeOut'
                 });
             }
 
-            // ============================================================
-            // BLAST BALL — AE layers 9-12 at (220.7, 229.9)
+
+            // BLAST BALL AE layers 9-12 at (220.7, 229.9)
             // Blast_ball_Base is default, others off
-            // ============================================================
+
             createBlastBall() {
                 // AE exact position for all Blast_ball layers
                 const bx = 220.7, by = 229.9;
@@ -469,7 +492,7 @@
                 this.blastGlow3 = this.add.image(bx, by, 'blast_glow3').setAlpha(0).setDepth(8);
                 this.blastExtraGlow = this.add.image(bx, by, 'blast_extra_glow3').setAlpha(0).setDepth(9);
 
-                // Full-screen energy effects — AE layer 4 at (360.0, 640.0)
+                // Full-screen energy effects AE layer 4 at (360.0, 640.0)
                 this.godRaysBlast = this.add.image(360.0, 640.0, 'godrays_blast').setAlpha(0).setDepth(50);
                 this.lightningBlast = this.add.image(360.0, 640.0, 'lightning_blast').setAlpha(0).setDepth(50);
 
@@ -498,22 +521,22 @@
                 this.tweens.add({ targets: this.lightningBlast, alpha: { from: 0, to: 0.6 }, duration: 150, yoyo: true, hold: 100, delay: 100 });
             }
 
-            // ============================================================
-            // ISLA TEXT — pos[368, 746], scale 1.0, rotation 0
+
+            // ISLA TEXT pos[368, 746], scale 1.0, rotation 0
             // inactive=visible, active=off
-            // ============================================================
+
             createIslaText() {
                 // AE layers 26+27 at (368.2, 745.9)
                 this.islaInactive = this.add.image(368.2, 745.9, 'isla_inactive').setDepth(10);
                 this.islaActive = this.add.image(368.2, 745.9, 'isla_active').setAlpha(0).setDepth(11);
             }
 
-            // ============================================================
-            // STOPPERS (bumpers) — positions from AE file
+
+            // STOPPERS (bumpers) positions from AE file
             // Stopper 1 (AE layers 20-23): pos[269.4, 443.3]
             // Stopper 2 (AE layers 24-25): pos[196.7, 557.8]
             // Scale 1.0, rotation 0
-            // ============================================================
+
             createStoppers() {
                 const M = Phaser.Physics.Matter.Matter;
                 const bumpOpts = {
@@ -539,12 +562,12 @@
                 }));
             }
 
-            // ============================================================
+
             // TRIANGLES (slingshots)
             // Triangle 1: pos[220, 880]
             // Triangle 2: mirrored at [500, 880] (720-220=500)
             // Scale 1.0, rotation 0
-            // ============================================================
+
             createTriangles() {
                 const M = Phaser.Physics.Matter.Matter;
                 const slingOpts = {
@@ -554,36 +577,33 @@
                     render: { visible: false }
                 };
 
-                // Triangle 1 (left) — AE layer 31 at (219.7, 879.4)
-                this.tri1_inactive = this.add.image(219.7, 879.4, 'triangle_inactive').setDepth(14);
-                this.tri1_active = this.add.image(219.7, 879.4, 'triangle_active').setAlpha(0).setDepth(15);
-                let tri1body = M.Bodies.polygon(219.7, 879.4, 3, 55, {
-                    ...slingOpts,
-                    angle: Math.PI / 2 + 0.35,
-                    plugin: { id: 'tri1' }
-                });
+                // Triangle 1 (left) AE layer 31 at (173.3803, 861.4949)
+                const sx = 1.481778, sy = 1.674793;
+                this.tri1_inactive = this.add.image(173.3803, 861.4949, 'triangle_inactive').setScale(sx, sy).setAngle(-207).setDepth(14);
+                this.tri1_active = this.add.image(173.3803, 861.4949, 'triangle_active').setScale(sx, sy).setAngle(-207).setAlpha(0).setDepth(15);
+                let tri1body = M.Bodies.polygon(173.3803, 861.4949, 3, 55, { ...slingOpts, plugin: { id: 'tri1' } });
+                M.Body.scale(tri1body, sx, sy);
+                M.Body.setAngle(tri1body, -207 * Math.PI / 180);
                 this.matter.world.add(tri1body);
 
-                // Triangle 2 (right, mirrored) — AE layer 30 at (500.3, 879.4)
-                this.tri2_inactive = this.add.image(500.3, 879.4, 'triangle_inactive').setFlipX(true).setDepth(14);
-                this.tri2_active = this.add.image(500.3, 879.4, 'triangle_active').setFlipX(true).setAlpha(0).setDepth(15);
-                let tri2body = M.Bodies.polygon(500.3, 879.4, 3, 55, {
-                    ...slingOpts,
-                    angle: -Math.PI / 2 - 0.35,
-                    plugin: { id: 'tri2' }
-                });
+                // Triangle 2 (right, mirrored) mirrored on X axis 720 - 173.3803 = 546.6197
+                this.tri2_inactive = this.add.image(546.6197, 861.4949, 'triangle_inactive').setFlipX(true).setScale(sx, sy).setAngle(207).setDepth(14);
+                this.tri2_active = this.add.image(546.6197, 861.4949, 'triangle_active').setFlipX(true).setScale(sx, sy).setAngle(207).setAlpha(0).setDepth(15);
+                let tri2body = M.Bodies.polygon(546.6197, 861.4949, 3, 55, { ...slingOpts, plugin: { id: 'tri2' } });
+                M.Body.scale(tri2body, sx, sy);
+                M.Body.setAngle(tri2body, 207 * Math.PI / 180);
                 this.matter.world.add(tri2body);
             }
 
-            // ============================================================
-            // DROP TARGET BARS (reactive_small_bar)
+
+            // drop TARGET BARS (reactive_small_bar)
             // Bar 1: pos[530, 548]   Bar 2: pos[226, 463]   Bar 3: pos[521, 368]
             // Default: inactive=visible, active=off
             // Scale 1.0, rotation 0
-            // ============================================================
-            createDropTargetBars() {
+
+            createdropTargetBars() {
                 const M = Phaser.Physics.Matter.Matter;
-                // AE positions — ALL bars on RIGHT side:
+                // AE positions ALL bars on RIGHT side:
                 // Layer 16/19: (529.4, 547.6)
                 // Layer 15/18: (526.2, 463.0)
                 // Layer 14/17: (521.5, 369.0)
@@ -608,10 +628,10 @@
                 });
             }
 
-            // ============================================================
+
             // TRANSPORT BALL BUTTON (subway/lock hole)
             // pos[181, 750], scale 1.0, rotation 0
-            // ============================================================
+
             createTransportButton() {
                 const M = Phaser.Physics.Matter.Matter;
 
@@ -627,13 +647,13 @@
                 this.matter.world.add(this.subwayHole);
             }
 
-            // ============================================================
-            // FLIPPERS — AE layers 7+8
+
+            // FLIPPERS AE layers 7+8
             // Left flipper: AE layer 8 at (239.8, 1073.6)
             // Right flipper: AE layer 7 at (480.2, 1073.6)
             // Images start at rotation 0, scale 1.0, default origin (0.5, 0.5)
             // Physics handles rotation; sync orbits image center around knob
-            // ============================================================
+
             createFlippers() {
                 const M = Phaser.Physics.Matter.Matter;
 
@@ -644,7 +664,8 @@
                     render: { visible: false }
                 };
 
-                const fW = 190, fH = 35; // Long enough to cover, gap at rest ~85px > ball diameter (50px)
+                const fScale = 1.13;
+                const fW = 190 * fScale, fH = 35 * fScale; // Scaled gap to allow ball to drop more easily
 
                 // Physics rest/active angles
                 this.L_REST = 0.55;
@@ -656,53 +677,55 @@
                 // Knob position in image-local coords: approx (60, 95) from top-left
                 // Image center in local coords: (131.5, 113)
                 // Offset from knob to center: (71.5, 18)
-                this.flipKnobToCenterX = 71.5;
-                this.flipKnobToCenterY = 18;
+                this.flipKnobToCenterX = 71.5 * fScale;
+                this.flipKnobToCenterY = 18 * fScale;
 
                 // AE exact positions
-                const lx = 239.8, ly = 1073.6;
-                const rx = 480.2, ry = 1073.6;
+                const lx = 223.4169, ly = 1073.6;
+                const rx = 720 - 223.4169, ry = 1073.6;
+
+                const pivotOffset = 15 * fScale;
 
                 // --- LEFT FLIPPER ---
                 // Knob world pos = center - offset
                 this.knobL = { x: lx - this.flipKnobToCenterX, y: ly - this.flipKnobToCenterY };
-                this.flipL = M.Bodies.rectangle(this.knobL.x + fW / 2 - 15, this.knobL.y, fW, fH, flipOpts);
+                this.flipL = M.Bodies.rectangle(this.knobL.x + fW / 2 - pivotOffset, this.knobL.y, fW, fH, flipOpts);
                 M.Body.setAngle(this.flipL, this.L_REST); // Initialize at rest angle
                 this.matter.world.add(this.flipL);
                 this.matter.world.add(M.Constraint.create({
-                    bodyA: this.flipL, pointA: { x: -fW / 2 + 15, y: 0 }, pointB: this.knobL,
+                    bodyA: this.flipL, pointA: { x: -fW / 2 + pivotOffset, y: 0 }, pointB: this.knobL,
                     length: 0, stiffness: 1, render: { visible: false }
                 }));
 
                 // --- RIGHT FLIPPER ---
                 // Knob world pos = center + offset (mirrored X)
                 this.knobR = { x: rx + this.flipKnobToCenterX, y: ry - this.flipKnobToCenterY };
-                this.flipR = M.Bodies.rectangle(this.knobR.x - fW / 2 + 15, this.knobR.y, fW, fH, flipOpts);
+                this.flipR = M.Bodies.rectangle(this.knobR.x - fW / 2 + pivotOffset, this.knobR.y, fW, fH, flipOpts);
                 M.Body.setAngle(this.flipR, this.R_REST); // Initialize at rest angle
                 this.matter.world.add(this.flipR);
                 this.matter.world.add(M.Constraint.create({
-                    bodyA: this.flipR, pointA: { x: fW / 2 - 15, y: 0 }, pointB: this.knobR,
+                    bodyA: this.flipR, pointA: { x: fW / 2 - pivotOffset, y: 0 }, pointB: this.knobR,
                     length: 0, stiffness: 1, render: { visible: false }
                 }));
 
                 // --- FLIPPER IMAGES ---
-                // Default origin (0.5, 0.5) — center placed at AE position
+                // Default origin (0.5, 0.5) center placed at AE position
                 // Left flipper at (239.8, 1073.6)
-                this.flipLInactive = this.add.image(lx, ly, 'flipper_inactive').setDepth(20);
-                this.flipLTranslucent = this.add.image(lx, ly, 'flipper_translucent').setAlpha(0).setDepth(21);
-                this.flipLActive = this.add.image(lx, ly, 'flipper_active').setAlpha(0).setDepth(22);
+                this.flipLInactive = this.add.image(lx, ly, 'flipper_inactive').setScale(fScale).setDepth(20);
+                this.flipLTranslucent = this.add.image(lx, ly, 'flipper_translucent').setScale(fScale).setAlpha(0).setDepth(21);
+                this.flipLActive = this.add.image(lx, ly, 'flipper_active').setScale(fScale).setAlpha(0).setDepth(22);
 
-                // Right flipper at (480.2, 1073.6) — mirrored
-                this.flipRInactive = this.add.image(rx, ry, 'flipper_inactive').setFlipX(true).setDepth(20);
-                this.flipRTranslucent = this.add.image(rx, ry, 'flipper_translucent').setFlipX(true).setAlpha(0).setDepth(21);
-                this.flipRActive = this.add.image(rx, ry, 'flipper_active').setFlipX(true).setAlpha(0).setDepth(22);
+                // Right flipper at (480.2, 1073.6) mirrored
+                this.flipRInactive = this.add.image(rx, ry, 'flipper_inactive').setScale(fScale).setFlipX(true).setDepth(20);
+                this.flipRTranslucent = this.add.image(rx, ry, 'flipper_translucent').setScale(fScale).setFlipX(true).setAlpha(0).setDepth(21);
+                this.flipRActive = this.add.image(rx, ry, 'flipper_active').setScale(fScale).setFlipX(true).setAlpha(0).setDepth(22);
 
                 this.flipLFlashing = false;
                 this.flipRFlashing = false;
             }
 
             // Flipper activation animation per plan:
-            // translucent fades on → active fades on → active fades off → translucent fades off
+            // translucent fades onactive fades onactive fades offtranslucent fades off
             flashFlipper(side) {
                 let translucent, active, flagProp;
                 if (side === 'left') {
@@ -742,10 +765,10 @@
                 });
             }
 
-            // ============================================================
-            // BOTTOM GODRAYS — pos[360, 1089], all OFF by default
+
+            // BOTTOM GODRAYS pos[360, 1089], all OFF by default
             // 3 layers in order of brightness
-            // ============================================================
+
             createBottomGodrays() {
                 // AE layers 1-3 at (360.3, 1089.0)
                 this.godrays1 = this.add.image(360.3, 1089.0, 'godrays_1').setAlpha(0).setDepth(30);
@@ -760,18 +783,18 @@
                 this.tweens.add({ targets: this.godrays3, alpha: { from: 0, to: 1 }, duration: 250, yoyo: true, delay: 200 });
             }
 
-            // ============================================================
-            // BOTTOM HOLE OVERLAY — pos[348, 1204]
+
+            // BOTTOM HOLE OVERLAY pos[348, 1204]
             // Always on, on top of all other images
-            // ============================================================
+
             createBottomOverlay() {
                 // AE layer 21 at (347.9, 1203.6)
                 this.add.image(347.9, 1203.6, 'bottom_overlay').setDepth(100);
             }
 
-            // ============================================================
-            // INVISIBLE PHYSICS WALLS — adapted for 720x1280
-            // ============================================================
+
+            // INVISIBLE PHYSICS WALLS adapted for 720x1280
+
             createPhysicsWalls() {
                 const M = Phaser.Physics.Matter.Matter;
                 const wallOpts = {
@@ -780,39 +803,55 @@
                     render: { visible: false }
                 };
 
-                // Left & right walls
-                this.matter.world.add(M.Bodies.rectangle(10, this.H / 2, 20, this.H, wallOpts));
-                this.matter.world.add(M.Bodies.rectangle(this.W - 10, this.H / 2, 20, this.H, wallOpts));
+                // Thick outer frame edges (100px thick to match the glass rim constraint)
+                // Left wall (inner edge at x = 100)
+                this.matter.world.add(M.Bodies.rectangle(50, this.H / 2, 100, this.H + 400, { ...wallOpts, label: 'wall_left' }));
 
-                // Top wall
-                this.matter.world.add(M.Bodies.rectangle(this.W / 2, 20, this.W, 40, wallOpts));
+                // Right wall (inner edge at x = W - 100)
+                this.matter.world.add(M.Bodies.rectangle(this.W - 50, this.H / 2, 100, this.H + 400, { ...wallOpts, label: 'wall_right' }));
+
+                // Top wall (inner edge at y = 100)
+                this.matter.world.add(M.Bodies.rectangle(this.W / 2, 50, this.W, 100, { ...wallOpts, label: 'wall_top' }));
+
+                // Bottom corner frames (inner edge at y = H - 100, leave center gap for drain)
+                this.matter.world.add(M.Bodies.rectangle(100, this.H - 50, 200, 100, wallOpts));
+                this.matter.world.add(M.Bodies.rectangle(this.W - 100, this.H - 50, 200, 100, wallOpts));
 
                 // Upper arch deflectors
-                this.matter.world.add(M.Bodies.rectangle(80, 160, 240, 20, { ...wallOpts, angle: -Math.PI / 4 }));
-                this.matter.world.add(M.Bodies.rectangle(this.W - 80, 160, 240, 20, { ...wallOpts, restitution: 0.5, angle: Math.PI / 4 }));
+                this.matter.world.add(M.Bodies.rectangle(130, 190, 240, 40, { ...wallOpts, angle: -Math.PI / 4, label: 'wall_arch_left' }));
+                this.matter.world.add(M.Bodies.rectangle(this.W - 130, 190, 240, 40, { ...wallOpts, restitution: 0.5, angle: Math.PI / 4, label: 'wall_arch_right' }));
 
                 // Lower flipper guide rails (funnels)
-                // Left funnel
-                this.matter.world.add(M.Bodies.rectangle(110, 930, 220, 30, { ...wallOpts, angle: 0.60, chamfer: { radius: 10 } }));
-                this.matter.world.add(M.Bodies.circle(185, 1005, 15, wallOpts));
+                // Left funnel (Double Red Block Obstacles: Base slope + Steeper upper slope)
+                this.matter.world.add(M.Bodies.rectangle(127, 1090, 360, 100, { ...wallOpts, angle: 0.5508 }));
+                this.matter.world.add(M.Bodies.rectangle(127, 1057, 330, 100, { ...wallOpts, angle: 0.8568 }));
 
-                // Right funnel
-                this.matter.world.add(M.Bodies.rectangle(this.W - 110, 930, 220, 30, { ...wallOpts, angle: -0.60, chamfer: { radius: 10 } }));
-                this.matter.world.add(M.Bodies.circle(this.W - 185, 1005, 15, wallOpts));
+                // Right funnel (Mirrored Double Red Block Obstacles)
+                this.matter.world.add(M.Bodies.rectangle(this.W - 127, 1090, 360, 100, { ...wallOpts, angle: -0.5508 }));
+                this.matter.world.add(M.Bodies.rectangle(this.W - 127, 1057, 330, 100, { ...wallOpts, angle: -0.8568 }));
 
-                // Bottom drain funnels — guide to center drain below flippers
+                // Bottom drain funnels guide to center drain below flippers
                 this.matter.world.add(M.Bodies.rectangle(150, 1180, 200, 20, { ...wallOpts, angle: 0.45 }));
                 this.matter.world.add(M.Bodies.rectangle(this.W - 150, 1180, 200, 20, { ...wallOpts, angle: -0.45 }));
             }
 
-            // ============================================================
-            // BALL — scale 0.70, spawns near ISLA text and drops
-            // ============================================================
-            spawnBall(x = 368, y = 500, isAutoLaunch = false) {
+
+            // BALL scale 0.70, spawns at random teleport spots
+
+            spawnBall(x = null, y = null, isAutoLaunch = false) {
+                if (x === null || y === null) {
+                    const teleportSpots = [
+                        { x: 404.7813, y: 225.0262 }, { x: 468.9679, y: 631.0437 },
+                        { x: 297.3061, y: 566.8571 }, { x: 566.8571, y: 757.9242 }, { x: 288.3499, y: 754.9388 }
+                    ];
+                    const spot = teleportSpots[Phaser.Math.Between(0, teleportSpots.length - 1)];
+                    x = spot.x;
+                    y = spot.y;
+                }
                 const M = Phaser.Physics.Matter.Matter;
 
-                const BALL_SCALE = 0.70;
-                const physicsRadius = 25; // Appropriate for gameplay at this canvas size
+                const BALL_SCALE = 0.588;
+                const physicsRadius = 21; // Appropriate for gameplay at this canvas size
 
                 let body = M.Bodies.circle(x, y, physicsRadius, {
                     label: 'ball',
@@ -827,7 +866,7 @@
                 });
                 this.matter.world.add(body);
 
-                // Ball sprites — all at scale 0.70, rotation 0
+                // Ball sprites all at scale 0.70, rotation 0
                 let baseSprite = this.add.image(x, y, 'ball_base').setScale(BALL_SCALE).setDepth(35);
                 let leftHit = this.add.image(x, y, 'ball_left').setScale(BALL_SCALE).setAlpha(0).setDepth(36);
                 let rightHit = this.add.image(x, y, 'ball_right').setScale(BALL_SCALE).setAlpha(0).setDepth(36);
@@ -890,9 +929,9 @@
                 Object.values(ballObj.sprites).forEach(s => s.setVisible(visible));
             }
 
-            // ============================================================
+
             // VFX
-            // ============================================================
+
             spawnFloatingText(x, y, text, color = '#ff0055') {
                 let t = this.add.text(x, y, text, {
                     fontFamily: "'Courier New', Courier, monospace",
@@ -937,9 +976,9 @@
                 });
             }
 
-            // ============================================================
+
             // CONTROLS
-            // ============================================================
+
             setupControls() {
                 this.cursors = this.input.keyboard.createCursorKeys();
                 this.keyA = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A);
@@ -950,9 +989,9 @@
                 this.input.addPointer(2);
             }
 
-            // ============================================================
+
             // COLLISION HANDLING
-            // ============================================================
+
             setupCollisions() {
                 const M = Phaser.Physics.Matter.Matter;
 
@@ -977,15 +1016,6 @@
 
                             // Flash appropriate stopper active image
                             this.flashStopperHit(otherBody);
-
-                            // Flash only the light on the collision side
-                            const isLeft = otherBody.position.x < 360;
-                            if (otherBody.position.y < 500) {
-                                this.flashLight([this.lightTop1, this.lightTop2]);
-                                this.flashLight(isLeft ? this.lightSideTopL : this.lightSideTopR);
-                            } else {
-                                this.flashLight(isLeft ? this.lightSideBotL : this.lightSideBotR);
-                            }
                         }
 
                         // --- SLINGSHOTS (triangles) ---
@@ -995,13 +1025,6 @@
 
                             // Flash triangle active
                             this.flashTriangleHit(otherBody);
-
-                            // Flash only the bottom light on the collision side
-                            if (otherBody.position.x < 360) {
-                                this.flashLight(this.lightSideBotL);
-                            } else {
-                                this.flashLight(this.lightSideBotR);
-                            }
 
                             // Velocity kick
                             const dx = ballBody.position.x - otherBody.position.x;
@@ -1015,7 +1038,21 @@
                             });
                         }
 
-                        // --- DROP TARGETS (reactive bars) ---
+                        // --- WALL LIGHTS ---
+                        else if (otherBody.label && otherBody.label.startsWith('wall_')) {
+                            // Flash top lights if hitting top wall or arches
+                            if (otherBody.label === 'wall_top' || otherBody.label.startsWith('wall_arch')) {
+                                this.flashLight([this.lightTop1, this.lightTop2]);
+                            } else if (otherBody.label === 'wall_left') {
+                                if (ballBody.position.y < 600) this.flashLight(this.lightSideTopL);
+                                else this.flashLight(this.lightSideBotL);
+                            } else if (otherBody.label === 'wall_right') {
+                                if (ballBody.position.y < 600) this.flashLight(this.lightSideTopR);
+                                else this.flashLight(this.lightSideBotR);
+                            }
+                        }
+
+                        // --- drop TARGETS (reactive bars) ---
                         else if (otherBody.label === 'drop_target' && otherBody.plugin.active) {
                             otherBody.plugin.active = false;
                             otherBody.isSensor = true;
@@ -1056,7 +1093,7 @@
                             this.handleSubwayLock(ballObj);
                         }
 
-                        // --- FLIPPER collision → flash ---
+                        // --- FLIPPER collisionflash ---
                         else if (otherBody.label === 'flipper') {
                             if (otherBody === this.flipL) this.flashFlipper('left');
                             else if (otherBody === this.flipR) this.flashFlipper('right');
@@ -1085,9 +1122,9 @@
             // Flash triangle active sprite
             flashTriangleHit(body) {
                 let activeSprite = null;
-                if (Math.abs(body.position.x - 219.7) < 30) {
+                if (Math.abs(body.position.x - 173.3803) < 30) {
                     activeSprite = this.tri1_active;
-                } else if (Math.abs(body.position.x - 500.3) < 30) {
+                } else if (Math.abs(body.position.x - 546.6197) < 30) {
                     activeSprite = this.tri2_active;
                 }
                 if (activeSprite) {
@@ -1098,9 +1135,9 @@
                 }
             }
 
-            // ============================================================
+
             // SUBWAY LOCK
-            // ============================================================
+
             handleSubwayLock(ballObj) {
                 if (!ballObj || ballObj.inSubway) return;
                 ballObj.inSubway = true;
@@ -1125,11 +1162,11 @@
                     this.triggerTotalCollapse(ballObj);
                 } else {
                     const teleportSpots = [
-                        {x: 404.7813, y: 225.0262},
-                        {x: 468.9679, y: 631.0437},
-                        {x: 297.3061, y: 566.8571},
-                        {x: 566.8571, y: 757.9242},
-                        {x: 288.3499, y: 754.9388}
+                        { x: 404.7813, y: 225.0262 },
+                        { x: 468.9679, y: 631.0437 },
+                        { x: 297.3061, y: 566.8571 },
+                        { x: 566.8571, y: 757.9242 },
+                        { x: 288.3499, y: 754.9388 }
                     ];
                     const randomSpot = teleportSpots[Phaser.Math.Between(0, teleportSpots.length - 1)];
 
@@ -1146,9 +1183,9 @@
                 }
             }
 
-            // ============================================================
+
             // TOTAL COLLAPSE (multiball)
-            // ============================================================
+
             triggerTotalCollapse(originalBallObj) {
                 STATE.isMultiball = true;
                 addLog('>>> TOTAL COLLAPSE INITIATED <<<', 'log-alert');
@@ -1158,24 +1195,25 @@
                 this.triggerBlastExplosion();
 
                 const M = Phaser.Physics.Matter.Matter;
-                
+
                 // Original ball teleports out
                 const teleportSpots = [
-                    {x: 404.7813, y: 225.0262}, {x: 468.9679, y: 631.0437},
-                    {x: 297.3061, y: 566.8571}, {x: 566.8571, y: 757.9242}, {x: 288.3499, y: 754.9388}
+                    { x: 404.7813, y: 225.0262 }, { x: 468.9679, y: 631.0437 },
+                    { x: 297.3061, y: 566.8571 }, { x: 566.8571, y: 757.9242 }, { x: 288.3499, y: 754.9388 }
                 ];
                 const spot1 = teleportSpots[Phaser.Math.Between(0, teleportSpots.length - 1)];
                 M.Body.setPosition(originalBallObj.body, spot1);
                 M.Body.setVelocity(originalBallObj.body, { x: 0, y: 15 });
                 originalBallObj.inSubway = false;
 
-                this.time.delayedCall(500, () => this.spawnBall(350, 500, true));
-                this.time.delayedCall(1200, () => this.spawnBall(400, 500, true));
+                // Multiball removed per user request: only one ball allowed.
+                // this.time.delayedCall(500, () => this.spawnBall(null, null, true));
+                // this.time.delayedCall(1200, () => this.spawnBall(null, null, true));
             }
 
-            // ============================================================
+
             // NUDGE
-            // ============================================================
+
             nudgeTable() {
                 const now = this.time.now;
                 if (now - this.lastNudge < 1000) return;
@@ -1194,9 +1232,9 @@
                 });
             }
 
-            // ============================================================
+
             // UPDATE LOOP
-            // ============================================================
+
             update(time, delta) {
                 const M = Phaser.Physics.Matter.Matter;
 
@@ -1296,26 +1334,66 @@
 
                 if (nudge) this.nudgeTable();
 
-                const FLIP_SPEED = 0.45;
-                const RETURN_SPEED = 0.30;
+                // Flipper physics: Massive acceleration + Rubber stops
+                const K_UP = 0.35;       // Violent acceleration
+                const DAMP_UP = 0.85;    // Keep momentum high for hard impact
+                const K_DOWN = 0.25;     // Gravity drop acceleration
+                const DAMP_DOWN = 0.85;  
 
                 // Left Flipper
+                let velL = 0;
                 if (flipL) {
-                    if (this.flipL.angle > this.L_UP) M.Body.setAngularVelocity(this.flipL, -FLIP_SPEED);
-                    else { M.Body.setAngle(this.flipL, this.L_UP); M.Body.setAngularVelocity(this.flipL, 0); }
+                    if (this.flipL.angle <= this.L_UP) {
+                        // Rubber stop (UP limit)
+                        let cVel = this.flipL.angularVelocity;
+                        if (cVel < 0) cVel *= 0.1; // Absorb forward momentum
+                        let force = (this.L_UP - this.flipL.angle) * 1.5; 
+                        velL = (cVel + force) * 0.4;
+                    } else {
+                        // Free swing
+                        let force = (this.L_UP - this.flipL.angle) * K_UP;
+                        velL = (this.flipL.angularVelocity + force) * DAMP_UP;
+                    }
                 } else {
-                    if (this.flipL.angle < this.L_REST) M.Body.setAngularVelocity(this.flipL, RETURN_SPEED);
-                    else { M.Body.setAngle(this.flipL, this.L_REST); M.Body.setAngularVelocity(this.flipL, 0); }
+                    if (this.flipL.angle >= this.L_REST) {
+                        // Rubber stop (DOWN limit)
+                        let cVel = this.flipL.angularVelocity;
+                        if (cVel > 0) cVel *= 0.1; // Absorb forward momentum
+                        let force = (this.L_REST - this.flipL.angle) * 1.5; 
+                        velL = (cVel + force) * 0.4;
+                    } else {
+                        let force = (this.L_REST - this.flipL.angle) * K_DOWN;
+                        velL = (this.flipL.angularVelocity + force) * DAMP_DOWN;
+                    }
                 }
+                M.Body.setAngularVelocity(this.flipL, velL);
 
                 // Right Flipper
+                let velR = 0;
                 if (flipR) {
-                    if (this.flipR.angle < this.R_UP) M.Body.setAngularVelocity(this.flipR, FLIP_SPEED);
-                    else { M.Body.setAngle(this.flipR, this.R_UP); M.Body.setAngularVelocity(this.flipR, 0); }
+                    if (this.flipR.angle >= this.R_UP) {
+                        // Rubber stop (UP limit)
+                        let cVel = this.flipR.angularVelocity;
+                        if (cVel > 0) cVel *= 0.1; 
+                        let force = (this.R_UP - this.flipR.angle) * 1.5; 
+                        velR = (cVel + force) * 0.4;
+                    } else {
+                        let force = (this.R_UP - this.flipR.angle) * K_UP;
+                        velR = (this.flipR.angularVelocity + force) * DAMP_UP;
+                    }
                 } else {
-                    if (this.flipR.angle > this.R_REST) M.Body.setAngularVelocity(this.flipR, -RETURN_SPEED);
-                    else { M.Body.setAngle(this.flipR, this.R_REST); M.Body.setAngularVelocity(this.flipR, 0); }
+                    if (this.flipR.angle <= this.R_REST) {
+                        // Rubber stop (DOWN limit)
+                        let cVel = this.flipR.angularVelocity;
+                        if (cVel < 0) cVel *= 0.1; 
+                        let force = (this.R_REST - this.flipR.angle) * 1.5; 
+                        velR = (cVel + force) * 0.4;
+                    } else {
+                        let force = (this.R_REST - this.flipR.angle) * K_DOWN;
+                        velR = (this.flipR.angularVelocity + force) * DAMP_DOWN;
+                    }
                 }
+                M.Body.setAngularVelocity(this.flipR, velR);
             }
 
             enforcePhysicsLimits(M) {
@@ -1332,9 +1410,9 @@
             }
         }
 
-        // ================================================================
-        // GAME CONFIG — 720w x 1280h, auto-scale to fit screen
-        // ================================================================
+
+        // GAME CONFIG 720w x 1280h, auto-scale to fit screen
+
         window.onload = function () {
             new Phaser.Game({
                 type: Phaser.WEBGL,
