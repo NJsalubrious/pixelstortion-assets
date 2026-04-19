@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PIXELSTORTION — The Longer Story</title>
+    <meta name="description"
+        content="The story behind Pixelstortion. How the characters were built, what makes them different, and why AI can't write them." />
+    <link rel="canonical" href="https://bio.pixelstortion.com/philosophy.html" />
+
+    <meta property="og:title" content="PIXELSTORTION — The Longer Story" />
+    <meta property="og:description"
+        content="How the characters were built, what makes them different, and why AI can't write them." />
+    <meta property="og:type" content="article" />
+    <meta property="og:url" content="https://bio.pixelstortion.com/philosophy.html" />
+    <meta property="og:image" content="https://www.pixelstortion.com/PIXELSTORTION.jpg" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600&family=Courier+Prime:wght@400;700&display=swap"
+        rel="stylesheet" />
+
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background: #0a0a0a;
+            color: #c8c8c8;
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 300;
+            line-height: 1.85;
+            font-size: 17px;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .hero {
+            width: 100%;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero img {
+            width: 100%;
+            display: block;
+            object-fit: cover;
+        }
+
+        .hero-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 60px 24px 40px;
+            background: linear-gradient(transparent, #0a0a0a);
+        }
+
+        .hero-overlay h1 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 18px;
+            font-weight: 400;
+            color: #e0e0e0;
+            line-height: 1.5;
+            max-width: 680px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .page {
+            max-width: 680px;
+            margin: 0 auto;
+            padding: 30px 24px 100px;
+        }
+
+        .back-link {
+            font-family: 'Courier Prime', monospace;
+            font-size: 12px;
+            color: #333;
+            text-decoration: none;
+            display: inline-block;
+            margin-bottom: 40px;
+            transition: color 0.3s;
+        }
+
+        .back-link:hover { color: #00ff41; }
+
+        h2 {
+            font-family: 'Courier Prime', monospace;
+            font-size: 12px;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: #333;
+            margin-bottom: 28px;
+            margin-top: 70px;
+        }
+
+        p { margin-bottom: 24px; color: #b0b0b0; }
+
+        .punch { color: #e0e0e0; font-weight: 400; }
+        .quiet { color: #666; font-size: 15px; }
+
+        .evidence {
+            margin: 28px 0 36px 0;
+            padding-left: 20px;
+            border-left: 1px solid #1a1a1a;
+        }
+
+        .evidence a {
+            display: block;
+            font-family: 'Courier Prime', monospace;
+            font-size: 13px;
+            color: #555;
+            text-decoration: none;
+            padding: 5px 0;
+            transition: color 0.3s;
+        }
+
+        .evidence a:hover { color: #00ff41; }
+        .evidence a.world-link { color: #333; margin-top: 4px; }
+        .evidence a.world-link:hover { color: #fff; }
+
+        .char-ethel { color: #6ec8f5; }
+        .char-isla { color: #f59e6e; }
+        .char-dominic { color: #f56e6e; }
+
+        .divider {
+            width: 40px;
+            height: 1px;
+            background: #222;
+            margin: 60px 0;
+        }
+
+        blockquote {
+            border-left: 2px solid #1a1a1a;
+            padding-left: 20px;
+            margin: 30px 0;
+            font-style: italic;
+            color: #777;
+            font-size: 15px;
+        }
+
+        footer {
+            margin-top: 80px;
+            padding-top: 24px;
+            border-top: 1px solid #111;
+        }
+
+        footer p {
+            font-size: 11px;
+            color: #2a2a2a;
+            font-family: 'Courier Prime', monospace;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+        }
+
+        footer a { color: #333; text-decoration: none; transition: color 0.3s; }
+        footer a:hover { color: #00ff41; }
+
+        @media (max-width: 600px) {
+            .page { padding: 20px 18px 80px; }
+            body { font-size: 16px; }
+            .hero-overlay h1 { font-size: 19px; }
+            h2 { margin-top: 50px; }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- ── HERO ── -->
+    <div class="hero">
+        <img src="images/PixelStortion16.png" alt="Isla, Ethel, and Nalani" />
+        <div class="hero-overlay">
+            <h1>These characters don't fit a trope.<br>That's the whole point.</h1>
+        </div>
+    </div>
+
+    <div class="page">
+
+        <a href="index.html" class="back-link">← Back to bio</a>
+
+        <!-- ── THE CHARACTERS ── -->
+
+        <p>I wanted to write characters who make perfect sense if you listen, but no sense if you try to
+            categorise them using shortcuts.</p>
+
+        <p><span class="char-ethel">Ethel</span> is quiet, measured, and direct. People read that as cold.
+            It isn't. She inherited her father's steel but none of his darkness, and her grandmother's
+            intellect. She was stuck inside Dominic's world with no safe way out, so she did what she was
+            built for. She mapped it, documented it, and built a case from the inside.</p>
+
+        <p><span class="char-isla">Isla</span> is chaos with purpose. Intuitive, creative, unnervingly
+            insightful, and loud about it. She turns what happened to her into sound. Not because she
+            planned a career out of it. Because she couldn't not.</p>
+
+        <p><span class="char-dominic">Dominic</span> speaks in the measured, calm cadence of a man who
+            genuinely believes that order is something only he can enforce. He makes perfect sense on paper.
+            That's the problem.</p>
+
+        <div class="evidence">
+            <a href="https://www.youtube.com/watch?v=t4AxR93yFNc" target="_blank" rel="noopener">▸ Hero Complex</a>
+            <a href="https://www.youtube.com/watch?v=f8o7zb3F-Xk" target="_blank" rel="noopener">▸ For You!!!</a>
+            <a href="https://www.youtube.com/watch?v=7UOZCk5vvbA" target="_blank" rel="noopener">▸ A Drop From the Fourth</a>
+            <a href="https://www.youtube.com/watch?v=Y4VC6mh37NI" target="_blank" rel="noopener">▸ What You Don't See</a>
+            <a href="https://www.youtube.com/watch?v=QM2hUMDu7WE" target="_blank" rel="noopener">▸ Structural Psychopathy 101</a>
+            <a href="https://www.youtube.com/watch?v=Ugy7KVuhwpE" target="_blank" rel="noopener">▸ Same Breath</a>
+        </div>
+
+        <div class="divider"></div>
+
+        <!-- ── THE AI PROBLEM ── -->
+        <h2>Where AI gets it wrong</h2>
+
+        <p>I use AI. I'm an animator. I've made short films and I know how long they take. I can make a
+            three-minute film by myself but not a two-hour feature. And I want to make a feature.</p>
+
+        <p>So AI is a production tool — not to write the story, but to build something too large to build
+            alone.</p>
+
+        <p>But here's the thing. AI is trained on normative data. These characters are not normative. The
+            hero's journey is the story of someone different, otherwise we'd all be heroes.</p>
+
+        <p>I have had AI call Ethel a sociopath. A villain. An ice queen. An "autistic robot," which is a
+            layered insult all on its own. This is in spite of her being the moral backbone of the
+            story.</p>
+
+        <p class="punch">AI looks at her and sees a cliché, a trope, and a category.</p>
+
+        <p>This happens because of something called regression to the mean. AI algorithms prioritise the
+            average, the data density, as a proxy for truth. When it encounters an outlier like Ethel,
+            it pulls her toward the centre. Treats her moral nuance as noise. Smooths it away.</p>
+
+        <p class="quiet">Every point in that sparse space isn't an error to be corrected. It's a person.</p>
+
+        <div class="divider"></div>
+
+        <!-- ── ISLA'S SOUND ── -->
+        <h2>What Isla does with it</h2>
+
+        <p>Isla sings about a suicide that never happened, told in past tense like it did. Emotional sleight
+            of hand. She sings about what survival actually feels like, not the movie version, but the
+            quiet kind that reshapes thought, trust, and belonging.</p>
+
+        <p class="quiet">AI would flatten this into a "trauma recovery anthem." It would miss the sleight of
+            hand entirely.</p>
+
+        <div class="divider"></div>
+
+        <!-- ── THE SCARY PART ── -->
+        <h2>The scary part</h2>
+
+        <p>To me, what AI does horribly is scarier than what it does well.</p>
+
+        <p>Imagine lazily handing surveillance to AI, only to have it flag all the outliers as "potential
+            problems" because it forces them into a box. These people are often our early awareness
+            mechanisms. We need them.</p>
+
+        <p>Imagine 1940s Germany with AI. We look back at the Nuremberg defence and think we live in a better
+            society. But the people who played along then are the ones playing along in the lesser-stakes
+            games of the present.</p>
+
+        <p class="punch">And nobody wants to meet the person they should be but weren't, couldn't, or don't
+            know how to be.</p>
+
+        <div class="divider"></div>
+
+        <!-- ── COMPOST ── -->
+        <h2>The compost</h2>
+
+        <p>If it's <em>only</em> about the AI and nothing else, then it probably warrants the slop label.
+            But slop can be compost. It can't grow something of worth by itself, but fighting it — yelling
+            at it until it gives you something interesting — can be very insightful.</p>
+
+        <blockquote>Slop is compost. You just have to fight it to grow something real.</blockquote>
+
+        <p>AI isn't going to write a unique story for you. Not yet. It won't understand Ethel or Isla. Left
+            alone, it will destroy all the complex nuance.</p>
+
+        <p>A story that has these characters is not a story written by AI. Sure, AI can help with the
+            structure, the planning, the dates and times and things that are not the story. But it can't
+            write the story about complex human characters for you.</p>
+
+        <p>This is what directors do. This is what writers do.</p>
+
+        <p class="punch">And this is what I'm trying to do.</p>
+
+        <footer>
+            <p><a href="index.html">← Back to bio</a> · <a href="https://pixelstortion.com/">pixelstortion.com</a></p>
+        </footer>
+
+    </div>
+</body>
+
+</html>
