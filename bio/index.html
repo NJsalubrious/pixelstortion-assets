@@ -43,6 +43,8 @@
             width: 100%;
             position: relative;
             overflow: hidden;
+            background: #0a0a0a;
+            padding-bottom: 30px;
         }
 
         .hero img {
@@ -56,9 +58,24 @@
             bottom: 0;
             left: 0;
             right: 0;
-            padding: 40px 24px 30px;
-            background: linear-gradient(transparent, #0a0a0a);
+            padding: 60px 24px 0px;
+            background: linear-gradient(transparent, #0a0a0a 70%);
             text-align: center;
+        }
+
+        .hero-links {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            bottom: 30px;
+            display: flex;
+            z-index: 10;
+        }
+
+        .hero-links a {
+            display: block;
+            height: 100%;
         }
 
         .hero-tagline {
@@ -307,7 +324,13 @@
 
     <!-- ── HERO ── -->
     <div class="hero">
-        <img src="images/PixelStortion16.png" alt="Isla, Ethel, and Nalani" />
+        <img src="images/images_jpg/PixelStortion_header.jpg" alt="Isla, Ethel, and Nalani" />
+        <div class="hero-links">
+            <a href="https://www.pixelstortion.com/zones/silence" style="flex: 0 0 31%;" title="Silence is the Trauma"></a>
+            <a href="https://islaband.com" target="_blank" style="flex: 0 0 13%;" title="Isla"></a>
+            <a href="https://ethelryker.com" target="_blank" style="flex: 0 0 13%;" title="Ethel Ryker"></a>
+            <a href="https://www.pixelstortion.com/zones/mataala/" style="flex: 0 0 43%;" title="Mataala: Tides of War"></a>
+        </div>
         <div class="hero-overlay">
             <div class="hero-tagline">Nurturing stories until fully grown.</div>
         </div>
@@ -349,7 +372,7 @@
 
         <h2>What is Pixelstortion?</h2>
 
-        <p class="highlight">A transmedia project. Two fictional worlds told through 45 original songs,
+        <p class="highlight">Two fictional worlds told through 45 original songs,
             interactive web experiences, character-driven websites, music videos, and short stories.</p>
 
         <p>Each character has their own website. Each song is a chapter. The stories are designed to be
@@ -363,7 +386,7 @@
 
         <h2><a href="https://www.pixelstortion.com/zones/silence/">World 1: Silence is the Trauma</a></h2>
 
-        <img class="section-img" src="images/Ethel_banner_PixelStortion.png" alt="Ethel Ryker" />
+        <img class="section-img" src="images/images_jpg/Ethel_banner_PixelStortion_1.jpg" alt="Ethel Ryker" />
 
         <p><span class="highlight">Ethel Ryker</span> is the biological daughter of billionaire
             property developer Dominic Ryker. Raised in the outback by her grandparents, she is
@@ -376,7 +399,7 @@
 
         <div class="divider"></div>
 
-        <img class="section-img" src="images/Isla_banner_PixelStortion.png" alt="Isla" />
+        <img class="section-img" src="images/images_jpg/Isla_banner_PixelStortion_2.jpg" alt="Isla" />
 
         <p><span class="highlight">Isla</span> is Dominic's stepdaughter. Her mother married him.
             Isla's own biological father, a high court judge, is the source of the trauma her songs are
@@ -389,7 +412,7 @@
 
         <div class="divider"></div>
 
-        <img class="section-img" src="images/Dominic_banner_PixelStortion.png" alt="Dominic Ryker" />
+        <img class="section-img" src="images/images_jpg/Dominic_banner_PixelStortion_1.jpg" alt="Dominic Ryker" />
 
         <p><span class="highlight">Dominic Ryker</span> is a structural psychopath. He doesn't break
             systems. He builds them so that other people break them for him. Calm, articulate, certain.
@@ -411,8 +434,8 @@
 
         <p>A different century. A different geography. <span class="highlight">Nalani</span> is an
             indigenous strategist using terrain, law, and patience against rogue trader
-            <span class="highlight">Turnbull</span>, while <span class="highlight">Redfern</span>
-            is caught between two worlds.
+            <span class="highlight">Turnbull</span>, while <span class="highlight">Redfern,</span>
+            the very embodiment of violence, is caught between two worlds.
         </p>
 
         <div class="links">
@@ -447,7 +470,7 @@
             too large to build alone.</p>
 
         <a href="philosophy.html" class="about-banner">
-            <img src="images/Ethe_sydney_bike6.png" alt="About — Read more" />
+            <img src="images/images_jpg/Ethel_banner_PixelStortion_2.jpg" alt="About — Read more" />
         </a>
         <a href="philosophy.html" class="aside-text">→ The longer story behind the project</a>
 

@@ -38,6 +38,8 @@
             width: 100%;
             position: relative;
             overflow: hidden;
+            background: #0a0a0a;
+            padding-bottom: 50px;
         }
 
         .hero img {
@@ -51,8 +53,23 @@
             bottom: 0;
             left: 0;
             right: 0;
-            padding: 60px 24px 40px;
-            background: linear-gradient(transparent, #0a0a0a);
+            padding: 80px 24px 0px;
+            background: linear-gradient(transparent, #0a0a0a 75%);
+        }
+
+        .hero-links {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            bottom: 50px;
+            display: flex;
+            z-index: 10;
+        }
+
+        .hero-links a {
+            display: block;
+            height: 100%;
         }
 
         .hero-overlay h1 {
@@ -169,7 +186,13 @@
 
     <!-- ── HERO ── -->
     <div class="hero">
-        <img src="images/PixelStortion16.png" alt="Isla, Ethel, and Nalani" />
+        <img src="images/images_jpg/PixelStortion_header.jpg" alt="Isla, Ethel, and Nalani" />
+        <div class="hero-links">
+            <a href="https://www.pixelstortion.com/zones/silence" style="flex: 0 0 31%;" title="Silence is the Trauma"></a>
+            <a href="https://islaband.com" target="_blank" style="flex: 0 0 13%;" title="Isla"></a>
+            <a href="https://ethelryker.com" target="_blank" style="flex: 0 0 13%;" title="Ethel Ryker"></a>
+            <a href="https://www.pixelstortion.com/zones/mataala/" style="flex: 0 0 43%;" title="Mataala: Tides of War"></a>
+        </div>
         <div class="hero-overlay">
             <h1>These characters don't fit a trope.<br>That's the whole point.</h1>
         </div>
