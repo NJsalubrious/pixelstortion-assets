@@ -1379,10 +1379,16 @@
                 justify-content: flex-start !important;
             }
 
-            /* Background video - make smaller on mobile */
+            /* Background video - remove scale to eliminate gaps, adjust height to make it smaller and higher */
             #hero-video {
-                transform: scale(0.8) !important;
                 opacity: 0.5 !important;
+                transform: none !important;
+            }
+
+            /* Target the video container directly to make it smaller without gaps */
+            #home-section > .absolute.inset-0 {
+                height: 45vh !important;
+                top: -2rem !important; /* Push it slightly higher */
             }
 
             #home-section p {
