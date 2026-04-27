@@ -6,12 +6,12 @@
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
     <title>PIXELSTORTION | SILENCE — The Trauma Runs Deep</title>
     <meta name="description"
-        content="Enter the Silence zone — an immersive psychological thriller experience. Explore the music, the mysteries, and the characters hiding in the static." />
+        content="Enter the Silence zone — an immersive psychological thriller experience. Explore the music, the mysteries, and the characters." />
 
     <!-- Open Graph for link sharing -->
     <meta property="og:title" content="PIXELSTORTION | SILENCE — The Trauma Runs Deep" />
     <meta property="og:description"
-        content="Enter the Silence zone — an immersive psychological thriller experience. Explore the music, the mysteries, and the characters hiding in the static." />
+        content="Enter the Silence zone — an immersive psychological thriller experience. Explore the music, the mysteries, and the characters." />
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://pixelstortion.com/zones/silence/" />
     <meta property="og:image" content="https://www.pixelstortion.com/PIXELSTORTION.jpg" />
@@ -23,7 +23,7 @@
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="PIXELSTORTION | SILENCE — The Trauma Runs Deep" />
     <meta name="twitter:description"
-        content="Enter the Silence zone — an immersive psychological thriller experience. Explore the music, the mysteries, and the characters hiding in the static." />
+        content="Enter the Silence zone — an immersive psychological thriller experience. Explore the music, the mysteries, and the characters." />
     <meta name="twitter:image" content="https://www.pixelstortion.com/PIXELSTORTION.jpg" />
 
     <script type="application/ld+json">
@@ -173,6 +173,13 @@
             color: #fff;
             background: rgba(255, 140, 0, 0.05);
             border-left: 2px solid #ff8c00;
+            padding-left: 24px;
+        }
+
+        .brand-dropdown-item.item-cinema:hover {
+            color: #fff;
+            background: rgba(0, 255, 65, 0.05);
+            border-left: 2px solid #00ff41;
             padding-left: 24px;
         }
 
@@ -2026,7 +2033,9 @@
         }
 
         .silence-story-card .s-card-img img {
-            width: 100%; height: 100%; object-fit: cover;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
             filter: grayscale(30%);
             transition: filter 0.7s ease;
         }
@@ -2036,24 +2045,30 @@
         }
 
         .silence-story-card .s-card-img .s-overlay {
-            position: absolute; inset: 0;
-            background: rgba(0,0,0,0.4);
+            position: absolute;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.4);
             transition: background 0.5s ease;
         }
 
         .silence-story-card:hover .s-card-img .s-overlay {
-            background: rgba(0,0,0,0.1);
+            background: rgba(0, 0, 0, 0.1);
         }
 
         .silence-story-card .s-card-img .s-gradient {
-            position: absolute; inset: 0;
-            background: linear-gradient(to top, rgba(0,0,0,0.7), transparent);
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.7), transparent);
         }
 
         .silence-story-card .s-card-img .s-read-icon {
-            position: absolute; inset: 0;
-            display: flex; align-items: center; justify-content: center;
-            opacity: 0; transition: opacity 0.3s ease;
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
         }
 
         .silence-story-card:hover .s-card-img .s-read-icon {
@@ -2063,7 +2078,7 @@
         .silence-story-card .s-card-info {
             padding: 16px;
             border-top: 1px solid #1f1f1f;
-            background: rgba(20,20,20,0.6);
+            background: rgba(20, 20, 20, 0.6);
             transition: border-color 0.4s ease;
         }
 
@@ -2072,37 +2087,51 @@
         }
 
         .silence-story-card .s-card-title {
-            font-size: 14px; font-weight: 700; color: #fff;
-            margin-bottom: 4px; white-space: nowrap;
-            overflow: hidden; text-overflow: ellipsis;
+            font-size: 14px;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 4px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         .silence-story-card .s-track-container {
-            display: grid; margin-bottom: 4px; align-items: start;
+            display: grid;
+            margin-bottom: 4px;
+            align-items: start;
         }
 
-        .silence-story-card .s-track, .silence-story-card .s-desc {
+        .silence-story-card .s-track,
+        .silence-story-card .s-desc {
             grid-area: 1 / 1;
             font-family: 'Courier Prime', 'Courier New', monospace;
-            font-size: 10px; text-transform: uppercase;
+            font-size: 10px;
+            text-transform: uppercase;
         }
 
         .silence-story-card .s-track {
-            letter-spacing: 2px; color: #666;
-            transition: opacity 0.3s ease; opacity: 1;
+            letter-spacing: 2px;
+            color: #666;
+            transition: opacity 0.3s ease;
+            opacity: 1;
         }
 
         .silence-story-card .s-desc {
-            letter-spacing: 1px; color: #999;
-            pointer-events: none; line-height: 1.4;
+            letter-spacing: 1px;
+            color: #999;
+            pointer-events: none;
+            line-height: 1.4;
         }
 
         .silence-story-card .s-desc span {
-            opacity: 0; transition: opacity 0.15s ease;
+            opacity: 0;
+            transition: opacity 0.15s ease;
         }
 
         .silence-story-card:hover .s-track {
-            opacity: 0; transition: opacity 0.1s ease;
+            opacity: 0;
+            transition: opacity 0.1s ease;
         }
 
         .silence-story-card:hover .s-desc span {
@@ -2111,8 +2140,10 @@
 
         .silence-story-card .s-cta {
             font-family: 'Courier Prime', 'Courier New', monospace;
-            font-size: 10px; letter-spacing: 2px;
-            color: #22c55e; text-transform: uppercase;
+            font-size: 10px;
+            letter-spacing: 2px;
+            color: #22c55e;
+            text-transform: uppercase;
             transition: color 0.3s ease;
         }
 
@@ -2231,12 +2262,18 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-16">
                 <div class="brand-dropdown-container">
-                    <button onclick="toggleBrandMenu(event)" class="brand-trigger" style="background: none; border: none; cursor: pointer; text-decoration: none; padding: 0;">
-                        <h1 class="text-2xl font-bold tracking-tighter text-white glitch-text brand-title" data-text="PIXELSTORTION">PIXELSTORTION</h1>
+                    <button onclick="toggleBrandMenu(event)" class="brand-trigger"
+                        style="background: none; border: none; cursor: pointer; text-decoration: none; padding: 0;">
+                        <h1 class="text-2xl font-bold tracking-tighter text-white glitch-text brand-title"
+                            data-text="PIXELSTORTION">PIXELSTORTION</h1>
                     </button>
                     <div id="brandDropdown" class="brand-dropdown-menu">
-                        <a href="https://pixelstortion.com/zones/silence/" class="brand-dropdown-item item-silence">Silence Is The Trauma</a>
-                        <a href="https://pixelstortion.com/zones/mataala/" class="brand-dropdown-item item-nalani">Nalani</a>
+                        <a href="https://pixelstortion.com/zones/silence/"
+                            class="brand-dropdown-item item-silence">Silence Is The Trauma</a>
+                        <a href="https://pixelstortion.com/zones/mataala/"
+                            class="brand-dropdown-item item-nalani">Nalani</a>
+                        <a href="https://pixelstortion.com/zones/silentcinema/"
+                            class="brand-dropdown-item item-cinema">SILENT CINEMA</a>
                         <a href="https://pixelstortion.com/bio/" class="brand-dropdown-item item-bio">BIO</a>
                     </div>
                 </div>
@@ -7155,7 +7192,7 @@
                         setTimeout(nextBrandWord, delay);
                     });
                 }
-                
+
                 setTimeout(nextBrandWord, 6000); // Start cycle after 6 seconds
             }
         });
@@ -7181,14 +7218,18 @@
         document.addEventListener('DOMContentLoaded', () => {
             const currentUrl = window.location.href.toLowerCase();
             const dropdownLinks = document.querySelectorAll('.brand-dropdown-item');
-            
+
             dropdownLinks.forEach(link => {
                 const href = link.getAttribute('href') || '';
-                const isSilenceLink = href.includes('silence');
-                const isMataalaLink = href.includes('mataala');
-                
-                if ((currentUrl.includes('silence') && isSilenceLink) || 
-                    (currentUrl.includes('mataala') && isMataalaLink)) {
+                const isSilenceLink = href.includes('/silence/');
+                const isMataalaLink = href.includes('/mataala/');
+                const isCinemaLink = href.includes('/silentcinema/');
+                const isBioLink = href.includes('/bio/');
+
+                if ((currentUrl.includes('silence') && !currentUrl.includes('silentcinema') && isSilenceLink) ||
+                    (currentUrl.includes('mataala') && isMataalaLink) ||
+                    (currentUrl.includes('silentcinema') && isCinemaLink) ||
+                    (currentUrl.includes('bio') && isBioLink)) {
                     link.removeAttribute('href');
                     link.style.opacity = '0.4';
                     link.style.cursor = 'default';
