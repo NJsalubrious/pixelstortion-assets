@@ -438,6 +438,23 @@
                 display: flex;
                 align-items: center;
             }
+
+            /* Ensure dropdown isn't clipped by sidebar */
+            #sidebar-left {
+                overflow: visible !important;
+            }
+
+            #sidebar-left > .p-3 {
+                overflow: visible !important;
+            }
+
+            .brand-dropdown-container {
+                z-index: 200;
+            }
+
+            .brand-dropdown-menu {
+                z-index: 300;
+            }
         }
     </style>
 </head>
