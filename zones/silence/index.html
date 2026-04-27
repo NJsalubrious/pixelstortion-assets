@@ -2075,7 +2075,10 @@
                             id="nav-podcast" onclick="switchTab('podcast')">PODCAST</button>
                         <button
                             class="text-gray-300 hover:text-white px-3 py-2 rounded-md font-medium transition-colors"
-                            id="nav-audio" onclick="switchTab('audio')">STORY</button>
+                            id="nav-stories" onclick="switchTab('stories')">STORIES</button>
+                        <button
+                            class="text-gray-300 hover:text-white px-3 py-2 rounded-md font-medium transition-colors"
+                            id="nav-audio" onclick="switchTab('audio')">SONGS</button>
                     </div>
                 </div>
                 <div class="-mr-2 flex md:hidden">
@@ -2108,7 +2111,10 @@
                 onclick="switchTab('podcast')">PODCAST</button>
             <button
                 class="text-gray-300 hover:text-white block px-3 py-2 rounded-md text-base font-medium w-full text-left"
-                onclick="switchTab('audio')">STORY</button>
+                onclick="switchTab('stories')">STORIES</button>
+            <button
+                class="text-gray-300 hover:text-white block px-3 py-2 rounded-md text-base font-medium w-full text-left"
+                onclick="switchTab('audio')">SONGS</button>
         </div>
     </div>
 
@@ -2196,12 +2202,23 @@
             </div>
         </section>
 
+        <section class="hidden h-full overflow-y-auto p-6 md:p-12 bg-zinc-950 pb-24 pt-28" id="stories-section">
+            <div class="max-w-7xl mx-auto">
+                <header class="mb-12 border-b border-gray-800 pb-6 mt-16">
+                    <h2 class="text-4xl md:text-5xl font-bold text-white mb-2">STORIES</h2>
+                    <p class="font-mono-custom text-gray-500 text-sm">SHORT FICTION // EACH A FRAGMENT OF THE WHOLE</p>
+                </header>
+                <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4" id="stories-grid">
+                </div>
+            </div>
+        </section>
+
         <section class="hidden h-full overflow-y-auto p-6 md:p-12 pb-24 pt-28 flex flex-col items-center"
             id="audio-section">
             <div class="w-full max-w-5xl">
                 <header class="mb-8 border-b border-gray-800 pb-6 flex justify-between items-center">
                     <div>
-                        <h2 class="text-4xl font-bold text-white mb-2">THE STORY</h2>
+                        <h2 class="text-4xl font-bold text-white mb-2">SONGS</h2>
                         <p class="font-mono-custom text-gray-500 text-sm">ETHEL'S ORIGIN STORY - an ongoing visual
                             exploration of the narrative</p>
                     </div>
@@ -2928,6 +2945,7 @@
             initCursor();
             loadGalleryMap();
             renderPodcasts();
+            renderStories();
         });
 
         function initCursor() {
@@ -2960,7 +2978,7 @@
                 activeBtn.classList.add('active-tab', 'text-white');
                 activeBtn.classList.remove('text-gray-300');
             }
-            ['home-section', 'files-section', 'profiles-section', 'games-section', 'podcast-section', 'audio-section'].forEach(id => {
+            ['home-section', 'files-section', 'profiles-section', 'games-section', 'podcast-section', 'stories-section', 'audio-section'].forEach(id => {
                 document.getElementById(id).classList.add('hidden');
             });
             document.getElementById(`${tabId}-section`).classList.remove('hidden');
@@ -3460,6 +3478,39 @@
             <div class="p-4 border-t border-gray-800 group-hover:border-green-500/30 transition-colors bg-zinc-900/50">
                 <h3 class="text-sm font-bold text-white mb-1 truncate" title="${pod.name}">${pod.name}</h3>
                 <p class="font-mono-custom text-[10px] tracking-wider text-green-500 group-hover:text-green-400">LISTEN NOW</p>
+            </div>
+        </div>
+    `).join('');
+        }
+
+        function renderStories() {
+            const container = document.getElementById('stories-grid');
+            if (!container || !PIXEL_MANIFEST || !PIXEL_MANIFEST.STORIES) return;
+
+            const storyList = Object.entries(PIXEL_MANIFEST.STORIES).map(([key, s]) => ({
+                id: key, ...s
+            }));
+
+            container.innerHTML = storyList.map((story, index) => `
+        <div class="group relative bg-black border border-gray-800 hover:border-green-500/50 
+             transition-all duration-500 overflow-hidden cursor-pointer" 
+             onclick="window.open('${story.href}', '_blank')"
+             style="animation: fadeInUp 0.6s ease forwards ${index * 0.1}s; opacity: 0;">
+            <div class="aspect-[3/4] overflow-hidden relative">
+                <img src="${story.cover}" 
+                     alt="${story.title}" 
+                     class="w-full h-full object-cover filter grayscale-[30%] group-hover:grayscale-0 transition-all duration-700">
+                <div class="absolute inset-0 bg-black/40 group-hover:bg-black/10 transition-all duration-500"></div>
+                <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent"></div>
+                <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                    <div class="w-14 h-14 rounded-full bg-green-500/90 flex items-center justify-center shadow-lg shadow-green-500/30">
+                        <span class="material-symbols-outlined text-3xl text-black">menu_book</span>
+                    </div>
+                </div>
+            </div>
+            <div class="p-4 border-t border-gray-800 group-hover:border-green-500/30 transition-colors bg-zinc-900/50">
+                <h3 class="text-sm font-bold text-white mb-1 truncate" title="${story.title}">${story.title}</h3>
+                <p class="font-mono-custom text-[10px] tracking-wider text-green-500 group-hover:text-green-400">READ NOW</p>
             </div>
         </div>
     `).join('');
