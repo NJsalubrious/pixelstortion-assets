@@ -121,6 +121,31 @@ const PIXEL_MANIFEST = {
         }
     },
 
+    // 3c. STORIES (Short fiction - absolute URLs for cross-site resolution)
+    STORIES: {
+        ISLA_4_7_2: {
+            title: 'ISLA 4-7-2',
+            track: 'STORY 01 // ISLA DARK ORIGIN STORY',
+            description: "Isla's origin story is horrific but important to tell",
+            cover: 'https://silenceisthetrauma.com/short_stories/pixelstortion_ISLA_4-7-2.jpg',
+            href: 'https://silenceisthetrauma.com/short_stories/pixelstortion_ISLA_4-7-2.html'
+        },
+        Islas_Blast_Radius: {
+            title: "Isla's Blast Radius",
+            track: "STORY 02 // ISLA'S BLAST RADIUS",
+            description: "The Burning Dominic's Empire starts here. The fallout is instant.",
+            cover: 'https://silenceisthetrauma.com/short_stories/Islas_Blast_Radius.jpg',
+            href: 'https://silenceisthetrauma.com/short_stories/Islas_Blast_Radius.html'
+        },
+        Same_Breath: {
+            title: 'Same Breath',
+            track: 'STORY 03 // SAME BREATH',
+            description: 'He saved a man. Then he removed a liability. Same breath',
+            cover: 'https://silenceisthetrauma.com/short_stories/Same_Breath.jpg',
+            href: 'https://silenceisthetrauma.com/short_stories/Same_Breath.html'
+        }
+    },
+
     // 4. DATA HOOKS    
     ASSETS: {
         GALLERY_MAP: `${IMAGE_BASE}/gallery_map.json`,
