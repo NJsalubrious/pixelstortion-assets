@@ -878,10 +878,9 @@
                 }
             }
 
-            // If current track not in new set, start from beginning
+            // If current track not in new set, reset index but don't auto-play
             currentTrackIdx = 0;
             renderTracks();
-            loadTrack(0);
         }
 
         // --- UI FUNCTIONS ---
@@ -961,11 +960,13 @@
             // Scroll to button
             document.getElementById(`album-btn-${albumId}`)?.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
 
-            // Load album tracks directly
+            // Load album tracks into the list (don't auto-play)
             currentTracks = album.tracks;
-            currentTrackIdx = 0;
+            // Preserve current track index if the playing track exists in this album
+            const currentId = currentTracks[currentTrackIdx]?.id;
+            const foundInAlbum = album.tracks.findIndex(t => t.id === currentId);
+            currentTrackIdx = foundInAlbum !== -1 ? foundInAlbum : 0;
             renderTracks();
-            loadTrack(0);
         }
 
         function renderTracks() {
