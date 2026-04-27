@@ -42,6 +42,76 @@
         }
 
         /* Glitch & Visuals */
+        /* ====== BRAND DROPDOWN ====== */
+        .brand-dropdown-container {
+            position: relative;
+        }
+
+        .brand-dropdown-menu {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            margin-top: 6px;
+            background: rgba(5, 5, 5, 0.95);
+            border: 1px solid var(--border-dim, #1a1a1a);
+            min-width: 170px;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+            backdrop-filter: blur(8px);
+            padding: 4px 0;
+            z-index: 100;
+        }
+
+        .brand-dropdown-menu.active {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .brand-dropdown-item {
+            display: block;
+            padding: 4px 12px;
+            font-family: 'Courier Prime', monospace;
+            font-size: 10px;
+            color: #ccc;
+            text-decoration: none;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.2s ease;
+            border-left: 2px solid transparent;
+            white-space: nowrap;
+        }
+
+        .brand-dropdown-item.item-silence:hover {
+            color: #fff;
+            background: rgba(0, 255, 65, 0.05);
+            border-left: 2px solid #00ff41;
+            padding-left: 24px;
+        }
+
+        .brand-dropdown-item.item-nalani:hover {
+            color: #fff;
+            background: rgba(255, 140, 0, 0.05);
+            border-left: 2px solid #ff8c00;
+            padding-left: 24px;
+        }
+
+        .brand-dropdown-item.item-cinema:hover {
+            color: #fff;
+            background: rgba(0, 255, 65, 0.05);
+            border-left: 2px solid #00ff41;
+            padding-left: 24px;
+        }
+
+        .brand-dropdown-item.item-bio:hover {
+            color: #fff;
+            background: rgba(0, 191, 255, 0.05);
+            border-left: 2px solid #00bfff;
+            padding-left: 24px;
+        }
+
         .glitch-text {
             position: relative;
         }
@@ -352,8 +422,17 @@
     <div id="sidebar-left" class="w-full md:w-56 bg-[#080808] border-r border-[#222] flex flex-col z-20">
         <div class="p-3 md:p-6 border-b border-[#222]">
             <div class="hidden md:block mb-4">
-                <h1 class="text-lg font-bold font-mono-custom text-white glitch-text" data-text="PIXELSTORTION">
-                    PIXELSTORTION</h1>
+                <div class="brand-dropdown-container">
+                    <button onclick="toggleBrandMenu(event)" class="brand-trigger text-left" style="background: none; border: none; cursor: pointer; text-decoration: none; padding: 0;">
+                        <h1 class="text-lg font-bold font-mono-custom text-white glitch-text" data-text="PIXELSTORTION">PIXELSTORTION</h1>
+                    </button>
+                    <div id="brandDropdown" class="brand-dropdown-menu">
+                        <a href="https://pixelstortion.com/zones/silence/" class="brand-dropdown-item item-silence">Silence Is The Trauma</a>
+                        <a href="https://pixelstortion.com/zones/mataala/" class="brand-dropdown-item item-nalani">Nalani</a>
+                        <a href="https://pixelstortion.com/zones/silentcinema/" class="brand-dropdown-item item-cinema">SILENT CINEMA</a>
+                        <a href="https://pixelstortion.com/bio/" class="brand-dropdown-item item-bio">BIO</a>
+                    </div>
+                </div>
                 <p class="text-[9px] text-gray-500 mt-1 font-mono-custom tracking-widest">SILENCE IS THE TRAUMA</p>
             </div>
             <div class="flex gap-1 justify-center md:justify-start">
@@ -1236,6 +1315,46 @@
             }
         });
         ytDialogObserver.observe(document.body, { childList: true, subtree: true });
+
+        // ============================================================
+        // BRAND DROPDOWN
+        // ============================================================
+        function toggleBrandMenu(e) {
+            e.stopPropagation();
+            const menu = document.getElementById('brandDropdown');
+            menu.classList.toggle('active');
+        }
+
+        document.addEventListener('click', (e) => {
+            const menu = document.getElementById('brandDropdown');
+            if (menu && menu.classList.contains('active')) {
+                menu.classList.remove('active');
+            }
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const currentUrl = window.location.href.toLowerCase();
+            const dropdownLinks = document.querySelectorAll('.brand-dropdown-item');
+            
+            dropdownLinks.forEach(link => {
+                const href = link.getAttribute('href') || '';
+                const isSilenceLink = href.includes('/silence/');
+                const isMataalaLink = href.includes('/mataala/');
+                const isCinemaLink = href.includes('/silentcinema/');
+                const isBioLink = href.includes('/bio/');
+                
+                if ((currentUrl.includes('silence') && !currentUrl.includes('silentcinema') && isSilenceLink) || 
+                    (currentUrl.includes('mataala') && isMataalaLink) ||
+                    (currentUrl.includes('silentcinema') && isCinemaLink) ||
+                    (currentUrl.includes('bio') && isBioLink)) {
+                    link.removeAttribute('href');
+                    link.style.opacity = '0.4';
+                    link.style.cursor = 'default';
+                    link.style.pointerEvents = 'none';
+                    link.innerHTML += ' <span style="font-size:9px; letter-spacing:1px; margin-left:8px; color:#666;">[ACTIVE]</span>';
+                }
+            });
+        });
     </script>
 </body>
 
