@@ -126,7 +126,7 @@ const PIXEL_MANIFEST = {
         ISLA_4_7_2: {
             title: 'ISLA 4-7-2',
             track: 'STORY 01 // ISLA DARK ORIGIN STORY',
-            description: "472 - Meaning oddly nothing. Isla's origin story is horrific. But important.",
+            description: "472 - The Meaning of Recursive Rot. Isla's origin story is horrific.",
             cover: 'https://silenceisthetrauma.com/short_stories/pixelstortion_ISLA_4-7-2.jpg',
             href: 'https://silenceisthetrauma.com/short_stories/pixelstortion_ISLA_4-7-2.html'
         },
