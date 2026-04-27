@@ -39,11 +39,178 @@
             -webkit-font-smoothing: antialiased;
         }
 
+        /* ========== PIXELSTORTION BRANDING ========== */
+        :root {
+            --glitch-color-1: #00ff41;
+            --glitch-color-2: #ff003c;
+            --border-dim: #1a1a1a;
+        }
+
+        .top-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 60px;
+            background: rgba(5, 5, 5, 0.95);
+            border-bottom: 1px solid var(--border-dim);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .top-bar-inner {
+            width: 100%;
+            max-width: 1200px;
+            padding: 0 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .brand-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 700;
+            font-size: 20px;
+            letter-spacing: 0.1em;
+            color: #fff;
+            margin: 0;
+            cursor: pointer;
+        }
+
+        .brand-subtitle {
+            font-family: 'Courier Prime', monospace;
+            font-size: 10px;
+            letter-spacing: 3px;
+            color: var(--glitch-color-1);
+            text-transform: uppercase;
+        }
+
+        .glitch-text {
+            position: relative;
+            display: inline-block;
+        }
+
+        .glitch-text::before,
+        .glitch-text::after {
+            content: attr(data-text);
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background: transparent;
+        }
+
+        .glitch-text::before {
+            left: 2px;
+            text-shadow: -2px 0 var(--glitch-color-2);
+            clip: rect(0, 0, 0, 0);
+            animation: glitch-anim 3s infinite;
+        }
+
+        .glitch-text::after {
+            left: -2px;
+            text-shadow: 2px 0 var(--glitch-color-1);
+            clip: rect(0, 0, 0, 0);
+            animation: glitch-anim2 3s infinite 0.5s;
+        }
+
+        @keyframes glitch-anim {
+            0% { clip: rect(44px, 9999px, 56px, 0); }
+            20% { clip: rect(12px, 9999px, 78px, 0); }
+            40% { clip: rect(89px, 9999px, 34px, 0); }
+            60% { clip: rect(23px, 9999px, 91px, 0); }
+            80% { clip: rect(67px, 9999px, 12px, 0); }
+            100% { clip: rect(45px, 9999px, 76px, 0); }
+        }
+
+        @keyframes glitch-anim2 {
+            0% { clip: rect(23px, 9999px, 87px, 0); }
+            20% { clip: rect(54px, 9999px, 12px, 0); }
+            40% { clip: rect(78px, 9999px, 45px, 0); }
+            60% { clip: rect(12px, 9999px, 67px, 0); }
+            80% { clip: rect(89px, 9999px, 23px, 0); }
+            100% { clip: rect(34px, 9999px, 56px, 0); }
+        }
+
+        /* ====== BRAND DROPDOWN ====== */
+        .brand-dropdown-container {
+            position: relative;
+        }
+
+        .brand-dropdown-menu {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            margin-top: 10px;
+            background: rgba(5, 5, 5, 0.95);
+            border: 1px solid var(--border-dim);
+            min-width: 220px;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+            backdrop-filter: blur(8px);
+            padding: 4px 0;
+            z-index: 100;
+        }
+
+        .brand-dropdown-menu.active {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .brand-dropdown-item {
+            display: block;
+            padding: 8px 20px;
+            font-family: 'Courier Prime', monospace;
+            font-size: 12px;
+            color: #ccc;
+            text-decoration: none;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            transition: all 0.2s ease;
+            border-left: 2px solid transparent;
+            white-space: nowrap;
+        }
+
+        .brand-dropdown-item.item-silence:hover {
+            color: #fff;
+            background: rgba(0, 255, 65, 0.05);
+            border-left: 2px solid #00ff41;
+            padding-left: 24px;
+        }
+
+        .brand-dropdown-item.item-nalani:hover {
+            color: #fff;
+            background: rgba(255, 140, 0, 0.05);
+            border-left: 2px solid #ff8c00;
+            padding-left: 24px;
+        }
+
+        .brand-dropdown-item.item-cinema:hover {
+            color: #fff;
+            background: rgba(0, 255, 65, 0.05);
+            border-left: 2px solid #00ff41;
+            padding-left: 24px;
+        }
+
+        .brand-dropdown-item.item-bio:hover {
+            color: #fff;
+            background: rgba(0, 191, 255, 0.05);
+            border-left: 2px solid #00bfff;
+            padding-left: 24px;
+        }
+
         .hero {
             width: 100%;
             position: relative;
             overflow: hidden;
             background: #0a0a0a;
+            padding-top: 60px;
             padding-bottom: 30px;
         }
 
@@ -322,6 +489,24 @@
 
 <body>
 
+    <!-- Top Bar -->
+    <nav class="top-bar">
+        <div class="top-bar-inner">
+            <div class="brand-dropdown-container">
+                <button onclick="toggleBrandMenu(event)" class="brand-trigger" style="background: none; border: none; cursor: pointer; text-decoration: none; padding: 0;">
+                    <h1 class="brand-title glitch-text" data-text="PIXELSTORTION">PIXELSTORTION</h1>
+                </button>
+                <div id="brandDropdown" class="brand-dropdown-menu">
+                    <a href="https://pixelstortion.com/zones/silence/" class="brand-dropdown-item item-silence">Silence Is The Trauma</a>
+                    <a href="https://pixelstortion.com/zones/mataala/" class="brand-dropdown-item item-nalani">Nalani</a>
+                    <a href="https://pixelstortion.com/zones/silentcinema/" class="brand-dropdown-item item-cinema">SILENT CINEMA</a>
+                    <a href="https://pixelstortion.com/bio/" class="brand-dropdown-item item-bio">BIO</a>
+                </div>
+            </div>
+            <div class="brand-subtitle">NURTURING STORIES</div>
+        </div>
+    </nav>
+
     <!-- ── HERO ── -->
     <div class="hero">
         <img src="images/images_jpg/PixelStortion_header.jpg" alt="Isla, Ethel, and Nalani" />
@@ -496,6 +681,128 @@
         </footer>
 
     </div>
+
+    <script>
+        // ============================================================
+        // BRANDING GLITCH (Kinetic Scramble)
+        // ============================================================
+        class BrandingGlitch {
+            constructor(el) {
+                this.el = el;
+                this.chars = '!<>-_\\/[]{}—=+*^?#________';
+                this.originalText = el.innerText;
+            }
+            setText(newText) {
+                const oldText = this.el.innerText;
+                const length = Math.max(oldText.length, newText.length);
+                const promise = new Promise((resolve) => this.resolve = resolve);
+                this.queue = [];
+                for (let i = 0; i < length; i++) {
+                    const from = oldText[i] || '';
+                    const to = newText[i] || '';
+                    const start = Math.floor(Math.random() * 40);
+                    const end = start + Math.floor(Math.random() * 40);
+                    this.queue.push({ from, to, start, end });
+                }
+                cancelAnimationFrame(this.frameRequest);
+                this.frame = 0;
+                this.update();
+                return promise;
+            }
+            update() {
+                let output = '';
+                let complete = 0;
+                for (let i = 0, n = this.queue.length; i < n; i++) {
+                    let { from, to, start, end, char } = this.queue[i];
+                    if (this.frame >= end) {
+                        complete++;
+                        output += to;
+                    } else if (this.frame >= start) {
+                        if (!char || Math.random() < 0.28) {
+                            char = this.randomChar();
+                            this.queue[i].char = char;
+                        }
+                        output += `<span style="opacity:0.3">${char}</span>`;
+                    } else {
+                        output += from;
+                    }
+                }
+                this.el.innerHTML = output;
+                this.el.setAttribute('data-text', this.el.innerText);
+                if (complete === this.queue.length) {
+                    this.resolve();
+                } else {
+                    this.frameRequest = requestAnimationFrame(this.update.bind(this));
+                    this.frame++;
+                }
+            }
+            randomChar() {
+                return this.chars[Math.floor(Math.random() * this.chars.length)];
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const brandEls = document.querySelectorAll('.brand-title');
+            if (brandEls.length > 0) {
+                const brandFx = new BrandingGlitch(brandEls[0]);
+                const brandWords = ['PIXELSTORTION', 'BIO', 'PROJECTS', 'MATAALA', 'MUSIC', 'SOCIALS'];
+                let wordIndex = 0;
+                
+                function nextBrandWord() {
+                    wordIndex = (wordIndex + 1) % brandWords.length;
+                    brandFx.setText(brandWords[wordIndex]).then(() => {
+                        let delay = 1500;
+                        if (brandWords[wordIndex] === 'PIXELSTORTION') {
+                            delay = 6000;
+                        }
+                        setTimeout(nextBrandWord, delay);
+                    });
+                }
+                
+                setTimeout(nextBrandWord, 6000);
+            }
+        });
+
+        // ============================================================
+        // BRAND DROPDOWN
+        // ============================================================
+        function toggleBrandMenu(e) {
+            e.stopPropagation();
+            const menu = document.getElementById('brandDropdown');
+            menu.classList.toggle('active');
+        }
+
+        document.addEventListener('click', (e) => {
+            const menu = document.getElementById('brandDropdown');
+            if (menu && menu.classList.contains('active')) {
+                menu.classList.remove('active');
+            }
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const currentUrl = window.location.href.toLowerCase();
+            const dropdownLinks = document.querySelectorAll('.brand-dropdown-item');
+            
+            dropdownLinks.forEach(link => {
+                const href = link.getAttribute('href') || '';
+                const isSilenceLink = href.includes('/silence/');
+                const isMataalaLink = href.includes('/mataala/');
+                const isCinemaLink = href.includes('/silentcinema/');
+                const isBioLink = href.includes('/bio/');
+                
+                if ((currentUrl.includes('silence') && !currentUrl.includes('silentcinema') && isSilenceLink) || 
+                    (currentUrl.includes('mataala') && isMataalaLink) ||
+                    (currentUrl.includes('silentcinema') && isCinemaLink) ||
+                    (currentUrl.includes('bio') && isBioLink)) {
+                    link.removeAttribute('href');
+                    link.style.opacity = '0.4';
+                    link.style.cursor = 'default';
+                    link.style.pointerEvents = 'none';
+                    link.innerHTML += ' <span style="font-size:9px; letter-spacing:1px; margin-left:8px; color:#666;">[ACTIVE]</span>';
+                }
+            });
+        });
+    </script>
 </body>
 
 </html>
