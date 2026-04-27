@@ -1942,6 +1942,121 @@
             padding-top: 120px !important;
         }
 
+        /* Story card hover reveal */
+        .silence-story-card {
+            display: block;
+            text-decoration: none;
+            background: #000;
+            border: 1px solid #1f1f1f;
+            overflow: hidden;
+            transition: border-color 0.5s ease;
+        }
+
+        .silence-story-card:hover {
+            border-color: rgba(0, 255, 65, 0.3);
+        }
+
+        .silence-story-card .s-card-img {
+            aspect-ratio: 3/4;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .silence-story-card .s-card-img img {
+            width: 100%; height: 100%; object-fit: cover;
+            filter: grayscale(30%);
+            transition: filter 0.7s ease;
+        }
+
+        .silence-story-card:hover .s-card-img img {
+            filter: grayscale(0%);
+        }
+
+        .silence-story-card .s-card-img .s-overlay {
+            position: absolute; inset: 0;
+            background: rgba(0,0,0,0.4);
+            transition: background 0.5s ease;
+        }
+
+        .silence-story-card:hover .s-card-img .s-overlay {
+            background: rgba(0,0,0,0.1);
+        }
+
+        .silence-story-card .s-card-img .s-gradient {
+            position: absolute; inset: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.7), transparent);
+        }
+
+        .silence-story-card .s-card-img .s-read-icon {
+            position: absolute; inset: 0;
+            display: flex; align-items: center; justify-content: center;
+            opacity: 0; transition: opacity 0.3s ease;
+        }
+
+        .silence-story-card:hover .s-card-img .s-read-icon {
+            opacity: 1;
+        }
+
+        .silence-story-card .s-card-info {
+            padding: 16px;
+            border-top: 1px solid #1f1f1f;
+            background: rgba(20,20,20,0.6);
+            transition: border-color 0.4s ease;
+        }
+
+        .silence-story-card:hover .s-card-info {
+            border-top-color: rgba(0, 255, 65, 0.3);
+        }
+
+        .silence-story-card .s-card-title {
+            font-size: 14px; font-weight: 700; color: #fff;
+            margin-bottom: 4px; white-space: nowrap;
+            overflow: hidden; text-overflow: ellipsis;
+        }
+
+        .silence-story-card .s-track-container {
+            display: grid; margin-bottom: 4px; align-items: start;
+        }
+
+        .silence-story-card .s-track, .silence-story-card .s-desc {
+            grid-area: 1 / 1;
+            font-family: 'Courier Prime', 'Courier New', monospace;
+            font-size: 10px; text-transform: uppercase;
+        }
+
+        .silence-story-card .s-track {
+            letter-spacing: 2px; color: #666;
+            transition: opacity 0.3s ease; opacity: 1;
+        }
+
+        .silence-story-card .s-desc {
+            letter-spacing: 1px; color: #999;
+            pointer-events: none; line-height: 1.4;
+        }
+
+        .silence-story-card .s-desc span {
+            opacity: 0; transition: opacity 0.15s ease;
+        }
+
+        .silence-story-card:hover .s-track {
+            opacity: 0; transition: opacity 0.1s ease;
+        }
+
+        .silence-story-card:hover .s-desc span {
+            opacity: 1;
+        }
+
+        .silence-story-card .s-cta {
+            font-family: 'Courier Prime', 'Courier New', monospace;
+            font-size: 10px; letter-spacing: 2px;
+            color: #22c55e; text-transform: uppercase;
+            transition: color 0.3s ease;
+        }
+
+        .silence-story-card:hover .s-cta {
+            color: #33ff66;
+        }
+
         /* *********************************************************** */
         /* DOMINIC RED PEN PARASITE  -  CSS                             */
         /* *********************************************************** */
@@ -3491,29 +3606,35 @@
                 id: key, ...s
             }));
 
-            container.innerHTML = storyList.map((story, index) => `
-        <div class="group relative bg-black border border-gray-800 hover:border-green-500/50 
-             transition-all duration-500 overflow-hidden cursor-pointer" 
-             onclick="window.open('${story.href}', '_blank')"
-             style="animation: fadeInUp 0.6s ease forwards ${index * 0.1}s; opacity: 0;">
-            <div class="aspect-[3/4] overflow-hidden relative">
-                <img src="${story.cover}" 
-                     alt="${story.title}" 
-                     class="w-full h-full object-cover filter grayscale-[30%] group-hover:grayscale-0 transition-all duration-700">
-                <div class="absolute inset-0 bg-black/40 group-hover:bg-black/10 transition-all duration-500"></div>
-                <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent"></div>
-                <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                    <div class="w-14 h-14 rounded-full bg-green-500/90 flex items-center justify-center shadow-lg shadow-green-500/30">
-                        <span class="material-symbols-outlined text-3xl text-black">menu_book</span>
+            container.innerHTML = storyList.map((story, index) => {
+                const descSpans = story.description ? story.description.split('').map((char, i) => {
+                    if (char === ' ') return ' ';
+                    return `<span style="transition-delay: ${i * 15}ms">${char}</span>`;
+                }).join('') : '';
+
+                return `
+                <a href="${story.href}" target="_blank" rel="noopener noreferrer" class="silence-story-card"
+                   style="animation: fadeInUp 0.6s ease forwards ${index * 0.12}s; opacity: 0;">
+                    <div class="s-card-img">
+                        <img src="${story.cover}" alt="${story.title}" loading="lazy">
+                        <div class="s-overlay"></div>
+                        <div class="s-gradient"></div>
+                        <div class="s-read-icon">
+                            <div class="w-14 h-14 rounded-full bg-green-500/90 flex items-center justify-center shadow-lg shadow-green-500/30">
+                                <span class="material-symbols-outlined text-3xl text-black">menu_book</span>
+                            </div>
+                        </div>
                     </div>
-                </div>
-            </div>
-            <div class="p-4 border-t border-gray-800 group-hover:border-green-500/30 transition-colors bg-zinc-900/50">
-                <h3 class="text-sm font-bold text-white mb-1 truncate" title="${story.title}">${story.title}</h3>
-                <p class="font-mono-custom text-[10px] tracking-wider text-green-500 group-hover:text-green-400">READ NOW</p>
-            </div>
-        </div>
-    `).join('');
+                    <div class="s-card-info">
+                        <h3 class="s-card-title" title="${story.title}">${story.title}</h3>
+                        <div class="s-track-container">
+                            <p class="s-track">${story.track}</p>
+                            <p class="s-desc">${descSpans}</p>
+                        </div>
+                        <p class="s-cta">READ NOW</p>
+                    </div>
+                </a>
+            `}).join('');
         }
 
         function openPodcastPlayer(podId) {
