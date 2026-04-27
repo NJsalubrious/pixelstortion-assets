@@ -1386,9 +1386,10 @@
             }
 
             /* Target the video container directly to make it smaller without gaps */
-            #home-section > .absolute.inset-0 {
+            #home-section>.absolute.inset-0 {
                 height: 45vh !important;
-                top: -2rem !important; /* Push it slightly higher */
+                top: -2rem !important;
+                /* Push it slightly higher */
             }
 
             #home-section p {
@@ -3162,13 +3163,18 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-16">
                 <div class="brand-dropdown-container">
-                    <button onclick="toggleBrandMenu(event)" class="brand-trigger" style="background: none; border: none; cursor: pointer; text-decoration: none; padding: 0;">
-                        <h1 class="text-2xl font-bold tracking-tighter text-white glitch-text brand-title" data-text="PIXELSTORTION">PIXELSTORTION</h1>
+                    <button onclick="toggleBrandMenu(event)" class="brand-trigger"
+                        style="background: none; border: none; cursor: pointer; text-decoration: none; padding: 0;">
+                        <h1 class="text-2xl font-bold tracking-tighter text-white glitch-text brand-title"
+                            data-text="PIXELSTORTION">PIXELSTORTION</h1>
                     </button>
                     <div id="brandDropdown" class="brand-dropdown-menu">
-                        <a href="https://pixelstortion.com/zones/silence/" class="brand-dropdown-item item-silence">Silence Is The Trauma</a>
-                        <a href="https://pixelstortion.com/zones/mataala/" class="brand-dropdown-item item-nalani">Nalani</a>
-                        <a href="https://pixelstortion.com/zones/silentcinema/" class="brand-dropdown-item item-cinema">SILENT CINEMA</a>
+                        <a href="https://pixelstortion.com/zones/silence/"
+                            class="brand-dropdown-item item-silence">Silence Is The Trauma</a>
+                        <a href="https://pixelstortion.com/zones/mataala/"
+                            class="brand-dropdown-item item-nalani">Nalani</a>
+                        <a href="https://pixelstortion.com/zones/silentcinema/"
+                            class="brand-dropdown-item item-cinema">SILENT CINEMA</a>
                         <a href="https://pixelstortion.com/bio/" class="brand-dropdown-item item-bio">BIO</a>
                     </div>
                 </div>
@@ -5240,7 +5246,7 @@ Image Sources:
             const brandEl = document.querySelector('.brand-title');
             if (brandEl) {
                 const brandFx = new BrandingGlitch(brandEl);
-                const brandWords = ['PIXELSTORTION', 'BIO', 'PROJECTS', 'MATAALA', 'MUSIC', 'SOCIALS', 'PIXELSTORTION'];
+                const brandWords = ['PIXELSTORTION', 'PROJECTS', 'BIO', 'SILENCE', 'MATAALA', 'CINEMA', 'MUSIC', 'NALANI', 'PIXELSTORTION'];
                 let wordIndex = 0;
 
                 function nextBrandWord() {
@@ -5253,7 +5259,7 @@ Image Sources:
                         setTimeout(nextBrandWord, delay);
                     });
                 }
-                
+
                 setTimeout(nextBrandWord, 6000); // Start cycle after 6 seconds
             }
         });
@@ -5279,15 +5285,15 @@ Image Sources:
         document.addEventListener('DOMContentLoaded', () => {
             const currentUrl = window.location.href.toLowerCase();
             const dropdownLinks = document.querySelectorAll('.brand-dropdown-item');
-            
+
             dropdownLinks.forEach(link => {
                 const href = link.getAttribute('href') || '';
                 const isSilenceLink = href.includes('/silence/');
                 const isMataalaLink = href.includes('/mataala/');
                 const isCinemaLink = href.includes('/silentcinema/');
                 const isBioLink = href.includes('/bio/');
-                
-                if ((currentUrl.includes('silence') && !currentUrl.includes('silentcinema') && isSilenceLink) || 
+
+                if ((currentUrl.includes('silence') && !currentUrl.includes('silentcinema') && isSilenceLink) ||
                     (currentUrl.includes('mataala') && isMataalaLink) ||
                     (currentUrl.includes('silentcinema') && isCinemaLink) ||
                     (currentUrl.includes('bio') && isBioLink)) {
