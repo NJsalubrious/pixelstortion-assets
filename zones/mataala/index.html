@@ -907,6 +907,13 @@
             padding-left: 24px;
         }
 
+        .brand-dropdown-item.item-cinema:hover {
+            color: #fff;
+            background: rgba(0, 255, 65, 0.05);
+            border-left: 2px solid #00ff41;
+            padding-left: 24px;
+        }
+
         .brand-dropdown-item.item-bio:hover {
             color: #fff;
             background: rgba(0, 191, 255, 0.05);
@@ -3135,6 +3142,7 @@
                     <div id="brandDropdown" class="brand-dropdown-menu">
                         <a href="https://pixelstortion.com/zones/silence/" class="brand-dropdown-item item-silence">Silence Is The Trauma</a>
                         <a href="https://pixelstortion.com/zones/mataala/" class="brand-dropdown-item item-nalani">Nalani</a>
+                        <a href="https://pixelstortion.com/zones/silentcinema/" class="brand-dropdown-item item-cinema">SILENT CINEMA</a>
                         <a href="https://pixelstortion.com/bio/" class="brand-dropdown-item item-bio">BIO</a>
                     </div>
                 </div>
@@ -5241,11 +5249,15 @@ Image Sources:
             
             dropdownLinks.forEach(link => {
                 const href = link.getAttribute('href') || '';
-                const isSilenceLink = href.includes('silence');
-                const isMataalaLink = href.includes('mataala');
+                const isSilenceLink = href.includes('/silence/');
+                const isMataalaLink = href.includes('/mataala/');
+                const isCinemaLink = href.includes('/silentcinema/');
+                const isBioLink = href.includes('/bio/');
                 
-                if ((currentUrl.includes('silence') && isSilenceLink) || 
-                    (currentUrl.includes('mataala') && isMataalaLink)) {
+                if ((currentUrl.includes('silence') && !currentUrl.includes('silentcinema') && isSilenceLink) || 
+                    (currentUrl.includes('mataala') && isMataalaLink) ||
+                    (currentUrl.includes('silentcinema') && isCinemaLink) ||
+                    (currentUrl.includes('bio') && isBioLink)) {
                     link.removeAttribute('href');
                     link.style.opacity = '0.4';
                     link.style.cursor = 'default';
