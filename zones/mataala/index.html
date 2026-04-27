@@ -1044,6 +1044,16 @@
 
         @media (max-width: 767px) {
 
+            /* Push home section CTA buttons to the bottom of the viewport */
+            #home-section {
+                justify-content: flex-end !important;
+                padding-bottom: 48px !important;
+            }
+
+            #home-section > .relative.z-10 {
+                margin-top: auto;
+            }
+
             /* Navigator's Challenge button - ultra compact like "Decrypt Files" */
             #game-toggle-btn {
                 left: 0;
