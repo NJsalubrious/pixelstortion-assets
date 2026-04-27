@@ -118,21 +118,55 @@
         }
 
         @keyframes glitch-anim {
-            0% { clip: rect(44px, 9999px, 56px, 0); }
-            20% { clip: rect(12px, 9999px, 78px, 0); }
-            40% { clip: rect(89px, 9999px, 34px, 0); }
-            60% { clip: rect(23px, 9999px, 91px, 0); }
-            80% { clip: rect(67px, 9999px, 12px, 0); }
-            100% { clip: rect(45px, 9999px, 76px, 0); }
+            0% {
+                clip: rect(44px, 9999px, 56px, 0);
+            }
+
+            20% {
+                clip: rect(12px, 9999px, 78px, 0);
+            }
+
+            40% {
+                clip: rect(89px, 9999px, 34px, 0);
+            }
+
+            60% {
+                clip: rect(23px, 9999px, 91px, 0);
+            }
+
+            80% {
+                clip: rect(67px, 9999px, 12px, 0);
+            }
+
+            100% {
+                clip: rect(45px, 9999px, 76px, 0);
+            }
         }
 
         @keyframes glitch-anim2 {
-            0% { clip: rect(23px, 9999px, 87px, 0); }
-            20% { clip: rect(54px, 9999px, 12px, 0); }
-            40% { clip: rect(78px, 9999px, 45px, 0); }
-            60% { clip: rect(12px, 9999px, 67px, 0); }
-            80% { clip: rect(89px, 9999px, 23px, 0); }
-            100% { clip: rect(34px, 9999px, 56px, 0); }
+            0% {
+                clip: rect(23px, 9999px, 87px, 0);
+            }
+
+            20% {
+                clip: rect(54px, 9999px, 12px, 0);
+            }
+
+            40% {
+                clip: rect(78px, 9999px, 45px, 0);
+            }
+
+            60% {
+                clip: rect(12px, 9999px, 67px, 0);
+            }
+
+            80% {
+                clip: rect(89px, 9999px, 23px, 0);
+            }
+
+            100% {
+                clip: rect(34px, 9999px, 56px, 0);
+            }
         }
 
         /* ====== BRAND DROPDOWN ====== */
@@ -531,13 +565,17 @@
     <nav class="top-bar">
         <div class="top-bar-inner">
             <div class="brand-dropdown-container">
-                <button onclick="toggleBrandMenu(event)" class="brand-trigger" style="background: none; border: none; cursor: pointer; text-decoration: none; padding: 0;">
+                <button onclick="toggleBrandMenu(event)" class="brand-trigger"
+                    style="background: none; border: none; cursor: pointer; text-decoration: none; padding: 0;">
                     <h1 class="brand-title glitch-text" data-text="PIXELSTORTION">PIXELSTORTION</h1>
                 </button>
                 <div id="brandDropdown" class="brand-dropdown-menu">
-                    <a href="https://pixelstortion.com/zones/silence/" class="brand-dropdown-item item-silence">Silence Is The Trauma</a>
-                    <a href="https://pixelstortion.com/zones/mataala/" class="brand-dropdown-item item-nalani">Nalani</a>
-                    <a href="https://pixelstortion.com/zones/silentcinema/" class="brand-dropdown-item item-cinema">SILENT CINEMA</a>
+                    <a href="https://pixelstortion.com/zones/silence/" class="brand-dropdown-item item-silence">Silence
+                        Is The Trauma</a>
+                    <a href="https://pixelstortion.com/zones/mataala/"
+                        class="brand-dropdown-item item-nalani">Nalani</a>
+                    <a href="https://pixelstortion.com/zones/silentcinema/"
+                        class="brand-dropdown-item item-cinema">SILENT CINEMA</a>
                     <a href="https://pixelstortion.com/bio/" class="brand-dropdown-item item-bio">BIO</a>
                 </div>
             </div>
@@ -612,7 +650,8 @@
         <h2><a href="https://www.pixelstortion.com/zones/silence/">World 1: Silence is the Trauma</a></h2>
 
         <div class="links" style="margin-top: -12px; margin-bottom: 24px;">
-            <a href="https://www.instagram.com/silenceisthetrauma/" target="_blank">&rarr; Instagram: @silenceisthetrauma</a>
+            <a href="https://www.instagram.com/silenceisthetrauma/" target="_blank">&rarr; Instagram:
+                @silenceisthetrauma</a>
         </div>
 
         <a href="https://ethelryker.com" target="_blank">
@@ -783,9 +822,9 @@
             const brandEls = document.querySelectorAll('.brand-title');
             if (brandEls.length > 0) {
                 const brandFx = new BrandingGlitch(brandEls[0]);
-                const brandWords = ['PIXELSTORTION', 'BIO', 'PROJECTS', 'MATAALA', 'MUSIC', 'SOCIALS'];
+                const brandWords = ['PIXELSTORTION', 'PROJECTS', 'BIO', 'SILENCE', 'MATAALA', 'CINEMA', 'MUSIC', 'NALANI', 'PIXELSTORTION'];
                 let wordIndex = 0;
-                
+
                 function nextBrandWord() {
                     wordIndex = (wordIndex + 1) % brandWords.length;
                     brandFx.setText(brandWords[wordIndex]).then(() => {
@@ -796,7 +835,7 @@
                         setTimeout(nextBrandWord, delay);
                     });
                 }
-                
+
                 setTimeout(nextBrandWord, 6000);
             }
         });
@@ -820,15 +859,15 @@
         document.addEventListener('DOMContentLoaded', () => {
             const currentUrl = window.location.href.toLowerCase();
             const dropdownLinks = document.querySelectorAll('.brand-dropdown-item');
-            
+
             dropdownLinks.forEach(link => {
                 const href = link.getAttribute('href') || '';
                 const isSilenceLink = href.includes('/silence/');
                 const isMataalaLink = href.includes('/mataala/');
                 const isCinemaLink = href.includes('/silentcinema/');
                 const isBioLink = href.includes('/bio/');
-                
-                if ((currentUrl.includes('silence') && !currentUrl.includes('silentcinema') && isSilenceLink) || 
+
+                if ((currentUrl.includes('silence') && !currentUrl.includes('silentcinema') && isSilenceLink) ||
                     (currentUrl.includes('mataala') && isMataalaLink) ||
                     (currentUrl.includes('silentcinema') && isCinemaLink) ||
                     (currentUrl.includes('bio') && isBioLink)) {
