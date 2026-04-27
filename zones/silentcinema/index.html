@@ -439,21 +439,13 @@
                 align-items: center;
             }
 
-            /* Ensure dropdown isn't clipped by sidebar */
-            #sidebar-left {
-                overflow: visible !important;
-            }
-
-            #sidebar-left > .p-3 {
-                overflow: visible !important;
-            }
-
-            .brand-dropdown-container {
-                z-index: 200;
-            }
-
+            /* Force dropdown to escape all overflow:hidden parents */
             .brand-dropdown-menu {
-                z-index: 300;
+                position: fixed !important;
+                top: auto;
+                left: 12px;
+                z-index: 9999;
+                margin-top: 4px;
             }
         }
     </style>
@@ -1377,6 +1369,13 @@
             e.stopPropagation();
             const menu = document.getElementById('brandDropdown');
             menu.classList.toggle('active');
+            // On mobile (position:fixed), position below the trigger button
+            if (menu.classList.contains('active') && window.innerWidth <= 768) {
+                const trigger = e.currentTarget;
+                const rect = trigger.getBoundingClientRect();
+                menu.style.top = (rect.bottom + 4) + 'px';
+                menu.style.left = rect.left + 'px';
+            }
         }
 
         document.addEventListener('click', (e) => {
