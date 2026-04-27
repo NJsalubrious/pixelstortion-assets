@@ -311,7 +311,13 @@
         #files-section,
         #profiles-section,
         #audio-section {
-            padding-top: 120px !important;
+            padding-top: 80px !important;
+        }
+
+        #games-section,
+        #podcast-section,
+        #stories-section {
+            padding-top: 80px !important;
         }
 
         /* Cursor Effects */
@@ -2248,6 +2254,22 @@
             color: rgba(239, 68, 68, 0.8);
             transform: scale(1.1);
         }
+
+        @media (max-width: 768px) {
+            .brand-dropdown-menu {
+                margin-top: 4px;
+                min-width: 180px;
+            }
+
+            .brand-dropdown-item {
+                font-size: 11px;
+                letter-spacing: 1px;
+                padding: 6px 12px;
+                min-height: 44px;
+                display: flex;
+                align-items: center;
+            }
+        }
     </style>
     <link rel="canonical" href="https://pixelstortion.com/zones/silence/" />
 </head>
@@ -2377,7 +2399,7 @@
             </div>
         </section>
 
-        <section class="hidden h-full overflow-y-auto p-6 md:p-12 pb-24 pt-28" id="files-section">
+        <section class="hidden h-full overflow-y-auto p-6 md:p-12 pb-24 pt-20" id="files-section">
             <div class="max-w-6xl mx-auto">
                 <header class="mb-12 border-b border-gray-800 pb-6 flex justify-between items-end">
                     <div>
@@ -2390,7 +2412,7 @@
             </div>
         </section>
 
-        <section class="hidden h-full overflow-y-auto p-6 md:p-12 bg-zinc-950 pb-24 pt-28" id="profiles-section">
+        <section class="hidden h-full overflow-y-auto p-6 md:p-12 bg-zinc-950 pb-24 pt-20" id="profiles-section">
             <div class="max-w-7xl mx-auto">
                 <header class="mb-12 border-b border-gray-800 pb-6">
                     <h2 class="text-4xl md:text-5xl font-bold text-white mb-2">SUBJECT PROFILES</h2>
@@ -2401,7 +2423,7 @@
             </div>
         </section>
 
-        <section class="hidden h-full overflow-y-auto p-6 md:p-12 bg-zinc-950 pb-24 pt-28" id="games-section">
+        <section class="hidden h-full overflow-y-auto p-6 md:p-12 bg-zinc-950 pb-24 pt-20" id="games-section">
             <div class="max-w-7xl mx-auto">
                 <header class="mb-12 border-b border-gray-800 pb-6 mt-16">
                     <h2 class="text-4xl md:text-5xl font-bold text-white mb-2">THE GAMES</h2>
@@ -2412,7 +2434,7 @@
             </div>
         </section>
 
-        <section class="hidden h-full overflow-y-auto p-6 md:p-12 bg-zinc-950 pb-24 pt-28" id="podcast-section">
+        <section class="hidden h-full overflow-y-auto p-6 md:p-12 bg-zinc-950 pb-24 pt-20" id="podcast-section">
             <div class="max-w-7xl mx-auto">
                 <header class="mb-12 border-b border-gray-800 pb-6 mt-16">
                     <h2 class="text-4xl md:text-5xl font-bold text-white mb-2">PODCAST</h2>
@@ -2423,7 +2445,7 @@
             </div>
         </section>
 
-        <section class="hidden h-full overflow-y-auto p-6 md:p-12 bg-zinc-950 pb-24 pt-28" id="stories-section">
+        <section class="hidden h-full overflow-y-auto p-6 md:p-12 bg-zinc-950 pb-24 pt-20" id="stories-section">
             <div class="max-w-7xl mx-auto">
                 <header class="mb-12 border-b border-gray-800 pb-6 mt-16">
                     <h2 class="text-4xl md:text-5xl font-bold text-white mb-2">STORIES</h2>
@@ -2434,7 +2456,7 @@
             </div>
         </section>
 
-        <section class="hidden h-full overflow-y-auto p-6 md:p-12 pb-24 pt-28 flex flex-col items-center"
+        <section class="hidden h-full overflow-y-auto p-6 md:p-12 pb-24 pt-20 flex flex-col items-center"
             id="audio-section">
             <div class="w-full max-w-5xl">
                 <header class="mb-8 border-b border-gray-800 pb-6 flex justify-between items-center">

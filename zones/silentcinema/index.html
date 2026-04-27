@@ -402,6 +402,43 @@
             color: #666;
             letter-spacing: 1px;
         }
+
+        @media (max-width: 768px) {
+            /* Sidebar collapses to a compact strip on mobile */
+            #sidebar-left {
+                max-height: none;
+                overflow: visible;
+            }
+
+            /* Hide track list on mobile - user uses the overlay instead */
+            #protocol-list {
+                display: none;
+            }
+
+            /* Hide the shuffle button container on mobile */
+            #sidebar-left > .hidden.md\\:block {
+                display: none !important;
+            }
+
+            /* Cap video height so controls are visible */
+            #video-frame {
+                max-height: 45vh;
+                min-height: 30vh;
+            }
+
+            /* Tighter header bar on mobile */
+            .header-bar {
+                height: auto !important;
+                min-height: 56px;
+            }
+
+            /* Dropdown tap targets */
+            .brand-dropdown-item {
+                min-height: 44px;
+                display: flex;
+                align-items: center;
+            }
+        }
     </style>
 </head>
 

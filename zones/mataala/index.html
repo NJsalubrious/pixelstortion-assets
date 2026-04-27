@@ -1026,6 +1026,22 @@
             }
         }
 
+        @media (max-width: 768px) {
+            .brand-dropdown-menu {
+                margin-top: 4px;
+                min-width: 180px;
+            }
+
+            .brand-dropdown-item {
+                font-size: 11px;
+                letter-spacing: 1px;
+                padding: 6px 12px;
+                min-height: 44px;
+                display: flex;
+                align-items: center;
+            }
+        }
+
         @media (max-width: 767px) {
 
             /* Navigator's Challenge button - ultra compact like "Decrypt Files" */
@@ -3194,7 +3210,7 @@
 
         <!-- HOME SECTION -->
         <section
-            class="relative w-full min-h-[calc(100vh-4rem)] flex flex-col items-center justify-center pt-16 md:pt-0 overflow-y-auto"
+            class="relative w-full min-h-[calc(100vh-4rem)] flex flex-col items-center justify-end pb-12 md:justify-center md:pb-0 overflow-y-auto"
             id="home-section">
             <!-- Hero Background Video -->
             <div class="absolute inset-0 z-0 h-[50vh] md:h-full">
