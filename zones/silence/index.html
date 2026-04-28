@@ -4648,7 +4648,7 @@
                 statusReplace: 'STATUS: STAGNANT',
                 descFind: 'An observer. A chemist of human behavior.',
                 descReplace: 'An archivist. She archives the fire while I build the furnace. - // Dominic Ryker //',
-                commentary: 'My daughter. She mapped my habits but forgot my exits.\n\nShe hoards the past like currency, hoping blueprints unlock doors.'
+                commentary: 'My daughter. She hoards the past like currency, hoping blueprints unlock doors.'
             },
             {
                 nameFind: 'ISLA',
@@ -5543,6 +5543,7 @@
                     case 'F': runSegmentF(); break;
                     case 'G': runSegmentG(); break;
                     case 'H': runSegmentH(); break;
+                    case 'I': runSegmentI(); break;
                     case 'END': endTour(); break;
                 }
             }
@@ -5825,20 +5826,48 @@
                 tourDelay(() => advanceToSegment('F'), 8000);
             }
 
-
             // *******************************************************
-            // SEGMENT F: TRANSITION TO STORY
+            // SEGMENT F: STORIES  -  The Protector's Perspective
             // *******************************************************
             function runSegmentF() {
-                switchTab('audio', true);
-                typeOutDominic('Now we reach the part where my daughter speaks.', null);
-                tourDelay(() => advanceToSegment('G'), 6000);
+                switchTab('stories', true);
+
+                tourDelay(() => {
+                    typeOutDominic('The stories. A catalogue of moments where the world fractured, and people had to decide what they were.', null);
+                }, 500);
+
+                tourDelay(() => {
+                    typeOutDominic('Look at the patterns. A girl trapped on a plane. A sister frozen in a kitchen. A bleeding man on a northern road.', null);
+                }, 8500);
+
+                tourDelay(() => {
+                    typeOutDominic('People think the violence is the story. They see the drama. The horrific inferences. They never see the structure underneath.', null);
+                }, 17000);
+
+                tourDelay(() => {
+                    typeOutDominic('They beg for a hero to pull them from the wreckage... never realising what that man is capable of, or what kind of man that he is.', null);
+                }, 25500);
+
+                tourDelay(() => {
+                    typeOutDominic('Read them if you must. But remember... I don\'t create the chaos. I just set the tempo.', null);
+                }, 34000);
+
+                tourDelay(() => advanceToSegment('G'), 41000);
             }
 
             // *******************************************************
-            // SEGMENT G: STORY  -  The Line Dominic Cannot Cross
+            // SEGMENT G: TRANSITION TO STORY
             // *******************************************************
             function runSegmentG() {
+                switchTab('audio', true);
+                typeOutDominic('Now we reach the part where my daughter speaks.', null);
+                tourDelay(() => advanceToSegment('H'), 6000);
+            }
+
+            // *******************************************************
+            // SEGMENT H: STORY  -  The Line Dominic Cannot Cross
+            // *******************************************************
+            function runSegmentH() {
                 storyBeatActive = true;
                 hideActionButtons();
 
@@ -5887,13 +5916,13 @@
                     storyBeatActive = false;
                 }, 37000);
 
-                tourDelay(() => advanceToSegment('H'), 40300);
+                tourDelay(() => advanceToSegment('I'), 40300);
             }
 
             // *******************************************************
-            // SEGMENT H: CIRCULAR CONCLUSION
+            // SEGMENT I: CIRCULAR CONCLUSION
             // *******************************************************
-            function runSegmentH() {
+            function runSegmentI() {
                 hideActionButtons();
 
                 typeOutDominic('You arrived knowing I was the villain.', null);
