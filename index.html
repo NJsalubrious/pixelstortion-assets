@@ -241,13 +241,13 @@
             line.innerHTML = first;
 
             // Read phase 1
-            await sleep(800);
+            await sleep(1600);
 
             // Execute the system override scramble
             await scrambleTo(second, 18);
 
             // Read phase 2 (Mathmatical precision achieved)
-            await sleep(900);
+            await sleep(1350);
 
             // Trigger visual exit
             page.classList.add("exit");
