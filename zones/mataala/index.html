@@ -852,9 +852,7 @@
 
         /* Glitch effect for PIXELSTORTION branding */
         /* ====== BRAND DROPDOWN ====== */
-        .brand-dropdown-container {
-            position: relative;
-        }
+        .brand-dropdown-container { position: relative; min-width: 160px; }
 
         .brand-dropdown-menu {
             position: absolute;
@@ -3202,40 +3200,12 @@
                     </button>
                     <div id="brandDropdown" class="brand-dropdown-menu" onclick="event.stopPropagation()">
                         <a href="https://silenceisthetrauma.com/veX_social_network/" class="brand-dropdown-item" style="border-bottom: 1px solid #222; margin-bottom: 4px;">veX: Social Network</a>
+                        <a href="https://pixelstortion.com/zones/silence/" class="brand-dropdown-item" style="border-bottom: 1px solid #222; margin-bottom: 4px;">Silence is the trauma</a>
+                        <a href="https://islaband.com/" class="brand-dropdown-item" style="border-bottom: 1px solid #222; margin-bottom: 4px;">Isla</a>
+                        <a href="https://ethelryker.com/" class="brand-dropdown-item" style="border-bottom: 1px solid #222; margin-bottom: 4px;">Ethel Ryker</a>
+                        <a href="https://dominicryker.com/" class="brand-dropdown-item" style="border-bottom: 1px solid #222; margin-bottom: 4px;">Dominic Ryker</a>
+                        <span class="brand-dropdown-item" style="border-bottom: 1px solid #222; margin-bottom: 4px; opacity: 0.5; cursor: default; pointer-events: none;">Nalani</span>
                         <a href="https://pixelstortion.com/bio/" class="brand-dropdown-item" style="border-bottom: 1px solid #222; margin-bottom: 4px;">BIO</a>
-                        
-                        <div class="menu-category-wrapper">
-                            <div class="menu-category" style="cursor:default;">Silence is the trauma : <span style="opacity:0.5">&#x25B8;</span></div>
-                            <div class="submenu">
-                                <a href="https://pixelstortion.com/zones/silence/" class="brand-dropdown-item">Main Site</a>
-                                
-                                <div class="menu-category-wrapper">
-                                    <div class="menu-category" style="cursor:default; font-size:11px; padding:8px 16px; background:rgba(0,0,0,0.5); border-bottom:1px solid #222;">Isla : <span style="opacity:0.5">&#x25B8;</span></div>
-                                    <div class="submenu" style="left:100%; top:0; margin-left:2px;">
-                                        <a href="https://islaband.com" class="brand-dropdown-item">Music Site</a>
-                                        <a href="https://islaband.com/ISLA_ALBUM" class="brand-dropdown-item">Isla ear splitting</a>
-                                    </div>
-                                </div>
-                                
-                                <a href="https://ethelryker.com" class="brand-dropdown-item">Ethel Ryker : Blog</a>
-                                <a href="https://dominicryker.com" class="brand-dropdown-item">Dominic Ryker : Structure</a>
-                                
-                                <div class="menu-category-wrapper">
-                                    <div class="menu-category" style="cursor:default; font-size:11px; padding:8px 16px; background:rgba(0,0,0,0.5); border-bottom:1px solid #222;">ART : <span style="opacity:0.5">&#x25B8;</span></div>
-                                    <div class="submenu" style="left:100%; top:0; margin-left:2px;">
-                                        <a href="https://pixelstortion.com/zones/silentcinema/" class="brand-dropdown-item">Cinema</a>
-                                        <a href="https://pixelstortion.com/zones/ethel_gallery/" class="brand-dropdown-item">Poetry</a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="menu-category-wrapper">
-                            <div class="menu-category" style="cursor:default;">Nalani : <span style="opacity:0.5">&#x25B8;</span></div>
-                            <div class="submenu">
-                                <a href="https://pixelstortion.com/zones/mataala/" class="brand-dropdown-item">Mataala</a>
-                            </div>
-                        </div>
                     </div>
                 </div>
                 <div class="hidden md:block">
@@ -3834,7 +3804,7 @@
         <div class="p-6">
             <div class="border-b border-[#5a3e1b] pb-4 mb-6 relative">
                 <button onclick="toggleGame()"
-                    class="absolute top-0 right-0 text-[#886644] hover:text-[var(--ember-color-1)] transition-colors text-lg font-bold cursor-pointer z-10 p-2">×</button>
+                    class="absolute top-0 right-0 text-[#886644] hover:text-[var(--ember-color-1)] transition-colors text-lg font-bold cursor-pointer z-10 p-2">�</button>
                 <h3 class="text-xl font-bold text-[var(--ember-color-1)] font-cinzel mb-2 flicker-text"
                     data-text="STRATEGY ROOM">STRATEGY ROOM</h3>
                 <p class="text-xs text-[#886644] font-cinzel">DECIPHER THE CONQUEST</p>
@@ -4056,11 +4026,11 @@
                     question: "Why does Nalani burn the house early instead of waiting for more allies?",
                     options: ["Emotional collapse", "To scare her own council", "Tactical instigation to force an early overreaction", "Revenge"],
                     correct: 2,
-                    intel: "She chooses the battlefield by choosing the moment. She forces him to act with what he has—not what he plans to bring later.",
+                    intel: "She chooses the battlefield by choosing the moment. She forces him to act with what he has�not what he plans to bring later.",
                     timeLimit: 20
                 },
                 {
-                    cipher: "SKIN ≠ WEAKNESS // SEX ≠ SUBMISSION",
+                    cipher: "SKIN ? WEAKNESS // SEX ? SUBMISSION",
                     question: "Why does Nalani use her femininity as a strategic advantage?",
                     options: ["To hide her fear", "To seduce Turnbull", "To weaponize colonial assumptions", "To blend into foreign courts"],
                     correct: 2,
@@ -4088,7 +4058,7 @@
                     question: "Why does Nalani resist imported \"gifts\"?",
                     options: ["They anger her father", "They are poorly made", "They create permanent dependency", "They insult her culture"],
                     correct: 2,
-                    intel: "Steel is faster than stone — but only the man with ships can replace it. Dependency is the first cage.",
+                    intel: "Steel is faster than stone � but only the man with ships can replace it. Dependency is the first cage.",
                     timeLimit: 20
                 },
                 {
@@ -4136,7 +4106,7 @@
                     question: "What is Nalani's first priority when war breaks out?",
                     options: ["Setting traps", "Capturing Redfern", "Moving families into safe terrain", "Saving Turnbull's documents"],
                     correct: 2,
-                    intel: "She can't outgun an empire — but she can outlast one.",
+                    intel: "She can't outgun an empire � but she can outlast one.",
                     timeLimit: 25
                 }
             ],
@@ -4158,7 +4128,7 @@
                     timeLimit: 18
                 },
                 {
-                    cipher: "MASTERS FOCUS ON ECONOMIC VALUE ≠ REDFERN'S FURY",
+                    cipher: "MASTERS FOCUS ON ECONOMIC VALUE ? REDFERN'S FURY",
                     question: "Why does Redfern escalate brutality beyond what Turnbull wants?",
                     options: ["Miscommunication", "Duty", "Because cruelty is his identity, not an economic tool", "To speed up production"],
                     correct: 2,
@@ -4214,23 +4184,23 @@
                     timeLimit: 21
                 },
                 {
-                    cipher: "COMPASSION ≠ MERCY",
+                    cipher: "COMPASSION ? MERCY",
                     question: "What does Nalani feel in the final moment before Redfern dies?",
                     options: ["Shame", "Triumph", "Hatred", "Brief compassion for a doomed creature"],
                     correct: 3,
-                    intel: "Recognition, not forgiveness — like ending a wounded tiger before it kills a child.",
+                    intel: "Recognition, not forgiveness � like ending a wounded tiger before it kills a child.",
                     timeLimit: 22
                 },
                 {
                     cipher: "NO PACK - JUST BLOOD",
                     question: "Why does Redfern fight alone, even in the final moments?",
-                    options: ["Because he has never believed in men — only targets", "Because no one follows him; they fear him more than they respect him", "Because Turnbull shaped him to stand apart, not with anyone", "Because he trusts no one to keep pace with his violence"],
+                    options: ["Because he has never believed in men � only targets", "Because no one follows him; they fear him more than they respect him", "Because Turnbull shaped him to stand apart, not with anyone", "Because he trusts no one to keep pace with his violence"],
                     correct: 1,
-                    intel: "Redfern was never a commander. Fear does not create followers — it creates witnesses.",
+                    intel: "Redfern was never a commander. Fear does not create followers � it creates witnesses.",
                     timeLimit: 20
                 },
                 {
-                    cipher: "INSTINCT ≠ STRATEGY",
+                    cipher: "INSTINCT ? STRATEGY",
                     question: "What makes Redfern fatally predictable to Nalani?",
                     options: ["His height gives her a reach advantage", "He hesitates before striking", "He follows the same emotional pattern every time", "He underestimates weapons"],
                     correct: 2,
@@ -4791,7 +4761,7 @@
         </div>
         <div class="text-center">
             <p class="text-xs text-[#886644] font-cinzel">
-                FILE ${currentPuzzleIndex + 1} OF ${shuffledPuzzles.length} — ${currentProtocol.toUpperCase()} STRATEGY
+                FILE ${currentPuzzleIndex + 1} OF ${shuffledPuzzles.length} � ${currentProtocol.toUpperCase()} STRATEGY
             </p>
         </div>
     `;
@@ -5059,37 +5029,37 @@ Image Sources:
             <div class="mt-6 space-y-2 border-t border-orange-700/20 pt-6">
                 <a href="https://pixelstortion.com/bio/" target="_blank"
                     class="block text-orange-400 hover:text-orange-300 transition-colors text-sm font-mono">
-                    → BIO
+                    ? BIO
                 </a>
                 <span class="block text-gray-500 text-sm font-mono cursor-default">
-                    → NALANI - Historical Fiction
+                    ? NALANI - Historical Fiction
                 </span>
                 <a href="#" class="block text-orange-400 hover:text-orange-300 transition-colors text-sm font-mono"
                     onclick="try { window.parent.location.href = PIXEL_MANIFEST.SILENCE; } catch(e) { window.location.href = PIXEL_MANIFEST.SILENCE; } event.preventDefault();">
-                    → SILENCE - Crime Fiction
+                    ? SILENCE - Crime Fiction
                 </a>
 
                 <!-- Social Media Links -->
                 <a href="https://open.spotify.com/artist/3iSE6REoCh9Noh6hhzIytf?si=axB0ucGeQ9KFlcvAg0ziew"
                     target="_blank"
                     class="block text-orange-400 hover:text-orange-300 transition-colors text-sm font-mono">
-                    → Spotify
+                    ? Spotify
                 </a>
                 <a href="https://www.youtube.com/@PixelStortion" target="_blank"
                     class="block text-orange-400 hover:text-orange-300 transition-colors text-sm font-mono">
-                    → YouTube
+                    ? YouTube
                 </a>
                 <a href="https://instagram.com/@pixelstortion" target="_blank"
                     class="block text-orange-400 hover:text-orange-300 transition-colors text-sm font-mono">
-                    → Instagram
+                    ? Instagram
                 </a>
                 <a href="https://www.tiktok.com/@pixelstortion" target="_blank"
                     class="block text-orange-400 hover:text-orange-300 transition-colors text-sm font-mono">
-                    → TikTok
+                    ? TikTok
                 </a>
                 <a href="https://facebook.com/PixelStortion" target="_blank"
                     class="block text-orange-400 hover:text-orange-300 transition-colors text-sm font-mono">
-                    → Facebook
+                    ? Facebook
                 </a>
             </div>
         </div>
@@ -5373,3 +5343,4 @@ Image Sources:
 </body>
 
 </html>
+
