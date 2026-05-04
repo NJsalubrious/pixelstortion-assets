@@ -32,8 +32,37 @@
 
     <!-- Custom Styles -->
     <link rel="stylesheet" href="styles.css">
+    <!-- PIXELSTORTION BRANDING -->
+    <style>
+        .brand-dropdown-container { position: fixed; top: 10px; left: 12px; z-index: 10000; min-width: 160px; }
+        .ps-brand { font-family: 'JetBrains Mono', monospace; font-size: 0.5rem; letter-spacing: 0.25em; text-transform: uppercase; color: #3f3f46; text-decoration: none; transition: color 0.2s, text-shadow 0.2s; cursor: pointer; }
+        .ps-brand:hover { color: #ef4444; text-shadow: 0 0 8px rgba(220,38,38,0.5); }
+        .brand-dropdown-menu { position: absolute; top: 100%; left: 0; margin-top: 6px; background: rgba(5,5,5,0.95); border: 1px solid #333; min-width: 180px; opacity: 0; visibility: hidden; transform: translateY(-10px); transition: all 0.3s ease; backdrop-filter: blur(8px); z-index: 10001; display: flex; flex-direction: column; padding: 4px 0; }
+        .brand-dropdown-menu.active { opacity: 1; visibility: visible; transform: translateY(0); }
+        .brand-dropdown-item { display: block; padding: 8px 16px; font-family: 'JetBrains Mono', monospace; font-size: 10px; color: #666; text-decoration: none; text-transform: uppercase; letter-spacing: 1px; transition: all 0.2s ease; border-left: 2px solid transparent; white-space: nowrap; }
+        .brand-dropdown-item:hover { color: #aaa; background: rgba(255,255,255,0.03); border-left: 2px solid #555; padding-left: 20px; }
+    </style>
 </head>
 <body>
+    <!-- PIXELSTORTION BRANDING DROPDOWN -->
+    <div class="brand-dropdown-container">
+        <button onclick="toggleBrandMenu(event)" style="background:none;border:none;padding:0;cursor:pointer;">
+            <span class="ps-brand">PIXELSTORTION</span>
+        </button>
+        <div id="brandDropdown" class="brand-dropdown-menu" onclick="event.stopPropagation()">
+            <a href="https://silenceisthetrauma.com/veX_social_network/" class="brand-dropdown-item" style="border-bottom:1px solid #222;margin-bottom:4px;">veX: Social Network</a>
+            <a href="https://pixelstortion.com/zones/silence/" class="brand-dropdown-item" style="border-bottom:1px solid #222;margin-bottom:4px;">Silence is the trauma</a>
+            <a href="https://islaband.com" class="brand-dropdown-item" style="border-bottom:1px solid #222;margin-bottom:4px;">Isla</a>
+            <a href="https://ethelryker.com/" class="brand-dropdown-item" style="border-bottom:1px solid #222;margin-bottom:4px;">Ethel Ryker</a>
+            <a href="https://dominicryker.com/" class="brand-dropdown-item" style="border-bottom:1px solid #222;margin-bottom:4px;">Dominic Ryker</a>
+            <a href="https://pixelstortion.com/zones/mataala/" class="brand-dropdown-item" style="border-bottom:1px solid #222;margin-bottom:4px;">Nalani</a>
+            <a href="https://pixelstortion.com/bio/" class="brand-dropdown-item" style="border-bottom:1px solid #222;margin-bottom:4px;">BIO</a>
+        </div>
+    </div>
+    <script>
+        window.toggleBrandMenu = function(e) { e.stopPropagation(); document.getElementById('brandDropdown').classList.toggle('active'); };
+        document.addEventListener('click', () => { const m = document.getElementById('brandDropdown'); if (m) m.classList.remove('active'); });
+    </script>
 
     <!-- ============================================================ -->
     <!-- ANTI-SLOT CABINET — 4-ZONE PORTRAIT LAYOUT                   -->
@@ -62,8 +91,7 @@
             <!-- Gaff Button (Bottom Right Absolute) -->
             <button id="gaff-toggle-btn" class="gaff-button">RULES</button>
             
-            <!-- Pixelstortion Link (Top Left Absolute) -->
-            <a href="https://pixelstortion.com/zones/silence/" target="_blank" class="gaff-button" style="bottom: auto; right: auto; top: 12px; left: 12px; text-decoration: none; display: flex; align-items: center; width: max-content;">PIXELSTORTION.COM</a>
+
             
 
             <!-- Password hack overlay — lives inside feature zone, reels stay visible -->
@@ -254,3 +282,4 @@
 
 </body>
 </html>
+
