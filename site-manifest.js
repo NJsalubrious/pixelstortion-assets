@@ -143,6 +143,13 @@ const PIXEL_MANIFEST = {
             description: 'Dominic saved a man. Then Dominic he removed a liability. Same breath',
             cover: 'https://silenceisthetrauma.com/short_stories/Same_Breath.jpg',
             href: 'https://silenceisthetrauma.com/short_stories/Same_Breath.html'
+        },
+        The_Equation: {
+            title: 'The Equation',
+            track: 'STORY 04 // THE EQUATION',
+            description: "Dominic Ryker doesn't lose. He adjusts the equation.",
+            cover: 'https://silenceisthetrauma.com/short_stories/pixelstortion_The_Equation.jpg',
+            href: 'https://silenceisthetrauma.com/short_stories/pixelstortion_The_Equation.html'
         }
     },
 
