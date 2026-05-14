@@ -150,6 +150,13 @@ const PIXEL_MANIFEST = {
             description: "Dominic Ryker doesn't lose. He adjusts the equation.",
             cover: 'https://silenceisthetrauma.com/short_stories/pixelstortion_The_Equation.jpg',
             href: 'https://silenceisthetrauma.com/short_stories/pixelstortion_The_Equation.html'
+        },
+        The_Evaluator: {
+            title: 'The Evaluator',
+            track: 'STORY 05 // THE EVALUATOR',
+            description: 'The Evaluator. A short story from the Silence Is The Trauma art installation.',
+            cover: 'https://silenceisthetrauma.com/short_stories/the_evaluation.jpg',
+            href: 'https://silenceisthetrauma.com/short_stories/the_evaluation.html'
         }
     },
 
