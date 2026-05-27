@@ -1,0 +1,1034 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pixelstortion | Nurturing Stories Until Fully Grown</title>
+    <meta name="description"
+        content="Pixelstortion is an independent studio publishing immersive fiction across web, music, and interactive media. Currently presenting two worlds: Silence is the Trauma and Mataala: Nalani." />
+    <link rel="canonical" href="https://pixelstortion.com/bio/" />
+
+    <meta property="og:title" content="Pixelstortion | Nurturing Stories Until Fully Grown" />
+    <meta property="og:description"
+        content="Independent studio publishing immersive fiction across web, music, and interactive media. Two current worlds: Silence is the Trauma and Mataala: Nalani." />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Pixelstortion" />
+    <meta property="og:url" content="https://pixelstortion.com/bio/" />
+    <meta property="og:image" content="https://pixelstortion.com/PIXELSTORTION.jpg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Pixelstortion | Nurturing Stories Until Fully Grown" />
+    <meta name="twitter:description" content="Independent studio publishing immersive fiction across web, music, and interactive media." />
+    <meta name="twitter:image" content="https://pixelstortion.com/PIXELSTORTION.jpg" />
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "AboutPage",
+      "name": "About Pixelstortion",
+      "url": "https://pixelstortion.com/bio/",
+      "description": "Pixelstortion is an independent studio publishing immersive fiction across web, music, and interactive media. Currently presenting two worlds: Silence is the Trauma and Mataala: Nalani.",
+      "inLanguage": "en",
+      "mainEntity": {
+        "@type": "Organization",
+        "name": "Pixelstortion",
+        "url": "https://pixelstortion.com/",
+        "logo": "https://pixelstortion.com/PIXELSTORTION.jpg",
+        "description": "Independent studio publishing immersive fiction across web, music, and interactive media."
+      },
+      "mentions": [
+        {
+          "@type": "CreativeWorkSeries",
+          "name": "Silence is the Trauma",
+          "url": "https://silenceisthetrauma.com/",
+          "publisher": { "@type": "Organization", "name": "Pixelstortion", "url": "https://pixelstortion.com/" }
+        },
+        {
+          "@type": "CreativeWorkSeries",
+          "name": "Mataala: Nalani",
+          "url": "https://pixelstortion.com/",
+          "publisher": { "@type": "Organization", "name": "Pixelstortion", "url": "https://pixelstortion.com/" }
+        }
+      ]
+    }
+    </script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600&family=Courier+Prime:wght@400;700&display=swap"
+        rel="stylesheet" />
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #0a0a0a;
+            color: #c0c0c0;
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 300;
+            line-height: 1.7;
+            font-size: 16px;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* ========== PIXELSTORTION BRANDING ========== */
+        :root {
+            --glitch-color-1: #00ff41;
+            --glitch-color-2: #ff003c;
+            --border-dim: #1a1a1a;
+        }
+
+        .top-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 60px;
+            background: rgba(5, 5, 5, 0.95);
+            border-bottom: 1px solid var(--border-dim);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .top-bar-inner {
+            width: 100%;
+            max-width: 1200px;
+            padding: 0 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .brand-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 700;
+            font-size: 20px;
+            letter-spacing: 0.1em;
+            color: #fff;
+            margin: 0;
+            cursor: pointer;
+        }
+
+        .brand-subtitle {
+            font-family: 'Courier Prime', monospace;
+            font-size: 10px;
+            letter-spacing: 3px;
+            color: var(--glitch-color-1);
+            text-transform: uppercase;
+        }
+
+        .glitch-text {
+            position: relative;
+            display: inline-block;
+        }
+
+        .glitch-text::before,
+        .glitch-text::after {
+            content: attr(data-text);
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background: transparent;
+        }
+
+        .glitch-text::before {
+            left: 2px;
+            text-shadow: -2px 0 var(--glitch-color-2);
+            clip: rect(0, 0, 0, 0);
+            animation: glitch-anim 3s infinite;
+        }
+
+        .glitch-text::after {
+            left: -2px;
+            text-shadow: 2px 0 var(--glitch-color-1);
+            clip: rect(0, 0, 0, 0);
+            animation: glitch-anim2 3s infinite 0.5s;
+        }
+
+        @keyframes glitch-anim {
+            0% {
+                clip: rect(44px, 9999px, 56px, 0);
+            }
+
+            20% {
+                clip: rect(12px, 9999px, 78px, 0);
+            }
+
+            40% {
+                clip: rect(89px, 9999px, 34px, 0);
+            }
+
+            60% {
+                clip: rect(23px, 9999px, 91px, 0);
+            }
+
+            80% {
+                clip: rect(67px, 9999px, 12px, 0);
+            }
+
+            100% {
+                clip: rect(45px, 9999px, 76px, 0);
+            }
+        }
+
+        @keyframes glitch-anim2 {
+            0% {
+                clip: rect(23px, 9999px, 87px, 0);
+            }
+
+            20% {
+                clip: rect(54px, 9999px, 12px, 0);
+            }
+
+            40% {
+                clip: rect(78px, 9999px, 45px, 0);
+            }
+
+            60% {
+                clip: rect(12px, 9999px, 67px, 0);
+            }
+
+            80% {
+                clip: rect(89px, 9999px, 23px, 0);
+            }
+
+            100% {
+                clip: rect(34px, 9999px, 56px, 0);
+            }
+        }
+
+        /* ====== BRAND DROPDOWN ====== */
+        .brand-dropdown-container { position: relative; min-width: 160px; }
+
+        .brand-dropdown-menu {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            margin-top: 10px;
+            background: rgba(5, 5, 5, 0.95);
+            border: 1px solid var(--border-dim);
+            min-width: 220px;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+            backdrop-filter: blur(8px);
+            padding: 4px 0;
+            z-index: 100;
+        }
+
+        .brand-dropdown-menu.active {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .brand-dropdown-item {
+            display: block;
+            padding: 8px 20px;
+            font-family: 'Courier Prime', monospace;
+            font-size: 12px;
+            color: #ccc;
+            text-decoration: none;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            transition: all 0.2s ease;
+            border-left: 2px solid transparent;
+            white-space: nowrap;
+        }
+
+        .brand-dropdown-item.item-silence:hover {
+            color: #fff;
+            background: rgba(0, 255, 65, 0.05);
+            border-left: 2px solid #00ff41;
+            padding-left: 24px;
+        }
+
+        .brand-dropdown-item.item-nalani:hover {
+            color: #fff;
+            background: rgba(255, 140, 0, 0.05);
+            border-left: 2px solid #ff8c00;
+            padding-left: 24px;
+        }
+
+        .brand-dropdown-item.item-cinema:hover {
+            color: #fff;
+            background: rgba(0, 255, 65, 0.05);
+            border-left: 2px solid #00ff41;
+            padding-left: 24px;
+        }
+
+        .brand-dropdown-item.item-bio:hover {
+            color: #fff;
+            background: rgba(0, 191, 255, 0.05);
+            border-left: 2px solid #00bfff;
+            padding-left: 24px;
+        }
+
+        .hero {
+            width: 100%;
+            position: relative;
+            overflow: hidden;
+            background: #0a0a0a;
+            padding-top: 60px;
+            padding-bottom: 30px;
+        }
+
+        .hero img {
+            width: 100%;
+            display: block;
+            object-fit: cover;
+        }
+
+        .hero-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 60px 24px 0px;
+            background: linear-gradient(transparent, #0a0a0a 70%);
+            text-align: center;
+        }
+
+        .hero-links {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            bottom: 30px;
+            display: flex;
+            z-index: 10;
+        }
+
+        .hero-links a {
+            display: block;
+            height: 100%;
+        }
+
+        .hero-tagline {
+            font-family: 'Courier Prime', monospace;
+            font-size: 14px;
+            color: #999;
+            letter-spacing: 0.08em;
+            font-style: italic;
+        }
+
+        .page {
+            max-width: 700px;
+            margin: 0 auto;
+            padding: 30px 24px 80px;
+        }
+
+        .social-row {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            padding: 20px 0 30px;
+            border-bottom: 1px solid #151515;
+            margin-bottom: 40px;
+        }
+
+        .social-row a {
+            font-family: 'Courier Prime', monospace;
+            font-size: 11px;
+            color: #444;
+            text-decoration: none;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            transition: color 0.3s;
+        }
+
+        .social-row a:hover {
+            color: #00ff41;
+        }
+
+        /* Ecosystem nav */
+        .eco-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 24px;
+            padding: 28px 0 32px;
+            border-bottom: 1px solid #151515;
+            margin-bottom: 40px;
+        }
+
+        .eco-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .eco-label {
+            font-family: 'Courier Prime', monospace;
+            font-size: 10px;
+            color: #2a2a2a;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            margin-bottom: 4px;
+        }
+
+        .eco-group a,
+        .eco-group a:visited {
+            font-family: 'Courier Prime', monospace;
+            font-size: 12px;
+            color: #555;
+            text-decoration: none;
+            transition: color 0.3s;
+            letter-spacing: 0.04em;
+        }
+
+        .eco-group a:hover {
+            color: #00ff41;
+        }
+
+        .section-img {
+            width: 100%;
+            margin: 16px 0;
+            display: block;
+        }
+
+        h2 {
+            font-family: 'Courier Prime', monospace;
+            font-size: 12px;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: #333;
+            margin-bottom: 16px;
+            margin-top: 50px;
+        }
+
+        h2 a {
+            color: #555;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        h2 a:hover {
+            color: #00ff41;
+        }
+
+        h2:first-of-type {
+            margin-top: 0;
+        }
+
+        p {
+            margin-bottom: 16px;
+            color: #999;
+        }
+
+        .highlight {
+            color: #d0d0d0;
+        }
+
+        .divider {
+            width: 40px;
+            height: 1px;
+            background: #1a1a1a;
+            margin: 40px 0;
+        }
+
+        .spotify-embed {
+            margin: 20px 0;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .spotify-embed iframe {
+            border: 0;
+            width: 100%;
+        }
+
+        .video-embed {
+            position: relative;
+            padding-bottom: 56.25%;
+            height: 0;
+            overflow: hidden;
+            margin: 20px 0;
+            background: #111;
+        }
+
+        .video-embed iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: 0;
+        }
+
+        .video-label {
+            font-family: 'Courier Prime', monospace;
+            font-size: 12px;
+            color: #555;
+            margin-top: 8px;
+            letter-spacing: 0.04em;
+        }
+
+        .links {
+            display: grid;
+            gap: 2px;
+            margin-top: 12px;
+        }
+
+        .links a {
+            font-family: 'Courier Prime', monospace;
+            font-size: 13px;
+            color: #555;
+            text-decoration: none;
+            padding: 10px 0;
+            border-bottom: 1px solid #111;
+            transition: color 0.3s;
+            letter-spacing: 0.04em;
+        }
+
+        .links a:hover {
+            color: #00ff41;
+        }
+
+        .about-banner {
+            display: block;
+            margin: 20px 0;
+            overflow: hidden;
+            transition: opacity 0.3s;
+        }
+
+        .about-banner:hover {
+            opacity: 0.85;
+        }
+
+        .about-banner img {
+            width: 100%;
+            display: block;
+            object-fit: cover;
+        }
+
+        .aside-text {
+            font-family: 'Courier Prime', monospace;
+            font-size: 12px;
+            color: #444;
+            text-decoration: none;
+            margin-top: 6px;
+            display: block;
+            transition: color 0.3s;
+        }
+
+        .aside-text:hover {
+            color: #00ff41;
+        }
+
+        footer {
+            margin-top: 60px;
+            padding-top: 20px;
+            border-top: 1px solid #111;
+        }
+
+        footer p {
+            font-size: 11px;
+            color: #2a2a2a;
+            font-family: 'Courier Prime', monospace;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+        }
+
+        @media (max-width: 600px) {
+            .page {
+                padding: 20px 16px 60px;
+            }
+
+            body {
+                font-size: 15px;
+            }
+
+            .social-row {
+                gap: 14px;
+                flex-wrap: wrap;
+                margin-bottom: 24px;
+            }
+
+            .brand-dropdown-menu {
+                margin-top: 4px;
+                min-width: 180px;
+            }
+
+            .brand-dropdown-item {
+                font-size: 11px;
+                letter-spacing: 1px;
+                padding: 6px 12px;
+                min-height: 44px;
+                display: flex;
+                align-items: center;
+            }
+
+            h2 {
+                margin-top: 28px;
+                margin-bottom: 12px;
+            }
+
+            .divider {
+                margin: 24px 0;
+            }
+
+            .hero {
+                padding-bottom: 10px;
+            }
+
+            .hero-overlay {
+                padding: 40px 16px 0px;
+            }
+
+            .eco-grid {
+                gap: 16px;
+                padding: 20px 0 24px;
+                margin-bottom: 24px;
+            }
+        }
+    
+        /* NESTED MENU CSS */
+        .menu-category-wrapper {
+            position: relative;
+        }
+
+        .menu-category {
+            font-family: 'Courier Prime', monospace;
+            font-size: 11px;
+            font-weight: 700;
+            color: #888;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            padding: 10px 12px;
+            border-bottom: 1px solid #222;
+            background: rgba(0,0,0,0.5);
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.2s;
+        }
+
+        .menu-category:hover {
+            background: rgba(255, 255, 255, 0.05);
+            color: #bbb;
+        }
+
+        .submenu {
+            position: absolute;
+            left: 100%;
+            top: 0;
+            margin-left: 2px;
+            background: rgba(5, 5, 5, 0.95);
+            border: 1px solid #333;
+            min-width: 180px;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateX(-5px);
+            transition: all 0.2s ease;
+            backdrop-filter: blur(8px);
+            display: flex;
+            flex-direction: column;
+            z-index: 10001;
+            padding: 4px 0;
+        }
+
+        .menu-category-wrapper:hover > .submenu {
+            opacity: 1;
+            visibility: visible;
+            transform: translateX(0);
+        }
+
+        .brand-dropdown-item {
+            display: block;
+            padding: 8px 16px;
+            font-family: 'Courier Prime', monospace;
+            font-size: 11px;
+            color: #666;
+            text-decoration: none;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            transition: all 0.2s ease;
+            border-left: 2px solid transparent;
+            white-space: nowrap;
+        }
+
+        .brand-dropdown-item:hover {
+            color: #aaa;
+            background: rgba(255, 255, 255, 0.03);
+            border-left: 2px solid #555;
+            padding-left: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .submenu {
+                position: static !important;
+                margin-left: 0 !important;
+                transform: none !important;
+                border: none !important;
+                border-left: 2px solid #333 !important;
+                background: rgba(0,0,0,0.2) !important;
+                min-width: auto !important;
+                display: none;
+                opacity: 1 !important;
+                visibility: visible !important;
+                padding-left: 10px !important;
+            }
+            .menu-category-wrapper:hover > .submenu {
+                display: flex !important;
+                transform: none !important;
+            }
+            .brand-dropdown-menu {
+                max-height: 80vh !important;
+                overflow-y: auto !important;
+            }
+        }
+
+</style>
+</head>
+
+<body>
+
+    <!-- Top Bar -->
+    <nav class="top-bar">
+        <div class="top-bar-inner">
+            <div class="brand-dropdown-container">
+                <button onclick="toggleBrandMenu(event)" class="brand-trigger"
+                    style="background: none; border: none; cursor: pointer; text-decoration: none; padding: 0;">
+                    <h1 class="brand-title glitch-text" data-text="PIXELSTORTION">PIXELSTORTION</h1>
+                </button>
+                <div id="brandDropdown" class="brand-dropdown-menu" onclick="event.stopPropagation()">
+                        <a href="https://silenceisthetrauma.com/veX_social_network/" class="brand-dropdown-item" style="border-bottom: 1px solid #222; margin-bottom: 4px;">veX: Social Network</a>
+                        <a href="https://silenceisthetrauma.com/" class="brand-dropdown-item" style="border-bottom: 1px solid #222; margin-bottom: 4px;">Silence is the trauma</a>
+                        <a href="https://islaband.com/" class="brand-dropdown-item" style="border-bottom: 1px solid #222; margin-bottom: 4px;">Isla</a>
+                        <a href="https://ethelryker.com/" class="brand-dropdown-item" style="border-bottom: 1px solid #222; margin-bottom: 4px;">Ethel Ryker</a>
+                        <a href="https://dominicryker.com/" class="brand-dropdown-item" style="border-bottom: 1px solid #222; margin-bottom: 4px;">Dominic Ryker</a>
+                        <a href="https://pixelstortion.com/" class="brand-dropdown-item" style="border-bottom: 1px solid #222; margin-bottom: 4px;">Nalani</a>
+                        <span class="brand-dropdown-item" style="border-bottom: 1px solid #222; margin-bottom: 4px; opacity: 0.5; cursor: default; pointer-events: none;">BIO</span>
+                    </div>
+            </div>
+            <div class="brand-subtitle">NURTURING STORIES</div>
+        </div>
+    </nav>
+
+    <!-- -- HERO -- -->
+    <div class="hero">
+        <img src="images/images_jpg/PixelStortion_header.jpg" alt="Isla, Ethel, and Nalani" />
+        <div class="hero-links">
+            <a href="https://silenceisthetrauma.com/" style="flex: 0 0 31%;"
+                title="Silence is the Trauma"></a>
+            <a href="https://islaband.com" target="_blank" style="flex: 0 0 13%;" title="Isla"></a>
+            <a href="https://ethelryker.com" target="_blank" style="flex: 0 0 13%;" title="Ethel Ryker"></a>
+            <a href="https://pixelstortion.com/" style="flex: 0 0 43%;"
+                title="Mataala: Nalani"></a>
+        </div>
+        <div class="hero-overlay">
+            <div class="hero-tagline">Nurturing stories until fully grown.</div>
+        </div>
+    </div>
+
+    <div class="page">
+
+        <!-- -- SOCIAL -- -->
+        <div class="social-row">
+            <a href="https://www.instagram.com/pixelstortion" target="_blank">Instagram</a>
+            <a href="https://www.tiktok.com/@pixelstortion" target="_blank">TikTok</a>
+            <a href="https://www.youtube.com/@PixelStortion" target="_blank">YouTube</a>
+            <a href="https://open.spotify.com/artist/3iSE6REoCh9Noh6hhzIytf" target="_blank">Spotify</a>
+            <a href="https://facebook.com/PixelStortion" target="_blank">Facebook</a>
+        </div>
+
+        <!-- -- ECOSYSTEM -- -->
+        <div class="eco-grid">
+            <div class="eco-group">
+                <div class="eco-label">The Worlds</div>
+                <a href="https://silenceisthetrauma.com/">Silence is the Trauma</a>
+                <a href="https://pixelstortion.com/">Mataala: Nalani</a>
+            </div>
+            <div class="eco-group">
+                <div class="eco-label">Character Sites</div>
+                <a href="https://ethelryker.com" target="_blank">ethelryker.com</a>
+                <a href="https://islaband.com" target="_blank">islaband.com</a>
+                <a href="https://dominicryker.com" target="_blank">dominicryker.com</a>
+            </div>
+            <div class="eco-group">
+                <div class="eco-label">Short Stories</div>
+                <a href="https://silenceisthetrauma.com" target="_blank">silenceisthetrauma.com</a>
+            </div>
+        </div>
+
+        <!-- ---------------------------------- -->
+        <!-- WHAT IS THIS                      -->
+        <!-- ---------------------------------- -->
+
+        <h2>What is Pixelstortion?</h2>
+
+        <p class="highlight">Pixelstortion is an independent studio publishing immersive fiction across
+            web, music, and interactive media. Currently presenting two worlds: Silence is the Trauma and
+            Mataala: Nalani. More worlds will follow.</p>
+
+        <p>Each character has their own website. Each song is a chapter. The stories are designed to be
+            explored, not just listened to.</p>
+
+        <div class="divider"></div>
+
+        <!-- ---------------------------------- -->
+        <!-- WORLD 1: SILENCE IS THE TRAUMA    -->
+        <!-- ---------------------------------- -->
+
+        <h2><a href="https://silenceisthetrauma.com/">World 1: Silence is the Trauma</a></h2>
+
+        <div class="links" style="margin-top: -12px; margin-bottom: 24px;">
+            <a href="https://www.instagram.com/silenceisthetrauma/" target="_blank">&rarr; Instagram:
+                @silenceisthetrauma</a>
+        </div>
+
+        <a href="https://ethelryker.com" target="_blank">
+            <img class="section-img" src="images/images_jpg/Ethel_banner_PixelStortion_1.jpg" alt="Ethel Ryker" />
+        </a>
+
+        <p><span class="highlight">Ethel Ryker</span> is the biological daughter of billionaire
+            property developer Dominic Ryker. Raised in the outback by her grandparents, she is
+            returned to her estranged father's world at 17 after their deaths. She works from the inside,
+            methodically building a forensic case against him.</p>
+
+        <div class="links">
+            <a href="https://ethelryker.com" target="_blank">&rarr; ethelryker.com</a>
+            <a href="https://www.instagram.com/ethel_ryker/" target="_blank">&rarr; Instagram: @ethel_ryker</a>
+        </div>
+
+        <div class="divider"></div>
+
+        <a href="https://islaband.com" target="_blank">
+            <img class="section-img" src="images/images_jpg/Isla_banner_PixelStortion_2.jpg" alt="Isla" />
+        </a>
+
+        <p><span class="highlight">Isla</span> is Dominic's stepdaughter. Her mother married him.
+            Isla's own biological father, a high court judge, is the source of the trauma her songs are
+            built from. She turns what happened to her into sound, 140 decibels of it, and calls
+            the stage her witness box.</p>
+
+        <div class="links">
+            <a href="https://islaband.com" target="_blank">&rarr; islaband.com</a>
+            <a href="https://www.instagram.com/isla_musician/" target="_blank">&rarr; Instagram: @isla_musician</a>
+        </div>
+
+        <div class="divider"></div>
+
+        <a href="https://dominicryker.com" target="_blank">
+            <img class="section-img" src="images/images_jpg/dominic_banner_PixelStortion_2.jpg" alt="Dominic Ryker" />
+        </a>
+
+        <p><span class="highlight">Dominic Ryker</span> is a structural psychopath. He doesn't break
+            systems. He builds them so that other people break them for him. Calm, articulate, certain.
+            He was imprisoned. He escaped. The story continues.</p>
+
+        <div class="links">
+            <a href="https://dominicryker.com" target="_blank">&rarr; dominicryker.com</a>
+            <a href="https://www.instagram.com/dominic_ryker/" target="_blank">&rarr; Instagram: @dominic_ryker</a>
+        </div>
+
+        <div class="divider"></div>
+
+        <!-- ---------------------------------- -->
+        <!-- WORLD 2: MATAALA                  -->
+        <!-- ---------------------------------- -->
+
+        <h2><a href="https://pixelstortion.com/">World 2: Mataala: Nalani</a></h2>
+
+        <a href="https://pixelstortion.com/">
+            <img class="section-img" src="images/Mataala_banner_PixelStortion.png" alt="Mataala: Nalani" />
+        </a>
+
+        <p>A different century. A different geography. <span class="highlight">Nalani</span> is an
+            indigenous strategist who reads terrain, law, and timing against rogue trader
+            <span class="highlight">Turnbull</span>. She prefers reading the system over breaking it,
+            but she does not flinch from force when force is what saves her people.
+            <span class="highlight">Redfern</span>, the overseer, is caught between two worlds.
+        </p>
+
+        <div class="links">
+            <a href="https://pixelstortion.com/">&rarr; Enter Mataala</a>
+        </div>
+
+        <div class="divider"></div>
+
+        <!-- ---------------------------------- -->
+        <!-- EXPLORE                           -->
+        <!-- ---------------------------------- -->
+
+        <h2>Explore</h2>
+
+        <div class="links">
+            <a href="https://silenceisthetrauma.com/">SILENCE IS THE TRAUMA, Interactive Experience</a>
+            <a href="https://pixelstortion.com/">MATAALA: NALANI</a>
+            <a href="https://silenceisthetrauma.com/zones/ethel_gallery/">THE GALLERY, 45 Songs, Every Story</a>
+            <a href="https://silenceisthetrauma.com/zones/silentcinema/">SILENT CINEMA, Music Videos</a>
+            <a href="https://silenceisthetrauma.com/stories.html">SHORT STORIES</a>
+        </div>
+
+        <div class="divider"></div>
+
+        <!-- ---------------------------------- -->
+        <!-- ABOUT                             -->
+        <!-- ---------------------------------- -->
+
+        <h2>About</h2>
+
+        <p>Pixelstortion publishes work about people who think their way through situations that
+            don't look winnable, finding the small move that changes the outcome. Each project
+            takes its own form: web, music, interactive, narrative.</p>
+
+        <p>The two current worlds both centre on women. That isn't the studio's identity; it's
+            a deliberate choice for these projects. The same careful thinking lands differently
+            when the person doing it isn't the person a reader would picture. That gap is the
+            work. Future projects pursue similar questions through other characters and other
+            forms.</p>
+
+        <p>Built by one person, an animator using AI as a production tool to build something
+            too large to build alone.</p>
+
+        <a href="philosophy.html" class="about-banner">
+            <img src="images/images_jpg/Ethel_banner_PixelStortion_2.jpg" alt="About: Read more" />
+        </a>
+        <a href="philosophy.html" class="aside-text">&rarr; The longer story behind the project</a>
+
+        <footer>
+            <p>&copy; 2025 Pixelstortion.</p>
+        </footer>
+
+    </div>
+
+    <script>
+        // ============================================================
+        // BRANDING GLITCH (Kinetic Scramble)
+        // ============================================================
+        class BrandingGlitch {
+            constructor(el) {
+                this.el = el;
+                this.chars = '!<>-_\\/[]{}�=+*^?#________';
+                this.originalText = el.innerText;
+            }
+            setText(newText) {
+                const oldText = this.el.innerText;
+                const length = Math.max(oldText.length, newText.length);
+                const promise = new Promise((resolve) => this.resolve = resolve);
+                this.queue = [];
+                for (let i = 0; i < length; i++) {
+                    const from = oldText[i] || '';
+                    const to = newText[i] || '';
+                    const start = Math.floor(Math.random() * 40);
+                    const end = start + Math.floor(Math.random() * 40);
+                    this.queue.push({ from, to, start, end });
+                }
+                cancelAnimationFrame(this.frameRequest);
+                this.frame = 0;
+                this.update();
+                return promise;
+            }
+            update() {
+                let output = '';
+                let complete = 0;
+                for (let i = 0, n = this.queue.length; i < n; i++) {
+                    let { from, to, start, end, char } = this.queue[i];
+                    if (this.frame >= end) {
+                        complete++;
+                        output += to;
+                    } else if (this.frame >= start) {
+                        if (!char || Math.random() < 0.28) {
+                            char = this.randomChar();
+                            this.queue[i].char = char;
+                        }
+                        output += `<span style="opacity:0.3">${char}</span>`;
+                    } else {
+                        output += from;
+                    }
+                }
+                this.el.innerHTML = output;
+                this.el.setAttribute('data-text', this.el.innerText);
+                if (complete === this.queue.length) {
+                    this.resolve();
+                } else {
+                    this.frameRequest = requestAnimationFrame(this.update.bind(this));
+                    this.frame++;
+                }
+            }
+            randomChar() {
+                return this.chars[Math.floor(Math.random() * this.chars.length)];
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const brandEls = document.querySelectorAll('.brand-title');
+            if (brandEls.length > 0) {
+                const brandFx = new BrandingGlitch(brandEls[0]);
+                const brandWords = ['PIXELSTORTION', 'PROJECTS', 'BIO', 'SILENCE', 'MATAALA', 'CINEMA', 'MUSIC', 'PIXELSTORTION', 'NALANI', 'REDFERN', 'TURNBULL', 'PIXELSTORTION', 'ETHEL', 'ISLA', 'DOMINIC', 'KINLEY', 'STICKY', 'PIXELSTORTION'];
+                let wordIndex = 0;
+
+                function nextBrandWord() {
+                    wordIndex = (wordIndex + 1) % brandWords.length;
+                    brandFx.setText(brandWords[wordIndex]).then(() => {
+                        let delay = 1500;
+                        if (brandWords[wordIndex] === 'PIXELSTORTION') {
+                            delay = 6000;
+                        }
+                        setTimeout(nextBrandWord, delay);
+                    });
+                }
+
+                setTimeout(nextBrandWord, 6000);
+            }
+        });
+
+        // ============================================================
+        // BRAND DROPDOWN
+        // ============================================================
+        function toggleBrandMenu(e) {
+            e.stopPropagation();
+            const menu = document.getElementById('brandDropdown');
+            menu.classList.toggle('active');
+        }
+
+        document.addEventListener('click', (e) => {
+            const menu = document.getElementById('brandDropdown');
+            if (menu && menu.classList.contains('active')) {
+                menu.classList.remove('active');
+            }
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const currentUrl = window.location.href.toLowerCase();
+            const dropdownLinks = document.querySelectorAll('.brand-dropdown-item');
+
+            dropdownLinks.forEach(link => {
+                const href = link.getAttribute('href') || '';
+                const isSilenceLink = href.includes('/silence/');
+                const isMataalaLink = href.includes('/mataala/');
+                const isCinemaLink = href.includes('/silentcinema/');
+                const isBioLink = href.includes('/bio/');
+
+                if ((currentUrl.includes('silence') && !currentUrl.includes('silentcinema') && isSilenceLink) ||
+                    (currentUrl.includes('mataala') && isMataalaLink) ||
+                    (currentUrl.includes('silentcinema') && isCinemaLink) ||
+                    (currentUrl.includes('bio') && isBioLink)) {
+                    link.removeAttribute('href');
+                    link.style.opacity = '0.4';
+                    link.style.cursor = 'default';
+                    link.style.pointerEvents = 'none';
+                    link.innerHTML += ' <span style="font-size:9px; letter-spacing:1px; margin-left:8px; color:#666;">[ACTIVE]</span>';
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>
+

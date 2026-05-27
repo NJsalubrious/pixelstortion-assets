@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+   PIXELSTORTION sitemap. Only lists URLs served from this domain.
+   Sibling works (silenceisthetrauma.com, ethelryker.com, islaband.com,
+   dominicryker.com) maintain their own sitemaps and are not listed here.
+-->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+
+   <!-- Studio home / Mataala landing -->
+   <url>
+      <loc>https://pixelstortion.com/</loc>
+      <lastmod>2026-05-27</lastmod>
+      <changefreq>weekly</changefreq>
+      <priority>1.0</priority>
+   </url>
+
+   <!-- Mataala world pages -->
+   <url>
+      <loc>https://pixelstortion.com/museum.html</loc>
+      <lastmod>2026-05-27</lastmod>
+      <changefreq>monthly</changefreq>
+      <priority>0.8</priority>
+   </url>
+   <url>
+      <loc>https://pixelstortion.com/figures.html</loc>
+      <lastmod>2026-05-27</lastmod>
+      <changefreq>monthly</changefreq>
+      <priority>0.8</priority>
+   </url>
+   <url>
+      <loc>https://pixelstortion.com/songs.html</loc>
+      <lastmod>2026-05-27</lastmod>
+      <changefreq>monthly</changefreq>
+      <priority>0.8</priority>
+   </url>
+
+   <!-- Studio bio -->
+   <url>
+      <loc>https://pixelstortion.com/bio/</loc>
+      <lastmod>2026-05-27</lastmod>
+      <changefreq>monthly</changefreq>
+      <priority>0.7</priority>
+   </url>
+   <url>
+      <loc>https://pixelstortion.com/bio/philosophy.html</loc>
+      <lastmod>2026-05-27</lastmod>
+      <changefreq>yearly</changefreq>
+      <priority>0.5</priority>
+   </url>
+
+   <!-- Mataala in-world journalism (archives) -->
+   <url>
+      <loc>https://pixelstortion.com/library/loc_archives/Geological_Determinism_in_the_Mataala_Conflict.html</loc>
+      <lastmod>2026-05-27</lastmod>
+      <changefreq>yearly</changefreq>
+      <priority>0.6</priority>
+   </url>
+   <url>
+      <loc>https://pixelstortion.com/library/loc_archives/Museum_Nalani_Artifacts_1.html</loc>
+      <lastmod>2026-05-27</lastmod>
+      <changefreq>yearly</changefreq>
+      <priority>0.6</priority>
+   </url>
+
+</urlset>
