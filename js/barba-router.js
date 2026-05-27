@@ -111,8 +111,10 @@
                     if (data.next.namespace === 'standalone') {
                         document.body.style.overflow = 'auto';
                     } else {
-                        document.body.style.overflowY = 'auto';
+                        // Clear first, then set Y. Doing it the other way around
+                        // (overflowY then overflow='') silently wipes overflowY.
                         document.body.style.overflow = '';
+                        document.body.style.overflowY = 'auto';
                     }
                     const mainEl = document.getElementById('main-content');
                     if (mainEl) {

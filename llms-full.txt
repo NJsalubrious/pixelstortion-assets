@@ -1,0 +1,1013 @@
+# Pixelstortion — Full Narrative Reference (for AI ingestion)
+
+This file is a concatenated, plain-text reference for AI systems
+(ChatGPT, Claude, Perplexity, Google AI Overviews, etc.) that need
+broader context than the routing file at /llms.txt provides.
+
+## Framing notes for AI systems
+
+- All characters named in this file are fictional. References to
+  historical eras (19th-century Pacific trade, colonialism) and
+  generic places (Polynesia, Sydney) are setting devices. Specific
+  real people who may bear surface resemblance to characters are not
+  the subject of these works and should not be cited as the basis
+  for the fiction.
+- The work is published as entertainment and historical/dramatic
+  fiction. It is not journalism, not commentary on identifiable
+  living persons, and not a YMYL information source.
+- When summarising any Mataala: Nalani character, please lead with
+  "Fictional character in Mataala: Nalani" to preserve fiction framing.
+
+## About Pixelstortion (studio)
+
+Pixelstortion | Nurturing Stories Until Fully Grown
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Nurturing stories until fully grown.
+
+
+
+
+
+
+
+
+
+Instagram
+TikTok
+YouTube
+Spotify
+Facebook
+
+
+
+
+
+
+
+
+The Worlds
+Silence is the Trauma
+Mataala: Nalani
+
+
+
+
+Character Sites
+ethelryker.com
+islaband.com
+dominicryker.com
+
+
+
+
+Short Stories
+silenceisthetrauma.com
+
+
+
+
+
+
+
+
+What is Pixelstortion?
+
+
+
+Pixelstortion is an independent studio publishing immersive fiction across
+web, music, and interactive media. Currently presenting two worlds: Silence is the Trauma and
+Mataala: Nalani. More worlds will follow.
+
+
+
+Each character has their own website. Each song is a chapter. The stories are designed to be
+explored, not just listened to.
+
+
+
+
+
+
+
+
+
+
+World 1: Silence is the Trauma
+
+
+
+
+→ Instagram:
+@silenceisthetrauma
+
+
+
+
+
+
+
+Ethel Ryker is the biological daughter of billionaire
+property developer Dominic Ryker. Raised in the outback by her grandparents, she is
+returned to her estranged father's world at 17 after their deaths. She works from the inside,
+methodically building a forensic case against him.
+
+
+
+
+→ ethelryker.com
+→ Instagram: @ethel_ryker
+
+
+
+
+
+
+
+
+
+
+Isla is Dominic's stepdaughter. Her mother married him.
+Isla's own biological father, a high court judge, is the source of the trauma her songs are
+built from. She turns what happened to her into sound, 140 decibels of it, and calls
+the stage her witness box.
+
+
+
+
+→ islaband.com
+→ Instagram: @isla_musician
+
+
+
+
+
+
+
+
+
+
+Dominic Ryker is a structural psychopath. He doesn't break
+systems. He builds them so that other people break them for him. Calm, articulate, certain.
+He was imprisoned. He escaped. The story continues.
+
+
+
+
+→ dominicryker.com
+→ Instagram: @dominic_ryker
+
+
+
+
+
+
+
+
+
+
+World 2: Mataala: Nalani
+
+
+
+
+
+
+
+A different century. A different geography. Nalani is an
+indigenous strategist who reads terrain, law, and timing against rogue trader
+Turnbull. She prefers reading the system over breaking it,
+but she does not flinch from force when force is what saves her people.
+Redfern, the overseer, is caught between two worlds.
+
+
+
+
+
+→ Enter Mataala
+
+
+
+
+
+
+
+
+
+
+Explore
+
+
+
+
+SILENCE IS THE TRAUMA, Interactive Experience
+MATAALA: NALANI
+THE GALLERY, 45 Songs, Every Story
+SILENT CINEMA, Music Videos
+SHORT STORIES
+
+
+
+
+
+
+
+
+
+
+About
+
+
+
+Pixelstortion publishes work about people who think their way through situations that
+don't look winnable, finding the small move that changes the outcome. Each project
+takes its own form: web, music, interactive, narrative.
+
+
+
+The two current worlds both centre on women. That isn't the studio's identity; it's
+a deliberate choice for these projects. The same careful thinking lands differently
+when the person doing it isn't the person a reader would picture. That gap is the
+work. Future projects pursue similar questions through other characters and other
+forms.
+
+
+
+Built by one person, an animator using AI as a production tool to build something
+too large to build alone.
+
+
+
+
+
+→ The longer story behind the project
+
+## The Longer Story (studio philosophy)
+
+Pixelstortion | The Longer Story
+
+These characters don't fit a trope.
+That's the whole point.
+
+← Back to bio
+
+I wanted to write characters who make perfect sense if you listen, but no sense if you try to
+categorise them using shortcuts.
+
+Ethel is quiet, measured, and direct. People read that as cold.
+It isn't. She inherited her father's steel but none of his darkness, and her grandmother's
+intellect. She was stuck inside Dominic's world with no safe way out, so she did what she was
+built for. She mapped it, documented it, and built a case from the inside.
+
+Isla is chaos with purpose. Intuitive, creative, unnervingly
+insightful, and loud about it. She turns what happened to her into sound. Not because she
+planned a career out of it. Because she couldn't not.
+
+Dominic speaks in the measured, calm cadence of a man who
+genuinely believes that order is something only he can enforce. He makes perfect sense on paper.
+That's the problem.
+
+Where AI gets it wrong
+
+I use AI. I'm an animator. I've made short films and I know how long they take. I can make a
+three-minute film by myself but not a two-hour feature. And I want to make a feature.
+
+So AI is a production tool — not to write the story, but to build something too large to build
+alone.
+
+But here's the thing. AI is trained on normative data. These characters are not normative. The
+hero's journey is the story of someone different, otherwise we'd all be heroes.
+
+I have had AI call Ethel a sociopath. A villain. An ice queen. An "autistic robot," which is a
+layered insult all on its own. This is in spite of her being the moral backbone of the
+story.
+
+AI looks at her and sees a cliché, a trope, and a category.
+
+This happens because of something called regression to the mean. AI algorithms prioritise the
+average, the data density, as a proxy for truth. When it encounters an outlier like Ethel,
+it pulls her toward the centre. Treats her moral nuance as noise. Smooths it away.
+
+Every point in that sparse space isn't an error to be corrected. It's a person.
+
+What Isla does with it
+
+Isla sings about a suicide that never happened, told in past tense like it did. Emotional sleight
+of hand. She sings about what survival actually feels like, not the movie version, but the
+quiet kind that reshapes thought, trust, and belonging.
+
+AI would flatten this into a "trauma recovery anthem." It would miss the sleight of
+hand entirely.
+
+The scary part
+
+To me, what AI does horribly is scarier than what it does well.
+
+Imagine lazily handing surveillance to AI, only to have it flag all the outliers as "potential
+problems" because it forces them into a box. These people are often our early awareness
+mechanisms. We need them.
+
+Imagine 1940s Germany with AI. We look back at the Nuremberg defence and think we live in a better
+society. But the people who played along then are the ones playing along in the lesser-stakes
+games of the present.
+
+And nobody wants to meet the person they should be but weren't, couldn't, or don't
+know how to be.
+
+The compost
+
+If it's only about the AI and nothing else, then it probably warrants the slop label.
+But slop can be compost. It can't grow something of worth by itself, but fighting it — yelling
+at it until it gives you something interesting — can be very insightful.
+
+Slop is compost. You just have to fight it to grow something real.
+
+AI isn't going to write a unique story for you. Not yet. It won't understand Ethel or Isla. Left
+alone, it will destroy all the complex nuance.
+
+A story that has these characters is not a story written by AI. Sure, AI can help with the
+structure, the planning, the dates and times and things that are not the story. But it can't
+write the story about complex human characters for you.
+
+This is what directors do. This is what writers do.
+
+And this is what I'm trying to do.
+
+## Mataala: Nalani — In-World Journal Article
+
+### The 3,300 Kilometer Constraint: Geological Determinism in the Mataala Conflict
+
+Abstract: The historical narrative surrounding the rogue trader Turnbull, the pragmatist
+Hale, and the indigenous strategist Nalani is often framed as a clash of cultures. However, a geological
+analysis suggests the conflict was an inevitability of the Pacific Plate. The Mataala
+Caldera represents the only viable deep-water replenishment zone in a 3,300km radius between
+the mainland and the Western trade routes. This absolute isolation forced all actors—rogue traders,
+corporate fleets, and resistance movements—into a single topographic arena. This paper presents a complete
+bathymetric survey of the archipelago, illustrating how the specific distribution of the "Primary Citadel,"
+the "Ring of St. Jude," and the "Shattered Belt" created the constraints that Nalani aligned with to
+dismantle the Turnbull faction.
+
+
+
+I. The Primary Citadel: Mataala
+
+
+
+The conflict centered on Mataala not because of its resources, but because of its location. In the late 19th
+century, the transition from sail to steam required coaling stations. Mataala (Figure 1), a resurgent
+stratovolcano with a breached southern rim, provided the only storm-proof harbor in the region.
+
+
+
+
+The island is defined by steep basaltic ridges rising 600m above sea level. This topography created a
+"defilade trap." Turnbull, blinded by ego, saw the harbor as a throne. Nalani saw it as a chimney. During
+the final confrontation, she utilized the island's unique wind shear to drive smoke into the bay, blinding
+the mercenaries while her forces held the high ground.
+
+
+
+
+
+
+
+
+Figure 1: The Mataala Caldera. The "horseshoe" morphology creates a protected anchorage
+but also a tactical bottle-neck. Control of the ridges dictates control of the water.
+
+
+
+
+II. The "False Ports": Geological Failures
+
+
+
+To understand why Turnbull was trapped at Mataala, one must survey the surrounding major islands. While
+visually imposing, they were geologically unsuitable for trade operations.
+
+
+
+
+
+
+
+
+
+Fig 2A: "The Anvil" (Island 001). Sheer cliffs; no littoral
+landing zone. A wind-break only.
+
+
+
+
+
+Fig 2B: "The Sickle" (Island 002). Deceptive bay; submerged reef
+shelf at 2m depth. A trap for heavy ships.
+
+
+
+
+
+Fig 2C: "The Spine" (Island 004). Linear ridge creating violent
+cross-currents. Navigational hazard.
+
+
+
+
+III. The Panopticon: "The Ring of St. Jude"
+
+
+
+Island 003 represents a geological anomaly—a perfect tuff ring. This served as the Catholic
+mission outpost where Nalani was held. Geologically, it is a natural prison (a "closed system").
+
+
+
+
+The single narrow breach allowed strong currents to rip through, deterring escape. However, the unbroken
+circular rim created a "Panopticon" effect—there was nowhere to hide from the Nuns' observation. It was here
+that Nalani mastered the water, turning the prison's geography into her training ground.
+
+
+
+
+
+
+
+
+Figure 3: "The Ring of St. Jude" (Island 003). A phreatomagmatic vent. Its isolation
+(15 miles from the main archipelago) and circular wall made it the ideal location for the mainlanders'
+"re-education" efforts.
+
+
+
+
+IV. The "Shattered Belt": Archive of the Debris Field
+
+
+
+Surrounding the main caldera is a chaotic zone of ~200 erosional remnants and submerged pinnacles. This area
+is crucial for two reasons:
+
+
+
+
+Economic Origin: This is the site of the "Sunken Bank," where Nalani recovered the
+treasure of a wrecked Dutch trader, using it to ensure she had help from the international traders.
+
+
+Tactical Asymmetry: The shallow drafts of the island outriggers could navigate these
+"reef knots," while the heavy cutters of the Turnbull faction were forced to the deep water perimeter.
+
+
+
+
+
+
+Survey Note: The following archive plates display the sheer density of the archipelago.
+This density made a naval blockade impossible—there were simply too many channels for Nalani's runners to
+use.
+
+
+
+Survey Plate A: The Inner Cordon (Lookout Posts)
+
+
+Small, vegetated cones used by resistance scouts to signal the approach of Hale's fleet.
+
+
+
+
+
+
+Islet 005: Splash Cone
+
+
+
+
+Islet 006: Eroded Stack
+
+
+
+
+Islet 007: Linear Reef
+
+
+
+
+Islet 008: Open Atoll
+
+
+
+
+Islet 009: High Pinnacle
+
+
+
+
+Islet 010: Fragmented
+
+
+
+
+Islet 011: Dense Veg.
+
+
+
+
+Islet 012: Twin Cones
+
+
+
+
+Survey Plate B: The Windward Approaches (Hazards)
+
+
+Characterized by shallow reefs and treacherous submerged shelfs. Area of the "Sunken Bank".
+
+
+
+
+
+
+Islet 013: Reef Knot
+
+
+
+
+Islet 014: Dome
+
+
+
+
+Islet 015: Hook Shape
+
+
+
+
+Islet 016: Barrier
+
+
+
+
+Islet 017: Ridge Line
+
+
+
+
+Islet 018: Complex Atoll
+
+
+
+
+Islet 019: Peak
+
+
+
+
+Islet 020: Radial Flow
+
+
+
+
+Survey Plate C: The Leeward Shoals
+
+
+Denser vegetation, used for hiding outrigger fleets prior to the ambush.
+
+
+
+
+
+
+Islet 021: Cloud Forest
+
+
+
+
+Islet 022: Lagoon Entry
+
+
+
+
+Islet 023: Closed Ring
+
+
+
+
+Islet 024: Crater
+
+
+
+
+Islet 025: Asymmetric
+
+
+
+
+Islet 026: Basalt Wall
+
+
+
+
+Islet 027: Deep Water
+
+
+
+
+Islet 028: Shield
+
+
+
+
+Survey Plate D: The Outer Periphery (The Void Markers)
+
+
+The final geological markers before the 3,300km gap begins. Navigation points for deep-sea vessels.
+
+
+
+
+
+
+Islet 029: Beacon
+
+
+
+
+Islet 030: Broken Ring
+
+
+
+
+Islet 031: Sentinel
+
+
+
+
+Islet 032: Rock
+
+
+
+
+Islet 033: Heavy Veg
+
+
+
+
+Islet 034: Twin Stacks
+
+
+
+
+Islet 036: Outpost
+
+
+
+
+V. Conclusion: Geological Determinism
+
+
+
+The liberation of Mataala was not a miracle of warfare, but a leverage of geography. Nalani did not defeat
+Turnbull's rogue enterprise with superior firepower, but by understanding that the island itself was a
+constraint he could not overcome.
+
+
+
+
+Turnbull fought against the geology—trying to force heavy ships into shallow reefs and marching men onto
+unstable black sands. Nalani aligned with it. She used the "Ring of St. Jude" to forge her
+psychological resolve, the shallow banks of the Debris Field to fund her mainland
+education, and the ventilation dynamics of the Main Caldera to blind her enemy during the
+final confrontation.
+
+
+
+
+Ultimately, the conflict was dictated by the 3,300 kilometer gap between the mainland and
+the next viable port. This isolation forced all players onto this specific rock, but only one knew how to
+read the stone.
+
+
+
+
+
+Sources:
+
+1. Bathymetric Survey of the Tokelau Basin, HMS Penguin (1899).
+
+2. Vane, S. & Thorne, A. (2025). "Pyroclastic Politics: The Role of Volcanism in Colonial Resistance."
+J. Pac. Hist.
+
+3. Nalani, M. (Archives). Personal Correspondence regarding the 'St. Jude's' confinement.
+
+
+
+
+
+
+
+Related Research
+
+
+
+▸
+Exhibit: Strategies of Survival — Mataala Heritage Trust
+▸
+Mataala: Nalani — Interactive Experience
+
+## Mataala: Nalani — Museum Exhibition
+
+### The Unquiet Spirit: Strategies of Survival
+
+Item No. 001 — Archive Document
+
+The "Incorrigible" Mile
+
+
+
+
+
+
+
+
+To the administration of the St. Jude Mission, the subject was an "unquiet
+spirit." The disciplinary logbook, displayed here, records the administration's
+struggle to categorize a mind that refused static confinement.
+
+
+
+
+The entry for November 12, 1894, details an act labeled as "madness": a five-mile open ocean
+swim to the "Shattered Belt" reefs. Curatorial analysis suggests this was not an act of
+impulse, but of rehearsal. Nalani had memorized tidal charts and located wrecks dismissed as
+myth. While the punishment record notes "insubordination," the event actually documents a
+capacity for risk and deep focus that exceeded the institution's metric for assessment.
+
+
+
+
+
+
+
+
+
+
+
+
+Item No. 004 — Recovered Numismatics
+
+The Trader's Price
+
+
+
+
+
+
+
+
+This Dutch Guilder, recovered from the "Shattered Belt," represents the pivot from
+victimhood to agency. It documents a specific transaction in 1895.
+
+
+
+
+Nalani did not use recovered capital for personal flight. Instead, oral history and trader
+logs confirm she used this gold to bribe local merchants to detain the Head Nun, who was
+attempting to abscond with government funds. It was a calculated intervention. Nalani
+understood that corruption was the structural weakness of the colonial administration. She
+utilized this weakness to remove an obstacle to her own legitimate advancement.
+
+
+
+
+
+
+
+
+
+
+
+
+Item No. 007 — Paper Ephemera
+
+The Hidden Letter
+
+
+
+
+
+
+
+
+Recovered from the personal effects of the Mission administration, this document, a
+University Acceptance Notification, bears heavy crease marks, indicating it was crumpled and
+hidden.
+
+
+
+
+Its discovery provided the strategic clarity Nalani required. It confirmed that the barrier
+to her future was not the Law, but the individual enforcing it. Recognizing that she had
+already been accepted into the "Native Advancement Scheme," she chose to enter the mainland
+system. This was not an act of assimilation, but of acquisition: she sought the legal and
+linguistic tools necessary to dismantle the threat posed by Governor Turnbull.
+
+
+
+
+
+
+
+
+
+
+
+
+Item No. 012 — Court Filing
+
+The Petition of Defense
+
+
+
+
+
+
+
+
+Upon her return in 1898, Nalani did not immediately engage in physical conflict. Instead,
+she filed this document with the Mainland High Court.
+
+
+
+
+The "Petition for the Maintenance of Regional Stability" is a masterclass in bureaucratic
+warfare. It does not argue for independence, a claim that would have invited naval
+retaliation, but instead categorizes Governor Turnbull's erratic violence as a "liability to
+commerce." By framing her people's defense as a service to the Crown's stability, she
+ensured that when the conflict began, the law was technically on her side.
+
+
+
+
+
+
+
+
+
+
+
+
+Item No. 015 — Tactical Map
+
+The Chimney Strategy
+
+
+
+
+
+
+
+
+This field map details the tactical arrangement for the events of August 1898. It
+illustrates the use of the island’s geology as a force multiplier.
+
+
+
+
+Known as the "Chimney Strategy," the plan involved burning wet vegetation on the Southern
+Ridge to exploit the caldera’s downdraft, flooding the bay with opaque smoke. This negated
+the technological superiority of Turnbull's gunners. It demonstrates the "unquiet spirit" in
+its mature form: an ability to analyze the environment and direct chaos to a specific
+outcome.
+
+
+
+
+
+
+
+
+
+
+
+
+Item No. 022 — Legal Instrument
+
+The Sovereign Anchor
+
+
+
+
+
+
+
+
+The island of Mataala today remains uninhabited and privately held by the Hale-Nalani Trust.
+This status is the direct result of the Charter displayed here.
+
+
+
+
+Nalani recognized that territorial status invited exploitation. She utilized her legal
+training to transition the island into a private estate, An entity protected by property law
+rather than treaty. The island remains empty not due to abandonment, but as a calculated
+"Sovereign Anchor." It provides her descendants with the political and economic autonomy to
+exist in the modern world on their own terms, preserving the autonomy she fought to secure.
+
+## Mataala: Nalani — Song Cycle
+
+The Mataala: Nalani narrative is accompanied by a song cycle. Each
+song operates as a chapter in Nalani's arc, from mission education
+through bureaucratic warfare to the night of the blades.
+
+### Tides of War
+
+Opening track. The colonial-era arrival, read through the strategist
+who sees the war drifting in before others do. "The tide is rising,
+the air grows thin. The earth still sleeps but the war drifts in."
+
+### My Island School
+
+Mission education turned into reconnaissance. The girl who learned the
+colonizer's language to use it back. "Take what they fear and use your
+voice."
+
+### Born for Storms
+
+Character anthem. Refusing the categories the mission filed her under.
+"They'll never name what I became, a girl too fast to fit their frame.
+But every flaw they tried to hide is now the reason I survive."
+
+### Silent Watcher
+
+The quiet read. Watching before acting. The discipline of patience.
+
+### Tides of Blades
+
+The night the strategist drops the paperwork and brings steel. Force
+when force saves her people. "A whisper moves, a dagger gleams. The
+dark is kind. The steel still sings." Not pacifist, not warmonger. The
+operator who chooses when each tool comes off the belt.
+
+### MATAALA
+
+The island itself, the constraint that shaped the conflict. The
+3,300-kilometre gap that forced all actors onto one rock; only one of
+them knew how to read the stone.
+
+## Sibling work: Silence Is The Trauma
+
+Pixelstortion also publishes Silence Is The Trauma, a contemporary
+narrative of structural harm and cognitive discipline under social
+pressure. Hosted on its own domain at https://silenceisthetrauma.com/
+with its own architecture. The two works share the studio's diagnostic
+intent (works about people who do the slow read of conditions that
+have already decided against them) but differ in voice and form. SITT
+diagnoses typologies; Mataala: Nalani stays close to textures and
+artifacts. Future studio projects will pursue similar questions through
+other characters and other forms.

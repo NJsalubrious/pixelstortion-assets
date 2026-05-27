@@ -38,3 +38,5 @@ Allow: /
 
 # Hint files
 Sitemap: https://pixelstortion.com/sitemap.xml
+Sitemap: https://pixelstortion.com/sitemap-video.xml
+Sitemap: https://pixelstortion.com/sitemap-images.xml

@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:video="http://www.google.com/schemas/sitemap-video/1.1">
+
+  <url>
+    <loc>https://pixelstortion.com/songs.html</loc>
+    <video:video>
+      <video:thumbnail_loc>https://i.ytimg.com/vi/BaEDmidh2fg/maxresdefault.jpg</video:thumbnail_loc>
+      <video:title>Tides of War</video:title>
+      <video:description>Song from the Mataala: Nalani narrative. The colonial-era arrival, read through the strategist who sees the war drifting in before others do.</video:description>
+      <video:player_loc allow_embed="yes">https://www.youtube-nocookie.com/embed/BaEDmidh2fg</video:player_loc>
+      <video:family_friendly>yes</video:family_friendly>
+    </video:video>
+    <video:video>
+      <video:thumbnail_loc>https://i.ytimg.com/vi/AD63pqPSdPs/maxresdefault.jpg</video:thumbnail_loc>
+      <video:title>My Island School</video:title>
+      <video:description>Song from the Mataala: Nalani narrative. Mission education turned into reconnaissance. The girl who learned the colonizer&#x27;s language to use it back.</video:description>
+      <video:player_loc allow_embed="yes">https://www.youtube-nocookie.com/embed/AD63pqPSdPs</video:player_loc>
+      <video:family_friendly>yes</video:family_friendly>
+    </video:video>
+    <video:video>
+      <video:thumbnail_loc>https://i.ytimg.com/vi/Bqwv8iOsosE/maxresdefault.jpg</video:thumbnail_loc>
+      <video:title>Born for Storms</video:title>
+      <video:description>Song from the Mataala: Nalani narrative. The character anthem. Refusing the categories the mission filed her under.</video:description>
+      <video:player_loc allow_embed="yes">https://www.youtube-nocookie.com/embed/Bqwv8iOsosE</video:player_loc>
+      <video:family_friendly>yes</video:family_friendly>
+    </video:video>
+    <video:video>
+      <video:thumbnail_loc>https://i.ytimg.com/vi/8XbCkq59YJc/maxresdefault.jpg</video:thumbnail_loc>
+      <video:title>Silent Watcher</video:title>
+      <video:description>Song from the Mataala: Nalani narrative. The quiet read. Watching before acting.</video:description>
+      <video:player_loc allow_embed="yes">https://www.youtube-nocookie.com/embed/8XbCkq59YJc</video:player_loc>
+      <video:family_friendly>yes</video:family_friendly>
+    </video:video>
+    <video:video>
+      <video:thumbnail_loc>https://i.ytimg.com/vi/SpgAuLxiBzI/maxresdefault.jpg</video:thumbnail_loc>
+      <video:title>Tides of Blades</video:title>
+      <video:description>Song from the Mataala: Nalani narrative. The night the strategist drops the paperwork and brings steel. Force when force saves her people.</video:description>
+      <video:player_loc allow_embed="yes">https://www.youtube-nocookie.com/embed/SpgAuLxiBzI</video:player_loc>
+      <video:family_friendly>yes</video:family_friendly>
+    </video:video>
+    <video:video>
+      <video:thumbnail_loc>https://i.ytimg.com/vi/Q6ZG0QXUD44/maxresdefault.jpg</video:thumbnail_loc>
+      <video:title>MATAALA</video:title>
+      <video:description>Song from the Mataala: Nalani narrative. The island itself, the constraint that shaped the conflict.</video:description>
+      <video:player_loc allow_embed="yes">https://www.youtube-nocookie.com/embed/Q6ZG0QXUD44</video:player_loc>
+      <video:family_friendly>yes</video:family_friendly>
+    </video:video>
+  </url>
+
+  <url>
+    <loc>https://pixelstortion.com/</loc>
+    <video:video>
+      <video:thumbnail_loc>https://pixelstortion.com/NALANI_MATAALA.jpg</video:thumbnail_loc>
+      <video:title>Mataala: Nalani — Hero Reel</video:title>
+      <video:description>The indigenous strategist Nalani and the rogue trader Turnbull. Hero reel for the Mataala: Nalani narrative.</video:description>
+      <video:content_loc>https://pub-111e813bd5634cd8a9ecdd3d5c2a0916.r2.dev/character_movies/Nalani_Turnbull__PixelStortion_withMusic.mp4</video:content_loc>
+      <video:family_friendly>yes</video:family_friendly>
+    </video:video>
+  </url>
+
+  <url>
+    <loc>https://pixelstortion.com/figures.html</loc>
+    <video:video>
+      <video:thumbnail_loc>https://pixelstortion.com/NALANI_MATAALA.jpg</video:thumbnail_loc>
+      <video:title>Nalani — Character Study</video:title>
+      <video:description>Nalani: indigenous strategist who reads terrain, law, and timing against the colonial-era merchants arriving on her shores.</video:description>
+      <video:content_loc>https://pub-111e813bd5634cd8a9ecdd3d5c2a0916.r2.dev/character_movies/Nalani_character_1.mp4</video:content_loc>
+      <video:family_friendly>yes</video:family_friendly>
+    </video:video>
+  </url>
+
+  <url>
+    <loc>https://pixelstortion.com/figures.html</loc>
+    <video:video>
+      <video:thumbnail_loc>https://pixelstortion.com/NALANI_MATAALA.jpg</video:thumbnail_loc>
+      <video:title>Elias Turnbull — Character Study</video:title>
+      <video:description>Elias Turnbull: rogue trader and principal antagonist in the Mataala: Nalani narrative.</video:description>
+      <video:content_loc>https://pub-111e813bd5634cd8a9ecdd3d5c2a0916.r2.dev/character_movies/Turnbull_character_1.mp4</video:content_loc>
+      <video:family_friendly>yes</video:family_friendly>
+    </video:video>
+  </url>
+
+  <url>
+    <loc>https://pixelstortion.com/figures.html</loc>
+    <video:video>
+      <video:thumbnail_loc>https://pixelstortion.com/NALANI_MATAALA.jpg</video:thumbnail_loc>
+      <video:title>Redfern — Character Study</video:title>
+      <video:description>Redfern: Turnbull&#x27;s overseer, caught between two worlds.</video:description>
+      <video:content_loc>https://pub-111e813bd5634cd8a9ecdd3d5c2a0916.r2.dev/character_movies/Redfern_character_1.mp4</video:content_loc>
+      <video:family_friendly>yes</video:family_friendly>
+    </video:video>
+  </url>
+
+  <url>
+    <loc>https://pixelstortion.com/figures.html</loc>
+    <video:video>
+      <video:thumbnail_loc>https://pixelstortion.com/NALANI_MATAALA.jpg</video:thumbnail_loc>
+      <video:title>Hale — Character Study</video:title>
+      <video:description>Hale: pragmatist whose alignments shift with the strategic calculus.</video:description>
+      <video:content_loc>https://pub-111e813bd5634cd8a9ecdd3d5c2a0916.r2.dev/character_movies/Hale_character_1.mp4</video:content_loc>
+      <video:family_friendly>yes</video:family_friendly>
+    </video:video>
+  </url>
+
+</urlset>
