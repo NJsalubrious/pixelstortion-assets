@@ -6772,11 +6772,11 @@
 
         }
 
-        function selectTrack(id) {
-
-            currentTrackId = id;
+        function selectTrack(id, autoplay = true) {
 
             const track = tracks.find(t => t.id === id);
+            if (!track) return;
+            currentTrackId = id;
 
             // Clear any existing error overlay
 
@@ -6784,21 +6784,26 @@
 
             if (existingError) existingError.remove();
 
-            // UI
+            // UI (null-guarded so missing DOM nodes don't block playback)
 
-            document.getElementById('current-track-title').innerText = track.title;
+            const titleEl = document.getElementById('current-track-title');
+            if (titleEl) titleEl.innerText = track.title;
 
-            document.getElementById('current-track-date').innerText = `TIMELINE: ${track.storyDate}`;
+            const dateEl = document.getElementById('current-track-date');
+            if (dateEl) dateEl.innerText = `TIMELINE: ${track.storyDate}`;
 
-            document.getElementById('lyrics-display').innerText = track.lyric;
+            const lyricsEl = document.getElementById('lyrics-display');
+            if (lyricsEl) lyricsEl.innerText = track.lyric;
 
-            document.getElementById('top-track-name').innerText = track.title.toUpperCase();
+            const topNameEl = document.getElementById('top-track-name');
+            if (topNameEl) topNameEl.innerText = track.title.toUpperCase();
 
             // Keep center text as "NALANI" for all tracks
 
             document.querySelectorAll('[id^="track-"]').forEach(el => el.classList.remove('track-active'));
 
-            document.getElementById(`track-${id}`).classList.add('track-active');
+            const trackRow = document.getElementById(`track-${id}`);
+            if (trackRow) trackRow.classList.add('track-active');
 
             // Show YouTube video and hide gallery images
 
@@ -6818,13 +6823,16 @@
 
             if (galleryInterval) clearInterval(galleryInterval);
 
-            // Load YouTube video
+            // Load YouTube video — cue (no play) on initial load, load+play on user-triggered clicks
 
-            if (ytPlayer && ytPlayer.loadVideoById) {
+            if (ytPlayer && ytPlayer.loadVideoById && track.videoId) {
 
-                ytPlayer.loadVideoById(track.videoId);
-
-                startUplinkMonitor(track.videoId);
+                if (autoplay) {
+                    ytPlayer.loadVideoById(track.videoId);
+                    startUplinkMonitor(track.videoId);
+                } else if (ytPlayer.cueVideoById) {
+                    ytPlayer.cueVideoById(track.videoId);
+                }
 
             }
 
@@ -6832,7 +6840,7 @@
 
         function togglePlay() {
 
-            if (!ytPlayer) return;
+            if (!ytPlayer || typeof ytPlayer.getPlayerState !== 'function') return;
 
             if (ytPlayer.getPlayerState() === 1) ytPlayer.pauseVideo();
 
@@ -6873,6 +6881,7 @@
         function createVisualizer() {
 
             const container = document.getElementById('visualizer-container');
+            if (!container) return;
 
             let bars = '';
 
@@ -7356,7 +7365,7 @@
 
         // --- Auto-Start ---
 
-        // Select "Silent Watcher" (track 4) on load (without playing) to populate UI
+        // Select "Silent Watcher" (track 4) on load — cue only, user must click play
 
         window.onload = () => {
 
@@ -7364,7 +7373,7 @@
 
             // We delay slightly to ensure fonts load
 
-            setTimeout(() => selectTrack(4), 500);
+            setTimeout(() => selectTrack(4, false), 500);
 
         }
 

@@ -188,15 +188,27 @@
     window.addEventListener('DOMContentLoaded', () => {
         createAudioElement();
         createMuteToggle();
-        
+
+        // If the visitor landed directly on the Songs page, don't start the
+        // theme — the YouTube player on that page will be the audio source.
+        // Fade in when they navigate away (Barba router calls AmbientAudio.fadeIn).
+        const initialContainer = document.querySelector('[data-barba="container"]');
+        const initialNamespace = initialContainer && initialContainer.getAttribute('data-barba-namespace');
+        if (initialNamespace === 'audio') {
+            isFadedOut = true;
+            audio.volume = 0;
+            updateMuteUI();
+            return;
+        }
+
         // Try autoplay
         tryStartAudio();
-        
+
         // Listen for interactions to start audio if autoplay failed
         document.body.addEventListener('click', () => {
             tryStartAudio();
         }, { once: true });
-        
+
         // Also listen to Barba transitions to try playing
         document.body.addEventListener('click', (e) => {
             if(e.target.tagName.toLowerCase() === 'a' || e.target.closest('a')) {
