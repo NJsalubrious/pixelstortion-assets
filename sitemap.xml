@@ -16,19 +16,19 @@
 
    <!-- Mataala world pages -->
    <url>
-      <loc>https://pixelstortion.com/museum.html</loc>
+      <loc>https://pixelstortion.com/museum</loc>
       <lastmod>2026-05-27</lastmod>
       <changefreq>monthly</changefreq>
       <priority>0.8</priority>
    </url>
    <url>
-      <loc>https://pixelstortion.com/figures.html</loc>
+      <loc>https://pixelstortion.com/figures</loc>
       <lastmod>2026-05-27</lastmod>
       <changefreq>monthly</changefreq>
       <priority>0.8</priority>
    </url>
    <url>
-      <loc>https://pixelstortion.com/songs.html</loc>
+      <loc>https://pixelstortion.com/songs</loc>
       <lastmod>2026-05-27</lastmod>
       <changefreq>monthly</changefreq>
       <priority>0.8</priority>
@@ -42,7 +42,7 @@
       <priority>0.7</priority>
    </url>
    <url>
-      <loc>https://pixelstortion.com/bio/philosophy.html</loc>
+      <loc>https://pixelstortion.com/bio/philosophy</loc>
       <lastmod>2026-05-27</lastmod>
       <changefreq>yearly</changefreq>
       <priority>0.5</priority>
@@ -50,13 +50,13 @@
 
    <!-- Mataala in-world journalism (archives) -->
    <url>
-      <loc>https://pixelstortion.com/library/loc_archives/Geological_Determinism_in_the_Mataala_Conflict.html</loc>
+      <loc>https://pixelstortion.com/library/loc_archives/Geological_Determinism_in_the_Mataala_Conflict</loc>
       <lastmod>2026-05-27</lastmod>
       <changefreq>yearly</changefreq>
       <priority>0.6</priority>
    </url>
    <url>
-      <loc>https://pixelstortion.com/library/loc_archives/Museum_Nalani_Artifacts_1.html</loc>
+      <loc>https://pixelstortion.com/library/loc_archives/Museum_Nalani_Artifacts_1</loc>
       <lastmod>2026-05-27</lastmod>
       <changefreq>yearly</changefreq>
       <priority>0.6</priority>

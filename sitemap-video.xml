@@ -3,7 +3,7 @@
         xmlns:video="http://www.google.com/schemas/sitemap-video/1.1">
 
   <url>
-    <loc>https://pixelstortion.com/songs.html</loc>
+    <loc>https://pixelstortion.com/songs</loc>
     <video:video>
       <video:thumbnail_loc>https://i.ytimg.com/vi/BaEDmidh2fg/maxresdefault.jpg</video:thumbnail_loc>
       <video:title>Tides of War</video:title>
@@ -60,7 +60,7 @@
   </url>
 
   <url>
-    <loc>https://pixelstortion.com/figures.html</loc>
+    <loc>https://pixelstortion.com/figures</loc>
     <video:video>
       <video:thumbnail_loc>https://pixelstortion.com/NALANI_MATAALA.jpg</video:thumbnail_loc>
       <video:title>Nalani — Character Study</video:title>
@@ -71,7 +71,7 @@
   </url>
 
   <url>
-    <loc>https://pixelstortion.com/figures.html</loc>
+    <loc>https://pixelstortion.com/figures</loc>
     <video:video>
       <video:thumbnail_loc>https://pixelstortion.com/NALANI_MATAALA.jpg</video:thumbnail_loc>
       <video:title>Elias Turnbull — Character Study</video:title>
@@ -82,7 +82,7 @@
   </url>
 
   <url>
-    <loc>https://pixelstortion.com/figures.html</loc>
+    <loc>https://pixelstortion.com/figures</loc>
     <video:video>
       <video:thumbnail_loc>https://pixelstortion.com/NALANI_MATAALA.jpg</video:thumbnail_loc>
       <video:title>Redfern — Character Study</video:title>
@@ -93,7 +93,7 @@
   </url>
 
   <url>
-    <loc>https://pixelstortion.com/figures.html</loc>
+    <loc>https://pixelstortion.com/figures</loc>
     <video:video>
       <video:thumbnail_loc>https://pixelstortion.com/NALANI_MATAALA.jpg</video:thumbnail_loc>
       <video:title>Hale — Character Study</video:title>
