@@ -72,6 +72,30 @@
         }
     }
 
+    /**
+     * Rebuild the songs-page YouTube player after a PJAX swap.
+     *
+     * The #youtube-player div lives inside the swapped <main> container, so
+     * every entry to the songs page gets a fresh, player-less div. The YouTube
+     * IFrame API only calls the global onYouTubeIframeAPIReady once (on the
+     * first hard load), so on subsequent soft navigations no player is created
+     * and videos won't play until a manual refresh. We invoke the global
+     * initializer here to attach a player to the new div.
+     *
+     * No-op until the API is ready: it will call onYouTubeIframeAPIReady
+     * itself once loading finishes.
+     */
+    function reinitYouTubePlayer() {
+        if (!document.getElementById('youtube-player')) return;
+        if (window.YT && window.YT.Player && typeof window.onYouTubeIframeAPIReady === 'function') {
+            try {
+                window.onYouTubeIframeAPIReady();
+            } catch (e) {
+                console.warn('[Barba] YouTube player reinit failed:', e);
+            }
+        }
+    }
+
     // Initialize Barba
     window.addEventListener('DOMContentLoaded', () => {
         if (typeof barba === 'undefined') {
@@ -103,6 +127,11 @@
                 enter(data) {
                     // Update active nav and trigger scripts based on new namespace
                     handleNamespace(data.next.namespace);
+
+                    // The songs page's YouTube player lives in the swapped
+                    // container and the YT API only fires its ready callback
+                    // once per hard load, so rebuild the player on entry.
+                    if (data.next.namespace === 'audio') reinitYouTubePlayer();
 
                     // Reset scroll constraints that switchTab may have set.
                     // Archives (standalone) have no internal scroll container, so they
