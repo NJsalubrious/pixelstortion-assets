@@ -198,5 +198,16 @@
         // Trigger for initial page load
         const initialNamespace = document.querySelector('main[data-barba="container"]')?.getAttribute('data-barba-namespace') || 'home';
         handleNamespace(initialNamespace);
+
+        // Close the mobile burger menu the instant a menu link is selected.
+        // Attached once on the persistent document; #mobile-menu lives in the
+        // shell (outside the Barba container) so it survives PJAX swaps and
+        // would otherwise stay open over the newly loaded page.
+        document.addEventListener('click', (e) => {
+            if (e.target.closest('#mobile-menu a')) {
+                const menu = document.getElementById('mobile-menu');
+                if (menu) menu.classList.add('hidden');
+            }
+        });
     });
 })();
