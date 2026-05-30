@@ -40,3 +40,6 @@ Allow: /
 Sitemap: https://pixelstortion.com/sitemap.xml
 Sitemap: https://pixelstortion.com/sitemap-video.xml
 Sitemap: https://pixelstortion.com/sitemap-images.xml
+Sitemap: https://pixelstortion.com/sitemap-songs.xml
+Sitemap: https://pixelstortion.com/sitemap-songs-images.xml
+Sitemap: https://pixelstortion.com/sitemap-songs-video.xml

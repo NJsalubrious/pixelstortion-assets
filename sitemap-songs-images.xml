@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+  <url>
+    <loc>https://pixelstortion.com/songs/nalani-mataala-tides-of-war</loc>
+    <image:image>
+      <image:loc>https://pixelstortion.com/songs/covers/Nalani-Mataala-Tides-Of-War.jpg</image:loc>
+      <image:title>Tides of War by Nalani, Mataala</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://pixelstortion.com/songs/nalani-mataala-my-island-school</loc>
+    <image:image>
+      <image:loc>https://pixelstortion.com/songs/covers/Nalani-Mataala-My-island-school.jpg</image:loc>
+      <image:title>My Island School by Nalani, Mataala</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://pixelstortion.com/songs/nalani-mataala-born-for-storms</loc>
+    <image:image>
+      <image:loc>https://pixelstortion.com/songs/covers/Nalani-Mataala-Born-For-Storms.jpg</image:loc>
+      <image:title>Born For Storms by Nalani, Mataala</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://pixelstortion.com/songs/nalani-mataala-silent-watcher</loc>
+    <image:image>
+      <image:loc>https://pixelstortion.com/songs/covers/Nalani-Mataala-The-Silent-Watcher.jpg</image:loc>
+      <image:title>Silent Watcher by Nalani, Mataala</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://pixelstortion.com/songs/nalani-mataala-blades-of-war</loc>
+    <image:image>
+      <image:loc>https://pixelstortion.com/songs/covers/Nalani-Mataala-Blades-Of-War.jpg</image:loc>
+      <image:title>Blades of War by Nalani, Mataala</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://pixelstortion.com/songs/nalani-mataala-short-film</loc>
+    <image:image>
+      <image:loc>https://pixelstortion.com/songs/covers/Nalani-Mataala-Short-Film.jpg</image:loc>
+      <image:title>Mataala (Short Film) by Nalani, Mataala</image:title>
+    </image:image>
+  </url>
+</urlset>
