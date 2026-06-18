@@ -159,6 +159,10 @@ function page(song, uploadDate) {
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
+    <!-- Favicon (browser tab + Google domain icon). Square PNG at site root. -->
+    <link rel="icon" type="image/png" sizes="96x96" href="/favicon.png" />
+    <link rel="icon" type="image/png" sizes="512x512" href="/favicon.png" />
+    <link rel="apple-touch-icon" href="/favicon.png" />
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>${esc(song.seoTitle)}</title>
@@ -269,7 +273,7 @@ ${JSON.stringify(ld, null, 2)}
 }
 
 // ---- gallery hub page (visual grid of all covers, dropdown nav, links to each song page) ----
-function galleryPage() {
+function galleryPage(dates = {}) {
   const cards = SONGS.map(s => {
     const badge = s.type === 'film' ? 'Short Film' : (s.notFilm ? 'Song' : 'Music Video / Short Film');
     return `        <a href="/songs/${s.slug}" class="group block bg-[#14100c] border border-[#3d2b1f] overflow-hidden transition-all duration-300 hover:border-[#d4af37] hover:shadow-[0_0_25px_rgba(212,175,55,0.18)]">
@@ -288,11 +292,29 @@ function galleryPage() {
     name: 'Musical Short Films | Mataala: Nalani', url: `${ORIGIN}/nalani_gallery`,
     description: 'The musical short films and songs of Mataala: Nalani, a 19th-century Polynesian historical fiction of indigenous strategy and resistance.',
     isPartOf: { '@type': 'CreativeWorkSeries', name: 'Mataala: Nalani', url: `${ORIGIN}/` },
-    hasPart: SONGS.map(s => ({ '@type': s.type === 'film' ? 'VideoObject' : 'MusicRecording', name: s.title, url: `${ORIGIN}/songs/${s.slug}` })),
+    hasPart: SONGS.map(s => {
+      const itemUrl = `${ORIGIN}/songs/${s.slug}`;
+      if (s.type === 'film') {
+        const thumb = s.videoId ? `https://i.ytimg.com/vi/${s.videoId}/maxresdefault.jpg` : `${ORIGIN}/songs/covers/${encodeURIComponent(s.cover)}`;
+        const d = dates[s.videoId];
+        return {
+          '@type': 'VideoObject', name: s.title, url: itemUrl,
+          description: s.seoDesc, thumbnailUrl: thumb,
+          ...(d ? { uploadDate: d } : {}),
+          embedUrl: `https://www.youtube-nocookie.com/embed/${s.videoId}`,
+          contentUrl: `https://www.youtube.com/watch?v=${s.videoId}`,
+        };
+      }
+      return { '@type': 'MusicRecording', name: s.title, url: itemUrl };
+    }),
   };
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
+    <!-- Favicon (browser tab + Google domain icon). Square PNG at site root. -->
+    <link rel="icon" type="image/png" sizes="96x96" href="/favicon.png" />
+    <link rel="icon" type="image/png" sizes="512x512" href="/favicon.png" />
+    <link rel="apple-touch-icon" href="/favicon.png" />
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Musical Short Films | Mataala: Nalani</title>
@@ -380,9 +402,11 @@ for (const s of SONGS) {
   if (existsSync(src)) copyFileSync(src, join(OUT_COVERS, s.cover));
 }
 const pageEntries = [], videoEntries = [], imageEntries = [];
+const dates = {};
 let n = 0;
 for (const song of SONGS) {
   const uploadDate = DATES[song.videoId] || await ytDate(song.videoId);
+  if (uploadDate) dates[song.videoId] = uploadDate;
   writeFileSync(join(OUT_DIR, `${song.slug}.html`), page(song, uploadDate), 'utf8');
   const cAbs = `${ORIGIN}/songs/covers/${encodeURIComponent(song.cover)}`;
   const thumb = `https://i.ytimg.com/vi/${song.videoId}/maxresdefault.jpg`;
@@ -399,5 +423,5 @@ const wrap = (ns, body) => `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmln
 writeFileSync(join(REPO, 'sitemap-songs.xml'), wrap('', pageEntries.join('')), 'utf8');
 writeFileSync(join(REPO, 'sitemap-songs-video.xml'), wrap('\n        xmlns:video="http://www.google.com/schemas/sitemap-video/1.1"', videoEntries.join('')), 'utf8');
 writeFileSync(join(REPO, 'sitemap-songs-images.xml'), wrap('\n        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1"', imageEntries.join('')), 'utf8');
-writeFileSync(join(REPO, 'nalani_gallery.html'), galleryPage(), 'utf8');
+writeFileSync(join(REPO, 'nalani_gallery.html'), galleryPage(dates), 'utf8');
 console.log(`Done. ${n} pages + hub + 3 sitemaps (pages/video/images) -> ${REPO}`);
