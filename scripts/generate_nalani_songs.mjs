@@ -183,8 +183,8 @@ function page(song, uploadDate) {
     <meta name="twitter:description" content="${esc(song.seoDesc)}">
     <meta name="twitter:image" content="${esc(thumb)}">
 
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-34H8LS884F"></script>
-    <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-34H8LS884F');</script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-WQLQGZ1Z9W"></script>
+    <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-WQLQGZ1Z9W');</script>
 
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -328,8 +328,8 @@ function galleryPage(dates = {}) {
   <meta property="og:image" content="${ORIGIN}/NALANI_MATAALA.jpg">
   <meta property="og:site_name" content="Pixelstortion">
   <meta name="twitter:card" content="summary_large_image">
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-34H8LS884F"></script>
-  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-34H8LS884F');</script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-WQLQGZ1Z9W"></script>
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-WQLQGZ1Z9W');</script>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
