@@ -214,4 +214,9 @@
     </image:image>
   </url>
 
+  <url>
+    <loc>https://pixelstortion.com/bio/</loc>
+    <image:image><image:loc>https://pixelstortion.com/bio/images/nathan-jones-bio-social.png</image:loc></image:image>
+    <image:image><image:loc>https://pixelstortion.com/bio/images/images_jpg/nathan-jones-nwjones-Drawing.jpg</image:loc></image:image>
+  </url>
 </urlset>

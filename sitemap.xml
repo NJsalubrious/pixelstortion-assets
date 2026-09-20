@@ -37,15 +37,9 @@
    <!-- Studio bio -->
    <url>
       <loc>https://pixelstortion.com/bio/</loc>
-      <lastmod>2026-05-27</lastmod>
+      <lastmod>2026-09-21</lastmod>
       <changefreq>monthly</changefreq>
       <priority>0.7</priority>
-   </url>
-   <url>
-      <loc>https://pixelstortion.com/bio/philosophy</loc>
-      <lastmod>2026-05-27</lastmod>
-      <changefreq>yearly</changefreq>
-      <priority>0.5</priority>
    </url>
 
    <!-- Mataala in-world journalism (archives) -->
